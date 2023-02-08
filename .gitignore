@@ -1,0 +1,49 @@
+# Maven
+target
+# Maven keycloak.js changes for "war-app-html5" and "war-app-profile-html5" example applications
+test-sso/src/test/resources/apps/war-app-html5/src/main/webapp/keycloak.js
+test-sso/src/test/resources/apps/war-app-profile-html5/src/main/webapp/keycloak.js
+
+# Eclipse
+.settings
+.classpath
+.project
+.checkstyle
+
+# Netbeans
+nb-configuration.xml
+
+# temp files
+./log
+tmp
+log.txt
+*.log
+
+# vim
+.*.swp
+
+# Intellij
+.idea/
+*.iml
+*.iws
+
+# Test properties
+test.properties*
+
+# Properties used in runtime
+used-test.properties
+
+# Images used in runtime
+used-images.properties
+
+# Templates used for tests
+used-templates.properties
+
+# Usage report
+usage.json
+
+# Indy
+infra/maven-cache/indy
+
+# Ansible
+*.retry

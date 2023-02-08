@@ -1,0 +1,52 @@
+package org.jboss.intersmash.tools.provision.openshift.operator.resources;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
+import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+
+import io.fabric8.kubernetes.api.model.EnvVar;
+
+public class SubscriptionTest {
+
+	/**
+	 * Verifies serialization/deserialization preserve environment variables
+	 */
+	@Test
+	public void testEnv() throws IOException {
+		final String propertyValue = "dummy-prop-value";
+		Subscription subscription = new Subscription(
+				"openshift-marketplace",
+				"redhat-operators",
+				"dummy-operator",
+				"alpha",
+				OperatorProvisioner.INSTALLPLAN_APPROVAL_MANUAL,
+				Map.of(
+						"PROP_1", propertyValue,
+						"PROP_2", propertyValue,
+						"PROP_3", propertyValue,
+						"PROP_4", "a different value"));
+		File subscriptionFile = subscription.save();
+		Subscription loadedSubscription = new Subscription();
+		loadedSubscription.load(subscriptionFile);
+		Assertions.assertEquals(loadedSubscription.getSpec().getInstallPlanApproval(),
+				OperatorProvisioner.INSTALLPLAN_APPROVAL_MANUAL);
+		for (EnvVar envVar : loadedSubscription.getSpec().getConfig().getEnv()) {
+			switch (envVar.getName()) {
+				case "PROP_1":
+				case "PROP_2":
+				case "PROP_3":
+					Assertions.assertEquals(envVar.getValue(), propertyValue);
+					break;
+				case "PROP_4":
+					Assertions.assertEquals(envVar.getValue(), "a different value");
+					break;
+				default:
+					break;
+			}
+		}
+	}
+}

@@ -1,0 +1,100 @@
+package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec;
+
+public final class KeycloakAPIAuthenticationExecutionBuilder {
+	private String authenticator;
+	private String authenticatorConfig;
+	private String authenticatorFlow;
+	private String flowAlias;
+	private int priority;
+	private String requirement;
+	private boolean userSetupAllowed;
+
+	/**
+	 * Set an authenticator.
+	 *
+	 * @param authenticator the authenticator that should be used
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder authenticator(String authenticator) {
+		this.authenticator = authenticator;
+		return this;
+	}
+
+	/**
+	 * Set Authenticator Config.
+	 *
+	 * @param authenticatorConfig String representing a valid authenticator configuration option
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder authenticatorConfig(String authenticatorConfig) {
+		this.authenticatorConfig = authenticatorConfig;
+		return this;
+	}
+
+	/**
+	 * Authenticator flow.
+	 *
+	 * @param authenticatorFlow String representing a valid authenticator flow
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder authenticatorFlow(String authenticatorFlow) {
+		this.authenticatorFlow = authenticatorFlow;
+		return this;
+	}
+
+	/**
+	 * Flow Alias.
+	 *
+	 * @param flowAlias String representing a valid authenticator flow alias
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder flowAlias(String flowAlias) {
+		this.flowAlias = flowAlias;
+		return this;
+	}
+
+	/**
+	 * Priority.
+	 *
+	 * @param priority Integer representing a valid priority
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder priority(int priority) {
+		this.priority = priority;
+		return this;
+	}
+
+	/**
+	 * Requirement {@code[REQUIRED, OPTIONAL, ALTERNATIVE, DISABLED]}.
+	 *
+	 * @param requirement String representing a valid requirement
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder requirement(String requirement) {
+		this.requirement = requirement;
+		return this;
+	}
+
+	/**
+	 * User setup allowed.
+	 *
+	 * @param userSetupAllowed Whether user setup is allowed
+	 * @return this
+	 */
+	public KeycloakAPIAuthenticationExecutionBuilder userSetupAllowed(boolean userSetupAllowed) {
+		this.userSetupAllowed = userSetupAllowed;
+		return this;
+	}
+
+	public KeycloakAPIAuthenticationExecution build() {
+		KeycloakAPIAuthenticationExecution keycloakAPIAuthenticationExecution = new KeycloakAPIAuthenticationExecution();
+		keycloakAPIAuthenticationExecution.setAuthenticator(authenticator);
+		keycloakAPIAuthenticationExecution.setAuthenticatorConfig(authenticatorConfig);
+		keycloakAPIAuthenticationExecution.setAuthenticatorFlow(authenticatorFlow);
+		keycloakAPIAuthenticationExecution.setFlowAlias(flowAlias);
+		keycloakAPIAuthenticationExecution.setPriority(priority);
+		keycloakAPIAuthenticationExecution.setRequirement(requirement);
+		keycloakAPIAuthenticationExecution.setUserSetupAllowed(userSetupAllowed);
+		return keycloakAPIAuthenticationExecution;
+	}
+}

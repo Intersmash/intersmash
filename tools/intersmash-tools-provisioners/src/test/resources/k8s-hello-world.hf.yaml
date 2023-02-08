@@ -1,0 +1,12 @@
+name: k8s-hello-world
+agents:
+  agent-one:
+  agent-two:
+http:
+  host: !param HOST_URL
+duration: 120s
+usersPerSec: 2
+scenario:
+- test:
+  - httpRequest:
+      GET: /

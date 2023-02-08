@@ -1,0 +1,35 @@
+package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec;
+
+public final class RedirectorIdentityProviderOverrideBuilder {
+	private String identityProvider;
+	private String forFlow;
+
+	/**
+	 * Set the Identity Provider to be overridden.
+	 *
+	 * @param identityProvider The Identity Provider to be overridden
+	 * @return this
+	 */
+	public RedirectorIdentityProviderOverrideBuilder identityProvider(String identityProvider) {
+		this.identityProvider = identityProvider;
+		return this;
+	}
+
+	/**
+	 * Set the Flow to be overridden.
+	 *
+	 * @param forFlow The Flow to be overridden
+	 * @return this
+	 */
+	public RedirectorIdentityProviderOverrideBuilder forFlow(String forFlow) {
+		this.forFlow = forFlow;
+		return this;
+	}
+
+	public RedirectorIdentityProviderOverride build() {
+		RedirectorIdentityProviderOverride redirectorIdentityProviderOverride = new RedirectorIdentityProviderOverride();
+		redirectorIdentityProviderOverride.setIdentityProvider(identityProvider);
+		redirectorIdentityProviderOverride.setForFlow(forFlow);
+		return redirectorIdentityProviderOverride;
+	}
+}

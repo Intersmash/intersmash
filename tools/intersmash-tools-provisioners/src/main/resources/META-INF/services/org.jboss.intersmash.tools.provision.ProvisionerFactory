@@ -1,0 +1,12 @@
+org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.KeycloakTemplateOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisionerFactory

@@ -1,0 +1,65 @@
+package org.jboss.intersmash.tools.provision.openshift;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.jboss.intersmash.tools.application.openshift.HasConfigMaps;
+import org.jboss.intersmash.tools.application.openshift.HasSecrets;
+import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
+import org.jboss.intersmash.tools.provision.Provisioner;
+
+import cz.xtf.core.openshift.OpenShift;
+import cz.xtf.core.openshift.OpenShifts;
+
+/**
+ * Provisioner that is supposed to deploy an application on OpenShift.
+ */
+public interface OpenShiftProvisioner<T extends OpenShiftApplication> extends Provisioner<T>, Scalable, HasPods {
+	String SCRIPT_DEBUG = "SCRIPT_DEBUG";
+	String APP_LABEL_KEY = "intersmash.app";
+
+	OpenShift openShift = OpenShifts.master();
+
+	@Override
+	default void preDeploy() {
+		// create secrets
+		if (HasSecrets.class.isAssignableFrom(getApplication().getClass())) {
+			((HasSecrets) getApplication()).getSecrets().forEach(openShift::createSecret);
+		}
+		// create configMaps
+		if (HasConfigMaps.class.isAssignableFrom(getApplication().getClass())) {
+			((HasConfigMaps) getApplication()).getConfigMaps().forEach(openShift::createConfigMap);
+		}
+	}
+
+	@Override
+	default void postUndeploy() {
+		// delete secrets
+		if (HasSecrets.class.isAssignableFrom(getApplication().getClass())) {
+			((HasSecrets) getApplication()).getSecrets().forEach(openShift::deleteSecret);
+		}
+		// delete configMaps
+		if (HasConfigMaps.class.isAssignableFrom(getApplication().getClass())) {
+			((HasConfigMaps) getApplication()).getConfigMaps().forEach(openShift::deleteConfigMap);
+		}
+	}
+
+	default OpenShift getOpenShift() {
+		return openShift;
+	}
+
+	default String getUrl(String routeName, boolean secure) {
+		String protocol = secure ? "https" : "http";
+		return protocol + "://" + openShift.generateHostname(routeName);
+	}
+
+	@Override
+	default URL getURL() {
+		try {
+			return new URL(getUrl(getApplication().getName(), false));
+		} catch (MalformedURLException ex) {
+			throw new RuntimeException(
+					String.format("Failed to get an URL for the \"%s\" route", this.getClass().getSimpleName()), ex);
+		}
+	}
+}

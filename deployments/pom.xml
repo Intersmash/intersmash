@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash</groupId>
+        <artifactId>intersmash-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>intersmash-deployments</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Intersmash Deployments: Aggregator</name>
+
+    <modules>
+        <module>intersmash-deployments-shared</module>
+        <module>intersmash-deployments-provider</module>
+        <module>openshift-jakarta-sample-standalone</module>
+    </modules>
+
+    <properties>
+        <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
+
+        <version.aether>1.1.0</version.aether>
+        <version.maven>3.3.9</version.maven>
+
+        <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
+        <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
+
+        <!-- By default, the following prop is empty, stating that the build profile is none -->
+        <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- The following ones are used by intersmash-deployments-provider -->
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-api</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-connector-basic</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-impl</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-spi</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-transport-file</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-transport-http</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-aether-provider</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings-builder</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <!--
+                The intersmash-deployments POM must be published because there are projects which depend on it and, e.g.
+                get executed on OCP
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>openshift</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <!-- Do not execute the maven-source-plugin when the openshift profile is active -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

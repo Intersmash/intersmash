@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash</groupId>
+        <artifactId>intersmash-parent</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>intersmash-testsuite</artifactId>
+
+    <name>Intersmash Testsuite</name>
+
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>cz.xtf</groupId>
+            <artifactId>junit5</artifactId>
+            <version>${xtf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-tools-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-tools-provisioners</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-deployments-provider</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
