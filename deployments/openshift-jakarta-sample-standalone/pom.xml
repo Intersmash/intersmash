@@ -167,7 +167,7 @@
                         </feature-pack>
                     </feature-packs>
                     <layers>
-                        <layer>cloud-server</layer>
+                        <layer>cloud-default-config</layer>
                     </layers>
                 </configuration>
             </plugin>
@@ -194,7 +194,7 @@
                                 </feature-pack>
                             </feature-packs>
                             <layers>
-                                <layer>cloud-server</layer>
+                                <layer>cloud-default-config</layer>
                             </layers>
                         </configuration>
                     </plugin>
