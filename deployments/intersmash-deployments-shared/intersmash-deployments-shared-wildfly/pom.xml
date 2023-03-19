@@ -154,7 +154,19 @@
                                         <location>${wildfly.cloud-feature-pack.location}</location>
                                     </feature-pack>
                                 </feature-packs>
+                                <galleon-options>
+                                    <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                         wildfly-jar-maven-plugin would collide  -->
+                                    <jboss-fork-embedded>true</jboss-fork-embedded>
+                                </galleon-options>
                             </configuration>
+                            <executions>
+                                <execution>
+                                    <goals>
+                                        <goal>package</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
                         </plugin>
                     </plugins>
                 </pluginManagement>

@@ -43,7 +43,7 @@
         -->
         <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:27.0.0.Final</wildfly.feature-pack.location>
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:27.0.0.Final</wildfly.ee-feature-pack.location>
-        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.0.Final</wildfly.cloud-feature-pack.location>
+        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.1.Final</wildfly.cloud-feature-pack.location>
         <wildfly.ee-channel.location></wildfly.ee-channel.location> <!-- TODO: add channel configuration to wildfly-maven-plugin -->
 
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
@@ -85,6 +85,11 @@
                     <version>${wildfly-maven-plugin.version}</version>
                     <configuration>
                         <runtime-name>ROOT.war</runtime-name>
+                        <galleon-options>
+                            <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                 wildfly-jar-maven-plugin would collide  -->
+                            <jboss-fork-embedded>true</jboss-fork-embedded>
+                        </galleon-options>
                     </configuration>
                     <executions>
                         <execution>
@@ -196,7 +201,19 @@
                             <layers>
                                 <layer>cloud-default-config</layer>
                             </layers>
+                            <galleon-options>
+                                <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                     wildfly-jar-maven-plugin would collide  -->
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </galleon-options>
                         </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
