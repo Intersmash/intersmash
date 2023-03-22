@@ -22,7 +22,7 @@ public class WildflyHelmChartOpenShiftExampleApplicaton
 	private final HelmChartRelease release;
 
 	public WildflyHelmChartOpenShiftExampleApplicaton() {
-		this.release = new HelmChartRelease(loadRetp://repository.eapqe.psi.redhat.com:8081/artifactory/all/"),lease());
+		this.release = new HelmChartRelease(loadRelease());
 	}
 
 	private HelmWildflyRelease loadRelease() {
