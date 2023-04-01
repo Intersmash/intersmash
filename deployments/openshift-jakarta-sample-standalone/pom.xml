@@ -47,6 +47,7 @@
         <wildfly.ee-channel.location></wildfly.ee-channel.location> <!-- TODO: add channel configuration to wildfly-maven-plugin -->
 
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+        <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
     </properties>
 
     <dependencyManagement>
@@ -108,6 +109,12 @@
                     <groupId>net.revelc.code</groupId>
                     <artifactId>impsort-maven-plugin</artifactId>
                     <version>${version.impsort-maven-plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${version.spotless-maven-plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -174,6 +181,21 @@
                     <layers>
                         <layer>cloud-default-config</layer>
                     </layers>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <!-- make sure every file has the following copyright header.
+                          optionally, Spotless can set copyright years by digging
+                          through git history (see "license" section below) -->
+                        <licenseHeader>
+                            <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+                        </licenseHeader>
+                    </java>
                 </configuration>
             </plugin>
         </plugins>
