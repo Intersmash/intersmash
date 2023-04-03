@@ -82,6 +82,7 @@
         <client.jvm.jpms.args>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED</client.jvm.jpms.args>
         <version.jsonschema2pojo-maven-plugin>1.1.2</version.jsonschema2pojo-maven-plugin>
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
+        <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
     </properties>
 
     <dependencyManagement>
@@ -425,6 +426,11 @@
                     <artifactId>jsonschema2pojo-maven-plugin</artifactId>
                     <version>${version.jsonschema2pojo-maven-plugin}</version>
                 </plugin>
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${version.spotless-maven-plugin}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -504,6 +510,21 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <!-- make sure every file has the following copyright header.
+                          optionally, Spotless can set copyright years by digging
+                          through git history (see "license" section below) -->
+                        <licenseHeader>
+                            <file>license-header</file>
+                        </licenseHeader>
+                    </java>
+                </configuration>
             </plugin>
         </plugins>
     </build>

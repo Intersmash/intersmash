@@ -1,3 +1,4 @@
+/* (C)2023 */
 package org.wildfly.sample;
 
 import jakarta.ws.rs.GET;
