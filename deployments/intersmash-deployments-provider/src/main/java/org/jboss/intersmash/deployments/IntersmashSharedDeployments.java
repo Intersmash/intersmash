@@ -29,6 +29,7 @@ import org.jboss.intersmash.deployments.util.maven.ArtifactProvider;
  */
 public class IntersmashSharedDeployments {
 	static final String BOOTABLE_JAR_ARTIFACT = "wildfly-bootable-jar";
+	static final String BOOTABLE_JAR_ARTIFACT_JAVAX = "wildfly-bootable-jar-javax";
 	static final String BOOTABLE_JAR_ARTIFACT_PACKAGING = "jar";
 
 	public static Path bootableJarDemoOpenShift() {
@@ -52,6 +53,36 @@ public class IntersmashSharedDeployments {
 			file = ArtifactProvider.resolveArtifact(
 					IntersmashSharedDeploymentsProperties.groupID(),
 					BOOTABLE_JAR_ARTIFACT,
+					IntersmashSharedDeploymentsProperties.version(),
+					BOOTABLE_JAR_ARTIFACT_PACKAGING,
+					"bootable-baremetal").toPath();
+		} catch (SettingsBuildingException | ArtifactResolutionException e) {
+			throw new RuntimeException("Can not get artifact", e);
+		}
+		return file;
+	}
+
+	public static Path bootableJarJavaxDemoOpenShift() {
+		Path file = null;
+		try {
+			file = ArtifactProvider.resolveArtifact(
+					IntersmashSharedDeploymentsProperties.groupID(),
+					BOOTABLE_JAR_ARTIFACT_JAVAX,
+					IntersmashSharedDeploymentsProperties.version(),
+					BOOTABLE_JAR_ARTIFACT_PACKAGING,
+					"bootable-openshift").toPath();
+		} catch (SettingsBuildingException | ArtifactResolutionException e) {
+			throw new RuntimeException("Can not get artifact", e);
+		}
+		return file;
+	}
+
+	public static Path bootableJarJavaxDemoBareMetal() {
+		Path file = null;
+		try {
+			file = ArtifactProvider.resolveArtifact(
+					IntersmashSharedDeploymentsProperties.groupID(),
+					BOOTABLE_JAR_ARTIFACT_JAVAX,
 					IntersmashSharedDeploymentsProperties.version(),
 					BOOTABLE_JAR_ARTIFACT_PACKAGING,
 					"bootable-baremetal").toPath();

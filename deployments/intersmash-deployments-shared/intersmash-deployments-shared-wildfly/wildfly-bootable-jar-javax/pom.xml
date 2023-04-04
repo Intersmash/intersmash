@@ -16,7 +16,21 @@
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <formatting-style-base-directory>${project.parent.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
+        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:26.1.2.Final</wildfly.feature-pack.location>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Lock all the provided legacy Javax dependencies to match the WildFly/EAP version -->
+            <dependency>
+                <groupId>${bom.wildfly-eap7-jakartaee.groupId}</groupId>
+                <artifactId>${bom.wildfly-eap7-jakartaee.artifactId}</artifactId>
+                <version>${bom.wildfly-eap7-jakartaee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -39,6 +53,22 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-jar-maven-plugin</artifactId>
+                    <version>${version.wildfly-jar-maven-plugin}</version>
+                    <configuration>
+                        <feature-packs>
+                            <feature-pack>
+                                <location>${wildfly.feature-pack.location}</location>
+                            </feature-pack>
+                        </feature-packs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <plugin>
                 <groupId>org.wildfly.plugins</groupId>

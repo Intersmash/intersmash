@@ -107,6 +107,34 @@ public class OpenShiftProvisionerTestBase {
 		};
 	}
 
+	static BootableJarOpenShiftApplication getWildflyBootableJarJavaxOpenShiftApplication() {
+		return new BootableJarOpenShiftApplication() {
+			@Override
+			public BinarySource getBuildInput() {
+				return IntersmashSharedDeployments::bootableJarJavaxDemoOpenShift;
+			}
+
+			@Override
+			public List<Secret> getSecrets() {
+				List<Secret> secrets = new ArrayList<>();
+				secrets.add(TEST_SECRET);
+				return Collections.unmodifiableList(secrets);
+			}
+
+			@Override
+			public List<EnvVar> getEnvVars() {
+				List<EnvVar> list = new ArrayList<>();
+				list.add(new EnvVarBuilder().withName(TEST_ENV_VAR.getName()).withValue(TEST_ENV_VAR.getValue()).build());
+				return Collections.unmodifiableList(list);
+			}
+
+			@Override
+			public String getName() {
+				return "bootable-jar";
+			}
+		};
+	}
+
 	static KeycloakTemplateOpenShiftApplication getHttpsKeycloak() {
 		return new KeycloakTemplateOpenShiftApplication() {
 			private final String secureAppHostname = "secure-" + getOpenShiftHostName();
