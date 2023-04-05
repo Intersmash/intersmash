@@ -409,7 +409,6 @@
                         <argLine>${client.jvm.jpms.args}</argLine>
                         <!-- Also, let's set some additional configuration that is common to all dependent modules -->
                         <trimStackTrace>false</trimStackTrace>
-                        <testFailureIgnore>true</testFailureIgnore>
                         <failIfNoTests>false</failIfNoTests>
                         <systemPropertyVariables>
                             <wildfly.ee-feature-pack.location>${wildfly.ee-feature-pack.location}</wildfly.ee-feature-pack.location>
