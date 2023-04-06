@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 import org.jboss.intersmash.tools.provision.openshift.*;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -28,14 +29,14 @@ import cz.xtf.junit5.annotations.CleanBeforeEach;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 
 @CleanBeforeEach
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class ProvisionerCleanupTestCase {
 	protected static final OpenShift openShift = OpenShifts.master();
 
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		return Stream.of(
 				new WildflyBootableJarImageOpenShiftProvisioner(
-						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()))
-				);
+						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication())));
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
