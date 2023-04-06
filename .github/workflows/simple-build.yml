@@ -1,9 +1,13 @@
 name: Intersmash - Simple build workflow
 
-on: [push]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  build:
+  simple-build:
     if: '! github.event.pull_request.draft'
     runs-on: ubuntu-latest
 
