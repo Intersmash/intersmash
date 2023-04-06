@@ -19,6 +19,7 @@ import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpe
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.junit5.annotations.CleanBeforeAll;
@@ -29,6 +30,7 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
  * programmatically
  */
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class WildflyHelmChartProvisionerTest {
 
 	@Test

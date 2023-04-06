@@ -21,11 +21,7 @@ import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
@@ -37,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class KafkaOperatorProvisionerTest {
 	private static KafkaOperatorApplication application = OpenShiftProvisionerTestBase.getKafkaApplication();
 	private static final KafkaOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();

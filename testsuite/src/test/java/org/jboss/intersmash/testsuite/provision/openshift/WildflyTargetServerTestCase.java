@@ -27,6 +27,7 @@ import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApp
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShift;
@@ -45,6 +46,7 @@ import io.fabric8.kubernetes.api.model.Service;
  * whatever strategy, as long as it produces a "target/server" containing the server and the application;
  */
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class WildflyTargetServerTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final WildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase

@@ -25,17 +25,14 @@ import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvision
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServer;
 import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServerBuilder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class WildflyOperatorProvisionerTest {
 	private static final String NAME = "wildfly-operator-test";
 	private static final WildflyOperatorProvisioner WILDFLY_OPERATOR_PROVISIONER = initializeOperatorProvisioner();

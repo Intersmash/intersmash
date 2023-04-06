@@ -26,11 +26,7 @@ import org.jboss.intersmash.tools.provision.openshift.operator.activemq.address.
 import org.jboss.intersmash.tools.provision.openshift.operator.activemq.broker.ActiveMQArtemisBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.activemq.broker.spec.DeploymentPlanBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
@@ -42,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class ActiveMQOperatorProvisionerTest {
 	private static final ActiveMQOperatorProvisioner activeMQOperatorProvisioner = initializeOperatorProvisioner();
 

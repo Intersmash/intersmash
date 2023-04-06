@@ -32,11 +32,7 @@ import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infini
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.AutoscaleBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanServiceSpecBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.slf4j.event.Level;
 
 import cz.xtf.builder.builders.SecretBuilder;
@@ -56,6 +52,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class InfinispanOperatorProvisionerTest {
 	static final String TEST_SECRET_USERNAME = "developer";
 	static final String TEST_SECRET_PASSWORD = "developer";

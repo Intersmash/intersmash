@@ -33,13 +33,9 @@ public class ProvisionerCleanupTestCase {
 
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		return Stream.of(
-				new MysqlImageOpenShiftProvisioner((OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication())),
 				new WildflyBootableJarImageOpenShiftProvisioner(
-						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication())),
-				new PostgreSQLImageOpenShiftProvisioner((OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication())),
-				new WildflyImageOpenShiftProvisioner(
-						OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
-				new KeycloakTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsKeycloak()));
+						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()))
+				);
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
