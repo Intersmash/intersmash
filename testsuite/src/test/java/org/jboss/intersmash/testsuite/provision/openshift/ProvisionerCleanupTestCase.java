@@ -17,12 +17,12 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
-import org.jboss.intersmash.tools.provision.openshift.*;
+import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import cz.xtf.core.openshift.IntersmashOpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeEach;
@@ -55,6 +55,6 @@ public class ProvisionerCleanupTestCase {
 		}
 		Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
 		openShift.configMaps().withName("no-delete").delete();
-		IntersmashOpenShiftWaiters.get(openShift, () -> false).isProjectClean().waitFor();
+		openShift.waiters().isProjectClean().waitFor();
 	}
 }
