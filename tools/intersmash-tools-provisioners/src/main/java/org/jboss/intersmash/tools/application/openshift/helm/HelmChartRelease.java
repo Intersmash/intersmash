@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.jboss.intersmash.model.helm.charts.values.wildfly.*;
+import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
 
 import com.fasterxml.jackson.databind.ObjectMapper;

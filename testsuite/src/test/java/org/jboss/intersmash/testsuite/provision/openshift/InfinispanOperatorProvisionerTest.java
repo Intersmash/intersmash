@@ -32,7 +32,12 @@ import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infini
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.AutoscaleBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanServiceSpecBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
 
 import cz.xtf.builder.builders.SecretBuilder;

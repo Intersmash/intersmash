@@ -21,7 +21,12 @@ import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;

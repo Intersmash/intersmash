@@ -30,7 +30,6 @@ import java.util.Map;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.*;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;

@@ -31,7 +31,14 @@ import org.jboss.intersmash.tools.provision.openshift.operator.hyperfoil.client.
 import org.jboss.intersmash.tools.provision.openshift.operator.hyperfoil.client.v05.invoker.Configuration;
 import org.jboss.intersmash.tools.provision.openshift.operator.hyperfoil.client.v05.model.Run;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

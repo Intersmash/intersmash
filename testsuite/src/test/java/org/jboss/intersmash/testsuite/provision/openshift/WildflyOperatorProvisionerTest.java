@@ -25,7 +25,12 @@ import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvision
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServer;
 import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServerBuilder;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;

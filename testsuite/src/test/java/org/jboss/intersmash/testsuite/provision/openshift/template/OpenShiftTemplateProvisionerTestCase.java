@@ -17,7 +17,11 @@ package org.jboss.intersmash.testsuite.provision.openshift.template;
 
 import java.util.List;
 
-import org.jboss.intersmash.tools.provision.openshift.template.*;
+import org.jboss.intersmash.tools.provision.openshift.template.InfinispanTemplate;
+import org.jboss.intersmash.tools.provision.openshift.template.InfinispanTemplateProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.template.KeycloakTemplate;
+import org.jboss.intersmash.tools.provision.openshift.template.KeycloakTemplateProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.template.OpenShiftTemplateProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
