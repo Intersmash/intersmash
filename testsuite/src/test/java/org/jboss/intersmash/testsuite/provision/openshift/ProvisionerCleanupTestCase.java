@@ -35,7 +35,9 @@ public class ProvisionerCleanupTestCase {
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		return Stream.of(
 				new WildflyBootableJarImageOpenShiftProvisioner(
-						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication())));
+						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication())),
+				new WildflyBootableJarImageOpenShiftProvisioner(
+						(OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication())));
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
