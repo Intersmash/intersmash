@@ -29,6 +29,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShifts;
@@ -36,6 +37,7 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class WildflyOperatorProvisionerTest {
 	private static final String NAME = "wildfly-operator-test";
 	private static final WildflyOperatorProvisioner WILDFLY_OPERATOR_PROVISIONER = initializeOperatorProvisioner();

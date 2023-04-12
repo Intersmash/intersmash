@@ -37,7 +37,7 @@ oc new-project $TEST_NAMESPACE
 
 cat >> test.properties <<EOL
 xtf.openshift.url=${TEST_CLUSTER_URL}
-xtf.openshift.namespace=${TEST_NAMESPACE}
+xtf.openshift.namespace=${TEST_NAMESPACE}-builds
 xtf.bm.namespace=${TEST_NAMESPACE}
 xtf.openshift.admin.username=${TEST_ADMIN_USERNAME}
 xtf.openshift.admin.password=${TEST_ADMIN_PASSWORD}

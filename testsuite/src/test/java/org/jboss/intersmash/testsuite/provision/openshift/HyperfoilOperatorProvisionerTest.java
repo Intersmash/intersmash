@@ -34,6 +34,7 @@ import org.jboss.intersmash.tools.provision.openshift.operator.resources.Operato
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -48,6 +49,7 @@ import io.hyperfoil.v1alpha2.HyperfoilBuilder;
 
 @CleanBeforeAll
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class HyperfoilOperatorProvisionerTest {
 	private static final Logger logger = LoggerFactory.getLogger(HyperfoilOperatorProvisionerTest.class);
 	private static final String NAME = "hyperfoil";

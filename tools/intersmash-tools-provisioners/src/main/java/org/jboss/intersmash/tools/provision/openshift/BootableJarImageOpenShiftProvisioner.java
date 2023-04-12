@@ -73,6 +73,29 @@ public abstract class BootableJarImageOpenShiftProvisioner
 	@Override
 	public void undeploy() {
 		OpenShiftUtils.deleteResourcesWithLabel(openShift, APP_LABEL_KEY, bootableApplication.getName());
+		// the bootable JAR provisioning process _might_ need to clean some custom build configs, builds,
+		// config maps, image streams and build pods which might appear as leftovers in OpenShift::clean()
+		// when the build and master namespaces are the same
+		openShift.getBuildConfigs()
+				.stream()
+				.filter(bc -> bc.getMetadata().getName().startsWith(bootableApplication.getName()))
+				.forEach(openShift::deleteBuildConfig);
+		openShift.getBuilds()
+				.stream()
+				.filter(b -> b.getMetadata().getName().startsWith(bootableApplication.getName()))
+				.forEach(openShift::deleteBuild);
+		openShift.getConfigMaps()
+				.stream()
+				.filter(cf -> cf.getMetadata().getName().startsWith(bootableApplication.getName()))
+				.forEach(openShift::deleteConfigMap);
+		openShift.getImageStreams()
+				.stream()
+				.filter(is -> is.getMetadata().getName().startsWith(bootableApplication.getName()))
+				.forEach(openShift::deleteImageStream);
+		openShift.getPods()
+				.stream()
+				.filter(pod -> pod.getMetadata().getName().startsWith(bootableApplication.getName()))
+				.forEach(openShift::deletePod);
 	}
 
 	@Override

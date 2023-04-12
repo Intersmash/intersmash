@@ -47,6 +47,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
 
@@ -71,6 +72,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
+@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class KeycloakOperatorProvisionerTest {
 	// Be aware that since we're using the static mock application, not all provisioner methods will work as expected!
 	private static final KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();

@@ -16,26 +16,25 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
-import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
+import org.jboss.intersmash.tools.provision.openshift.BootableJarImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import cz.xtf.core.bm.BuildManagers;
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
-import lombok.extern.slf4j.Slf4j;
 
 @CleanBeforeAll
-@Slf4j
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
-public class MysqlImageTestCase {
+public class WildflyJavaxBootableJarTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
-	private static final MysqlImageOpenShiftApplication application = OpenShiftProvisionerTestBase
-			.getMysqlOpenShiftApplication();
-	private static final MysqlImageOpenShiftProvisioner provisioner = new MysqlImageOpenShiftProvisioner(application);
+	private static final BootableJarOpenShiftApplication application = OpenShiftProvisionerTestBase
+			.getWildflyBootableJarJavaxOpenShiftApplication();
+	private static final BootableJarImageOpenShiftProvisioner provisioner = new WildflyBootableJarImageOpenShiftProvisioner(
+			application);
 
 	@BeforeAll
 	public static void deploy() {
@@ -47,6 +46,24 @@ public class MysqlImageTestCase {
 	public static void undeploy() {
 		provisioner.undeploy();
 		provisioner.postUndeploy();
+	}
+
+	@Test
+	public void verifyOpenShiftConfiguration() {
+		// environmentVariables
+		Assertions
+				.assertThat(BuildManagers.get().openShift().getBuildConfig(application.getName()).getSpec().getStrategy()
+						.getSourceStrategy().getEnv())
+				.as("Environment variable test").contains(OpenShiftProvisionerTestBase.TEST_ENV_VAR);
+	}
+
+	/**
+	 * Secret resource should be created as a preDeploy() operation by a provisioner.
+	 */
+	@Test
+	public void verifyDeployHooks() {
+		Assertions.assertThat(openShift.getSecret(OpenShiftProvisionerTestBase.TEST_SECRET.getMetadata().getName()))
+				.isNotNull();
 	}
 
 	@Test

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash</groupId>
+        <artifactId>intersmash-deployments-shared-wildfly</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>wildfly-bootable-jar-javax</artifactId>
+    <packaging>war</packaging>
+
+    <name>Intersmash Shared Deployments (Wildfly): WildFly Bootable JAR (javax version)</name>
+
+    <properties>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
+        <formatting-style-base-directory>${project.parent.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
+        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:26.1.2.Final</wildfly.feature-pack.location>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Lock all the provided legacy Javax dependencies to match the WildFly/EAP version -->
+            <dependency>
+                <groupId>${bom.wildfly-eap7-jakartaee.groupId}</groupId>
+                <artifactId>${bom.wildfly-eap7-jakartaee.artifactId}</artifactId>
+                <version>${bom.wildfly-eap7-jakartaee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Import the CDI API, we use provided scope as the API is included in WildFly -->
+        <dependency>
+            <groupId>jakarta.inject</groupId>
+            <artifactId>jakarta.inject-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Import the JAX-RS API, we use provided scope as the API is included WildFly -->
+        <dependency>
+            <groupId>org.jboss.spec.javax.ws.rs</groupId>
+            <artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.wildfly.plugins</groupId>
+                    <artifactId>wildfly-jar-maven-plugin</artifactId>
+                    <version>${version.wildfly-jar-maven-plugin}</version>
+                    <configuration>
+                        <feature-packs>
+                            <feature-pack>
+                                <location>${wildfly.feature-pack.location}</location>
+                            </feature-pack>
+                        </feature-packs>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-jar-maven-plugin</artifactId>
+                <!-- Use configuration from parent and append specific configuration for project - layers, cli,... -->
+                <configuration>
+                    <layers>
+                        <layer>jaxrs</layer>
+                        <layer>observability</layer>
+                    </layers>
+                    <excluded-layers>
+                        <layer>deployment-scanner</layer>
+                    </excluded-layers>
+                    <cli-sessions>
+                        <cli-session>
+                            <script-files>
+                                ./scripts/property.cli
+                            </script-files>
+                        </cli-session>
+                    </cli-sessions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

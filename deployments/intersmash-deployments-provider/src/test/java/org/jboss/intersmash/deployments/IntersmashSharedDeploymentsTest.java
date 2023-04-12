@@ -23,23 +23,39 @@ import org.junit.jupiter.api.Test;
 
 public class IntersmashSharedDeploymentsTest {
 	@Test
-	public void BootableJarBareMetalAvailable() {
-		Path bareMetalApp = IntersmashSharedDeployments.bootableJarDemoBareMetal();
-		Assertions.assertNotNull(bareMetalApp);
-		Assertions.assertTrue(Files.exists(bareMetalApp));
+	public void testBareMetalBootableJarIsAvailable() {
+		// jakarta
+		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarDemoBareMetal());
+		// javax
+		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarJavaxDemoBareMetal());
 	}
 
 	@Test
-	public void BootableJarOpenShiftAvailable() {
-		Path openShiftApp = IntersmashSharedDeployments.bootableJarDemoOpenShift();
+	public void testOpenShiftBootableJarIsAvailable() {
+		// jakarta
+		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarDemoOpenShift());
+		// javax
+		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarJavaxDemoOpenShift());
+	}
+
+	@Test
+	public void testBareMetalAndOpenShiftBootableJarAreNotTheSame() {
+		// jakarta
+		assertBareMetalAndOpenShiftBootableJarAreNotTheSame(IntersmashSharedDeployments.bootableJarDemoBareMetal(),
+				IntersmashSharedDeployments.bootableJarDemoOpenShift());
+		// javax
+		assertBareMetalAndOpenShiftBootableJarAreNotTheSame(IntersmashSharedDeployments.bootableJarJavaxDemoBareMetal(),
+				IntersmashSharedDeployments.bootableJarJavaxDemoOpenShift());
+	}
+
+	private static void assertBareMetalAndOpenShiftBootableJarAreNotTheSame(final Path bareMetalBootableJarPath,
+			final Path openShiftBootableJarPath) {
+		Assertions.assertNotEquals(bareMetalBootableJarPath.toAbsolutePath().toString(),
+				openShiftBootableJarPath.toAbsolutePath().toString());
+	}
+
+	private static void assertBootableJarIsAvailable(final Path openShiftApp) {
 		Assertions.assertNotNull(openShiftApp);
 		Assertions.assertTrue(Files.exists(openShiftApp));
-	}
-
-	@Test
-	public void BootableJarNotSame() {
-		Path bareMetalApp = IntersmashSharedDeployments.bootableJarDemoBareMetal();
-		Path openShiftApp = IntersmashSharedDeployments.bootableJarDemoOpenShift();
-		Assertions.assertNotEquals(bareMetalApp.toAbsolutePath().toString(), openShiftApp.toAbsolutePath().toString());
 	}
 }

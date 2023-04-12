@@ -30,7 +30,6 @@ import java.util.Map;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.*;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
@@ -84,6 +83,34 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public BinarySource getBuildInput() {
 				return IntersmashSharedDeployments::bootableJarDemoOpenShift;
+			}
+
+			@Override
+			public List<Secret> getSecrets() {
+				List<Secret> secrets = new ArrayList<>();
+				secrets.add(TEST_SECRET);
+				return Collections.unmodifiableList(secrets);
+			}
+
+			@Override
+			public List<EnvVar> getEnvVars() {
+				List<EnvVar> list = new ArrayList<>();
+				list.add(new EnvVarBuilder().withName(TEST_ENV_VAR.getName()).withValue(TEST_ENV_VAR.getValue()).build());
+				return Collections.unmodifiableList(list);
+			}
+
+			@Override
+			public String getName() {
+				return "bootable-jar";
+			}
+		};
+	}
+
+	static BootableJarOpenShiftApplication getWildflyBootableJarJavaxOpenShiftApplication() {
+		return new BootableJarOpenShiftApplication() {
+			@Override
+			public BinarySource getBuildInput() {
+				return IntersmashSharedDeployments::bootableJarJavaxDemoOpenShift;
 			}
 
 			@Override

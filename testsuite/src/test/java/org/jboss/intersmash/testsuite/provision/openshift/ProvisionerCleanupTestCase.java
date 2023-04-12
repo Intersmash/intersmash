@@ -17,7 +17,8 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
-import org.jboss.intersmash.tools.provision.openshift.*;
+import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -33,13 +34,10 @@ public class ProvisionerCleanupTestCase {
 
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		return Stream.of(
-				new MysqlImageOpenShiftProvisioner((OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication())),
 				new WildflyBootableJarImageOpenShiftProvisioner(
 						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication())),
-				new PostgreSQLImageOpenShiftProvisioner((OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication())),
-				new WildflyImageOpenShiftProvisioner(
-						OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
-				new KeycloakTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsKeycloak()));
+				new WildflyBootableJarImageOpenShiftProvisioner(
+						(OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication())));
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")

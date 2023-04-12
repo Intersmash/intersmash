@@ -43,16 +43,21 @@
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:27.0.0.Final</wildfly.ee-feature-pack.location>
         <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.0.Final</wildfly.cloud-feature-pack.location>
         <wildfly.ee-channel.location></wildfly.ee-channel.location>
+        <!-- Default WildFly legacy Javax based BOMs version is set here for pulling the right EAP BOM -->
+        <bom.wildfly-eap7-jakartaee.groupId>org.wildfly.bom</bom.wildfly-eap7-jakartaee.groupId>
+        <bom.wildfly-eap7-jakartaee.artifactId>wildfly-jakartaee8</bom.wildfly-eap7-jakartaee.artifactId>
+        <bom.wildfly-eap7-jakartaee.version>26.1.2.Final</bom.wildfly-eap7-jakartaee.version>
     </properties>
 
     <modules>
         <module>wildfly-bootable-jar</module>
+        <module>wildfly-bootable-jar-javax</module>
         <module>wildfly-helloworld</module>
     </modules>
 
     <dependencyManagement>
         <dependencies>
-            <!-- Lock all the provided dependencies to match the WildFly/EAP version -->
+            <!-- Lock all the provided Jakarta dependencies to match the WildFly/EAP version -->
             <dependency>
                 <groupId>${bom.wildfly-ee.groupId}</groupId>
                 <artifactId>${bom.wildfly-ee.artifactId}</artifactId>
