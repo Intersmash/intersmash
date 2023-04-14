@@ -12,38 +12,39 @@ set -x
 
 printenv KUBECONFIG
 printenv KUBEADMIN_PASSWORD_FILE
+
 oc get node
 oc config view
-oc whoami
 
-export TEST_ADMIN_USERNAME=tadmin
-export TEST_ADMIN_PASSWORD=adminpwd
-
-export TEST_USER_USERNAME=tadmin
-export TEST_USER_PASSWORD=userpwd
-
-export HTPASSWD_FILE=users.htpasswd
-htpasswd -c -B -b $HTPASSWD_FILE $TEST_ADMIN_USERNAME $TEST_ADMIN_PASSWORD
-htpasswd -b $HTPASSWD_FILE $TEST_USER_USERNAME $TEST_USER_PASSWORD
-cat $HTPASSWD_FILE
-oc create secret generic htpass-secret-2 --from-file=htpasswd=$HTPASSWD_FILE -n openshift-config
-oc patch OAuth cluster -p '{"spec": {"identityProviders": [{"htpasswd": {"fileData": {"name": "htpass-secret-2"}},"mappingMethod": "claim","name": "my_htpasswd_provider","type": "HTPasswd"}]}}' --type=merge
-oc adm policy add-cluster-role-to-user cluster-admin $TEST_ADMIN_USERNAME
-
+# For some reason the creation of a cluster admin and a user authentication mechanism does not allow for immediate
+# login, even though the oc commands don't report any error.
+# This doesn't let us get a token, and XTF won't take the xtf.openshift.admin.kubeconfig and
+# xtf.openshift.master.kubeconfig properties into account when the token is not present.
+# Eventually this turns out to be the condition hat prevents the oc binary commands to succeed, because they would
+# use a tmp oc.config file which is not found on the build cluster filesystem.
+# This is why we login with kubwadmin, get a token and use its full set of credentials (username, password and token)
+# both for xtf.openshift.admin.* and xtf.openshift.master.* properties
+export SYSADMIN_USERNAME=kubeadmin
+export SYSADMIN_PASSWORD=$(cat "${KUBEADMIN_PASSWORD_FILE}")
 export TEST_CLUSTER_URL=$(oc whoami --show-server)
-export TEST_NAMESPACE=intersmash-test
+oc login "${TEST_CLUSTER_URL}" -u "${SYSADMIN_USERNAME}" -p "${SYSADMIN_PASSWORD}" --insecure-skip-tls-verify=true
+export SYSADMIN_TOKEN=$(oc whoami -t)
 
+export TEST_NAMESPACE=intersmash-test
 oc new-project $TEST_NAMESPACE
 
 cat >> test.properties <<EOL
 xtf.openshift.url=${TEST_CLUSTER_URL}
-xtf.openshift.namespace=${TEST_NAMESPACE}-builds
-xtf.bm.namespace=${TEST_NAMESPACE}
-xtf.openshift.admin.username=${TEST_ADMIN_USERNAME}
-xtf.openshift.admin.password=${TEST_ADMIN_PASSWORD}
-xtf.openshift.master.username=${TEST_USER_USERNAME}
-xtf.openshift.master.password=${TEST_USER_PASSWORD}
+xtf.openshift.namespace=${TEST_NAMESPACE}
+xtf.bm.namespace=${TEST_NAMESPACE}-builds
+xtf.openshift.admin.username=${SYSADMIN_USERNAME}
+xtf.openshift.admin.password=${SYSADMIN_PASSWORD}
+xtf.openshift.admin.token=${SYSADMIN_TOKEN}
+xtf.openshift.master.username=${SYSADMIN_USERNAME}
+xtf.openshift.master.password=${SYSADMIN_PASSWORD}
+xtf.openshift.master.token=${SYSADMIN_TOKEN}
 xtf.openshift.admin.kubeconfig=${KUBECONFIG}
+xtf.openshift.master.kubeconfig=${KUBECONFIG}
 EOL
 
 cat test.properties
