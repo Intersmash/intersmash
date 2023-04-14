@@ -424,40 +424,48 @@ The following properties could be used to configure Intersmash. You can keep the
 
 Intersmash properties:
 
-| Property                                       | Description                                                                         |
-|------------------------------------------------|-------------------------------------------------------------------------------------|
-| intersmash.skip.deploy                         | Skip the deployment phase, tests will be run against a prepared environment *       |
-| intersmash.skip.undeploy                       | Do not cleanup environment after test (development use)                             |
-| intersmash.deployments.repository.ref          | Manually set git repository branch of intersmash-deployments                        |
-| intersmash.deployments.repository.url          | Manually set git repository url of intersmash-deployments                           |
-| intersmash.openshift.script.debug              | Add parameter SCRIPT_DEBUG=true to DeploymentConfig/Pod                             |
-| intersmash.operators.source                    | Sets CatalogSource that should be used to deploy Operators                          |
-| intersmash.wildfly.image                       | Wildfly Builder image URL                                                           |
-| intersmash.wildfly.runtime.image               | Wildfly Runtime image URL                                                           |
-| intersmash.wildfly.helm.charts.repo            | Wildfly Helm Charts repository URL                                                  |
-| intersmash.wildfly.helm.charts.branch          | Wildfly Helm Charts repository branch                                               |	
-| intersmash.wildfly.helm.charts.name            | Wildfly Helm Charts repository namespaces                                           |
-| intersmash.wildfly.operators.catalog_source    | Wildfly custom catalog for Operator (must be in namespace openshift-marketplace)    |
-| intersmash.wildfly.operators.index_image       | Wildfly custom index image for Operator                                             |
-| intersmash.infinispan.image                    | Infinispan image URL                                                                |
-| intersmash.infinispan.templates                | URL where Infinispan OpenShift templates resides                                    |
-| intersmash.infinispan.operators.catalog_source | Infinispan custom catalog for Operator (must be in namespace openshift-marketplace) |
-| intersmash.infinispan.operators.index_image    | Infinispan custom index image for Operator                                          |
-| intersmash.keycloak.image                      | Keycloak image URL                                                                  |
-| intersmash.keycloak.templates                  | URL where Keycloak OpenShift templates resides                                      |
-| intersmash.keycloak.operators.catalog_source   | Keycloak custom catalog for Operator (must be in namespace openshift-marketplace)   |
-| intersmash.keycloak.operators.index_image      | Keycloak custom index image for Operator                                            |
-| intersmash.kafka.operators.catalog_source      | Kefka custom catalog for Operator (must be in namespace openshift-marketplace)      |
-| intersmash.kafka.operators.index_image         | Kafka custom index image for Operator                                               |
-| intersmash.activemq.operators.catalog_source   | ActiveMQ custom catalog for Operator (must be in namespace openshift-marketplace)   |
-| intersmash.activemq.operators.index_image      | ActiveMQ custom index image for Operators                                           |
-| wildfly.feature-pack.location                  | Wildfly feature pack used by shared configurable deployments                        |
-| wildfly.ee-feature-pack.location               | Wildfly EE feature pack used by shared configurable deployments                     |
-| wildfly.cloud-feature-pack.location            | Wildfly cloud feature pack used by shared configurable deployments                  |
+| Property                                         | Description                                                                         |
+|--------------------------------------------------|-------------------------------------------------------------------------------------|
+| intersmash.skip.deploy                           | Skip the deployment phase, tests will be run against a prepared environment *       |
+| intersmash.skip.undeploy                         | Do not cleanup environment after test (development use)                             |
+| intersmash.deployments.repository.ref            | Manually set git repository branch of intersmash-deployments                        |
+| intersmash.deployments.repository.url            | Manually set git repository url of intersmash-deployments                           |
+| intersmash.openshift.script.debug                | Add parameter SCRIPT_DEBUG=true to DeploymentConfig/Pod                             |
+| intersmash.operators.source                      | Sets CatalogSource that should be used to deploy Operators                          |
+| intersmash.wildfly.image                         | Wildfly Builder image URL                                                           |
+| intersmash.wildfly.runtime.image                 | Wildfly Runtime image URL                                                           |
+| intersmash.wildfly.helm.charts.repo              | Wildfly Helm Charts repository URL                                                  |
+| intersmash.wildfly.helm.charts.branch            | Wildfly Helm Charts repository branch                                               |	
+| intersmash.wildfly.helm.charts.name              | Wildfly Helm Charts repository namespaces                                           |
+| intersmash.wildfly.operators.catalog_source      | Wildfly custom catalog for Operator (must be in namespace openshift-marketplace)    |
+| intersmash.wildfly.operators.index_image         | Wildfly custom index image for Operator                                             |
+| intersmash.wildfly.operators.package_manifest    | Wildfly custom package manifest for Operator                                        |
+| intersmash.infinispan.image                      | Infinispan image URL                                                                |
+| intersmash.infinispan.templates                  | URL where Infinispan OpenShift templates resides                                    |
+| intersmash.infinispan.operators.catalog_source   | Infinispan custom catalog for Operator (must be in namespace openshift-marketplace) |
+| intersmash.infinispan.operators.index_image      | Infinispan custom index image for Operator                                          |
+| intersmash.infinispan.operators.package_manifest | Infinispan custom package manifest for Operator                                     |
+| intersmash.keycloak.image                        | Keycloak image URL                                                                  |
+| intersmash.keycloak.templates                    | URL where Keycloak OpenShift templates resides                                      |
+| intersmash.keycloak.operators.catalog_source     | Keycloak custom catalog for Operator (must be in namespace openshift-marketplace)   |
+| intersmash.keycloak.operators.index_image        | Keycloak custom index image for Operator                                            |
+| intersmash.keycloak.operators.package_manifest   | Keycloak custom package manifest for Operator                                       |
+| intersmash.kafka.operators.catalog_source        | Kafka custom catalog for Operator (must be in namespace openshift-marketplace)      |
+| intersmash.kafka.operators.index_image           | Kafka custom index image for Operator                                               |
+| intersmash.kafka.operators.package_manifest      | Kafka custom package manifest for Operator                                          |
+| intersmash.activemq.operators.catalog_source     | ActiveMQ custom catalog for Operator (must be in namespace openshift-marketplace)   |
+| intersmash.activemq.operators.index_image        | ActiveMQ custom index image for Operators                                           |
+| intersmash.activemq.operators.package_manifest   | ActiveMQ custom package manifest for Operators                                      |
+| intersmash.hyperfoil.operators.catalog_source    | HyperFoil custom catalog for Operator (must be in namespace openshift-marketplace)  |
+| intersmash.hyperfoil.operators.index_image       | HyperFoil custom index image for Operators                                          |
+| intersmash.hyperfoil.operators.package_manifest  | HyperFoil custom package manifest for Operators                                     |
+| wildfly.feature-pack.location                    | Wildfly feature pack used by shared configurable deployments                        |
+| wildfly.ee-feature-pack.location                 | Wildfly EE feature pack used by shared configurable deployments                     |
+| wildfly.cloud-feature-pack.location              | Wildfly cloud feature pack used by shared configurable deployments                  |
 
  [*] - When `intersmash.skip.deploy` is set, please take into account that the prepared environment should be 
  configured accordingly to the `Application` descriptors which are defined by the test class `@Service` annotations.
- E.g.: if a test class defines an `WildflyOperatoApplication` as one of its services, and such application sets the `name`
+ E.g.: if a test class defines an `WildflyOperatorApplication` as one of its services, and such application sets the `name`
  to be "wildfly-operator-app", then a Wildfly operator application with such a name should exist in the prepared environment.
  This feature is useful to save debugging time during development, where you can deploy a complex scenario and then 
  enable the property to just execute tests in the following runs.

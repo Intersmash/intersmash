@@ -59,7 +59,7 @@ public class HyperfoilOperatorProvisioner extends OperatorProvisioner<HyperfoilO
 	// this is the packagemanifest for the hyperfoil operator;
 	// you can get it with command:
 	// oc get packagemanifest hyperfoil-bundle -o template --template='{{ .metadata.name }}'
-	private static final String OPERATOR_ID = "hyperfoil-bundle";
+	private static final String OPERATOR_ID = IntersmashConfig.hyperfoilOperatorPackageManifest();
 
 	public HyperfoilOperatorProvisioner(@NonNull HyperfoilOperatorApplication hyperfoilOperatorApplication) {
 		super(hyperfoilOperatorApplication, OPERATOR_ID, null);

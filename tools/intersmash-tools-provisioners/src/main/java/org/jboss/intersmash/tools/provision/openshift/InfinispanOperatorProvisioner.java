@@ -58,7 +58,7 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 	private static NonNamespaceOperation<Cache, CacheList, Resource<Cache>> INFINISPAN_CACHES_CLIENT;
 
 	// oc get packagemanifest datagrid -n openshift-marketplace
-	private static final String OPERATOR_ID = "datagrid";
+	private static final String OPERATOR_ID = IntersmashConfig.infinispanOperatorPackageManifest();
 
 	public InfinispanOperatorProvisioner(@NonNull InfinispanOperatorApplication infinispanOperatorApplication) {
 		super(infinispanOperatorApplication, OPERATOR_ID);
