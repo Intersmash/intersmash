@@ -415,7 +415,8 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 		adminBinary.execute("delete", "subscription", packageManifestName, "--ignore-not-found");
 		adminBinary.execute("delete", "csvs", currentCSV, "--ignore-not-found");
 		for (String customResource : getCustomResourceDefinitions()) {
-			if (adminBinary.execute("get", "crd", customResource, "--ignore-not-found").length() > 0) {
+			final String crds = adminBinary.execute("get", "crd", customResource, "--ignore-not-found");
+			if (crds != null && (crds.length() > 0)) {
 				log.info("CRD: {} is still defined on the cluster", customResource);
 			}
 		}
