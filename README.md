@@ -275,7 +275,12 @@ a given service on cloud environments via APIs that leverage the
 [Operator Framework](https://github.com/operator-framework). 
 
 Intersmash makes this feature available for currently supported products (see the table below), but that can be 
-extended easily, since Intersmash _provisioners_ are pluggable components. 
+extended easily, since Intersmash _provisioners_ are pluggable components.
+
+| Product    | Supported Operator version | Default channel name | Supported product version | Repository                                        | Notes |
+|:-----------|:---------------------------|:---------------------|:--------------------------|:--------------------------------------------------|:------|
+| Infinispan | 2.3.1                      | 2.3.x                | 14.0.6.Final              | https://github.com/infinispan/infinispan-operator |       |
+
 
 Intersmash operator-based provisioners implement a common contract and high level behavior which is defined by the 
 [OperatorProvisioner](./intersmash-tools/intersmash-tools-core/src/main/java/org/jboss/intersmash/tools/provision/openshift/operator/OperatorProvisioner.java)
