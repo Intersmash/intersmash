@@ -43,6 +43,7 @@ xtf.openshift.admin.username=${TEST_ADMIN_USERNAME}
 xtf.openshift.admin.password=${TEST_ADMIN_PASSWORD}
 xtf.openshift.master.username=${TEST_USER_USERNAME}
 xtf.openshift.master.password=${TEST_USER_PASSWORD}
+xtf.openshift.admin.kubeconfig=${KUBECONFIG}
 EOL
 
 cat test.properties
