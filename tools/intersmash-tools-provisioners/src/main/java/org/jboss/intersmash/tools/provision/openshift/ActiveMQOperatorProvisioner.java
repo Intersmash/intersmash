@@ -53,7 +53,7 @@ public class ActiveMQOperatorProvisioner extends OperatorProvisioner<ActiveMQOpe
 
 	//	private final static String ACTIVE_MQ_ARTEMIS_SCALEDOWN_RESOURCE = "activemqartemisscaledowns.broker.amq.io"; // TODO add on demand
 
-	private static final String OPERATOR_ID = "amq-broker-rhel8";
+	private static final String OPERATOR_ID = IntersmashConfig.activeMQOperatorPackageManifest();
 
 	public ActiveMQOperatorProvisioner(@NonNull ActiveMQOperatorApplication activeMqOperatorApplication) {
 		super(activeMqOperatorApplication, OPERATOR_ID);

@@ -46,7 +46,7 @@ public class WildflyOperatorProvisioner extends OperatorProvisioner<WildflyOpera
 	private final static String WILDFLY_SERVER_RESOURCE = "wildflyservers.wildfly.org";
 	private static NonNamespaceOperation<WildFlyServer, WildFlyServerList, Resource<WildFlyServer>> WILDFLY_SERVERS_CLIENT;
 	// oc get packagemanifest wildfly -n openshift-marketplace
-	private static final String OPERATOR_ID = "eap";
+	private static final String OPERATOR_ID = IntersmashConfig.wildflyOperatorPackageManifest();
 
 	public WildflyOperatorProvisioner(@NonNull WildflyOperatorApplication wildflyOperatorApplication) {
 		super(wildflyOperatorApplication, OPERATOR_ID, "stable");

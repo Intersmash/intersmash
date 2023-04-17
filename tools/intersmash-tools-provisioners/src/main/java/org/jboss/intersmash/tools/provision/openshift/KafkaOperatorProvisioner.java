@@ -47,7 +47,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorApplication> {
 
-	private static final String OPERATOR_ID = "amq-streams";
+	private static final String OPERATOR_ID = IntersmashConfig.kafkaOperatorPackageManifest();
 
 	public KafkaOperatorProvisioner(@NonNull KafkaOperatorApplication kafkaOperatorApplication) {
 		super(kafkaOperatorApplication, OPERATOR_ID);

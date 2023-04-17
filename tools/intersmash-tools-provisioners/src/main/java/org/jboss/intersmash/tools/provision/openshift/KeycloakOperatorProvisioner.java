@@ -75,7 +75,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	private static NonNamespaceOperation<KeycloakUser, KeycloakUserList, Resource<KeycloakUser>> KEYCLOAK_USERS_CLIENT;
 
 	// oc get packagemanifest rhsso-operator -n openshift-marketplace
-	private static final String OPERATOR_ID = "rhsso-operator";
+	private static final String OPERATOR_ID = IntersmashConfig.keycloakOperatorPackageManifest();
 	private static final String STATEFUL_SET_NAME = "keycloak";
 
 	public KeycloakOperatorProvisioner(@NonNull KeycloakOperatorApplication keycloakOperatorApplication) {
