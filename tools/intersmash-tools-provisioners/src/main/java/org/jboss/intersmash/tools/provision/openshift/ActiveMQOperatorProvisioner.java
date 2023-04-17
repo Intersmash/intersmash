@@ -243,4 +243,9 @@ public class ActiveMQOperatorProvisioner extends OperatorProvisioner<ActiveMQOpe
 	protected String getOperatorIndexImage() {
 		return IntersmashConfig.activeMQOperatorIndexImage();
 	}
+
+	@Override
+	protected String getOperatorChannel() {
+		return IntersmashConfig.activeMQOperatorChannel();
+	}
 }

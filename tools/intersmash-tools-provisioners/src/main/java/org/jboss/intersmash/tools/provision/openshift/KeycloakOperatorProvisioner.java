@@ -97,6 +97,11 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	}
 
 	@Override
+	protected String getOperatorChannel() {
+		return IntersmashConfig.keycloakOperatorChannel();
+	}
+
+	@Override
 	public void subscribe() {
 		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakImageURL())) {
 			super.subscribe();

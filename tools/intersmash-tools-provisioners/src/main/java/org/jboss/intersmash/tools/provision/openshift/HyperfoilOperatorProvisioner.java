@@ -62,7 +62,7 @@ public class HyperfoilOperatorProvisioner extends OperatorProvisioner<HyperfoilO
 	private static final String OPERATOR_ID = IntersmashConfig.hyperfoilOperatorPackageManifest();
 
 	public HyperfoilOperatorProvisioner(@NonNull HyperfoilOperatorApplication hyperfoilOperatorApplication) {
-		super(hyperfoilOperatorApplication, OPERATOR_ID, null);
+		super(hyperfoilOperatorApplication, OPERATOR_ID);
 	}
 
 	public static String getOperatorId() {
@@ -220,6 +220,11 @@ public class HyperfoilOperatorProvisioner extends OperatorProvisioner<HyperfoilO
 	@Override
 	protected String getOperatorIndexImage() {
 		return IntersmashConfig.hyperfoilOperatorIndexImage();
+	}
+
+	@Override
+	protected String getOperatorChannel() {
+		return IntersmashConfig.hyperfoilOperatorChannel();
 	}
 
 	@Override
