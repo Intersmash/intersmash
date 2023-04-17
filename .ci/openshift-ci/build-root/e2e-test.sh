@@ -20,9 +20,9 @@ oc config view
 # login, even though the oc commands don't report any error.
 # This doesn't let us get a token, and XTF won't take the xtf.openshift.admin.kubeconfig and
 # xtf.openshift.master.kubeconfig properties into account when the token is not present.
-# Eventually this turns out to be the condition hat prevents the oc binary commands to succeed, because they would
+# Eventually this turns out to be the condition that prevents the oc binary commands to succeed, because they would
 # use a tmp oc.config file which is not found on the build cluster filesystem.
-# This is why we login with kubwadmin, get a token and use its full set of credentials (username, password and token)
+# This is why we login with kubeadmin, get a token and use its full set of credentials (username, password and token)
 # both for xtf.openshift.admin.* and xtf.openshift.master.* properties
 export SYSADMIN_USERNAME=kubeadmin
 export SYSADMIN_PASSWORD=$(cat "${KUBEADMIN_PASSWORD_FILE}")
