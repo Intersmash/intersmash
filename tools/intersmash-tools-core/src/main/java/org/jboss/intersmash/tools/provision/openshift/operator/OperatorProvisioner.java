@@ -17,7 +17,9 @@ package org.jboss.intersmash.tools.provision.openshift.operator;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
@@ -160,27 +162,30 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 	 */
 	private CatalogSource initCatalogSource() {
 		CatalogSource catalogSource;
+		final String operatorCatalogSource = getOperatorCatalogSource();
+		final String operatorCatalogSourceNamespace = getCatalogSourceNamespace();
+		final String operatorIndexImage = getOperatorIndexImage();
 		// if a custom index-image has been specified, then a custom CatalogSource has to be created
-		if (!Strings.isNullOrEmpty(getOperatorIndexImage())) {
+		if (!Strings.isNullOrEmpty(operatorIndexImage)) {
 			String catalogSourceName;
 			// default CatalogSource name must be differentiated per product adding a suffix to avoid conflicts
-			if (IntersmashConfig.defaultOperatorCatalogSourceName().equalsIgnoreCase(getOperatorCatalogSource())) {
+			if (IntersmashConfig.defaultOperatorCatalogSourceName().equalsIgnoreCase(operatorCatalogSource)) {
 				catalogSourceName = String.format("%s-%s",
-						getOperatorCatalogSource(),
+						operatorCatalogSource,
 						getApplication().getName() == null ? // happens when Application is mocked
 								getApplication().getClass().getSimpleName().substring(0, 4)
 								: getApplication().getName())
 						.toLowerCase();
 			} else {
-				catalogSourceName = getOperatorCatalogSource();
+				catalogSourceName = operatorCatalogSource;
 			}
 			// create CatalogSource pointing to our custom IndexImage
 			catalogSource = new CatalogSource(
 					// a composite name is needed in order to avoid conflicts in case of multiple custom CatalogSources
 					catalogSourceName,
-					getCatalogSourceNamespace(),
+					operatorCatalogSourceNamespace,
 					"grpc",
-					getOperatorIndexImage(),
+					operatorIndexImage,
 					catalogSourceName,
 					"jboss-tests@redhat.com");
 			try {
@@ -189,7 +194,7 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 				new SimpleWaiter(() -> {
 					// oc get CatalogSource redhat-operators -n openshift-marketplace -o template --template {{.status.connectionState.lastObservedState}}
 					catalogSourceStatus.set(adminBinary.execute("get", "CatalogSource", catalogSource.getMetadata().getName(),
-							"-n", getCatalogSourceNamespace(),
+							"-n", operatorCatalogSourceNamespace,
 							"-o", "template", "--template",
 							"{{.status.connectionState.lastObservedState}}",
 							"--ignore-not-found"));
@@ -200,7 +205,7 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 					return !Strings.isNullOrEmpty(catalogSourceStatus.get())
 							&& "READY".equalsIgnoreCase(catalogSourceStatus.get());
 				}).reason(String.format("CatalogSource [%s] not found in namespace [%s]",
-						catalogSource.getMetadata().getName(), getCatalogSourceNamespace()))
+						catalogSource.getMetadata().getName(), operatorCatalogSourceNamespace))
 						.level(Level.DEBUG)
 						.failFast(getFailFastCheck())
 						.waitFor();
@@ -211,16 +216,22 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 		} else {
 			// load CatalogSource by name from OpenShift cluster
 			catalogSource = new CatalogSource();
-			catalogSource.load(getOperatorCatalogSource(),
+			catalogSource.load(operatorCatalogSource,
 					IntersmashConfig.defaultOperatorCatalogSourceNamespace());
 		}
 		return catalogSource;
 	}
 
 	private PackageManifest initPackageManifest() {
-		return adminShift.operatorHub().packageManifests().list().getItems()
-				.stream().filter(pm -> this.packageManifestName.equals(pm.getMetadata().getName()) &&
-						this.catalogSource.getMetadata().getName().equals(pm.getStatus().getCatalogSource()))
+		log.debug("Listing package manifests belonging to: " + this.catalogSource.getMetadata().getName());
+		List<PackageManifest> catalogSourcePackageManifests = adminShift.operatorHub().packageManifests().list().getItems()
+				.stream()
+				.filter(pm -> this.catalogSource.getMetadata().getName().equals(pm.getStatus().getCatalogSource()))
+				.collect(Collectors.toList());
+		catalogSourcePackageManifests.stream()
+				.forEach(pm -> log.debug("---> " + pm.getMetadata().getName()));
+		return catalogSourcePackageManifests.stream()
+				.filter(pm -> this.packageManifestName.equals(pm.getMetadata().getName()))
 				.findFirst().orElseThrow(
 						() -> new IllegalStateException(
 								"Unable to retrieve PackageManifest " + this.packageManifestName + " in CatalogSource "
@@ -443,5 +454,14 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 
 	protected OpenShiftBinary getAdminBinary() {
 		return adminBinary;
+	}
+
+	@Override
+	public void dismiss() {
+		// let's remove any custom catalog source
+		if (Arrays.stream(IntersmashConfig.getKnownCatalogSources())
+				.noneMatch(cs -> this.catalogSource.getMetadata().getName().equals(cs))) {
+			adminBinary.execute("delete", "catalogsource", catalogSource.getMetadata().getName(), "--ignore-not-found");
+		}
 	}
 }

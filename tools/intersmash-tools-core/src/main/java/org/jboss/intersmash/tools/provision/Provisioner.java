@@ -60,7 +60,19 @@ public interface Provisioner<T extends Application> {
 	 */
 	URL getURL();
 
+	/**
+	 * Defines an operation for configuring the provisioner, before any deployment related tasks are executed, e.g.:
+	 * for Operator based provisioners this allows for configuring custom catalog sources etc.
+	 */
 	default void configure() {
+		;
+	}
+
+	/**
+	 * Defines an operation for configuring the provisioner, after all deploy related tasks are executed, e.g.:
+	 * for Operator based provisioners this allows for removing custom catalog sources etc.
+	 */
+	default void dismiss() {
 		;
 	}
 }

@@ -55,12 +55,12 @@ public class WildflyOperatorProvisionerTest {
 						return NAME;
 					}
 				});
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
+		WILDFLY_OPERATOR_PROVISIONER.configure();
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
@@ -71,6 +71,7 @@ public class WildflyOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		WILDFLY_OPERATOR_PROVISIONER.dismiss();
 	}
 
 	@AfterEach

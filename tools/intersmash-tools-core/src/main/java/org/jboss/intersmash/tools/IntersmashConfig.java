@@ -18,6 +18,8 @@ package org.jboss.intersmash.tools;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.checkerframework.checker.units.qual.C;
+
 import cz.xtf.core.config.XTFConfig;
 import cz.xtf.core.openshift.OpenShifts;
 
@@ -112,6 +114,10 @@ public class IntersmashConfig {
 
 	public static boolean skipUndeploy() {
 		return skipDeploy() || XTFConfig.get(SKIP_UNDEPLOY, "false").equals("true");
+	}
+
+	public static String[] getKnownCatalogSources() {
+		return new String[] { COMMUNITY_OPERATOR_CATALOG_SOURCE_NAME, REDHAT_OPERATOR_CATALOG_SOURCE_NAME };
 	}
 
 	public static String defaultOperatorCatalogSourceName() {

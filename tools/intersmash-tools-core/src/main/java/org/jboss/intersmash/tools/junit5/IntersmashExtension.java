@@ -52,14 +52,6 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 
 	private static final Namespace NAMESPACE = Namespace.create("org", "jboss", "intersmash", "IntersmashExtension");
 	private static final String INTERSMASH_SERVICES = "INTERSMASH_SERVICES";
-	//	private OpenShiftRecorderService openShiftRecorderService;
-	//
-	//	private OpenShiftRecorderService openShiftRecorderService() {
-	//		if (openShiftRecorderService == null) {
-	//			openShiftRecorderService = new OpenShiftRecorderService();
-	//		}
-	//		return openShiftRecorderService;
-	//	}
 
 	@Override
 	public void beforeAll(ExtensionContext extensionContext) throws Exception {
@@ -106,11 +98,6 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			}
 		} catch (Throwable t) {
 			tt = Optional.of(t);
-			//			try {
-			//				openShiftRecorderService().recordState(extensionContext);
-			//			} catch (Throwable th) {
-			//				log.error("Error getting OpenShift logs for Intersmash!", th);
-			//			}
 		} finally {
 			if (tt.isPresent())
 				throw new Exception("Error before test execution!", tt.get());
@@ -145,6 +132,7 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		log.info("Undeploying ", provisioner.getApplication().getClass().getName());
 		provisioner.undeploy();
 		provisioner.postUndeploy();
+		provisioner.dismiss();
 	}
 
 	public void afterAll(ExtensionContext extensionContext) {

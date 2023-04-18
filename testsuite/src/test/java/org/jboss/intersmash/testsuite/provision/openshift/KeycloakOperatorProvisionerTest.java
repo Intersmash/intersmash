@@ -95,7 +95,6 @@ public class KeycloakOperatorProvisionerTest {
 						return DEFAULT_KEYCLOAK_APP_NAME;
 					}
 				});
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
@@ -105,6 +104,7 @@ public class KeycloakOperatorProvisionerTest {
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
+		KEYCLOAK_OPERATOR_PROVISIONER.configure();
 		matchLabels.put("app", "sso");
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
@@ -116,6 +116,7 @@ public class KeycloakOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
 	}
 
 	@AfterEach

@@ -45,12 +45,12 @@ public class KafkaOperatorProvisionerTest {
 
 	private static KafkaOperatorProvisioner initializeOperatorProvisioner() {
 		KafkaOperatorProvisioner operatorProvisioner = new KafkaOperatorProvisioner(application);
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
+		operatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
@@ -62,6 +62,7 @@ public class KafkaOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		operatorProvisioner.dismiss();
 	}
 
 	@AfterEach
