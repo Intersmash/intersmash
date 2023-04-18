@@ -45,6 +45,11 @@ xtf.openshift.master.password=${SYSADMIN_PASSWORD}
 xtf.openshift.master.token=${SYSADMIN_TOKEN}
 xtf.openshift.admin.kubeconfig=${KUBECONFIG}
 xtf.openshift.master.kubeconfig=${KUBECONFIG}
+
+# WildFly community operator settings
+intersmash.wildfly.operators.catalog_source=community-operators-wildfly-operator
+intersmash.wildfly.operators.index_image=quay.io/operatorhubio/catalog:latest
+intersmash.wildfly.operators.package_manifest=wildfly
 EOL
 
 cat test.properties
