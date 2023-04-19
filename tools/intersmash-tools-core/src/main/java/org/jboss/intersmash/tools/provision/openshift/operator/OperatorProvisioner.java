@@ -64,8 +64,6 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 	private final T operatorApplication;
 	private PackageManifest packageManifest;
 	private String operatorChannel;
-	private final String desiredChannel;
-
 	protected FailFastCheck ffCheck = () -> false;
 	private OpenShift adminShift;
 	private OpenShiftBinary adminBinary;
@@ -73,13 +71,8 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 	public static final String INSTALLPLAN_APPROVAL_MANUAL = "Manual";
 
 	public OperatorProvisioner(T operatorApplication, String packageManifestName) {
-		this(operatorApplication, packageManifestName, null);
-	}
-
-	public OperatorProvisioner(T operatorApplication, String packageManifestName, String desiredChannel) {
 		this.operatorApplication = operatorApplication;
 		this.packageManifestName = packageManifestName;
-		this.desiredChannel = desiredChannel;
 	}
 
 	@Override
@@ -97,7 +90,8 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 		final String defaultChannel = packageManifest.getStatus().getDefaultChannel();
 
 		// if there is no specific desired channel for Operator installation, let's use the default one.
-		this.operatorChannel = (desiredChannel != null) ? desiredChannel : defaultChannel;
+		final String desiredChannel = this.getOperatorChannel();
+		this.operatorChannel = (desiredChannel != null && !desiredChannel.isEmpty()) ? desiredChannel : defaultChannel;
 
 		PackageChannel packageChannel = initPackageChannel(operatorChannel);
 
@@ -117,6 +111,8 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 	protected abstract String getOperatorCatalogSource();
 
 	protected abstract String getOperatorIndexImage();
+
+	protected abstract String getOperatorChannel();
 
 	/**
 	 * The CatalogSource is in the "openshift-marketplace" namespace by default;

@@ -153,6 +153,11 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 		return IntersmashConfig.infinispanOperatorIndexImage();
 	}
 
+	@Override
+	protected String getOperatorChannel() {
+		return IntersmashConfig.infinispanOperatorChannel();
+	}
+
 	/**
 	 * The result is affected by the CR definition and specifically the method will return the {@code service} URL in
 	 * case the CR {@code .spec.expose.type} is set to {@code NodePort} or {@code LoadBalancer} while it will return the

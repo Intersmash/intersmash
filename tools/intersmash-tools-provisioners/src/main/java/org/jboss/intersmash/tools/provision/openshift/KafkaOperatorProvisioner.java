@@ -366,4 +366,9 @@ public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorA
 	protected String getOperatorIndexImage() {
 		return IntersmashConfig.kafkaOperatorIndexImage();
 	}
+
+	@Override
+	protected String getOperatorChannel() {
+		return IntersmashConfig.kafkaOperatorChannel();
+	}
 }

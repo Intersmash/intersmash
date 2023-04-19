@@ -426,9 +426,7 @@ is also used internally, properties are resolved as following: System Properties
 test.properties file > global-test.properties, see https://github.com/xtf-cz/xtf#configuration for more details on this.
 
 ### Configuration properties
-The following properties could be used to configure Intersmash. You can keep the defaults here for start.
-
-Intersmash properties:
+The following properties could be used to configure Intersmash:
 
 | Property                                         | Description                                                                         |
 |--------------------------------------------------|-------------------------------------------------------------------------------------|
@@ -446,25 +444,31 @@ Intersmash properties:
 | intersmash.wildfly.operators.catalog_source      | Wildfly custom catalog for Operator (must be in namespace openshift-marketplace)    |
 | intersmash.wildfly.operators.index_image         | Wildfly custom index image for Operator                                             |
 | intersmash.wildfly.operators.package_manifest    | Wildfly custom package manifest for Operator                                        |
+| intersmash.wildfly.operators.channel             | Wildfly desired channel for Operator                                                |
 | intersmash.infinispan.image                      | Infinispan image URL                                                                |
 | intersmash.infinispan.templates                  | URL where Infinispan OpenShift templates resides                                    |
 | intersmash.infinispan.operators.catalog_source   | Infinispan custom catalog for Operator (must be in namespace openshift-marketplace) |
 | intersmash.infinispan.operators.index_image      | Infinispan custom index image for Operator                                          |
 | intersmash.infinispan.operators.package_manifest | Infinispan custom package manifest for Operator                                     |
+| intersmash.infinispan.operators.channel          | Infinispan desired channel for Operator                                             |
 | intersmash.keycloak.image                        | Keycloak image URL                                                                  |
 | intersmash.keycloak.templates                    | URL where Keycloak OpenShift templates resides                                      |
 | intersmash.keycloak.operators.catalog_source     | Keycloak custom catalog for Operator (must be in namespace openshift-marketplace)   |
 | intersmash.keycloak.operators.index_image        | Keycloak custom index image for Operator                                            |
 | intersmash.keycloak.operators.package_manifest   | Keycloak custom package manifest for Operator                                       |
+| intersmash.keycloak.operators.channel            | Keycloak desired channel for Operator                                               |
 | intersmash.kafka.operators.catalog_source        | Kafka custom catalog for Operator (must be in namespace openshift-marketplace)      |
 | intersmash.kafka.operators.index_image           | Kafka custom index image for Operator                                               |
 | intersmash.kafka.operators.package_manifest      | Kafka custom package manifest for Operator                                          |
+| intersmash.kafka.operators.channel               | Kafka desired channel for Operator                                                  |
 | intersmash.activemq.operators.catalog_source     | ActiveMQ custom catalog for Operator (must be in namespace openshift-marketplace)   |
 | intersmash.activemq.operators.index_image        | ActiveMQ custom index image for Operators                                           |
 | intersmash.activemq.operators.package_manifest   | ActiveMQ custom package manifest for Operators                                      |
+| intersmash.activemq.operators.channel            | ActiveMQ desired channel for Operator                                               |
 | intersmash.hyperfoil.operators.catalog_source    | HyperFoil custom catalog for Operator (must be in namespace openshift-marketplace)  |
 | intersmash.hyperfoil.operators.index_image       | HyperFoil custom index image for Operators                                          |
 | intersmash.hyperfoil.operators.package_manifest  | HyperFoil custom package manifest for Operators                                     |
+| intersmash.hyperfoil.operators.channel           | HyperFoil desired channel for Operator                                              |
 | wildfly.feature-pack.location                    | Wildfly feature pack used by shared configurable deployments                        |
 | wildfly.ee-feature-pack.location                 | Wildfly EE feature pack used by shared configurable deployments                     |
 | wildfly.cloud-feature-pack.location              | Wildfly cloud feature pack used by shared configurable deployments                  |

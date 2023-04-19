@@ -49,7 +49,7 @@ public class WildflyOperatorProvisioner extends OperatorProvisioner<WildflyOpera
 	private static final String OPERATOR_ID = IntersmashConfig.wildflyOperatorPackageManifest();
 
 	public WildflyOperatorProvisioner(@NonNull WildflyOperatorApplication wildflyOperatorApplication) {
-		super(wildflyOperatorApplication, OPERATOR_ID, "alpha");
+		super(wildflyOperatorApplication, OPERATOR_ID);
 	}
 
 	public static String getOperatorId() {
@@ -168,6 +168,11 @@ public class WildflyOperatorProvisioner extends OperatorProvisioner<WildflyOpera
 	@Override
 	protected String getOperatorIndexImage() {
 		return IntersmashConfig.wildflyOperatorIndexImage();
+	}
+
+	@Override
+	protected String getOperatorChannel() {
+		return IntersmashConfig.wildflyOperatorChannel();
 	}
 
 	@Override
