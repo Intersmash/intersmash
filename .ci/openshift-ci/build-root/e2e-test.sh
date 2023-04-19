@@ -57,4 +57,4 @@ cat test.properties
 
 mkdir local-repo
 mvn clean install -Dmaven.repo.local=./local-repo -DskipTests
-mvn clean test -Dmaven.repo.local=./local-repo -pl testsuite/ -am
+mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -am
