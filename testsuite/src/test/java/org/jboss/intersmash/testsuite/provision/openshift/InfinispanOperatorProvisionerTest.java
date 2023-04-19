@@ -88,7 +88,6 @@ public class InfinispanOperatorProvisionerTest {
 						return DEFAULT_INFINISPAN_APP_NAME;
 					}
 				});
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
@@ -97,10 +96,10 @@ public class InfinispanOperatorProvisionerTest {
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
-		matchLabels.put("app", "datagrid");
-		IntersmashExtension.operatorCleanup();
 		// let's configure the provisioner
 		INFINISPAN_OPERATOR_PROVISIONER.configure();
+		matchLabels.put("app", "datagrid");
+		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
 		// clean any leftovers
@@ -110,6 +109,7 @@ public class InfinispanOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		INFINISPAN_OPERATOR_PROVISIONER.dismiss();
 	}
 
 	@AfterEach

@@ -69,12 +69,12 @@ public class HyperfoilOperatorProvisionerTest {
 						return NAME;
 					}
 				});
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
+		hyperfoilOperatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
@@ -87,6 +87,7 @@ public class HyperfoilOperatorProvisionerTest {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
 		// there might be leftovers in case of failures
 		OpenShifts.admin().deletePods("role", "agent");
+		hyperfoilOperatorProvisioner.dismiss();
 	}
 
 	/**

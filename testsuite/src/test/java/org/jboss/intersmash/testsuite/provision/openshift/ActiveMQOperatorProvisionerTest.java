@@ -70,7 +70,6 @@ public class ActiveMQOperatorProvisionerTest {
 						return DEFAULT_ACTIVEMQ_APP_NAME;
 					}
 				});
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
@@ -78,6 +77,7 @@ public class ActiveMQOperatorProvisionerTest {
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
+		activeMQOperatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
@@ -90,6 +90,7 @@ public class ActiveMQOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		activeMQOperatorProvisioner.dismiss();
 	}
 
 	@AfterEach

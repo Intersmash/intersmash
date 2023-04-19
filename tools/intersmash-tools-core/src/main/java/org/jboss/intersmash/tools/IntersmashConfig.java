@@ -114,6 +114,10 @@ public class IntersmashConfig {
 		return skipDeploy() || XTFConfig.get(SKIP_UNDEPLOY, "false").equals("true");
 	}
 
+	public static String[] getKnownCatalogSources() {
+		return new String[] { COMMUNITY_OPERATOR_CATALOG_SOURCE_NAME, REDHAT_OPERATOR_CATALOG_SOURCE_NAME };
+	}
+
 	public static String defaultOperatorCatalogSourceName() {
 		return DEFAULT_OPERATOR_CATALOG_SOURCE_NAME;
 	}

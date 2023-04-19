@@ -17,7 +17,6 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
 
-import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
@@ -29,7 +28,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShifts;
@@ -37,7 +35,6 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class WildflyOperatorProvisionerTest {
 	private static final String NAME = "wildfly-operator-test";
 	private static final WildflyOperatorProvisioner WILDFLY_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
@@ -48,7 +45,7 @@ public class WildflyOperatorProvisionerTest {
 					@Override
 					public WildFlyServer getWildflyServer() {
 						return new WildFlyServerBuilder(getName())
-								.applicationImage(IntersmashConfig.wildflyImageURL())
+								.applicationImage("quay.io/wildfly/wildfly")
 								.replicas(1)
 								.build();
 					}
@@ -58,12 +55,12 @@ public class WildflyOperatorProvisionerTest {
 						return NAME;
 					}
 				});
-		operatorProvisioner.configure();
 		return operatorProvisioner;
 	}
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
+		WILDFLY_OPERATOR_PROVISIONER.configure();
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
@@ -74,6 +71,7 @@ public class WildflyOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		WILDFLY_OPERATOR_PROVISIONER.dismiss();
 	}
 
 	@AfterEach

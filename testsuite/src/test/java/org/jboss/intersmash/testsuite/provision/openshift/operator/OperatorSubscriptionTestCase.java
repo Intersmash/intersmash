@@ -115,15 +115,19 @@ public class OperatorSubscriptionTestCase {
 
 	public void operatorSubscriptionTest() {
 		operatorProvisioner.configure();
-		// clean any leftovers
-		operatorProvisioner.unsubscribe();
-		operatorProvisioner.subscribe();
+		try {
+			// clean any leftovers
+			operatorProvisioner.unsubscribe();
+			operatorProvisioner.subscribe();
 
-		log.debug("Pods:");
-		OpenShifts.master().getPods().forEach(this::introducePod);
-		Assertions.assertTrue(operatorProvisioner.getCustomResourceDefinitions().size() > 0,
-				String.format("List of CRDs provided by operator [%s] should not be empty.",
-						operatorProvisioner.getPackageManifestName()));
+			log.debug("Pods:");
+			OpenShifts.master().getPods().forEach(this::introducePod);
+			Assertions.assertTrue(operatorProvisioner.getCustomResourceDefinitions().size() > 0,
+					String.format("List of CRDs provided by operator [%s] should not be empty.",
+							operatorProvisioner.getPackageManifestName()));
+		} finally {
+			operatorProvisioner.dismiss();
+		}
 	}
 
 	private void introducePod(Pod pod) {
