@@ -50,6 +50,7 @@ xtf.openshift.master.kubeconfig=${KUBECONFIG}
 intersmash.wildfly.operators.catalog_source=community-operators-wildfly-operator
 intersmash.wildfly.operators.index_image=quay.io/operatorhubio/catalog:latest
 intersmash.wildfly.operators.package_manifest=wildfly
+intersmash.wildfly.operators.channel=alpha
 EOL
 
 cat test.properties
