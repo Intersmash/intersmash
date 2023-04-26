@@ -10,18 +10,15 @@
     <name>Intersmash Standalone Deployments: OpenShift Jakarta Sample</name>
 
     <properties>
-        <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
-        <version.impsort-maven-plugin>1.8.0</version.impsort-maven-plugin>
-
         <formatting-style-base-directory>${project.basedir}/ide-config</formatting-style-base-directory>
         <formatting-style-file>eclipse-format.xml</formatting-style-file>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <version.impsort-maven-plugin>1.6.2</version.impsort-maven-plugin>
-        <version.formatter-maven-plugin>2.16.0</version.formatter-maven-plugin>
+        <version.impsort-maven-plugin>1.8.0</version.impsort-maven-plugin>
         <version.ide-config>1.1</version.ide-config>
+        <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
 
         <!-- WildFly/EAP 8 Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
