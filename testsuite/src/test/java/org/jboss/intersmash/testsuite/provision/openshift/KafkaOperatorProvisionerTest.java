@@ -25,7 +25,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShifts;
@@ -38,7 +37,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class KafkaOperatorProvisionerTest {
 	private static KafkaOperatorApplication application = OpenShiftProvisionerTestBase.getKafkaApplication();
 	private static final KafkaOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();
@@ -85,8 +83,8 @@ public class KafkaOperatorProvisionerTest {
 	 */
 	@Test
 	public void basicProvisioningTest() {
+		operatorProvisioner.deploy();
 		try {
-			operatorProvisioner.deploy();
 			verifyDeployed();
 
 			int scaledNum = operatorProvisioner.getApplication().getKafka().getSpec().getKafka().getReplicas() + 1;

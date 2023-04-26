@@ -496,7 +496,7 @@ public class OpenShiftProvisionerTestBase {
 	 */
 	public static KafkaOperatorApplication getKafkaApplication() {
 		return new KafkaOperatorApplication() {
-			static final String NAME = "amq-streams-test";
+			static final String NAME = "kafka-test";
 			private static final String KAFKA_VERSION = KafkaOperatorApplication.KAFKA_VERSION;
 			private static final String INTER_BROKER_PROTOCOL_VERSION = KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION;
 			private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;

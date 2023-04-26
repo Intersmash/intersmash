@@ -303,7 +303,7 @@ public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorA
 	}
 
 	public List<Pod> getClusterOperatorPods() {
-		return OpenShiftProvisioner.openShift.getLabeledPods("name", OPERATOR_ID + "-cluster-operator");
+		return OpenShiftProvisioner.openShift.getLabeledPods("strimzi.io/kind", "cluster-operator");
 	}
 
 	/**

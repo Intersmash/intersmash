@@ -277,10 +277,11 @@ a given service on cloud environments via APIs that leverage the
 Intersmash makes this feature available for currently supported products (see the table below), but that can be 
 extended easily, since Intersmash _provisioners_ are pluggable components.
 
-| Product    | Supported Operator version | Channel name | Supported product version | Repository                                        | Notes                                                   |
-|:-----------|:---------------------------|:-------------|:--------------------------|:--------------------------------------------------|:--------------------------------------------------------|
-| Infinispan | 2.3.1                      | 2.3.x        | 14.0.6.Final              | https://github.com/infinispan/infinispan-operator |                                                         |
-| WildFly    | 0.5.6                      | alpha        | 27.0.1.Final              | https://github.com/wildfly/wildfly-operator       | As available on https://operatorhub.io/operator/wildfly |
+| Product                   | Supported Operator version | Channel name   | Supported product version | Repository                                        | Notes                                                   |
+|:--------------------------|:---------------------------|:---------------|:--------------------------|:--------------------------------------------------|:--------------------------------------------------------|
+| Infinispan                | 2.3.1                      | 2.3.x          | 14.0.6.Final              | https://github.com/infinispan/infinispan-operator |                                                         |
+| WildFly                   | 0.5.6                      | alpha          | 27.0.1.Final              | https://github.com/wildfly/wildfly-operator       | As available on https://operatorhub.io/operator/wildfly |
+| Kafka provided by Strimzi | 0.29.0                     | strimzi-0.29.x | 3.2.0                     | https://github.com/strimzi/strimzi-kafka-operator | As available on https://operatorhub.io/operator/wildfly |
 
 
 Intersmash operator-based provisioners implement a common contract and high level behavior which is defined by the 
