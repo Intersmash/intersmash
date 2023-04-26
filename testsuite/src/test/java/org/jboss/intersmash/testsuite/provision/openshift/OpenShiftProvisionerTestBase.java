@@ -243,9 +243,8 @@ public class OpenShiftProvisionerTestBase {
 			public List<EnvVar> getEnvVars() {
 				List<EnvVar> list = new ArrayList<>();
 				list.add(new EnvVarBuilder().withName(TEST_ENV_VAR.getName()).withValue(TEST_ENV_VAR.getValue()).build());
-				list.add(new EnvVarBuilder().withName("CLI_LAUNCH_SCRIPT").withValue("/opt/server/extensions/configure.cli")
-						.build());
-
+				// Let's skip addition of the CLI_LAUNCH_SCRIPT environment variable here to test that it's added automatically
+				// in org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner#deployImage().
 				list.add(new EnvVarBuilder().withName("ADMIN_USERNAME").withValue("admin").build());
 				list.add(new EnvVarBuilder().withName("ADMIN_PASSWORD").withValue("pass.1234").build());
 				if (!Strings.isNullOrEmpty(IntersmashConfig.getMavenMirrorUrl())) {

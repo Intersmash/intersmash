@@ -61,6 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<WildflyImageOpenShiftApplication> {
 
 	private final WildflyImageOpenShiftApplication wildflyApplication;
+	private final String CLI_LAUNCH_SCRIPT = "CLI_LAUNCH_SCRIPT";
 	private FailFastCheck ffCheck = () -> false;
 
 	public WildflyImageOpenShiftProvisioner(@NonNull WildflyImageOpenShiftApplication wildflyApplication) {
@@ -285,14 +286,23 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 
 		// mount postconfigure CLI commands
 		if (!wildflyApplication.getCliScript().isEmpty()) {
+			final String extensionPath = "/opt/server/extensions";
+			final String scriptName = "configure.cli";
+
 			appBuilder.configMap("jboss-cli")
-					.configEntry("configure.cli", String.join("\n", wildflyApplication.getCliScript()));
+					.configEntry(scriptName, String.join("\n", wildflyApplication.getCliScript()));
 
 			appBuilder.deploymentConfig()
 					.podTemplate()
 					.addConfigMapVolume("jboss-cli", "jboss-cli", "0755")
 					.container()
-					.addVolumeMount("jboss-cli", "/opt/server/extensions", false);
+					.addVolumeMount("jboss-cli", extensionPath, false);
+
+			if (wildflyApplication.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals(CLI_LAUNCH_SCRIPT)))) {
+				// Application doesn't provide necessary env variable value to the extension script, so let's define it here.
+				addEnvVariable(appBuilder, CLI_LAUNCH_SCRIPT, extensionPath + "/" + scriptName, true,
+						!BinarySource.class.isAssignableFrom(wildflyApplication.getBuildInput().getClass()));
+			}
 		}
 
 		// mount secrets to /etc/secrets
