@@ -60,7 +60,7 @@ public class IntersmashConfig {
 	private static final String KAFKA_OPERATOR_INDEX_IMAGE = "intersmash.kafka.operators.index_image";
 	private static final String KAFKA_OPERATOR_CHANNEL = "intersmash.kafka.operators.channel";
 	private static final String KAFKA_OPERATOR_PACKAGE_MANIFEST = "intersmash.kafka.operators.package_manifest";
-	private static final String COMMUNITY_KAFKA_OPERATOR_PACKAGE_MANIFEST = "kafka";
+	private static final String COMMUNITY_KAFKA_OPERATOR_PACKAGE_MANIFEST = "strimzi-kafka-operator";
 	private static final String PRODUCT_KAFKA_OPERATOR_PACKAGE_MANIFEST = "amq-streams";
 	private static final String DEFAULT_KAFKA_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KAFKA_OPERATOR_PACKAGE_MANIFEST;
 	private static final String ACTIVEMQ_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.activemq.operators.catalog_source";
