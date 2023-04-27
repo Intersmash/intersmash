@@ -310,7 +310,7 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 				.envVars(wildflyApplication.getEnvVars().stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)));
 
 		// enable script debugging
-		if (wildflyApplication.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals("SCRIPT_DEBUG")))) {
+		if (wildflyApplication.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals(SCRIPT_DEBUG)))) {
 			if (IntersmashConfig.scriptDebug() != null)
 				addEnvVariable(appBuilder, SCRIPT_DEBUG, IntersmashConfig.scriptDebug(), true,
 						!BinarySource.class.isAssignableFrom(wildflyApplication.getBuildInput().getClass()));
