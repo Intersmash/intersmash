@@ -43,17 +43,22 @@ public class ProvisionerCleanupTestCase {
 	@ParameterizedTest(name = "{displayName}#class({0})")
 	@MethodSource("provisionerProvider")
 	public void undeploy(OpenShiftProvisioner provisioner) {
-		provisioner.preDeploy();
+		provisioner.configure();
 		try {
-			provisioner.deploy();
+			provisioner.preDeploy();
 			try {
-				openShift.configMaps()
-						.create(new ConfigMapBuilder().withNewMetadata().withName("no-delete").endMetadata().build());
+				provisioner.deploy();
+				try {
+					openShift.configMaps()
+							.create(new ConfigMapBuilder().withNewMetadata().withName("no-delete").endMetadata().build());
+				} finally {
+					provisioner.undeploy();
+				}
 			} finally {
-				provisioner.undeploy();
+				provisioner.postUndeploy();
 			}
 		} finally {
-			provisioner.postUndeploy();
+			provisioner.dismiss();
 		}
 		Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
 		openShift.configMaps().withName("no-delete").delete();
