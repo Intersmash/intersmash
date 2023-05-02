@@ -17,6 +17,7 @@ package org.jboss.intersmash.tools.provision.openshift.operator;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -40,6 +41,8 @@ import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.core.waiting.failfast.FailFastCheck;
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import io.fabric8.openshift.api.model.operatorhub.lifecyclemanager.v1.PackageChannel;
 import io.fabric8.openshift.api.model.operatorhub.lifecyclemanager.v1.PackageManifest;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CRDDescription;
@@ -68,6 +71,12 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 	private OpenShift adminShift;
 	private OpenShiftBinary adminBinary;
 	private Set<String> customResourceDefinitions;
+	private static final RetryPolicy<PackageManifest> RETRY_POLICY_LOOKUP_MATCHING_PACKAGE_MANIFEST = RetryPolicy
+			.<PackageManifest> builder()
+			.handle(IllegalStateException.class)
+			.withDelay(Duration.ofSeconds(5))
+			.withMaxRetries(3)
+			.build();
 	public static final String INSTALLPLAN_APPROVAL_MANUAL = "Manual";
 
 	public OperatorProvisioner(T operatorApplication, String packageManifestName) {
@@ -84,7 +93,7 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 		catalogSource = initCatalogSource();
 
 		// init package manifest used for data parsing
-		this.packageManifest = initPackageManifest();
+		this.packageManifest = Failsafe.with(RETRY_POLICY_LOOKUP_MATCHING_PACKAGE_MANIFEST).get(() -> initPackageManifest());
 
 		// read operator spec from package manifest
 		final String defaultChannel = packageManifest.getStatus().getDefaultChannel();
