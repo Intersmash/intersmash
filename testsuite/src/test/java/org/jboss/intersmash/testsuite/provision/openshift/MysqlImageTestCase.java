@@ -20,7 +20,6 @@ import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftAppli
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShift;
@@ -30,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @CleanBeforeAll
 @Slf4j
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class MysqlImageTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final MysqlImageOpenShiftApplication application = OpenShiftProvisionerTestBase

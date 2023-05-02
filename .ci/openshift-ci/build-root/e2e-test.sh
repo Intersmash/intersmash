@@ -46,15 +46,6 @@ xtf.openshift.master.token=${SYSADMIN_TOKEN}
 xtf.openshift.admin.kubeconfig=${KUBECONFIG}
 xtf.openshift.master.kubeconfig=${KUBECONFIG}
 
-# WildFly community operator settings
-intersmash.wildfly.operators.catalog_source=community-operators-wildfly-operator
-intersmash.wildfly.operators.index_image=quay.io/operatorhubio/catalog:latest
-intersmash.wildfly.operators.package_manifest=wildfly
-intersmash.wildfly.operators.channel=alpha
-
-# Kafka community operator settings
-intersmash.kafka.operators.channel=strimzi-0.29.x
-
 EOL
 
 cat test.properties
