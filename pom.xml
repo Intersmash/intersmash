@@ -83,6 +83,7 @@
         <version.jsonschema2pojo-maven-plugin>1.1.2</version.jsonschema2pojo-maven-plugin>
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
+        <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
     </properties>
 
     <dependencyManagement>
@@ -174,6 +175,11 @@
                 <groupId>cz.xtf</groupId>
                 <artifactId>builder</artifactId>
                 <version>${xtf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>dev.failsafe</groupId>
+                <artifactId>failsafe</artifactId>
+                <version>${version.dev-failsafe.failsafe}</version>
             </dependency>
             <!-- JUnit 5 Jupiter -->
             <dependency>
