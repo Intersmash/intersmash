@@ -36,6 +36,13 @@
         <version.ide-config>1.1</version.ide-config>
         <version.io.strimzi-api>0.28.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
+        <version.io.fabric8>6.6.0</version.io.fabric8>
+
+        <!--
+            Version used for the activemq-artemis-operator;
+            Note: we are using a custom index image built as described in https://github.com/Intersmash/intersmash/issues/32
+        -->
+        <version.intersmash.activemq.operators>v1.0.11</version.intersmash.activemq.operators>
 
         <version.impsort-maven-plugin>1.8.0</version.impsort-maven-plugin>
         <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
@@ -327,6 +334,11 @@
                 <artifactId>system-stubs-jupiter</artifactId>
                 <version>${version.junit5.jupiter.system.stubs}</version>
             </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>generator-annotations</artifactId>
+                <version>${version.io.fabric8}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -435,6 +447,11 @@
                     <groupId>com.diffplug.spotless</groupId>
                     <artifactId>spotless-maven-plugin</artifactId>
                     <version>${version.spotless-maven-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>java-generator-maven-plugin</artifactId>
+                    <version>${version.io.fabric8}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

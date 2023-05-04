@@ -30,7 +30,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShifts;
@@ -43,7 +42,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class ActiveMQOperatorProvisionerTest {
 	private static final ActiveMQOperatorProvisioner activeMQOperatorProvisioner = initializeOperatorProvisioner();
 
@@ -159,7 +157,7 @@ public class ActiveMQOperatorProvisionerTest {
 			// scaling down to 0 (graceful shutdown)
 			amq.getSpec().getDeploymentPlan().setSize(0);
 			activeMQOperatorProvisioner.activeMQArtemisesClient().replace(amq);
-			new SimpleWaiter(() -> OpenShifts.master().getPods().size() == 1).waitFor();
+			new SimpleWaiter(() -> OpenShifts.master().getLabeledPods("application", name + "-app").size() == 0).waitFor();
 
 			// delete and verify that object was removed
 			activeMQOperatorProvisioner.activeMQArtemisesClient().withName(name)
