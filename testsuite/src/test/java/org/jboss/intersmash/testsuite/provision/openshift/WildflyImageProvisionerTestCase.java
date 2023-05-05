@@ -27,7 +27,6 @@ import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApp
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShift;
@@ -40,14 +39,13 @@ import io.fabric8.openshift.api.model.GitBuildSource;
 
 /**
  * This test verifies a binary build can be executed using a remote git repository containing a maven project using the
- * wildfly-maven-plugin;
+ * wildfly-maven-plugin.
  * <br>
- * The code inside the remote git repository is uploaded to the builder image and the actual maven build is executed
- * inside the builder image with a command like the following:
+ * The code inside the remote git repository is pulled by the running Pod and the actual Maven build is executed
+ * inside the builder image.
  */
 @CleanBeforeAll
-@Disabled("Until we have a reliable way to provide snapshot artifacts to the Pods running s2i v2")
-public class WildflyImageTestCase {
+public class WildflyImageProvisionerTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final WildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase
 			.getWildflyOpenShiftImageApplication();
