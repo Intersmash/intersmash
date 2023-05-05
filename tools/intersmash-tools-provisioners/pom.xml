@@ -142,6 +142,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>generator-annotations</artifactId>
+            <version>6.6.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -173,7 +179,6 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>java-generator-maven-plugin</artifactId>
-                <version>6.0.0</version>
                 <executions>
                     <execution>
                         <goals>
@@ -182,8 +187,12 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>src/main/resources/crds</source>
                     <target>target/generated-sources</target>
+                    <urls>
+                        <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemises.yaml</url>
+                        <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisaddresses.yaml</url>
+                        <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisscaledowns.yaml</url>
+                    </urls>
                 </configuration>
             </plugin>
 
