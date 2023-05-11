@@ -522,7 +522,7 @@
               "type": "object",
               "properties": {
                 "enabled" : {
-                  "description": "Determines if the Route should be TLS-encrypted. If deploy.tls.enabled is true, the route will use the secure service to acess to the deployment",
+                  "description": "Determines if the Route should be TLS-encrypted. If deploy.tls.enabled is true, the route will use the secure service to access to the deployment",
                   "default": true,
                   "type": "boolean"
                 },
