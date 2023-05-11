@@ -37,6 +37,7 @@
         <version.io.strimzi-api>0.28.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
         <version.io.fabric8>6.6.0</version.io.fabric8>
+        <version.openshift-client>5.12.2</version.openshift-client>
 
         <!--
             Version used for the activemq-artemis-operator;
@@ -284,6 +285,10 @@
                     <exclusion>
                         <groupId>org.apache.logging.log4j</groupId>
                         <artifactId>log4j-slf4j-impl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>kubernetes-model-common</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

@@ -15,31 +15,26 @@
  */
 package org.jboss.intersmash.tools.application.openshift;
 
-import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import java.util.Collections;
+import java.util.List;
+
+import org.jboss.intersmash.tools.provision.openshift.KeycloakQuarkusOperatorProvisioner;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
 
 /**
- * End user Application interface which presents PostgreSQL image application on OpenShift Container Platform.
- *
- * PostgreSQL application that is supposed to run on OpenShift needs to implement this interface.
- * Usage:
- * <pre>
- *     &#064;Intersmash(
- *     		&#064;Service(PgSQLApp.class)
- *     })
- * </pre>
+ * End user Application interface which presents Keycloak operator application on OpenShift Container Platform.
  *
  * The application will be deployed by:
  * <ul>
- *     <li>{@link PostgreSQLImageOpenShiftProvisioner}</li>
+ *     <li>{@link KeycloakQuarkusOperatorProvisioner}</li>
  * </ul>
  */
-public interface PostgreSQLImageOpenShiftApplication extends DBImageOpenShiftApplication {
+public interface KeycloakQuarkusOperatorApplication extends OperatorApplication {
 
-	default String getName() {
-		return "postgresql";
-	}
+	Keycloak getKeycloak();
 
-	default String getAdminPassword() {
-		return "admin123";
+	default List<KeycloakRealmImport> getKeycloakRealmImports() {
+		return Collections.emptyList();
 	}
 }

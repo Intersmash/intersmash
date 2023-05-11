@@ -44,6 +44,11 @@
             <groupId>org.jboss.intersmash</groupId>
             <artifactId>intersmash-deployments-provider</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>openshift-client</artifactId>
+            <version>${version.openshift-client}</version>
+        </dependency>
     </dependencies>
 
 </project>

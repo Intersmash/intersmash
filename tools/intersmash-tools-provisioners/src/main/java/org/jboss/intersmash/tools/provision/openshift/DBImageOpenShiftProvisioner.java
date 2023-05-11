@@ -68,6 +68,9 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		return vars;
 	}
 
+	public void customizeApplicationBuilder(ApplicationBuilder appBuilder) {
+	}
+
 	public abstract String getSymbolicName();
 
 	@Override
@@ -95,6 +98,8 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		appBuilder.service().port(getPort())
 				.addContainerSelector("deploymentconfig", dbApplication.getName())
 				.addContainerSelector("app", dbApplication.getName());
+
+		customizeApplicationBuilder(appBuilder);
 
 		appBuilder.buildApplication(openShift).deploy();
 
@@ -130,4 +135,20 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 	public String getUrl(String routeName, boolean secure) {
 		throw new UnsupportedOperationException("Route is not created for DB applications.");
 	}
+
+	/**
+	 * When using {@link ApplicationBuilder} to build the application, then the service name defaults to the application nane
+	 * @return service name to access the database
+	 */
+	public String getServiceName() {
+		return dbApplication.getName();
+	}
+
+	/**
+	 * @return name of the secret containing username and password for the database
+	 */
+	public String getSecretName() {
+		return dbApplication.getName();
+	}
+
 }
