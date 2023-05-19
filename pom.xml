@@ -485,6 +485,7 @@
                 <executions>
                     <execution>
                         <id>sort-imports</id>
+                        <phase>process-sources</phase>
                         <goals>
                             <goal>sort</goal>
                         </goals>
