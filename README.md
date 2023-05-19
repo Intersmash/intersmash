@@ -245,15 +245,15 @@ public class PostgresqlProvisionTest {
 
 Mapping of implemented provisioners:
 
-| Product    | Application                          | Provisioner                          | Notes                                                        |
-|:-----------|:-------------------------------------|:-------------------------------------|:-------------------------------------------------------------|
-| ActiveMQ   | ActiveMQOperatorApplication*         | ActiveMQOperatorProvisioner          |                                                              |
-| Kafka      | KafkaOperatorApplication             | KafkaOperatorProvisioner             |                                                              |
-| Wildfly    | WildflyImageOpenShiftApplication     | WildflyImageOpenShiftProvisioner     | AVailable both for Git sources and binary based s2i v2 build |
-| Wildfly    | WildflyHelmChartOpenShiftApplication | WildflyHelmChartOpenShiftProvisioner |                                                              |
-| Infinispan | InfinispanOperatorApplication        | InfinispanOperatorProvisioner        |                                                              |
-| Keycloak   | KeycloakOpenShiftApplication         | KeycloakTemplateOpenShiftProvisioner |                                                              |
-| Keycloak   | KeycloakOperatorApplication          | KeycloakOperatorProvisioner          |                                                              |
+| Product    | Application                          | Provisioner                          | Notes                                                                                                                                                                                                                                   |
+|:-----------|:-------------------------------------|:-------------------------------------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ActiveMQ   | ActiveMQOperatorApplication*         | ActiveMQOperatorProvisioner          |                                                                                                                                                                                                                                         |
+| Kafka      | KafkaOperatorApplication             | KafkaOperatorProvisioner             |                                                                                                                                                                                                                                         |
+| Wildfly    | WildflyImageOpenShiftApplication     | WildflyImageOpenShiftProvisioner     |                                                                                                                                                                                                                                         |
+| Wildfly    | WildflyHelmChartOpenShiftApplication | WildflyHelmChartOpenShiftProvisioner | The `wildfly-2.3.2` tag of https://github.com/wildfly/wildfly-charts is used and the model is generated based on the https://raw.githubusercontent.com/wildfly/wildfly-charts/main/charts/wildfly/values.schema.json  value schema file |
+| Infinispan | InfinispanOperatorApplication        | InfinispanOperatorProvisioner        |                                                                                                                                                                                                                                         |
+| Keycloak   | KeycloakOpenShiftApplication         | KeycloakTemplateOpenShiftProvisioner |                                                                                                                                                                                                                                         |
+| Keycloak   | KeycloakOperatorApplication          | KeycloakOperatorProvisioner          |                                                                                                                                                                                                                                         |
 
 Additional services provisioners:
 
@@ -277,14 +277,13 @@ a given service on cloud environments via APIs that leverage the
 Intersmash makes this feature available for currently supported products (see the table below), but that can be 
 extended easily, since Intersmash _provisioners_ are pluggable components.
 
-| Product                   | Supported Operator version | Channel name   | Supported product version | Repository                                                | Notes                                                                               |
-|:--------------------------|:---------------------------|:---------------|:--------------------------|:----------------------------------------------------------|:------------------------------------------------------------------------------------|
-| Hyperfoil                 | 0.21.0                     | alpha          | 0.23                      | https://github.com/Hyperfoil/hyperfoil-operator           |                                                                                     |
-| Infinispan                | 2.3.1                      | 2.3.x          | 14.0.6.Final              | https://github.com/infinispan/infinispan-operator         |                                                                                     |
-| WildFly                   | 0.5.6                      | alpha          | 27.0.1.Final              | https://github.com/wildfly/wildfly-operator               | As available on https://operatorhub.io/operator/wildfly                             |
-| Kafka provided by Strimzi | 0.29.0                     | strimzi-0.29.x | 3.2.0                     | https://github.com/strimzi/strimzi-kafka-operator         | Latest Kafka provided by Strimzi Operator version seems to require some adjustments |
-| ActiveMQ                  | 1.0.11                     | upstream       | 1.0.15                    | https://github.com/artemiscloud/activemq-artemis-operator | We are using a custom index image <b>quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11</b> built as described in https://github.com/Intersmash/intersmash/issues/32
-
+| Product                   | Supported Operator version | Channel name   | Supported product version | Repository                                                | Notes                                                                                                                                                                              |
+|:--------------------------|:---------------------------|:---------------|:--------------------------|:----------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Hyperfoil                 | 0.21.0                     | alpha          | 0.23                      | https://github.com/Hyperfoil/hyperfoil-operator           |                                                                                                                                                                                    |
+| Infinispan                | 2.3.1                      | 2.3.x          | 14.0.6.Final              | https://github.com/infinispan/infinispan-operator         |                                                                                                                                                                                    |
+| WildFly                   | 0.5.6                      | alpha          | 27.0.1.Final              | https://github.com/wildfly/wildfly-operator               | As available on https://operatorhub.io/operator/wildfly                                                                                                                            |
+| Kafka provided by Strimzi | 0.29.0                     | strimzi-0.29.x | 3.2.0                     | https://github.com/strimzi/strimzi-kafka-operator         | Latest Kafka provided by Strimzi Operator version seems to require some adjustments                                                                                                |
+| ActiveMQ                  | 1.0.11                     | upstream       | 1.0.15                    | https://github.com/artemiscloud/activemq-artemis-operator | We are using a custom index image <b>quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11</b> built as described in https://github.com/Intersmash/intersmash/issues/32 |
 
 Intersmash operator-based provisioners implement a common contract and high level behavior which is defined by the 
 [OperatorProvisioner](./intersmash-tools/intersmash-tools-core/src/main/java/org/jboss/intersmash/tools/provision/openshift/operator/OperatorProvisioner.java)
