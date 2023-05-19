@@ -27,7 +27,6 @@ import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApp
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShift;
@@ -40,13 +39,13 @@ import io.fabric8.kubernetes.api.model.Service;
 /**
  * This test verifies a binary build can be executed starting from a local folder containing an already provisioned
  * server and a deployed application; this is typically the "target/server" folder of a project using the
- * wildfly-maven-plugin;
+ * wildfly-maven-plugin.
  * <br>
  * No maven build is performed inside the builder image; it's supposed that the application is build locally with
- * whatever strategy, as long as it produces a "target/server" containing the server and the application;
+ * whatever strategy, as long as it produces a "target/server" containing the server and an application deployment
+ * which are compatible with a WildFly/EAP s2i v2 binary build.
  */
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class WildflyTargetServerTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final WildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase

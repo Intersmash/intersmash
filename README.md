@@ -245,15 +245,15 @@ public class PostgresqlProvisionTest {
 
 Mapping of implemented provisioners:
 
-| Product    | Application                          | Provisioner                          |
-|:-----------|:-------------------------------------|:-------------------------------------|
-| ActiveMQ   | ActiveMQOperatorApplication*         | ActiveMQOperatorProvisioner          |
-| Kafka      | KafkaOperatorApplication             | KafkaOperatorProvisioner             |
-| Wildfly    | WildflyImageOpenShiftApplication     | WildflyImageOpenShiftProvisioner     |
-| Wildfly    | WildflyHelmChartOpenShiftApplication | WildflyHelmChartOpenShiftProvisioner |
-| Infinispan | InfinispanOperatorApplication        | InfinispanOperatorProvisioner        |
-| Keycloak   | KeycloakOpenShiftApplication         | KeycloakTemplateOpenShiftProvisioner |
-| Keycloak   | KeycloakOperatorApplication          | KeycloakOperatorProvisioner          |
+| Product    | Application                          | Provisioner                          | Notes                                                        |
+|:-----------|:-------------------------------------|:-------------------------------------|:-------------------------------------------------------------|
+| ActiveMQ   | ActiveMQOperatorApplication*         | ActiveMQOperatorProvisioner          |                                                              |
+| Kafka      | KafkaOperatorApplication             | KafkaOperatorProvisioner             |                                                              |
+| Wildfly    | WildflyImageOpenShiftApplication     | WildflyImageOpenShiftProvisioner     | AVailable both for Git sources and binary based s2i v2 build |
+| Wildfly    | WildflyHelmChartOpenShiftApplication | WildflyHelmChartOpenShiftProvisioner |                                                              |
+| Infinispan | InfinispanOperatorApplication        | InfinispanOperatorProvisioner        |                                                              |
+| Keycloak   | KeycloakOpenShiftApplication         | KeycloakTemplateOpenShiftProvisioner |                                                              |
+| Keycloak   | KeycloakOperatorApplication          | KeycloakOperatorProvisioner          |                                                              |
 
 Additional services provisioners:
 
