@@ -26,7 +26,6 @@ import org.assertj.core.api.SoftAssertions;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.config.BuildManagerConfig;
@@ -39,13 +38,12 @@ import io.fabric8.kubernetes.api.model.Service;
 
 /**
  * This test verifies a binary build can be executed using a local folder containing a maven project using the
- * wildfly-maven-plugin;
+ * wildfly-maven-plugin.
  * <br>
  * The code inside the local folder is uploaded to the builder image and the actual maven build is executed
- * inside the builder image with a command like the following
+ * inside the builder image via the s2i binary build process.
  */
 @CleanBeforeAll
-@Disabled("Until we have a reliable way to provide snapshot artifacts to the Pods running s2i v2")
 public class WildflyMavenProjectTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final OpenShiftProvisionerTestBase.StaticWildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase
