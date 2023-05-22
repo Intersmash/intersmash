@@ -18,14 +18,17 @@ package org.jboss.intersmash.testsuite.provision.openshift.operator;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.HyperfoilOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.InfinispanOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.HyperfoilOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
@@ -33,11 +36,10 @@ import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
@@ -45,13 +47,21 @@ import io.fabric8.kubernetes.api.model.Pod;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Verify the {@link OperatorProvisioner} functionality.
+ * Verify the {@link OperatorProvisioner} subscription process.
  */
 @Slf4j
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class OperatorSubscriptionTestCase {
-	private OperatorProvisioner operatorProvisioner;
+
+	private static Stream<OperatorProvisioner> provisionerProvider() {
+		return Stream.of(
+				new ActiveMQOperatorProvisioner(mock(ActiveMQOperatorApplication.class)),
+				new HyperfoilOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
+				new InfinispanOperatorProvisioner(mock(InfinispanOperatorApplication.class)),
+				new KafkaOperatorProvisioner(mock(KafkaOperatorApplication.class)),
+				new KeycloakOperatorProvisioner(mock(KeycloakOperatorApplication.class)),
+				new WildflyOperatorProvisioner(mock(WildflyOperatorApplication.class)));
+	}
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
@@ -66,65 +76,21 @@ public class OperatorSubscriptionTestCase {
 		IntersmashExtension.operatorCleanup();
 	}
 
-	@AfterEach
-	public void unsubscribe() {
-		operatorProvisioner.unsubscribe();
-	}
-
-	/**
-	 * Try the {@link WildflyOperatorProvisioner} subscription.
-	 */
-	@Test
-	public void wildflyOperatorProvisionerSubscriptionTest() {
-		operatorProvisioner = new WildflyOperatorProvisioner(mock(WildflyOperatorApplication.class));
-		operatorSubscriptionTest();
-	}
-
-	/**
-	 * Try the {@link KeycloakOperatorProvisioner} subscription.
-	 */
-	@Test
-	public void keycloakOperatorProvisionerSubscriptionTest() {
-		operatorProvisioner = new KeycloakOperatorProvisioner(mock(KeycloakOperatorApplication.class));
-		operatorSubscriptionTest();
-	}
-
-	/**
-	 * Try the {@link InfinispanOperatorProvisioner} subscription.
-	 */
-	@Test
-	public void infinispanOperatorProvisionerSubscriptionTest() {
-		operatorProvisioner = new InfinispanOperatorProvisioner(mock(InfinispanOperatorApplication.class));
-		operatorSubscriptionTest();
-	}
-
-	/**
-	 * Try the {@link ActiveMQOperatorProvisioner} subscription.
-	 */
-	@Test
-	public void activeMQProvisionerSubscriptionTest() {
-		operatorProvisioner = new ActiveMQOperatorProvisioner(mock(ActiveMQOperatorApplication.class));
-		operatorSubscriptionTest();
-	}
-
-	@Test
-	public void kafkaProvisionerSubscriptionTest() {
-		operatorProvisioner = new KafkaOperatorProvisioner(mock(KafkaOperatorApplication.class));
-		operatorSubscriptionTest();
-	}
-
-	public void operatorSubscriptionTest() {
+	@ParameterizedTest(name = "{displayName}#class({0})")
+	@MethodSource("provisionerProvider")
+	public void operatorSubscriptionTest(OperatorProvisioner operatorProvisioner) {
 		operatorProvisioner.configure();
 		try {
-			// clean any leftovers
-			operatorProvisioner.unsubscribe();
 			operatorProvisioner.subscribe();
-
-			log.debug("Pods:");
-			OpenShifts.master().getPods().forEach(this::introducePod);
-			Assertions.assertTrue(operatorProvisioner.getCustomResourceDefinitions().size() > 0,
-					String.format("List of CRDs provided by operator [%s] should not be empty.",
-							operatorProvisioner.getPackageManifestName()));
+			try {
+				log.debug("Pods:");
+				OpenShifts.master().getPods().forEach(this::introducePod);
+				Assertions.assertTrue(operatorProvisioner.getCustomResourceDefinitions().size() > 0,
+						String.format("List of CRDs provided by operator [%s] should not be empty.",
+								operatorProvisioner.getPackageManifestName()));
+			} finally {
+				operatorProvisioner.unsubscribe();
+			}
 		} finally {
 			operatorProvisioner.dismiss();
 		}
