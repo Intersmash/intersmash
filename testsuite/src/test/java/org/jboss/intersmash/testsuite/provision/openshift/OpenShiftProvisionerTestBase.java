@@ -15,8 +15,6 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -33,20 +31,16 @@ import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.tools.application.openshift.KeycloakTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
-import org.jboss.intersmash.tools.provision.openshift.template.KeycloakTemplate;
 import org.jboss.intersmash.tools.util.IntersmashToolsProvisionersProperties;
-import org.jboss.intersmash.tools.util.ProcessKeystoreGenerator;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
-import cz.xtf.core.config.OpenShiftConfig;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -130,56 +124,6 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getName() {
 				return "bootable-jar";
-			}
-		};
-	}
-
-	static KeycloakTemplateOpenShiftApplication getHttpsKeycloak() {
-		return new KeycloakTemplateOpenShiftApplication() {
-			private final String secureAppHostname = "secure-" + getOpenShiftHostName();
-			private final Path keystore = ProcessKeystoreGenerator.generateKeystore(secureAppHostname);
-			private final String jceksFileName = "jgroups.jceks";
-			private final Path truststore = ProcessKeystoreGenerator.getTruststore();
-
-			@Override
-			public String getName() {
-				return "sso-app";
-			}
-
-			@Override
-			public Map<String, String> getParameters() {
-				Map<String, String> parameters = new HashMap<>();
-
-				parameters.put("APPLICATION_NAME", getName());
-				parameters.put("SSO_REALM", "wildfly-realm");
-				parameters.put("SSO_SERVICE_USERNAME", "client");
-				parameters.put("SSO_SERVICE_PASSWORD", "creator");
-				parameters.put("SSO_ADMIN_USERNAME", "admin");
-				parameters.put("SSO_ADMIN_PASSWORD", "admin");
-				parameters.put("JGROUPS_CLUSTER_PASSWORD", "changeme");
-				parameters.put("IMAGE_STREAM_NAMESPACE", OpenShiftConfig.namespace());
-
-				return Collections.unmodifiableMap(parameters);
-			}
-
-			@Override
-			public List<Secret> getSecrets() {
-				SecretBuilder sb;
-				try (InputStream is = getClass().getClassLoader().getResourceAsStream("certs/jgroups.jceks")) {
-					sb = new SecretBuilder(getName() + "-secret")
-							.addData(keystore.getFileName().toString(), keystore)
-							.addData(jceksFileName, is)
-							.addData(truststore.getFileName().toString(), truststore);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-
-				return Collections.singletonList(sb.build());
-			}
-
-			@Override
-			public KeycloakTemplate getTemplate() {
-				return KeycloakTemplate.X509_HTTPS;
 			}
 		};
 	}
