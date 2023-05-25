@@ -79,7 +79,7 @@ public class ActiveMQOperatorProvisioner extends OperatorProvisioner<ActiveMQOpe
 			}
 
 			MixedOperation<ActiveMQArtemisAddress, ActiveMQArtemisAddressList, Resource<ActiveMQArtemisAddress>> addressesClient = OpenShifts
-					.master().customResources(crdc, ActiveMQArtemisAddress.class, ActiveMQArtemisAddressList.class);
+					.master().newHasMetadataOperation(crdc, ActiveMQArtemisAddress.class, ActiveMQArtemisAddressList.class);
 			ACTIVE_MQ_ARTEMIS_ADDRESSES_CLIENT = addressesClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return ACTIVE_MQ_ARTEMIS_ADDRESSES_CLIENT;
@@ -127,7 +127,7 @@ public class ActiveMQOperatorProvisioner extends OperatorProvisioner<ActiveMQOpe
 			}
 
 			MixedOperation<ActiveMQArtemis, ActiveMQArtemisList, Resource<ActiveMQArtemis>> amqClient = OpenShifts
-					.master().customResources(crdc, ActiveMQArtemis.class, ActiveMQArtemisList.class);
+					.master().newHasMetadataOperation(crdc, ActiveMQArtemis.class, ActiveMQArtemisList.class);
 			ACTIVE_MQ_ARTEMISES_CLIENT = amqClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return ACTIVE_MQ_ARTEMISES_CLIENT;

@@ -19,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.assertj.core.util.Lists;
@@ -77,10 +78,16 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 		// create custom resources
 		int replicas = getApplication().getInfinispan().getSpec().getReplicas();
 		infinispansClient().createOrReplace(getApplication().getInfinispan());
-		if (getApplication().getCaches().size() > 0)
-			cachesClient().createOrReplace(getApplication().getCaches().stream().toArray(Cache[]::new));
+		if (getApplication().getCaches().size() > 0) {
+			for (Cache cache : getApplication().getCaches()) {
+				Resource resource = cachesClient().resource(cache);
+				resource.delete();
+				resource.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+				resource.create();
+			}
+		}
 
-		// This might be a litle bit naive, but we need more use cases to see how will this behave and what other
+		// This might be a little bit naive, but we need more use cases to see how will this behave and what other
 		// use-cases we have to cover wait for infinispan pods - look for "clusterName" in infinispan pod
 		if (replicas > 0) {
 			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck).areExactlyNPodsReady(
@@ -223,7 +230,7 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 
 			MixedOperation<Infinispan, InfinispanList, Resource<Infinispan>> infinispansClient = OpenShifts
 					.master()
-					.customResources(crdc, Infinispan.class, InfinispanList.class);
+					.newHasMetadataOperation(crdc, Infinispan.class, InfinispanList.class);
 			INFINISPAN_CLIENT = infinispansClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return INFINISPAN_CLIENT;
@@ -257,7 +264,7 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 
 			MixedOperation<Cache, CacheList, Resource<Cache>> cachesClient = OpenShifts
 					.master()
-					.customResources(crdc, Cache.class, CacheList.class);
+					.newHasMetadataOperation(crdc, Cache.class, CacheList.class);
 			INFINISPAN_CACHES_CLIENT = cachesClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return INFINISPAN_CACHES_CLIENT;

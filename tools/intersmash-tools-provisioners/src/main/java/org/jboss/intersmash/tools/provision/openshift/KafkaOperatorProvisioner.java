@@ -252,28 +252,25 @@ public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorA
 		// delete the resources
 
 		if (getApplication().getUsers() != null) {
-			if (!kafkasUserClient().delete()) {
-				log.warn("Wasn't able to remove all relevant 'Kafka User' resources created for '" + getApplication().getName()
-						+ "' instance!");
-			}
-
+			kafkasUserClient().resources().forEach(t -> {
+				t.delete();
+				//				t.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+			});
+			// TODO - don't we want to simply delete the client? then hopefully all nested users are deleted too; this also means we need to amend following line that check the list of users though...
 			new SimpleWaiter(() -> kafkasUserClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
 		}
 
 		if (getApplication().getTopics() != null) {
-			if (!kafkasTopicClient().delete()) {
-				log.warn("Wasn't able to remove all relevant 'Kafka Topic' resources created for '" + getApplication().getName()
-						+ "' instance!");
-			}
+			kafkasTopicClient().resources().forEach(t -> {
+				t.delete();
+				//				t.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+			});
 
 			new SimpleWaiter(() -> kafkasTopicClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
 		}
 
 		if (getApplication().getKafka() != null) {
-			if (!kafka().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete()) {
-				log.warn("Wasn't able to remove all relevant 'Kafka' resources created for '" + getApplication().getName()
-						+ "' instance!");
-			}
+			kafka().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
 
 			new SimpleWaiter(() -> getKafkaPods().size() == 0).level(Level.DEBUG).waitFor();
 		}

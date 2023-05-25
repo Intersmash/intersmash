@@ -20,6 +20,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.assertj.core.util.Lists;
@@ -125,17 +126,38 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 		// create custom resources
 		keycloaksClient().createOrReplace(getApplication().getKeycloak());
-		if (getApplication().getKeycloakRealms().size() > 0)
-			keycloakRealmsClient().createOrReplace(getApplication().getKeycloakRealms().stream().toArray(KeycloakRealm[]::new));
-		if (getApplication().getKeycloakClients().size() > 0)
-			keycloakClientsClient()
-					.createOrReplace(getApplication().getKeycloakClients().stream().toArray(KeycloakClient[]::new));
-		if (getApplication().getKeycloakUsers().size() > 0)
-			keycloakUsersClient().createOrReplace(getApplication().getKeycloakUsers().stream().toArray(KeycloakUser[]::new));
-		if (getApplication().getKeycloakBackups().size() > 0)
-			keycloakBackupsClient()
-					.createOrReplace(getApplication().getKeycloakBackups().stream().toArray(KeycloakBackup[]::new));
-
+		if (getApplication().getKeycloakRealms().size() > 0) {
+			for (KeycloakRealm keycloakRealm : getApplication().getKeycloakRealms()) {
+				Resource resource = keycloakRealmsClient().resource(keycloakRealm);
+				resource.delete();
+				resource.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+				resource.create();
+			}
+		}
+		if (getApplication().getKeycloakClients().size() > 0) {
+			for (KeycloakClient keycloakClient : getApplication().getKeycloakClients()) {
+				Resource resource = keycloakClientsClient().resource(keycloakClient);
+				resource.delete();
+				resource.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+				resource.create();
+			}
+		}
+		if (getApplication().getKeycloakUsers().size() > 0) {
+			for (KeycloakUser keycloakUser : getApplication().getKeycloakUsers()) {
+				Resource resource = keycloakUsersClient().resource(keycloakUser);
+				resource.delete();
+				resource.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+				resource.create();
+			}
+		}
+		if (getApplication().getKeycloakBackups().size() > 0) {
+			for (KeycloakBackup keycloakBackup : getApplication().getKeycloakBackups()) {
+				Resource resource = keycloakBackupsClient().resource(keycloakBackup);
+				resource.delete();
+				resource.waitUntilCondition(Objects::isNull, 30, TimeUnit.SECONDS);
+				resource.create();
+			}
+		}
 		// Wait for Keycloak (and PostgreSQL) to be ready
 		waitFor(getApplication().getKeycloak());
 		// wait for all resources to be ready
@@ -290,7 +312,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 			MixedOperation<Keycloak, KeycloakList, Resource<Keycloak>> keycloaksClient = OpenShifts
 					.master()
-					.customResources(crdc, Keycloak.class, KeycloakList.class);
+					.newHasMetadataOperation(crdc, Keycloak.class, KeycloakList.class);
 			KEYCLOAKS_CLIENT = keycloaksClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAKS_CLIENT;
@@ -324,7 +346,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 			MixedOperation<KeycloakRealm, KeycloakRealmList, Resource<KeycloakRealm>> keycloakRealmsClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakRealm.class, KeycloakRealmList.class);
+					.newHasMetadataOperation(crdc, KeycloakRealm.class, KeycloakRealmList.class);
 			KEYCLOAK_REALMS_CLIENT = keycloakRealmsClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_REALMS_CLIENT;
@@ -375,7 +397,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 			MixedOperation<KeycloakBackup, KeycloakBackupList, Resource<KeycloakBackup>> keycloakBackupsClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakBackup.class, KeycloakBackupList.class);
+					.newHasMetadataOperation(crdc, KeycloakBackup.class, KeycloakBackupList.class);
 			KEYCLOAK_BACKUPS_CLIENT = keycloakBackupsClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_BACKUPS_CLIENT;
@@ -426,7 +448,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 			MixedOperation<KeycloakClient, KeycloakClientList, Resource<KeycloakClient>> keycloakClientsClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakClient.class, KeycloakClientList.class);
+					.newHasMetadataOperation(crdc, KeycloakClient.class, KeycloakClientList.class);
 			KEYCLOAK_CLIENTS_CLIENT = keycloakClientsClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_CLIENTS_CLIENT;
@@ -477,7 +499,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 			MixedOperation<KeycloakUser, KeycloakUserList, Resource<KeycloakUser>> keycloakUsersClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakUser.class, KeycloakUserList.class);
+					.newHasMetadataOperation(crdc, KeycloakUser.class, KeycloakUserList.class);
 			KEYCLOAK_USERS_CLIENT = keycloakUsersClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_USERS_CLIENT;
