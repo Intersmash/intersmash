@@ -16,29 +16,22 @@
 package org.jboss.intersmash.tools.provision;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import org.jboss.intersmash.tools.application.Application;
 import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.tools.application.openshift.KeycloakTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.PostgreSQLTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.KeycloakTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.template.KeycloakTemplate;
-import org.jboss.intersmash.tools.provision.openshift.template.PostgreSQLTemplate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -47,11 +40,9 @@ import org.junit.jupiter.api.Test;
  * |-----------------------------------------|----------|-----------------------------------------------|
 *  | WildflyImageOpenShiftApplication        | IMAGE    | WildflymageOpenShiftProvisioner         		|
  * | InfinispanImageOpenShiftApplication     | IMAGE    | InfinispanImageOpenShiftProvisioner     		|
- * | KeycloakTemplateOpenShiftApplication    | TEMPLATE | KeycloakTemplateOpenShiftProvisioner    		|
  * | MysqlImageOpenShiftApplication          | IMAGE    | MysqlImageOpenShiftProvisioner          		|
  * | PostgreSQLImageOpenShiftApplication     | IMAGE    | PostgreSQLImageOpenShiftProvisioner     		|
  * | EapS2iBuildTemplateApplication          | TEMPLATE | EapS2iBuildTemplateProvisioner          		|
- * | PostgreSQLTemplateOpenShiftApplication  | TEMPLATE | PostgreSQLTemplateOpenShiftProvisioner  		|
  * | WildflyOperatorApplication              | OPERATOR | WildflyOperatorProvisioner              		|
 *  | ActiveMQOperatorApplication             | OPERATOR | ActiveMQOperatorProvisioner             		|
  * | KafkaOperatorApplication           	 | OPERATOR | KafkaOperatorProvisioner           	  		|
@@ -83,18 +74,6 @@ public class ProvisionerManagerTestCase {
 	}
 
 	/**
-	 * | KeycloakTemplateOpenShiftApplication      | TEMPLATE | KeycloakTemplateOpenShiftProvisioner   |
-	 */
-	@Test
-	public void openShiftKeycloakTemplateProvisioner() {
-		application = mock(KeycloakTemplateOpenShiftApplication.class);
-		when(((KeycloakTemplateOpenShiftApplication) application).getTemplate()).thenReturn(KeycloakTemplate.X509_HTTPS);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(KeycloakTemplateOpenShiftProvisioner.class, actual.getClass());
-	}
-
-	/**
 	 * | MysqlImageOpenShiftApplication      | IMAGE    | MysqlImageOpenShiftProvisioner      |
 	 */
 	@Test
@@ -114,19 +93,6 @@ public class ProvisionerManagerTestCase {
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
 		Assertions.assertEquals(PostgreSQLImageOpenShiftProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | PostgreSQLTemplateOpenShiftApplication | TEMPLATE | PostgreSQLTemplateOpenShiftProvisioner  |
-	 */
-	@Test
-	public void openShiftPostgreSQLTemplateProvisioner() {
-		application = mock(PostgreSQLTemplateOpenShiftApplication.class);
-		when(((PostgreSQLTemplateOpenShiftApplication) application).getTemplate())
-				.thenReturn(PostgreSQLTemplate.POSTGRESQL_PERSISTENT);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(PostgreSQLTemplateOpenShiftProvisioner.class, actual.getClass());
 	}
 
 	/**

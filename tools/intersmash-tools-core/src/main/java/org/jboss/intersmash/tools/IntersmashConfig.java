@@ -98,11 +98,9 @@ public class IntersmashConfig {
 
 	// INFINISPAN
 	private static final String INFINISPAN_IMAGE_URL = "intersmash.infinispan.image";
-	private static final String INFINISPAN_TEMPLATES = "intersmash.infinispan.templates";
 
 	// KEYCLOAK
 	private static final String KEYCLOAK_IMAGE_URL = "intersmash.keycloak.image";
-	private static final String KEYCLOAK_TEMPLATES = "intersmash.keycloak.templates";
 
 	// ACTIVEMQ
 	private static final String ACTIVEMQ_IMAGE_URL = "intersmash.activemq.image";
@@ -265,20 +263,12 @@ public class IntersmashConfig {
 		return XTFConfig.get(INFINISPAN_IMAGE_URL);
 	}
 
-	public static String infinispanTemplates() {
-		return XTFConfig.get(INFINISPAN_TEMPLATES);
-	}
-
 	public static String infinispanProductCode() {
 		return getProductCode(infinispanImageURL());
 	}
 
 	public static String keycloakImageURL() {
 		return XTFConfig.get(KEYCLOAK_IMAGE_URL);
-	}
-
-	public static String keycloakTemplates() {
-		return XTFConfig.get(KEYCLOAK_TEMPLATES);
 	}
 
 	public static String keycloakProductCode() {
