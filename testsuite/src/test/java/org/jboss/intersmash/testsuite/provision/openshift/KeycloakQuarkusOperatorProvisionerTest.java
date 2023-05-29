@@ -16,27 +16,32 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import org.jboss.intersmash.tools.application.openshift.KeycloakQuarkusOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.PostgreSQLTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.KeycloakQuarkusOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.jboss.intersmash.tools.provision.openshift.template.PostgreSQLTemplate;
 import org.jboss.intersmash.tools.util.tls.CertificatesUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImportSpec;
 import org.keycloak.k8s.v2alpha1.KeycloakSpec;
+import org.keycloak.k8s.v2alpha1.keycloakrealmimportspec.Realm;
+import org.keycloak.k8s.v2alpha1.keycloakrealmimportspec.realm.Users;
+import org.keycloak.k8s.v2alpha1.keycloakrealmimportspec.realm.users.Credentials;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Db;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Hostname;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Http;
@@ -45,6 +50,7 @@ import org.keycloak.k8s.v2alpha1.keycloakspec.db.PasswordSecret;
 import org.keycloak.k8s.v2alpha1.keycloakspec.db.UsernameSecret;
 import org.slf4j.event.Level;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
@@ -72,31 +78,6 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	private static final String POSTGRESQL_PASSWORD = "pippobaudo1234";
 	private static final String POSTGRESQL_USER = "user09M";
 
-	private static PostgreSQLTemplateOpenShiftProvisioner initializePostgreSQLTemplateProvisioner() {
-		PostgreSQLTemplateOpenShiftProvisioner templateProvisioner = new PostgreSQLTemplateOpenShiftProvisioner(
-				new PostgreSQLTemplateOpenShiftApplication() {
-					@Override
-					public String getName() {
-						return POSTGRESQL_NAME;
-					}
-
-					@Override
-					public Map<String, String> getParameters() {
-						Map<String, String> parameters = new HashMap<>();
-						parameters.put("POSTGRESQL_DATABASE", POSTGRESQL_DATABASE);
-						parameters.put("POSTGRESQL_PASSWORD", POSTGRESQL_PASSWORD);
-						parameters.put("POSTGRESQL_USER", POSTGRESQL_USER);
-						return parameters;
-					}
-
-					@Override
-					public PostgreSQLTemplate getTemplate() {
-						return PostgreSQLTemplate.POSTGRESQL_EPHEMERAL;
-					}
-				});
-		return templateProvisioner;
-	}
-
 	private static final PostgreSQLImageOpenShiftApplication pgSQLApplication = new PostgreSQLImageOpenShiftApplication() {
 		@Override
 		public String getName() {
@@ -121,58 +102,41 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	private static final PostgreSQLImageOpenShiftProvisioner POSTGRESQL_IMAGE_PROVISIONER = new PostgreSQLImageOpenShiftProvisioner(
 			pgSQLApplication);
 
-	private static KeycloakQuarkusOperatorProvisioner initializeOperatorProvisioner() {
+	private static KeycloakQuarkusOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
+			final String appName) {
 		KeycloakQuarkusOperatorProvisioner operatorProvisioner = new KeycloakQuarkusOperatorProvisioner(
 				new KeycloakQuarkusOperatorApplication() {
-					private static final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
 
 					@Override
 					public Keycloak getKeycloak() {
-						Keycloak keycloak = new Keycloak();
-						keycloak.getMetadata().setName(DEFAULT_KEYCLOAK_APP_NAME);
-						KeycloakSpec spec = new KeycloakSpec();
-						spec.setInstances(1L);
-						Ingress ingress = new Ingress();
-						ingress.setEnabled(true);
-						spec.setIngress(ingress);
-						Hostname hostname = new Hostname();
-						hostname.setHostname(OpenShifts.master().generateHostname(DEFAULT_KEYCLOAK_APP_NAME));
-						spec.setHostname(hostname);
-						String tlsSecretName = DEFAULT_KEYCLOAK_APP_NAME + "-tls-secret";
-						// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
-						CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-								.generateSelfSignedCertificateAndKey(hostname.getHostname(), tlsSecretName);
-						// add TLS config to keycloak using the secret we just created
-						Http http = new Http();
-						http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
-						spec.setHttp(http);
 						return keycloak;
 					}
 
 					@Override
 					public String getName() {
-						return DEFAULT_KEYCLOAK_APP_NAME;
+						return appName;
 					}
 				});
 		return operatorProvisioner;
 	}
 
 	private String name;
+	private String realmName;
 
 	private static final Map<String, String> matchLabels = new HashMap<>();
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
-		// Keycloak
-		KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
-
-		KEYCLOAK_OPERATOR_PROVISIONER.configure();
 		matchLabels.put("app", "sso");
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
-		// clean any leftovers
-		KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+	}
+
+	@BeforeEach
+	public void cleanup() throws IOException {
+		if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
+			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 	}
 
 	@AfterAll
@@ -208,11 +172,10 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	 */
 	@Test
 	public void exampleSso() {
-		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-sso";
 
-			Keycloak keycloak = new Keycloak();
+			final Keycloak keycloak = new Keycloak();
 			keycloak.getMetadata().setName(name);
 			keycloak.getMetadata().setLabels(matchLabels);
 			KeycloakSpec spec = new KeycloakSpec();
@@ -233,6 +196,10 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 			spec.setHostname(hostname);
 			keycloak.setSpec(spec);
 
+			KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
+			KEYCLOAK_OPERATOR_PROVISIONER.configure();
+			KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
+
 			verifyKeycloak(keycloak, true);
 		} finally {
 			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
@@ -240,17 +207,17 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	}
 
 	/**
-	 * This test case creates and validates a {@link Keycloak} CR which uses a PostgreSQL databse
+	 * This test case creates and validates a {@link Keycloak} CR which uses a PostgreSQL database
 	 *
-	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
-	 * model specification.
+	 * Using a database is needed if you want to perform any {@link KeycloakRealmImport} import: after the import is
+	 * completed, Keycloak is automatically restarted by the operator and, unless connected to a database, Keycloak
+	 * would lose all the information just imported!
 	 *
 	 * See
 	 * <br> - https://github.com/keycloak/keycloak-operator/tree/master/deploy/examples/keycloak
 	 */
 	@Test
 	public void exampleSsoWithDatabase() {
-		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			POSTGRESQL_IMAGE_PROVISIONER.preDeploy();
 			POSTGRESQL_IMAGE_PROVISIONER.deploy();
@@ -261,6 +228,7 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 			keycloak.getMetadata().setName(name);
 			keycloak.getMetadata().setLabels(matchLabels);
 			KeycloakSpec spec = new KeycloakSpec();
+			keycloak.setSpec(spec);
 			spec.setInstances(1L);
 			Ingress ingress = new Ingress();
 			ingress.setEnabled(true);
@@ -278,7 +246,7 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 			spec.setHostname(hostname);
 			// database
 			Db db = new Db();
-			db.setDatabase(POSTGRESQL_IMAGE_PROVISIONER.getApplication().getDbName());
+			db.setVendor("postgres");
 			db.setHost(POSTGRESQL_IMAGE_PROVISIONER.getServiceName());
 			db.setPort(Integer.toUnsignedLong(POSTGRESQL_IMAGE_PROVISIONER.getPort()));
 			UsernameSecret usernameSecret = new UsernameSecret();
@@ -290,9 +258,35 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 			passwordSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_PASSWORD_KEY);
 			db.setPasswordSecret(passwordSecret);
 			spec.setDb(db);
-			keycloak.setSpec(spec);
 
-			verifyKeycloak(keycloak, true);
+			realmName = "saml-basic-auth";
+			KeycloakRealmImport realmImport = new KeycloakRealmImport();
+			realmImport.getMetadata().setName(realmName);
+			realmImport.getMetadata().setLabels(matchLabels);
+			KeycloakRealmImportSpec spec1 = new KeycloakRealmImportSpec();
+			realmImport.setSpec(spec1);
+			spec1.setKeycloakCRName(name);
+			Realm realm = new Realm();
+			spec1.setRealm(realm);
+			realm.setId(realmName);
+			realm.setRealm(realmName);
+			realm.setEnabled(true);
+			List<Users> users = new ArrayList<>();
+			realm.setUsers(users);
+			Users user1 = new Users();
+			users.add(user1);
+			user1.setUsername("user");
+			user1.setEnabled(true);
+			Credentials credentials = new Credentials();
+			user1.setCredentials(List.of(credentials));
+			credentials.setType("password");
+			credentials.setValue("LOREDANABERTE1234");
+
+			KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
+			KEYCLOAK_OPERATOR_PROVISIONER.configure();
+			KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
+
+			verifyKeycloak(keycloak, realmImport, true);
 		} finally {
 			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 			POSTGRESQL_IMAGE_PROVISIONER.undeploy();
@@ -301,8 +295,12 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	}
 
 	private void verifyKeycloak(Keycloak keycloak, boolean waitForPods) {
+		verifyKeycloak(keycloak, null, waitForPods);
+	}
+
+	private void verifyKeycloak(Keycloak keycloak, KeycloakRealmImport realmImport, boolean waitForPods) {
 		// create and verify that object exists
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().createOrReplace(keycloak);
+		KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().inNamespace(OpenShiftConfig.namespace()).createOrReplace(keycloak);
 		KEYCLOAK_OPERATOR_PROVISIONER.waitFor(keycloak);
 		// two pods expected keycloak-0 and keycloak-postgresql-*, keycloak-0 won't start unless keycloak-postgresql-* is ready
 		if (waitForPods) {
@@ -330,6 +328,26 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 			Assertions.assertEquals(keycloak.getSpec().getDb().getPasswordSecret().getKey(),
 					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getPasswordSecret()
 							.getKey());
+		}
+
+		// import new realm
+		if (realmImport != null) {
+			KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().inNamespace(OpenShiftConfig.namespace())
+					.createOrReplace(realmImport);
+			KEYCLOAK_OPERATOR_PROVISIONER.waitFor(realmImport);
+			KEYCLOAK_OPERATOR_PROVISIONER.waitFor(keycloak);
+
+			Assertions.assertEquals(
+					KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().withName(realmImport.getMetadata().getName())
+							.get().getSpec().getRealm().getRealm(),
+					realmName);
+
+			KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().withName(realmImport.getMetadata().getName())
+					.withPropagationPolicy(DeletionPropagation.FOREGROUND)
+					.delete();
+			new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().list().getItems()
+					.stream()
+					.noneMatch(ri -> realmImport.getMetadata().getName().equalsIgnoreCase(ri.getMetadata().getName())));
 		}
 
 		// delete and verify that object was removed

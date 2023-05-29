@@ -173,6 +173,27 @@ public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<Keyc
 		}
 	}
 
+	public void waitFor(KeycloakRealmImport realmImport) {
+		new SimpleWaiter(() -> {
+			Resource<KeycloakRealmImport> res = keycloakRealmImportClient().withName(realmImport.getMetadata().getName());
+			if (res != null && res.get() != null) {
+				KeycloakRealmImport imp = res.get();
+				return imp.getStatus().getConditions().stream().filter(
+						cond -> cond.getStatus()
+								&& "Done".equalsIgnoreCase(cond.getType())
+								&& com.google.common.base.Strings.isNullOrEmpty(cond.getMessage()))
+						.count() == 1
+						&&
+						imp.getStatus().getConditions().stream().filter(
+								cond -> !cond.getStatus()
+										&& "HasErrors".equalsIgnoreCase(cond.getType())
+										&& com.google.common.base.Strings.isNullOrEmpty(cond.getMessage()))
+								.count() == 1;
+			}
+			return false;
+		});
+	}
+
 	private void waitForKeycloakResourceReadiness() {
 		new SimpleWaiter(
 				() -> keycloak().get().getStatus().getConditions().stream().anyMatch(

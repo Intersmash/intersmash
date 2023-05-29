@@ -23,7 +23,7 @@
         <formatting-style-base-directory>${project.basedir}/ide-config</formatting-style-base-directory>
         <formatting-style-file>eclipse-format.xml</formatting-style-file>
 
-        <xtf.version>0.29</xtf.version>
+        <xtf.version>0.31-SNAPSHOT</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 

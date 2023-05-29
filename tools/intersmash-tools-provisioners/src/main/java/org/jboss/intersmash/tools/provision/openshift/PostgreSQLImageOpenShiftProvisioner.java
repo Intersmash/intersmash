@@ -86,20 +86,13 @@ public class PostgreSQLImageOpenShiftProvisioner extends DBImageOpenShiftProvisi
 
 	@Override
 	public void customizeApplicationBuilder(ApplicationBuilder appBuilder) {
-		//TODO: use the secret and remove the configMap once xtf has been fixed
-
 		// the secret is supposed to be used by applications connecting to the database
-		appBuilder.secret(dbApplication.getName())
+		appBuilder.secret(getSecretName())
 				.setType(SecretType.OPAQUE)
 				.addData(POSTGRESQL_USER_KEY, dbApplication.getUser().getBytes())
 				.addData(POSTGRESQL_PASSWORD_KEY, dbApplication.getPassword().getBytes())
 				.addData(POSTGRESQL_ADMIN_PASSWORD_KEY,
 						dbApplication.getAdminPassword().getBytes());
-		// configMap is temporarily supposed to be used by database POD
-		/*appBuilder.configMap(dbApplication.getName() + "-tmp")
-				.configEntry(DATABASE_USER_KEY, dbApplication.getUser())
-				.configEntry(DATABASE_PASSWORD_KEY, dbApplication.getPassword())
-				.configEntry(DATABASE_ADMIN_PASSWORD_KEY, dbApplication.getAdminPassword());*/
 		appBuilder.deploymentConfig().podTemplate().container().configFromConfigMap(
 				dbApplication.getName(),
 				(String t) -> t.replace("-", "_").toUpperCase(),
