@@ -80,7 +80,7 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		ApplicationBuilder appBuilder = ApplicationBuilder.fromImage(dbApplication.getName(), getImage(),
 				Collections.singletonMap(APP_LABEL_KEY, dbApplication.getName()));
 
-		final DeploymentConfigBuilder builder = appBuilder.deploymentConfig();
+		final DeploymentConfigBuilder builder = appBuilder.deploymentConfig(dbApplication.getName());
 		builder.podTemplate().container().envVars(getImageVariables()).port(getPort());
 
 		configureContainer(builder.podTemplate().container());
@@ -95,9 +95,9 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 					new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build());
 		}
 
-		appBuilder.service().port(getPort())
+		appBuilder.service(getServiceName()).port(getPort())
 				.addContainerSelector("deploymentconfig", dbApplication.getName())
-				.addContainerSelector("app", dbApplication.getName());
+				.addContainerSelector("name", dbApplication.getName());
 
 		customizeApplicationBuilder(appBuilder);
 
@@ -141,14 +141,14 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 	 * @return service name to access the database
 	 */
 	public String getServiceName() {
-		return dbApplication.getName();
+		return dbApplication.getName() + "-service";
 	}
 
 	/**
 	 * @return name of the secret containing username and password for the database
 	 */
 	public String getSecretName() {
-		return dbApplication.getName();
+		return dbApplication.getName() + "-credentials";
 	}
 
 }
