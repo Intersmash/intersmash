@@ -50,12 +50,14 @@ import org.keycloak.k8s.v2alpha1.keycloakspec.db.PasswordSecret;
 import org.keycloak.k8s.v2alpha1.keycloakspec.db.UsernameSecret;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
+import io.fabric8.kubernetes.api.model.KubernetesResourceList;
+import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
+import io.fabric8.kubernetes.client.dsl.Resource;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -142,23 +144,26 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
-		KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
+		if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
+			KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
 		POSTGRESQL_IMAGE_PROVISIONER.undeploy();
 		POSTGRESQL_IMAGE_PROVISIONER.postUndeploy();
 	}
 
 	@AfterEach
 	public void customResourcesCleanup() {
-
-		// delete keycloaks
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().list().getItems().stream()
-				.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
-						.keycloakClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
-		// delete realms
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().list().getItems().stream()
-				.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
-						.keycloakRealmImportClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND)
-						.delete());
+		if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER)) {
+			// delete keycloaks
+			KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().list().getItems().stream()
+					.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
+							.keycloakClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
+			// delete realms
+			KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().list().getItems()
+					.stream()
+					.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
+							.keycloakRealmImportClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND)
+							.delete());
+		}
 	}
 
 	/**
@@ -202,7 +207,8 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 
 			verifyKeycloak(keycloak, true);
 		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+			if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
+				KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 		}
 	}
 
@@ -257,6 +263,7 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 			passwordSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
 			passwordSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_PASSWORD_KEY);
 			db.setPasswordSecret(passwordSecret);
+			db.setDatabase(POSTGRESQL_IMAGE_PROVISIONER.getApplication().getDbName());
 			spec.setDb(db);
 
 			realmName = "saml-basic-auth";
@@ -288,7 +295,8 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 
 			verifyKeycloak(keycloak, realmImport, true);
 		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+			if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
+				KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 			POSTGRESQL_IMAGE_PROVISIONER.undeploy();
 			POSTGRESQL_IMAGE_PROVISIONER.postUndeploy();
 		}
@@ -299,61 +307,63 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	}
 
 	private void verifyKeycloak(Keycloak keycloak, KeycloakRealmImport realmImport, boolean waitForPods) {
+		NonNamespaceOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient = KEYCLOAK_OPERATOR_PROVISIONER
+				.keycloakClient();
+		NonNamespaceOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient = KEYCLOAK_OPERATOR_PROVISIONER
+				.keycloakRealmImportClient();
 		// create and verify that object exists
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().inNamespace(OpenShiftConfig.namespace()).createOrReplace(keycloak);
+		keycloakClient.createOrReplace(keycloak);
 		KEYCLOAK_OPERATOR_PROVISIONER.waitFor(keycloak);
 		// two pods expected keycloak-0 and keycloak-postgresql-*, keycloak-0 won't start unless keycloak-postgresql-* is ready
 		if (waitForPods) {
 			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
 					.areExactlyNPodsReady(keycloak.getSpec().getInstances().intValue(), "app", keycloak.getKind().toLowerCase())
 					.level(Level.DEBUG).waitFor();
-			log.debug(KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getStatus().toString());
 		}
 		Assertions.assertEquals(keycloak.getSpec().getHostname().getHostname(),
-				KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getHostname().getHostname());
+				keycloakClient.withName(name).get().getSpec().getHostname().getHostname());
 		if (!Objects.isNull(keycloak.getSpec().getDb())) {
 			Assertions.assertEquals(keycloak.getSpec().getDb().getHost(),
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getHost());
+					keycloakClient.withName(name).get().getSpec().getDb().getHost());
 			Assertions.assertEquals(keycloak.getSpec().getDb().getDatabase(),
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getDatabase());
+					keycloakClient.withName(name).get().getSpec().getDb().getDatabase());
 			Assertions.assertEquals(keycloak.getSpec().getDb().getUsernameSecret().getName(),
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getUsernameSecret()
+					keycloakClient.withName(name).get().getSpec().getDb().getUsernameSecret()
 							.getName());
 			Assertions.assertEquals(keycloak.getSpec().getDb().getUsernameSecret().getKey(),
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getUsernameSecret()
+					keycloakClient.withName(name).get().getSpec().getDb().getUsernameSecret()
 							.getKey());
 			Assertions.assertEquals(keycloak.getSpec().getDb().getPasswordSecret().getName(),
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getPasswordSecret()
+					keycloakClient.withName(name).get().getSpec().getDb().getPasswordSecret()
 							.getName());
 			Assertions.assertEquals(keycloak.getSpec().getDb().getPasswordSecret().getKey(),
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).get().getSpec().getDb().getPasswordSecret()
+					keycloakClient.withName(name).get().getSpec().getDb().getPasswordSecret()
 							.getKey());
 		}
 
 		// import new realm
 		if (realmImport != null) {
-			KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().inNamespace(OpenShiftConfig.namespace())
-					.createOrReplace(realmImport);
+			keycloakRealmImportClient.createOrReplace(realmImport);
 			KEYCLOAK_OPERATOR_PROVISIONER.waitFor(realmImport);
 			KEYCLOAK_OPERATOR_PROVISIONER.waitFor(keycloak);
 
 			Assertions.assertEquals(
-					KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().withName(realmImport.getMetadata().getName())
+					keycloakRealmImportClient.withName(realmImport.getMetadata().getName())
 							.get().getSpec().getRealm().getRealm(),
 					realmName);
 
-			KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().withName(realmImport.getMetadata().getName())
+			keycloakRealmImportClient.withName(realmImport.getMetadata().getName())
 					.withPropagationPolicy(DeletionPropagation.FOREGROUND)
 					.delete();
-			new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmImportClient().list().getItems()
+			new SimpleWaiter(() -> keycloakRealmImportClient.list().getItems()
 					.stream()
 					.noneMatch(ri -> realmImport.getMetadata().getName().equalsIgnoreCase(ri.getMetadata().getName())));
 		}
 
 		// delete and verify that object was removed
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND)
+		keycloakClient.withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND)
 				.delete();
-		new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.keycloakClient().list().getItems().size() == 0).level(Level.DEBUG)
+		new SimpleWaiter(() -> keycloakClient.list().getItems().size() == 0).level(Level.DEBUG)
 				.waitFor();
 		if (waitForPods) {
 			OpenShiftWaiters.get(OpenShifts.master(), () -> false)

@@ -45,6 +45,7 @@ import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
+import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import lombok.NonNull;
 
@@ -191,7 +192,7 @@ public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<Keyc
 								.count() == 1;
 			}
 			return false;
-		});
+		}).reason("Wait for KeycloakRealmImport resource to be imported").level(Level.DEBUG).waitFor();
 	}
 
 	private void waitForKeycloakResourceReadiness() {
@@ -214,12 +215,12 @@ public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<Keyc
 	 * @return A concrete {@link Resource} instance representing the {@link org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak} resource definition
 	 */
 	public Resource<Keycloak> keycloak() {
-		return keycloakClient().inNamespace(OpenShiftConfig.namespace())
+		return keycloakClient()
 				.withName(getApplication().getKeycloak().getMetadata().getName());
 	}
 
 	public List<KeycloakRealmImport> keycloakRealmImports() {
-		return keycloakRealmImportClient().inNamespace(OpenShiftConfig.namespace()).list().getItems()
+		return keycloakRealmImportClient().list().getItems()
 				.stream().filter(
 						realm -> getApplication().getKeycloakRealmImports().stream().map(
 								ri -> ri.getMetadata().getName())
@@ -245,15 +246,15 @@ public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<Keyc
 	public void undeploy() {
 		keycloakRealmImports()
 				.forEach(
-						keycloakRealm -> keycloakRealmImportClient().inNamespace(OpenShiftConfig.namespace())
+						keycloakRealm -> keycloakRealmImportClient()
 								.withName(keycloakRealm.getMetadata().getName())
 								.withPropagationPolicy(DeletionPropagation.FOREGROUND)
 								.delete());
 		new SimpleWaiter(
-				() -> keycloakRealmImportClient().inNamespace(OpenShiftConfig.namespace()).list().getItems().size() == 0)
+				() -> keycloakRealmImportClient().list().getItems().size() == 0)
 				.reason("Wait for all keycloakRealmImports instances to be deleted.").level(Level.DEBUG).waitFor();
 		keycloak().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		new SimpleWaiter(() -> keycloakClient().inNamespace(OpenShiftConfig.namespace()).list().getItems().size() == 0)
+		new SimpleWaiter(() -> keycloakClient().list().getItems().size() == 0)
 				.reason("Wait for Keycloak instances to be deleted.").level(Level.DEBUG).waitFor();
 
 		// wait for 0 pods
@@ -325,19 +326,19 @@ public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<Keyc
 		}
 	}
 
-	public MixedOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient() {
+	public NonNamespaceOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient() {
 		try (KubernetesClient kubernetesClient = new DefaultKubernetesClient()) {
 			MixedOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient = kubernetesClient
 					.resources(Keycloak.class);
-			return keycloakClient;
+			return keycloakClient.inNamespace(OpenShiftConfig.namespace());
 		}
 	}
 
-	public MixedOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient() {
+	public NonNamespaceOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient() {
 		try (KubernetesClient kubernetesClient = new DefaultKubernetesClient()) {
 			MixedOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient = kubernetesClient
 					.resources(KeycloakRealmImport.class);
-			return keycloakRealmImportClient;
+			return keycloakRealmImportClient.inNamespace(OpenShiftConfig.namespace());
 		}
 	}
 }
