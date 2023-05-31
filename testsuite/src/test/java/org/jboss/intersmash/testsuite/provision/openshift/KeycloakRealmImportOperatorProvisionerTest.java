@@ -22,10 +22,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jboss.intersmash.tools.application.openshift.KeycloakQuarkusOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
-import org.jboss.intersmash.tools.provision.openshift.KeycloakQuarkusOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.jboss.intersmash.tools.util.tls.CertificatesUtils;
@@ -72,8 +72,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CleanBeforeAll
 //@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
-public class KeycloakQuarkusOperatorProvisionerTest {
-	private static KeycloakQuarkusOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
+public class KeycloakRealmImportOperatorProvisionerTest {
+	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
 	private static final String POSTGRESQL_NAME = "postgresql";
 	private static final String POSTGRESQL_DATABASE = "keycloak";
@@ -104,10 +104,10 @@ public class KeycloakQuarkusOperatorProvisionerTest {
 	private static final PostgreSQLImageOpenShiftProvisioner POSTGRESQL_IMAGE_PROVISIONER = new PostgreSQLImageOpenShiftProvisioner(
 			pgSQLApplication);
 
-	private static KeycloakQuarkusOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
+	private static KeycloakRealmImportOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
 			final String appName) {
-		KeycloakQuarkusOperatorProvisioner operatorProvisioner = new KeycloakQuarkusOperatorProvisioner(
-				new KeycloakQuarkusOperatorApplication() {
+		KeycloakRealmImportOperatorProvisioner operatorProvisioner = new KeycloakRealmImportOperatorProvisioner(
+				new KeycloakRealmImportOperatorApplication() {
 
 					@Override
 					public Keycloak getKeycloak() {

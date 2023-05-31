@@ -16,18 +16,19 @@
 package org.jboss.intersmash.tools.provision.openshift;
 
 import org.jboss.intersmash.tools.application.Application;
-import org.jboss.intersmash.tools.application.openshift.KeycloakQuarkusOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.provision.ProvisionerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class KeycloakQuarkusOperatorProvisionerFactory implements ProvisionerFactory<KeycloakQuarkusOperatorProvisioner> {
+public class KeycloakRealmImportOperatorProvisionerFactory
+		implements ProvisionerFactory<KeycloakRealmImportOperatorProvisioner> {
 
 	@Override
-	public KeycloakQuarkusOperatorProvisioner getProvisioner(Application application) {
-		if (KeycloakQuarkusOperatorApplication.class.isAssignableFrom(application.getClass()))
-			return new KeycloakQuarkusOperatorProvisioner((KeycloakQuarkusOperatorApplication) application);
+	public KeycloakRealmImportOperatorProvisioner getProvisioner(Application application) {
+		if (KeycloakRealmImportOperatorApplication.class.isAssignableFrom(application.getClass()))
+			return new KeycloakRealmImportOperatorProvisioner((KeycloakRealmImportOperatorApplication) application);
 		return null;
 	}
 }

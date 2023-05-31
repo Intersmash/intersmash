@@ -17,6 +17,7 @@ package org.jboss.intersmash.tools.provision.openshift;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -25,7 +26,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
-import org.jboss.intersmash.tools.application.openshift.KeycloakQuarkusOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
 import org.jboss.intersmash.tools.util.tls.CertificatesUtils;
 import org.keycloak.k8s.v2alpha1.Keycloak;
@@ -52,14 +53,14 @@ import lombok.NonNull;
 /**
  * Keycloak operator provisioner
  */
-public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<KeycloakQuarkusOperatorApplication> {
+public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<KeycloakRealmImportOperatorApplication> {
 
 	//private MixedOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient;
 	//private MixedOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient;
 	private static final String OPERATOR_ID = IntersmashConfig.keycloakQuarkusOperatorPackageManifest();
 	protected FailFastCheck ffCheck = () -> false;
 
-	public KeycloakQuarkusOperatorProvisioner(@NonNull KeycloakQuarkusOperatorApplication application) {
+	public KeycloakRealmImportOperatorProvisioner(@NonNull KeycloakRealmImportOperatorApplication application) {
 		super(application, OPERATOR_ID);
 	}
 
@@ -232,14 +233,16 @@ public class KeycloakQuarkusOperatorProvisioner extends OperatorProvisioner<Keyc
 	 * @return the underlying StatefulSet which provisions the cluster
 	 */
 	private StatefulSet getStatefulSet() {
-		String STATEFUL_SET_NAME = getApplication().getKeycloak().getMetadata().getName();
-		StatefulSet statefulSet = OpenShiftProvisioner.openShift.getStatefulSet(STATEFUL_SET_NAME);
-		if (Objects.isNull(statefulSet)) {
-			throw new IllegalStateException(String.format(
-					"Impossible to find StatefulSet with name=\"%s\"!",
-					STATEFUL_SET_NAME));
-		}
-		return statefulSet;
+		final String STATEFUL_SET_NAME = getApplication().getKeycloak().getMetadata().getName();
+		new SimpleWaiter(
+				() -> Objects.nonNull(OpenShiftProvisioner.openShift.getStatefulSet(STATEFUL_SET_NAME)))
+				.reason(
+						MessageFormat.format(
+								"Waiting for StatefulSet \"{0}\" to be created for Keycloak \"{1}\".",
+								STATEFUL_SET_NAME,
+								getApplication().getKeycloak().getMetadata().getName()))
+				.level(Level.DEBUG).timeout(60000L).waitFor();
+		return OpenShiftProvisioner.openShift.getStatefulSet(STATEFUL_SET_NAME);
 	}
 
 	@Override
