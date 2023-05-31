@@ -179,7 +179,9 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 	public void waitFor(KeycloakRealmImport realmImport) {
 		new SimpleWaiter(() -> {
 			Resource<KeycloakRealmImport> res = keycloakRealmImportClient().withName(realmImport.getMetadata().getName());
-			if (res != null && res.get() != null) {
+			if (Objects.nonNull(res)
+					&& Objects.nonNull(res.get())
+					&& Objects.nonNull(res.get().getStatus())) {
 				KeycloakRealmImport imp = res.get();
 				return imp.getStatus().getConditions().stream().filter(
 						cond -> cond.getStatus()
