@@ -193,7 +193,7 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 			// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
 			String tlsSecretName = name + "-tls-secret";
 			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-					.generateSelfSignedCertificateAndKey(hostname.getHostname(), tlsSecretName);
+					.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
 			// add TLS config to keycloak using the secret we just created
 			Http http = new Http();
 			http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
@@ -244,7 +244,7 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 			// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
 			String tlsSecretName = name + "-tls-secret";
 			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-					.generateSelfSignedCertificateAndKey(hostname.getHostname(), tlsSecretName);
+					.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
 			// add TLS config to keycloak using the secret we just created
 			Http http = new Http();
 			http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());

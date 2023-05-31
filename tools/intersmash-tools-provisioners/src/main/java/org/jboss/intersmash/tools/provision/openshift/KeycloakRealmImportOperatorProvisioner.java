@@ -123,7 +123,8 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 			// create key, certificate and tls secret
 			String tlsSecretName = getApplication().getKeycloak().getMetadata().getName() + "-tls-secret";
 			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-					.generateSelfSignedCertificateAndKey(getApplication().getKeycloak().getSpec().getHostname().getHostname(),
+					.generateSelfSignedCertificateAndKey(
+							getApplication().getKeycloak().getSpec().getHostname().getHostname().replaceFirst("[.].*$", ""),
 							tlsSecretName);
 			// add config to keycloak
 			if (getApplication().getKeycloak().getSpec().getHttp() == null) {
