@@ -43,18 +43,18 @@ public class IntersmashConfig {
 	private static final String PRODUCT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = "datagrid";
 	private static final String DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_INFINISPAN_OPERATOR_PACKAGE_MANIFEST;
 	private static final String KEYCLOAK_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.keycloak.operators.catalog_source";
-	private static final String KEYCLOAK_QUARKUS_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.keycloak.quarkus.operators.catalog_source";
+	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.keycloak.realm_import.operators.catalog_source";
 
 	private static final String KEYCLOAK_OPERATOR_INDEX_IMAGE = "intersmash.keycloak.operators.index_image";
-	private static final String KEYCLOAK_QUARKUS_OPERATOR_INDEX_IMAGE = "intersmash.keycloak.quarkus.operators.index_image";
+	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_INDEX_IMAGE = "intersmash.keycloak.realm_import.operators.index_image";
 	private static final String KEYCLOAK_OPERATOR_CHANNEL = "intersmash.keycloak.operators.channel";
-	private static final String KEYCLOAK_QUARKUS_OPERATOR_CHANNEL = "intersmash.keycloak.quarkus.operators.channel";
+	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_CHANNEL = "intersmash.keycloak.realm_import.operators.channel";
 	private static final String KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.operators.package_manifest";
-	private static final String KEYCLOAK_QUARKUS_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.quarkus.operators.package_manifest";
+	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.realm_import.operators.package_manifest";
 	private static final String COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "keycloak-operator";
 	private static final String PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "rhsso-operator";
 	private static final String DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST;
-	private static final String DEFAULT_KEYCLOAK_QUARKUS_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST;
+	private static final String DEFAULT_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST;
 	private static final String WILDFLY_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.wildfly.operators.catalog_source";
 	private static final String WILDFLY_OPERATOR_INDEX_IMAGE = "intersmash.wildfly.operators.index_image";
 	private static final String WILDFLY_OPERATOR_CHANNEL = "intersmash.wildfly.operators.channel";
@@ -107,7 +107,7 @@ public class IntersmashConfig {
 
 	// KEYCLOAK
 	private static final String KEYCLOAK_IMAGE_URL = "intersmash.keycloak.image";
-	private static final String KEYCLOAK_QUARKUS_IMAGE_URL = "intersmash.keycloak.quarks.image";
+	private static final String KEYCLOAK_REALM_IMPORT_IMAGE_URL = "intersmash.keycloak.realm_import.image";
 	private static final String KEYCLOAK_TEMPLATES = "intersmash.keycloak.templates";
 
 	// ACTIVEMQ
@@ -166,10 +166,6 @@ public class IntersmashConfig {
 	}
 
 	public static String keycloakOperatorPackageManifest() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
-	}
-
-	public static String keycloakOperatorQuarkusPackageManifest() {
 		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
 	}
 
@@ -283,8 +279,8 @@ public class IntersmashConfig {
 		return XTFConfig.get(KEYCLOAK_IMAGE_URL);
 	}
 
-	public static String keycloakQuarkusImageURL() {
-		return XTFConfig.get(KEYCLOAK_QUARKUS_IMAGE_URL);
+	public static String keycloakRealmImportImageURL() {
+		return XTFConfig.get(KEYCLOAK_REALM_IMPORT_IMAGE_URL);
 	}
 
 	public static String keycloakProductCode() {
@@ -393,19 +389,20 @@ public class IntersmashConfig {
 		return XTFConfig.get(WILDFLY_HELM_CHARTS_BRANCH);
 	}
 
-	public static String keycloakQuarkusOperatorCatalogSource() {
-		return XTFConfig.get(KEYCLOAK_QUARKUS_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
+	public static String keycloakRealmImportOperatorCatalogSource() {
+		return XTFConfig.get(KEYCLOAK_REALM_IMPORT_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
 	}
 
-	public static String keycloakQuarkusOperatorIndexImage() {
-		return XTFConfig.get(KEYCLOAK_QUARKUS_OPERATOR_INDEX_IMAGE);
+	public static String keycloakRealmImportOperatorIndexImage() {
+		return XTFConfig.get(KEYCLOAK_REALM_IMPORT_OPERATOR_INDEX_IMAGE);
 	}
 
-	public static String keycloakQuarkusOperatorChannel() {
-		return XTFConfig.get(KEYCLOAK_QUARKUS_OPERATOR_CHANNEL);
+	public static String keycloakRealmImportOperatorChannel() {
+		return XTFConfig.get(KEYCLOAK_REALM_IMPORT_OPERATOR_CHANNEL);
 	}
 
-	public static String keycloakQuarkusOperatorPackageManifest() {
-		return XTFConfig.get(KEYCLOAK_QUARKUS_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_QUARKUS_OPERATOR_PACKAGE_MANIFEST);
+	public static String keycloakRealmImportOperatorPackageManifest() {
+		return XTFConfig.get(KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST,
+				DEFAULT_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST);
 	}
 }

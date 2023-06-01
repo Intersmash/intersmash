@@ -55,9 +55,7 @@ import lombok.NonNull;
  */
 public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<KeycloakRealmImportOperatorApplication> {
 
-	//private MixedOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient;
-	//private MixedOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient;
-	private static final String OPERATOR_ID = IntersmashConfig.keycloakQuarkusOperatorPackageManifest();
+	private static final String OPERATOR_ID = IntersmashConfig.keycloakRealmImportOperatorPackageManifest();
 	protected FailFastCheck ffCheck = () -> false;
 
 	public KeycloakRealmImportOperatorProvisioner(@NonNull KeycloakRealmImportOperatorApplication application) {
@@ -70,22 +68,22 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 
 	@Override
 	protected String getOperatorCatalogSource() {
-		return IntersmashConfig.keycloakQuarkusOperatorCatalogSource();
+		return IntersmashConfig.keycloakRealmImportOperatorCatalogSource();
 	}
 
 	@Override
 	protected String getOperatorIndexImage() {
-		return IntersmashConfig.keycloakQuarkusOperatorIndexImage();
+		return IntersmashConfig.keycloakRealmImportOperatorIndexImage();
 	}
 
 	@Override
 	protected String getOperatorChannel() {
-		return IntersmashConfig.keycloakQuarkusOperatorChannel();
+		return IntersmashConfig.keycloakRealmImportOperatorChannel();
 	}
 
 	@Override
 	public void subscribe() {
-		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakQuarkusImageURL())) {
+		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakRealmImportImageURL())) {
 			super.subscribe();
 		} else {
 			// RELATED_IMAGE_RHSSO_OPENJ9 and RELATED_IMAGE_RHSSO_OPENJDK, determine the final value for RELATED_IMAGE_RHSSO
@@ -96,7 +94,7 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 							// Custom Keycloak image to be used: overrides the Keycloak image at the operator level: all
 							// Keycloak instances will be spun out of this image
 							// e.g. OPERATOR_KEYCLOAK_IMAGE=quay.io/keycloak/keycloak:21.1.1 --> operator.keycloak.image
-							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakQuarkusImageURL()
+							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakRealmImportImageURL()
 					//		"PROFILE", "RHSSO"
 					));
 		}
@@ -112,8 +110,8 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 
 		// Custom Keycloak image to be used: overrides the Keycloak image at the Keycloak level: just this Keycloak
 		// instance will be spun out of this image
-		if (!Strings.isNullOrEmpty(IntersmashConfig.keycloakQuarkusImageURL())) {
-			getApplication().getKeycloak().getSpec().setImage(IntersmashConfig.keycloakQuarkusImageURL());
+		if (!Strings.isNullOrEmpty(IntersmashConfig.keycloakRealmImportImageURL())) {
+			getApplication().getKeycloak().getSpec().setImage(IntersmashConfig.keycloakRealmImportImageURL());
 		}
 
 		// create keys/certificates and add them to the Keycloak resource:
