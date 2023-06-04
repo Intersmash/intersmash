@@ -343,6 +343,7 @@
                 <groupId>uk.org.webcompere</groupId>
                 <artifactId>system-stubs-jupiter</artifactId>
                 <version>${version.junit5.jupiter.system.stubs}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.fabric8</groupId>

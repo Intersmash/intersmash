@@ -18,10 +18,7 @@ package org.jboss.intersmash.tools.junit5;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.jboss.intersmash.tools.IntersmashConfig;
@@ -30,15 +27,12 @@ import org.jboss.intersmash.tools.annotations.Service;
 import org.jboss.intersmash.tools.annotations.ServiceProvisioner;
 import org.jboss.intersmash.tools.annotations.ServiceUrl;
 import org.jboss.intersmash.tools.application.Application;
-import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.tools.provision.Provisioner;
 import org.jboss.intersmash.tools.provision.ProvisionerManager;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.AssertionFailedError;
@@ -50,27 +44,20 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback, TestInstancePostProcessor {
 
-	private static final Namespace NAMESPACE = Namespace.create("org", "jboss", "intersmash", "IntersmashExtension");
-	private static final String INTERSMASH_SERVICES = "INTERSMASH_SERVICES";
-
 	@Override
 	public void beforeAll(ExtensionContext extensionContext) throws Exception {
 		Optional<Throwable> tt = Optional.empty();
 		try {
 			log.debug("beforeAll");
-			//			openShiftRecorderService().initFilters(extensionContext);
-			Intersmash[] intersmashes = extensionContext.getRequiredTestClass().getAnnotationsByType(Intersmash.class);
-			Intersmash intersmash;
-			if (intersmashes.length > 0) {
-				intersmash = intersmashes[0];
-			} else {
+			// let's store the Intersmash definition in the extension context store
+			Intersmash intersmash = IntersmashExtensionHelper.getIntersmash(extensionContext);
+			if (intersmash == null) {
+				log.warn("No @Intersmah definition stored by Intersmash extensions");
 				return;
 			}
-
 			// we don't want to touch anything if the deployment phase is skipped
 			if (!IntersmashConfig.skipDeploy()) {
-				if (Arrays.stream(intersmash.value())
-						.anyMatch(app -> OpenShiftApplication.class.isAssignableFrom(app.value()))) {
+				if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
 					if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
 						operatorCleanup();
 						log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
@@ -91,7 +78,7 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 				// store provisioners right now, those might be needed in each phase independently
 				Provisioner provisioner = ProvisionerManager.getProvisioner(application);
 				// keep the provisioner in the JUpiter Extension Store
-				getProvisioners(extensionContext).put(application.getClass().getName(), provisioner);
+				IntersmashExtensionHelper.getProvisioners(extensionContext).put(application.getClass().getName(), provisioner);
 				if (!IntersmashConfig.skipDeploy()) {
 					deployApplication(provisioner);
 				}
@@ -141,12 +128,13 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		if (IntersmashConfig.skipUndeploy()) {
 			log.info("Skipping the after test cleanup operations.");
 		} else {
-			for (Provisioner provisioner : getProvisioners(extensionContext).values()) {
+			for (Provisioner provisioner : IntersmashExtensionHelper.getProvisioners(extensionContext).values()) {
 				undeployApplication(provisioner);
 			}
 			// operator group is not bound to a specific product
 			// no Operator support on OCP3 clusters, OLM doesn't run there
-			if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
+			if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+					&& !IntersmashConfig.isOcp3x(OpenShifts.admin())) {
 				operatorCleanup();
 			}
 			// let's cleanup once we're done
@@ -175,23 +163,13 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		injectServiceProvisioner(o, extensionContext);
 	}
 
-	private Map<String, Provisioner> getProvisioners(ExtensionContext extensionContext) {
-		Store store = extensionContext.getStore(NAMESPACE);
-		Map<String, Provisioner> provisioners = (Map<String, Provisioner>) store.get(INTERSMASH_SERVICES);
-		if (provisioners != null) {
-			return provisioners;
-		} else {
-			store.put(INTERSMASH_SERVICES, new HashMap<String, Provisioner>());
-			return (Map<String, Provisioner>) store.get(INTERSMASH_SERVICES);
-		}
-	}
-
 	private void injectServiceUrl(Object o, ExtensionContext extensionContext) throws Exception {
 		log.debug("injectServiceUrl");
 		List<Field> annotatedFields = AnnotationSupport.findAnnotatedFields(o.getClass(), ServiceUrl.class);
 		for (Field field : annotatedFields) {
 			ServiceUrl serviceUrl = field.getAnnotation(ServiceUrl.class);
-			Provisioner provisioner = getProvisioners(extensionContext).get(serviceUrl.value().getName());
+			Provisioner provisioner = IntersmashExtensionHelper.getProvisioners(extensionContext)
+					.get(serviceUrl.value().getName());
 			URL url = provisioner.getURL();
 			if (String.class.isAssignableFrom(field.getType())) {
 				field.setAccessible(true);
@@ -211,7 +189,8 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		List<Field> annotatedFields = AnnotationSupport.findAnnotatedFields(o.getClass(), ServiceProvisioner.class);
 		for (Field field : annotatedFields) {
 			ServiceProvisioner serviceProvisioner = field.getAnnotation(ServiceProvisioner.class);
-			Provisioner provisioner = getProvisioners(extensionContext).get(serviceProvisioner.value().getName());
+			Provisioner provisioner = IntersmashExtensionHelper.getProvisioners(extensionContext)
+					.get(serviceProvisioner.value().getName());
 			if (Provisioner.class.isAssignableFrom(field.getType())) {
 				field.setAccessible(true);
 				field.set(o, provisioner);
