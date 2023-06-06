@@ -45,7 +45,9 @@ public class CertificatesUtils {
 
 	/**
 	 * Generates a key and self-signed certificate for that key; it also generates a truststore containing the certificate;
-	 * @return
+	 * @param hostname: to be used as Common Name (CN) for the certificate
+	 * @param tlsSecretName: name of the secret to be created in OpenShift containing key and certificate
+	 * @return wrapper object {@link CertificateAndKey} containing details about the newly created key, certificate and secret
 	 */
 	public static CertificateAndKey generateSelfSignedCertificateAndKey(String hostname, String tlsSecretName) {
 		CertificateAndKey certificateAndKey = new CertificateAndKey();
@@ -113,11 +115,11 @@ public class CertificatesUtils {
 				}
 			}
 		} catch (IOException | InterruptedException e) {
-			throw new IllegalStateException("Failed executing " + String.join(" ", args));
+			throw new RuntimeException("Failed executing " + String.join(" ", args));
 		}
 
 		if (result != 0) {
-			throw new IllegalStateException("Failed executing " + String.join(" ", args));
+			throw new RuntimeException("Failed executing " + String.join(" ", args));
 		}
 	}
 

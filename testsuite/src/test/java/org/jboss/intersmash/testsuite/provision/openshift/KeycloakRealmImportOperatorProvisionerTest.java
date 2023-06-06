@@ -33,7 +33,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
@@ -71,7 +70,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-//@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class KeycloakRealmImportOperatorProvisionerTest {
 	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
@@ -133,12 +131,6 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 		IntersmashExtension.operatorCleanup();
 		// create operator group - this should be done by InteropExtension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
-	}
-
-	@BeforeEach
-	public void cleanup() throws IOException {
-		if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 	}
 
 	@AfterAll
@@ -225,6 +217,7 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 	@Test
 	public void exampleSsoWithDatabase() {
 		try {
+			POSTGRESQL_IMAGE_PROVISIONER.configure();
 			POSTGRESQL_IMAGE_PROVISIONER.preDeploy();
 			POSTGRESQL_IMAGE_PROVISIONER.deploy();
 

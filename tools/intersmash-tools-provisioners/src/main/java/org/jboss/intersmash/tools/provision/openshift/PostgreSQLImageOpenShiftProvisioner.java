@@ -86,7 +86,7 @@ public class PostgreSQLImageOpenShiftProvisioner extends DBImageOpenShiftProvisi
 	}
 
 	@Override
-	public void customizeApplicationBuilder(ApplicationBuilder appBuilder) {
+	public void customizeApplication(ApplicationBuilder appBuilder) {
 		// the secret is supposed to be used by applications connecting to the database
 		appBuilder.secret(getSecretName())
 				.setType(SecretType.OPAQUE)

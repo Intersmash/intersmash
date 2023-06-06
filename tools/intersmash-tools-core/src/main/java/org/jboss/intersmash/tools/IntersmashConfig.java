@@ -108,7 +108,6 @@ public class IntersmashConfig {
 	// KEYCLOAK
 	private static final String KEYCLOAK_IMAGE_URL = "intersmash.keycloak.image";
 	private static final String KEYCLOAK_REALM_IMPORT_IMAGE_URL = "intersmash.keycloak.realm_import.image";
-	private static final String KEYCLOAK_TEMPLATES = "intersmash.keycloak.templates";
 
 	// ACTIVEMQ
 	private static final String ACTIVEMQ_IMAGE_URL = "intersmash.activemq.image";

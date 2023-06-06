@@ -86,17 +86,13 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakRealmImportImageURL())) {
 			super.subscribe();
 		} else {
-			// RELATED_IMAGE_RHSSO_OPENJ9 and RELATED_IMAGE_RHSSO_OPENJDK, determine the final value for RELATED_IMAGE_RHSSO
 			subscribe(
 					INSTALLPLAN_APPROVAL_MANUAL,
-					// TODO: check if these env variables still make sense in the new quarkus operator
 					Map.of(
 							// Custom Keycloak image to be used: overrides the Keycloak image at the operator level: all
 							// Keycloak instances will be spun out of this image
 							// e.g. OPERATOR_KEYCLOAK_IMAGE=quay.io/keycloak/keycloak:21.1.1 --> operator.keycloak.image
-							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakRealmImportImageURL()
-					//		"PROFILE", "RHSSO"
-					));
+							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakRealmImportImageURL()));
 		}
 	}
 

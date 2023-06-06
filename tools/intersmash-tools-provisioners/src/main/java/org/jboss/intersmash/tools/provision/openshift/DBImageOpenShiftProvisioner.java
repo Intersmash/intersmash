@@ -68,7 +68,7 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		return vars;
 	}
 
-	public void customizeApplicationBuilder(ApplicationBuilder appBuilder) {
+	public void customizeApplication(ApplicationBuilder appBuilder) {
 	}
 
 	public abstract String getSymbolicName();
@@ -99,7 +99,7 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 				.addContainerSelector("deploymentconfig", dbApplication.getName())
 				.addContainerSelector("name", dbApplication.getName());
 
-		customizeApplicationBuilder(appBuilder);
+		customizeApplication(appBuilder);
 
 		appBuilder.buildApplication(openShift).deploy();
 
@@ -137,7 +137,8 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 	}
 
 	/**
-	 * When using {@link ApplicationBuilder} to build the application, then the service name defaults to the application nane
+	 * Returns the service name used to expose the database functionality inside OpenShift;
+	 * When using {@link ApplicationBuilder} to build the application (which is always the case here), then the service name defaults to the application nane
 	 * @return service name to access the database
 	 */
 	public String getServiceName() {
