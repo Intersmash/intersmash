@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import cz.xtf.core.config.XTFConfig;
-import cz.xtf.core.openshift.OpenShifts;
+import cz.xtf.core.openshift.OpenShift;
 
 public class IntersmashConfig {
 	private static final String SKIP_DEPLOY = "intersmash.skip.deploy";
@@ -303,12 +303,12 @@ public class IntersmashConfig {
 		return image;
 	}
 
-	public static String getOcpVersion() {
-		return OpenShifts.getVersion();
+	public static String getOcpVersion(OpenShift openShift) {
+		return String.format("%s.%s", openShift.getVersion().getMajor(), openShift.getVersion().getMinor());
 	}
 
-	public static boolean isOcp3x() {
-		return OpenShifts.getVersion().startsWith("3");
+	public static boolean isOcp3x(OpenShift openShift) {
+		return openShift.getVersion().getMajor().startsWith("3");
 	}
 
 	/**

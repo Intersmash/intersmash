@@ -71,7 +71,7 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			if (!IntersmashConfig.skipDeploy()) {
 				if (Arrays.stream(intersmash.value())
 						.anyMatch(app -> OpenShiftApplication.class.isAssignableFrom(app.value()))) {
-					if (!IntersmashConfig.isOcp3x()) {
+					if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
 						operatorCleanup();
 						log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
 								OperatorGroup.SINGLE_NAMESPACE.getMetadata().getName());
@@ -146,7 +146,7 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			}
 			// operator group is not bound to a specific product
 			// no Operator support on OCP3 clusters, OLM doesn't run there
-			if (!IntersmashConfig.isOcp3x()) {
+			if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
 				operatorCleanup();
 			}
 			// let's cleanup once we're done
