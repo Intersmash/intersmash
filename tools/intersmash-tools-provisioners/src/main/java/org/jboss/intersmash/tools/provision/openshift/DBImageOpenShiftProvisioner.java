@@ -68,6 +68,9 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		return vars;
 	}
 
+	public void customizeApplication(ApplicationBuilder appBuilder) {
+	}
+
 	public abstract String getSymbolicName();
 
 	@Override
@@ -77,7 +80,7 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		ApplicationBuilder appBuilder = ApplicationBuilder.fromImage(dbApplication.getName(), getImage(),
 				Collections.singletonMap(APP_LABEL_KEY, dbApplication.getName()));
 
-		final DeploymentConfigBuilder builder = appBuilder.deploymentConfig();
+		final DeploymentConfigBuilder builder = appBuilder.deploymentConfig(dbApplication.getName());
 		builder.podTemplate().container().envVars(getImageVariables()).port(getPort());
 
 		configureContainer(builder.podTemplate().container());
@@ -92,9 +95,11 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 					new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build());
 		}
 
-		appBuilder.service().port(getPort())
+		appBuilder.service(getServiceName()).port(getPort())
 				.addContainerSelector("deploymentconfig", dbApplication.getName())
-				.addContainerSelector("app", dbApplication.getName());
+				.addContainerSelector("name", dbApplication.getName());
+
+		customizeApplication(appBuilder);
 
 		appBuilder.buildApplication(openShift).deploy();
 
@@ -130,4 +135,21 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 	public String getUrl(String routeName, boolean secure) {
 		throw new UnsupportedOperationException("Route is not created for DB applications.");
 	}
+
+	/**
+	 * Returns the service name used to expose the database functionality inside OpenShift;
+	 * When using {@link ApplicationBuilder} to build the application (which is always the case here), then the service name defaults to the application nane
+	 * @return service name to access the database
+	 */
+	public String getServiceName() {
+		return dbApplication.getName() + "-service";
+	}
+
+	/**
+	 * @return name of the secret containing username and password for the database
+	 */
+	public String getSecretName() {
+		return dbApplication.getName() + "-credentials";
+	}
+
 }
