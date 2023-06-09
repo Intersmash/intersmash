@@ -138,8 +138,6 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
 		if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
 			KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
-		POSTGRESQL_IMAGE_PROVISIONER.undeploy();
-		POSTGRESQL_IMAGE_PROVISIONER.postUndeploy();
 	}
 
 	@AfterEach
@@ -169,38 +167,40 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 	 */
 	@Test
 	public void exampleSso() {
+		name = "example-sso";
+
+		final Keycloak keycloak = new Keycloak();
+		keycloak.getMetadata().setName(name);
+		keycloak.getMetadata().setLabels(matchLabels);
+		KeycloakSpec spec = new KeycloakSpec();
+		spec.setInstances(1L);
+		Ingress ingress = new Ingress();
+		ingress.setEnabled(true);
+		spec.setIngress(ingress);
+		Hostname hostname = new Hostname();
+		hostname.setHostname(OpenShifts.master().generateHostname(name));
+		// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
+		String tlsSecretName = name + "-tls-secret";
+		CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
+				.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
+		// add TLS config to keycloak using the secret we just created
+		Http http = new Http();
+		http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
+		spec.setHttp(http);
+		spec.setHostname(hostname);
+		keycloak.setSpec(spec);
+
+		KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
+		KEYCLOAK_OPERATOR_PROVISIONER.configure();
 		try {
-			name = "example-sso";
-
-			final Keycloak keycloak = new Keycloak();
-			keycloak.getMetadata().setName(name);
-			keycloak.getMetadata().setLabels(matchLabels);
-			KeycloakSpec spec = new KeycloakSpec();
-			spec.setInstances(1L);
-			Ingress ingress = new Ingress();
-			ingress.setEnabled(true);
-			spec.setIngress(ingress);
-			Hostname hostname = new Hostname();
-			hostname.setHostname(OpenShifts.master().generateHostname(name));
-			// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
-			String tlsSecretName = name + "-tls-secret";
-			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-					.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
-			// add TLS config to keycloak using the secret we just created
-			Http http = new Http();
-			http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
-			spec.setHttp(http);
-			spec.setHostname(hostname);
-			keycloak.setSpec(spec);
-
-			KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
-			KEYCLOAK_OPERATOR_PROVISIONER.configure();
 			KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
-
-			verifyKeycloak(keycloak, true);
-		} finally {
-			if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
+			try {
+				verifyKeycloak(keycloak, true);
+			} finally {
 				KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+			}
+		} finally {
+			KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
 		}
 	}
 
@@ -216,82 +216,93 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 	 */
 	@Test
 	public void exampleSsoWithDatabase() {
+		POSTGRESQL_IMAGE_PROVISIONER.configure();
 		try {
-			POSTGRESQL_IMAGE_PROVISIONER.configure();
 			POSTGRESQL_IMAGE_PROVISIONER.preDeploy();
-			POSTGRESQL_IMAGE_PROVISIONER.deploy();
+			try {
+				POSTGRESQL_IMAGE_PROVISIONER.deploy();
+				try {
+					name = "example-sso";
+					Keycloak keycloak = new Keycloak();
+					keycloak.getMetadata().setName(name);
+					keycloak.getMetadata().setLabels(matchLabels);
+					KeycloakSpec spec = new KeycloakSpec();
+					keycloak.setSpec(spec);
+					spec.setInstances(1L);
+					Ingress ingress = new Ingress();
+					ingress.setEnabled(true);
+					spec.setIngress(ingress);
+					Hostname hostname = new Hostname();
+					hostname.setHostname(OpenShifts.master().generateHostname(name));
+					// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
+					String tlsSecretName = name + "-tls-secret";
+					CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
+							.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""),
+									tlsSecretName);
+					// add TLS config to keycloak using the secret we just created
+					Http http = new Http();
+					http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
+					spec.setHttp(http);
+					spec.setHostname(hostname);
+					// database
+					Db db = new Db();
+					db.setVendor("postgres");
+					db.setHost(POSTGRESQL_IMAGE_PROVISIONER.getServiceName());
+					db.setPort(Integer.toUnsignedLong(POSTGRESQL_IMAGE_PROVISIONER.getPort()));
+					UsernameSecret usernameSecret = new UsernameSecret();
+					usernameSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
+					usernameSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_USER_KEY);
+					db.setUsernameSecret(usernameSecret);
+					PasswordSecret passwordSecret = new PasswordSecret();
+					passwordSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
+					passwordSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_PASSWORD_KEY);
+					db.setPasswordSecret(passwordSecret);
+					db.setDatabase(POSTGRESQL_IMAGE_PROVISIONER.getApplication().getDbName());
+					spec.setDb(db);
 
-			name = "example-sso";
+					realmName = "saml-basic-auth";
+					KeycloakRealmImport realmImport = new KeycloakRealmImport();
+					realmImport.getMetadata().setName(realmName);
+					realmImport.getMetadata().setLabels(matchLabels);
+					KeycloakRealmImportSpec spec1 = new KeycloakRealmImportSpec();
+					realmImport.setSpec(spec1);
+					spec1.setKeycloakCRName(name);
+					Realm realm = new Realm();
+					spec1.setRealm(realm);
+					realm.setId(realmName);
+					realm.setRealm(realmName);
+					realm.setEnabled(true);
+					List<Users> users = new ArrayList<>();
+					realm.setUsers(users);
+					Users user1 = new Users();
+					users.add(user1);
+					user1.setUsername("user");
+					user1.setEnabled(true);
+					Credentials credentials = new Credentials();
+					user1.setCredentials(List.of(credentials));
+					credentials.setType("password");
+					credentials.setValue("LOREDANABERTE1234");
 
-			Keycloak keycloak = new Keycloak();
-			keycloak.getMetadata().setName(name);
-			keycloak.getMetadata().setLabels(matchLabels);
-			KeycloakSpec spec = new KeycloakSpec();
-			keycloak.setSpec(spec);
-			spec.setInstances(1L);
-			Ingress ingress = new Ingress();
-			ingress.setEnabled(true);
-			spec.setIngress(ingress);
-			Hostname hostname = new Hostname();
-			hostname.setHostname(OpenShifts.master().generateHostname(name));
-			// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
-			String tlsSecretName = name + "-tls-secret";
-			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-					.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
-			// add TLS config to keycloak using the secret we just created
-			Http http = new Http();
-			http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
-			spec.setHttp(http);
-			spec.setHostname(hostname);
-			// database
-			Db db = new Db();
-			db.setVendor("postgres");
-			db.setHost(POSTGRESQL_IMAGE_PROVISIONER.getServiceName());
-			db.setPort(Integer.toUnsignedLong(POSTGRESQL_IMAGE_PROVISIONER.getPort()));
-			UsernameSecret usernameSecret = new UsernameSecret();
-			usernameSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
-			usernameSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_USER_KEY);
-			db.setUsernameSecret(usernameSecret);
-			PasswordSecret passwordSecret = new PasswordSecret();
-			passwordSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
-			passwordSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_PASSWORD_KEY);
-			db.setPasswordSecret(passwordSecret);
-			db.setDatabase(POSTGRESQL_IMAGE_PROVISIONER.getApplication().getDbName());
-			spec.setDb(db);
-
-			realmName = "saml-basic-auth";
-			KeycloakRealmImport realmImport = new KeycloakRealmImport();
-			realmImport.getMetadata().setName(realmName);
-			realmImport.getMetadata().setLabels(matchLabels);
-			KeycloakRealmImportSpec spec1 = new KeycloakRealmImportSpec();
-			realmImport.setSpec(spec1);
-			spec1.setKeycloakCRName(name);
-			Realm realm = new Realm();
-			spec1.setRealm(realm);
-			realm.setId(realmName);
-			realm.setRealm(realmName);
-			realm.setEnabled(true);
-			List<Users> users = new ArrayList<>();
-			realm.setUsers(users);
-			Users user1 = new Users();
-			users.add(user1);
-			user1.setUsername("user");
-			user1.setEnabled(true);
-			Credentials credentials = new Credentials();
-			user1.setCredentials(List.of(credentials));
-			credentials.setType("password");
-			credentials.setValue("LOREDANABERTE1234");
-
-			KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
-			KEYCLOAK_OPERATOR_PROVISIONER.configure();
-			KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
-
-			verifyKeycloak(keycloak, realmImport, true);
+					KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
+					KEYCLOAK_OPERATOR_PROVISIONER.configure();
+					try {
+						KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
+						try {
+							verifyKeycloak(keycloak, true);
+						} finally {
+							KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+						}
+					} finally {
+						KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
+					}
+				} finally {
+					POSTGRESQL_IMAGE_PROVISIONER.undeploy();
+				}
+			} finally {
+				POSTGRESQL_IMAGE_PROVISIONER.postUndeploy();
+			}
 		} finally {
-			if (!Objects.isNull(KEYCLOAK_OPERATOR_PROVISIONER))
-				KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
-			POSTGRESQL_IMAGE_PROVISIONER.undeploy();
-			POSTGRESQL_IMAGE_PROVISIONER.postUndeploy();
+			POSTGRESQL_IMAGE_PROVISIONER.dismiss();
 		}
 	}
 

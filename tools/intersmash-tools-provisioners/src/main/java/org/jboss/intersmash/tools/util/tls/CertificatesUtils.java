@@ -6,11 +6,11 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.junit.jupiter.api.Assertions;
+import java.util.Objects;
 
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShifts;
@@ -69,7 +69,9 @@ public class CertificatesUtils {
 				caDir.resolve(truststore).toFile().exists()) {
 			certificateAndKey.existing = true;
 			Secret tlsSecret = OpenShifts.master().getSecret(tlsSecretName);
-			Assertions.assertNotNull(tlsSecret);
+			if (Objects.isNull(tlsSecret)) {
+				throw new RuntimeException(MessageFormat.format("Secret {} doesn't exist!", tlsSecretName));
+			}
 			certificateAndKey.tlsSecret = tlsSecret;
 			return certificateAndKey;
 		}
@@ -85,7 +87,9 @@ public class CertificatesUtils {
 		// create secret
 		try {
 			Secret tlsSecret = createTlsSecret(tlsSecretName, certificateAndKey.key, certificateAndKey.certificate);
-			Assertions.assertNotNull(tlsSecret);
+			if (Objects.isNull(tlsSecret)) {
+				throw new RuntimeException(MessageFormat.format("Secret {} doesn't exist!", tlsSecretName));
+			}
 			certificateAndKey.tlsSecret = tlsSecret;
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to create secret " + tlsSecretName, e);
