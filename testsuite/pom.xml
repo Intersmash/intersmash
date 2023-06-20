@@ -45,10 +45,10 @@
             <artifactId>intersmash-deployments-provider</artifactId>
         </dependency>
         <dependency>
-<<<<<<< HEAD
             <groupId>io.fabric8</groupId>
             <artifactId>openshift-client</artifactId>
-=======
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
@@ -56,7 +56,6 @@
         <dependency>
             <groupId>uk.org.webcompere</groupId>
             <artifactId>system-stubs-jupiter</artifactId>
->>>>>>> 8f43cea ([k8s-support] - Adding supported execution targets and conditional OpenShift/Kubernetes JUnit5 extension behavior)
         </dependency>
     </dependencies>
 

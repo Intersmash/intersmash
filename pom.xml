@@ -41,8 +41,13 @@
         <version.ide-config>1.1</version.ide-config>
         <version.io.strimzi-api>0.28.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
+<<<<<<< HEAD
         <version.io.fabric8>6.6.0</version.io.fabric8>
         <version.openshift-client>5.12.2</version.openshift-client>
+=======
+        <version.io.fabric8.generator>6.6.0</version.io.fabric8.generator>
+        <version.io.fabric8.kubernetes-client>5.12.2</version.io.fabric8.kubernetes-client>
+>>>>>>> 7061a52 ([k8s-support] - Adding drat of k8s provisioning tooling)
 
         <!--
             Version used for the activemq-artemis-operator;
@@ -97,6 +102,7 @@
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
+        <version.junit5.platform>1.7.0</version.junit5.platform>
     </properties>
 
     <dependencyManagement>
@@ -195,6 +201,11 @@
                 <version>${version.dev-failsafe.failsafe}</version>
             </dependency>
             <!-- JUnit 5 Jupiter -->
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${version.junit5.platform}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -348,7 +359,12 @@
             <dependency>
                 <groupId>io.fabric8</groupId>
                 <artifactId>generator-annotations</artifactId>
-                <version>${version.io.fabric8}</version>
+                <version>${version.io.fabric8.generator}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client</artifactId>
+                <version>${version.io.fabric8.kubernetes-client}</version>
             </dependency>
             <dependency>
                 <groupId>io.fabric8</groupId>
@@ -467,7 +483,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>java-generator-maven-plugin</artifactId>
-                    <version>${version.io.fabric8}</version>
+                    <version>${version.io.fabric8.generator}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
