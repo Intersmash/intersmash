@@ -14,7 +14,7 @@ public final class KubernetesConfig {
 	public static final String KUBERNETES_BINARY_PATH = "intersmash.kubernetes.binary.path";
 	public static final String KUBERNETES_BINARY_CACHE_ENABLED = "intersmash.kubernetes.binary.cache.enabled";
 	public static final String KUBERNETES_BINARY_CACHE_PATH = "intersmash.kubernetes.binary.cache.path";
-	public static final String KUBERNETES_BINARY_CACHE_DEFAULT_FOLDER = "xtf-oc-cache";
+	public static final String KUBERNETES_BINARY_CACHE_DEFAULT_FOLDER = "kubectl-cache";
 	public static final String KUBERNETES_ADMIN_USERNAME = "intersmash.kubernetes.admin.username";
 	public static final String KUBERNETES_ADMIN_PASSWORD = "intersmash.kubernetes.admin.password";
 	public static final String KUBERNETES_ADMIN_KUBECONFIG = "intersmash.kubernetes.admin.kubeconfig";
@@ -25,18 +25,17 @@ public final class KubernetesConfig {
 	public static final String KUBERNETES_MASTER_TOKEN = "intersmash.kubernetes.master.token";
 	public static final String KUBERNETES_ROUTE_DOMAIN = "intersmash.kubernetes.route_domain";
 	public static final String KUBERNETES_PULL_SECRET = "intersmash.kubernetes.pullsecret";
-	public static final String KUBERNETES_CLIENT_VERSION = "intersmash.kubernetes.client.version";
 	public static final String KUBERNETES_NAMESPACE_PER_TESTCASE = "intersmash.kubernetes.namespace.per.testcase";
 
 	/**
-	 * Used only if xtf.openshift.namespace.per.testcase=true - this property can configure its maximum length. This is useful
+	 * Used only if intersmash.kubernetes.namespace.per.testcase=true - this property can configure its maximum length. This is useful
 	 * in case
 	 * where namespace is used in first part of URL of route which must have <64 chars length.
 	 */
-	public static final String KUBERNETES_NAMESPACE_NAME_LENGTH_LIMIT = "xtf.openshift.namespace.per.testcase.length.limit";
+	public static final String KUBERNETES_NAMESPACE_NAME_LENGTH_LIMIT = "intersmash.kubernetes.namespace.per.testcase.length.limit";
 
 	/**
-	 * Used only if xtf.openshift.namespace.per.testcase=true - this property configures default maximum length of namespace
+	 * Used only if intersmash.kubernetes.namespace.per.testcase=true - this property configures default maximum length of namespace
 	 * name.
 	 */
 	private static final String DEFAULT_KUBERNETES_NAMESPACE_NAME_LENGTH_LIMIT = "25";
@@ -48,9 +47,9 @@ public final class KubernetesConfig {
 	private static final String CLEAN_KUBERNETES = "intersmash.junit.clean_namespace";
 
 	/**
-	 * Used only if xtf.openshift.namespace.per.testcase=true
+	 * Used only if intersmash.kubernetes.namespace.per.testcase=true
 	 *
-	 * @return limit on namespace if it's set by -Dxtf.openshift.namespace.per.testcase.length.limit property
+	 * @return limit on namespace if it's set by -Dintersmash.kubernetes.namespace.per.testcase.length.limit property
 	 */
 	public static int getNamespaceLengthLimitForUniqueNamespacePerTest() {
 		return Integer.parseInt(XTFConfig.get(KUBERNETES_NAMESPACE_NAME_LENGTH_LIMIT,
@@ -141,13 +140,9 @@ public final class KubernetesConfig {
 		return XTFConfig.get(KUBERNETES_PULL_SECRET);
 	}
 
-	public static String clientVersion() {
-		return XTFConfig.get(KUBERNETES_CLIENT_VERSION);
-	}
-
 	/**
-	 * @return For backwards-compatibility reasons, also returns the value of intersmash.kubernetes.token if intersmash.kubernetes.master.token
-	 *         not specified
+	 * @return For backwards-compatibility reasons, also returns the value of intersmash.kubernetes.token if
+	 * intersmash.kubernetes.master.token not specified
 	 */
 	public static String masterToken() {
 		String masterToken = XTFConfig.get(KUBERNETES_MASTER_TOKEN);

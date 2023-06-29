@@ -5,13 +5,13 @@ import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.intersmash.tools.k8s.KubernetesConfig;
+import org.jboss.intersmash.tools.k8s.client.binary.KubernetesClientBinary;
+import org.jboss.intersmash.tools.k8s.client.binary.KubernetesClientBinaryManagerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Kuberneteses {
-	//    private static final String OCP3_CLIENTS_URL = "https://mirror.openshift.com/pub/openshift-v3/clients";
-	//    private static final String OCP4_CLIENTS_URL = "https://mirror.openshift.com/pub/openshift-v4";
 
 	public static Kubernetes admin() {
 		return Kuberneteses.admin(NamespaceManager.getNamespace());
@@ -57,25 +57,25 @@ public class Kuberneteses {
 		return Kubernetes.get(namespace);
 	}
 
-	//    public static String getBinaryPath() {
-	//        return OpenShiftBinaryManagerFactory.INSTANCE.getOpenShiftBinaryManager().getBinaryPath();
-	//    }
-	//
-	//    public static OpenShiftBinary masterBinary() {
-	//        return masterBinary(NamespaceManager.getNamespace());
-	//    }
-	//
-	//    public static OpenShiftBinary masterBinary(String namespace) {
-	//        return OpenShiftBinaryManagerFactory.INSTANCE.getOpenShiftBinaryManager().masterBinary(namespace);
-	//    }
-	//
-	//    public static OpenShiftBinary adminBinary() {
-	//        return adminBinary(NamespaceManager.getNamespace());
-	//    }
-	//
-	//    public static OpenShiftBinary adminBinary(String namespace) {
-	//        return OpenShiftBinaryManagerFactory.INSTANCE.getOpenShiftBinaryManager().adminBinary(namespace);
-	//    }
+	public static String getBinaryPath() {
+		return KubernetesClientBinaryManagerFactory.INSTANCE.getKubernetesClientBinaryManager().getBinaryPath();
+	}
+
+	public static KubernetesClientBinary masterBinary() {
+		return masterBinary(NamespaceManager.getNamespace());
+	}
+
+	public static KubernetesClientBinary masterBinary(String namespace) {
+		return KubernetesClientBinaryManagerFactory.INSTANCE.getKubernetesClientBinaryManager().masterBinary(namespace);
+	}
+
+	public static KubernetesClientBinary adminBinary() {
+		return adminBinary(NamespaceManager.getNamespace());
+	}
+
+	public static KubernetesClientBinary adminBinary(String namespace) {
+		return KubernetesClientBinaryManagerFactory.INSTANCE.getKubernetesClientBinaryManager().adminBinary(namespace);
+	}
 
 	private static String getHomeDir() {
 		String home = System.getenv("HOME");

@@ -22,6 +22,7 @@ import java.util.Map;
 import org.jboss.intersmash.tools.annotations.Intersmash;
 import org.jboss.intersmash.tools.application.k8s.KubernetesApplication;
 import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
+import org.jboss.intersmash.tools.application.operator.OperatorApplication;
 import org.jboss.intersmash.tools.provision.Provisioner;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -50,7 +51,6 @@ public class IntersmashExtensionHelper {
 			return result;
 		} else {
 			Intersmash[] intersmashes = extensionContext.getRequiredTestClass().getAnnotationsByType(Intersmash.class);
-			Intersmash intersmash;
 			if (intersmashes.length > 0) {
 				store.put(INTERSMASH, intersmashes[0]);
 				return (Intersmash) store.get(INTERSMASH);
@@ -62,6 +62,11 @@ public class IntersmashExtensionHelper {
 	public static Boolean isIntersmashTargetingOpenShift(ExtensionContext extensionContext) {
 		return Arrays.stream(getIntersmash(extensionContext).value())
 				.anyMatch(app -> OpenShiftApplication.class.isAssignableFrom(app.value()));
+	}
+
+	public static Boolean isIntersmashTargetingOperator(ExtensionContext extensionContext) {
+		return Arrays.stream(getIntersmash(extensionContext).value())
+				.anyMatch(app -> OperatorApplication.class.isAssignableFrom(app.value()));
 	}
 
 	public static Boolean isIntersmashTargetingKubernetes(ExtensionContext extensionContext) {

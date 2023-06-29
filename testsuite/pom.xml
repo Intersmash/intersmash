@@ -49,6 +49,10 @@
             <artifactId>openshift-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-kubernetes-client</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>

@@ -19,10 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
+import org.jboss.intersmash.tools.provision.operator.OperatorProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import io.fabric8.kubernetes.api.model.EnvVar;
 
 public class SubscriptionTest {
@@ -43,7 +44,8 @@ public class SubscriptionTest {
 						"PROP_1", propertyValue,
 						"PROP_2", propertyValue,
 						"PROP_3", propertyValue,
-						"PROP_4", "a different value"));
+						"PROP_4", "a different value"),
+				OpenShiftConfig.namespace());
 		File subscriptionFile = subscription.save();
 		Subscription loadedSubscription = new Subscription();
 		loadedSubscription.load(subscriptionFile);

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import cz.xtf.core.config.OpenShiftConfig;
 import io.fabric8.kubernetes.client.CustomResource;
 import io.fabric8.kubernetes.model.annotation.Group;
 import io.fabric8.kubernetes.model.annotation.Version;
@@ -35,7 +34,6 @@ import io.fabric8.kubernetes.model.annotation.Version;
 @Group("operators.coreos.com")
 @Version("v1")
 public class OperatorGroup extends CustomResource implements OpenShiftResource<OperatorGroup> {
-	public static final OperatorGroup SINGLE_NAMESPACE = new OperatorGroup(OpenShiftConfig.namespace());
 	private Map<String, List<String>> spec = new HashMap<>();
 
 	public OperatorGroup() {

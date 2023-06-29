@@ -18,9 +18,9 @@ package org.jboss.intersmash.tools.provision.openshift;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.jboss.intersmash.tools.application.Application;
 import org.jboss.intersmash.tools.application.openshift.HasConfigMaps;
 import org.jboss.intersmash.tools.application.openshift.HasSecrets;
-import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.tools.provision.Provisioner;
 
 import cz.xtf.core.openshift.OpenShift;
@@ -29,7 +29,7 @@ import cz.xtf.core.openshift.OpenShifts;
 /**
  * Provisioner that is supposed to deploy an application on OpenShift.
  */
-public interface OpenShiftProvisioner<T extends OpenShiftApplication> extends Provisioner<T>, Scalable, HasPods {
+public interface OpenShiftProvisioner<T extends Application> extends Provisioner<T>, Scalable, HasPods {
 	String SCRIPT_DEBUG = "SCRIPT_DEBUG";
 	String APP_LABEL_KEY = "intersmash.app";
 

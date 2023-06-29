@@ -21,6 +21,8 @@ import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import cz.xtf.core.config.OpenShiftConfig;
+
 /**
  * Verify the functionality provided by {@link OpenShiftResource} interface.
  */
@@ -32,12 +34,12 @@ public class OpenShiftResourceTestCase {
 	@Test
 	public void writeReadEqualsTest() throws IOException {
 		// write test
-		File yaml = OperatorGroup.SINGLE_NAMESPACE.save();
+		File yaml = new OperatorGroup(OpenShiftConfig.namespace()).save();
 		// read test
 		OpenShiftResource testGroup = new OperatorGroup();
 		testGroup.load(yaml);
 		//
-		Assertions.assertEquals(OperatorGroup.SINGLE_NAMESPACE, testGroup,
+		Assertions.assertEquals(new OperatorGroup(OpenShiftConfig.namespace()), testGroup,
 				"OpenShift resource (OperatorGroup) does not equal after serialization into yaml file and deserialization back to an object.");
 	}
 }

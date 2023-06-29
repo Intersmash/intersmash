@@ -67,7 +67,7 @@ public class NamespaceManager {
 		// in case namespace is terminating (means is being deleted) then wait
 		checkAndWaitIfNamespaceIsTerminating(namespace);
 
-		if (kubernetes.getNamespace() == null) {
+		if (kubernetes.namespaces().withName(namespace).get() == null) {
 			log.info("Creating namespace: " + kubernetes.getNamespace());
 
 			Namespace projectNamespace = new Namespace();

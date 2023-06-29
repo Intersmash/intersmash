@@ -23,9 +23,9 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jboss.intersmash.tools.IntersmashConfig;
+import org.jboss.intersmash.tools.application.input.BinarySource;
+import org.jboss.intersmash.tools.application.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
-import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.slf4j.event.Level;
 
 import cz.xtf.builder.builders.ApplicationBuilder;

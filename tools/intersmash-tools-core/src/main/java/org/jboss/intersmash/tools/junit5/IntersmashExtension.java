@@ -15,6 +15,7 @@
  */
 package org.jboss.intersmash.tools.junit5;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -27,6 +28,8 @@ import org.jboss.intersmash.tools.annotations.Service;
 import org.jboss.intersmash.tools.annotations.ServiceProvisioner;
 import org.jboss.intersmash.tools.annotations.ServiceUrl;
 import org.jboss.intersmash.tools.application.Application;
+import org.jboss.intersmash.tools.k8s.KubernetesConfig;
+import org.jboss.intersmash.tools.k8s.client.Kuberneteses;
 import org.jboss.intersmash.tools.provision.Provisioner;
 import org.jboss.intersmash.tools.provision.ProvisionerManager;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
@@ -38,6 +41,7 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShifts;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,15 +61,20 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			}
 			// we don't want to touch anything if the deployment phase is skipped
 			if (!IntersmashConfig.skipDeploy()) {
-				if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
-					if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
-						operatorCleanup();
-						log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
-								OperatorGroup.SINGLE_NAMESPACE.getMetadata().getName());
-						OpenShifts.adminBinary().execute("apply", "-f",
-								OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
+				if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
+					final boolean cleanupKubernetes = IntersmashExtensionHelper
+							.isIntersmashTargetingKubernetes(extensionContext) && !IntersmashConfig.isOcp3x(OpenShifts.admin()),
+							cleanupOpenShift = IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+									&& !IntersmashConfig.isOcp3x(OpenShifts.admin());
+					operatorCleanup(cleanupKubernetes, cleanupOpenShift);
+					deployOperatorGroup(extensionContext);
+
+					if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
+						OpenShifts.master().clean().waitFor();
 					}
-					OpenShifts.master().clean().waitFor();
+					if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
+						Kuberneteses.master().clean().waitFor();
+					}
 				}
 			}
 
@@ -88,6 +97,22 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		} finally {
 			if (tt.isPresent())
 				throw new Exception("Error before test execution!", tt.get());
+		}
+	}
+
+	private static void deployOperatorGroup(ExtensionContext extensionContext) throws IOException {
+		if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
+			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
+					new OperatorGroup(KubernetesConfig.namespace()).getMetadata().getName());
+			OpenShifts.adminBinary().execute("apply", "-f",
+					new OperatorGroup(KubernetesConfig.namespace()).save().getAbsolutePath());
+		}
+		if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+				&& !IntersmashConfig.isOcp3x(OpenShifts.admin())) {
+			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
+					new OperatorGroup(OpenShiftConfig.namespace()).getMetadata().getName());
+			OpenShifts.adminBinary().execute("apply", "-f",
+					new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		}
 	}
 
@@ -133,28 +158,43 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			}
 			// operator group is not bound to a specific product
 			// no Operator support on OCP3 clusters, OLM doesn't run there
-			if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
-					&& !IntersmashConfig.isOcp3x(OpenShifts.admin())) {
-				operatorCleanup();
+			if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
+				final boolean cleanupKubernetes = IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)
+						&& !IntersmashConfig.isOcp3x(OpenShifts.admin()),
+						cleanupOpenShift = IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+								&& !IntersmashConfig.isOcp3x(OpenShifts.admin());
+				operatorCleanup(cleanupKubernetes, cleanupOpenShift);
 			}
 			// let's cleanup once we're done
-			safetyCleanup();
+			safetyCleanup(extensionContext);
 		}
 	}
 
-	private static void safetyCleanup() {
+	private static void safetyCleanup(ExtensionContext extensionContext) {
 		log.info("Cleaning up the remaining resources on the cluster.");
-		OpenShifts.master().clean().waitFor();
+		if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
+			OpenShifts.master().clean().waitFor();
+		}
+		if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
+			Kuberneteses.master().clean().waitFor();
+		}
 	}
 
 	/**
 	 * Clean all OLM related objects.
 	 * <p>
 	 */
-	public static void operatorCleanup() {
-		OpenShifts.adminBinary().execute("delete", "subscription", "--all");
-		OpenShifts.adminBinary().execute("delete", "csvs", "--all");
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+	public static void operatorCleanup(final boolean cleanupKubernetes, final boolean cleanupOpenShift) {
+		if (cleanupKubernetes) {
+			Kuberneteses.adminBinary().execute("delete", "subscription", "--all");
+			Kuberneteses.adminBinary().execute("delete", "csvs", "--all");
+			Kuberneteses.adminBinary().execute("delete", "operatorgroup", "--all");
+		}
+		if (cleanupOpenShift) {
+			OpenShifts.adminBinary().execute("delete", "subscription", "--all");
+			OpenShifts.adminBinary().execute("delete", "csvs", "--all");
+			OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		}
 	}
 
 	@Override

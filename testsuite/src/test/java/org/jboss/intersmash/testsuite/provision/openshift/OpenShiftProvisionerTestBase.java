@@ -28,15 +28,16 @@ import java.util.Map;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
+import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.tools.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
-import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
-import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
+import org.jboss.intersmash.tools.application.input.BinarySource;
+import org.jboss.intersmash.tools.application.input.BuildInput;
+import org.jboss.intersmash.tools.application.input.BuildInputBuilder;
 import org.jboss.intersmash.tools.util.IntersmashToolsProvisionersProperties;
 
 import cz.xtf.builder.builders.SecretBuilder;
@@ -59,6 +60,7 @@ import io.strimzi.api.kafka.model.listener.arraylistener.KafkaListenerType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@OpenShiftTest
 public class OpenShiftProvisionerTestBase {
 	static final EnvVar TEST_ENV_VAR = new EnvVarBuilder().withName("test-evn-key").withValue("test-evn-value").build();
 	static final String TEST_SECRET_FOO = "foo";

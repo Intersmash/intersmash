@@ -17,6 +17,8 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
@@ -29,7 +31,8 @@ import cz.xtf.junit5.annotations.CleanBeforeEach;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 
 @CleanBeforeEach
-public class ProvisionerCleanupTestCase {
+@OpenShiftTest
+public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 	protected static final OpenShift openShift = OpenShifts.master();
 
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
