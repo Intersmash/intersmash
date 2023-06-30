@@ -90,4 +90,4 @@ cat test.properties
 
 mkdir local-repo
 mvn clean install -Dmaven.repo.local=./local-repo -DskipTests
-mvn test -Dmaven.repo.local=./local-repo -pl testsuite/
+mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.openshift

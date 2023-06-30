@@ -83,6 +83,7 @@ public class KubernetesClientBinary {
 	}
 
 	public void namespace(String projectName) {
+		// see https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-context-and-configuration
 		this.execute("config", "set-context", "--current", String.format("--namespace=%s", projectName));
 	}
 

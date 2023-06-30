@@ -1,26 +1,78 @@
-name: Intersmash - Simple build workflow
+name: Kubernetes E2E Tests
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
   pull_request:
-    branches: [ "main" ]
+    paths-ignore:
+      - 'doc/**'
+      - 'ide-config/**'
+      - '**.md'
+
+concurrency:
+  # Only run once for latest commit per ref and cancel other (previous) runs.
+  group: ci-e2e-intersmash-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  simple-build:
-    if: '! github.event.pull_request.draft'
+  minikube:
+    name: K8S
     runs-on: ubuntu-latest
-
+    if: github.repository == 'Intersmash/intersmash'
+    strategy:
+      fail-fast: false
+      matrix:
+        kubernetes: [v1.25.0, v1.24.0]
     steps:
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Minikube-Kubernetes
+        uses: manusa/actions-setup-minikube@v2.7.2
         with:
-          maven-version: 3.8.7
-      - uses: actions/checkout@v3
+          minikube version: v1.25.0
+          kubernetes version: ${{ matrix.kubernetes }}
+          github token: ${{ secrets.GITHUB_TOKEN }}
+          start args: '--force'
+      - name: Cache .m2 registry
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: cache-e2e-${{ github.sha }}-${{ github.run_id }}
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
-      - name: Build with Maven
-        run: mvn -version ; mvn clean install -U -B -DskipTests
+      - name: Install and Run Integration Tests
+        run: |
+          set -x
+          # cat our ~/.kube/config contents
+          #
+          cat ~/.kube/config
+          #
+          # operator-sdk must be installed manually, see 
+          #
+          export ARCH=$(case $(uname -m) in x86_64) echo -n amd64 ;; aarch64) echo -n arm64 ;; *) echo -n $(uname -m) ;; esac)
+          export OS=$(uname | awk '{print tolower($0)}')
+          export OPERATOR_SDK_DL_URL=https://github.com/operator-framework/operator-sdk/releases/download/v1.28.0
+          curl -LO ${OPERATOR_SDK_DL_URL}/operator-sdk_${OS}_${ARCH}
+          chmod +x operator-sdk_${OS}_${ARCH} && sudo mv operator-sdk_${OS}_${ARCH} /usr/local/bin/operator-sdk
+          operator-sdk olm install
+          #
+          # set the Kubernetes hostname that will resolve to the minikube IP
+          #
+          export KUBERNETES_HOSTNAME=host.minikube.internal
+          #
+          # run...
+          #
+          mkdir local-repo
+          mvn clean install -Dmaven.repo.local=./local-repo -DskipTests
+          mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.k8s \
+          -Dintersmash.kubernetes.url=https://$( minikube ip):8443 \
+          -Dintersmash.kubernetes.hostname=$KUBERNETES_HOSTNAME \
+          -Dintersmash.kubernetes.namespace=test-k8s-1 \
+          -Dintersmash.olm.operators.catalog_source=community-operators \
+          -Dintersmash.olm.operators.namespace=olm \
+          -Dintersmash.hyperfoil.operators.catalog_source=operatorhubio-catalog

@@ -24,8 +24,8 @@ import java.util.Objects;
 
 import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
-import org.jboss.intersmash.tools.application.operator.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.operator.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
@@ -51,6 +51,7 @@ import org.keycloak.k8s.v2alpha1.keycloakspec.db.PasswordSecret;
 import org.keycloak.k8s.v2alpha1.keycloakspec.db.UsernameSecret;
 import org.slf4j.event.Level;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
@@ -105,7 +106,8 @@ public class KeycloakRealmImportOpenShiftOperatorProvisionerTest implements Proj
 	private static final PostgreSQLImageOpenShiftProvisioner POSTGRESQL_IMAGE_PROVISIONER = new PostgreSQLImageOpenShiftProvisioner(
 			pgSQLApplication);
 
-	private static KeycloakRealmImportOpenShiftOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak, final String appName) {
+	private static KeycloakRealmImportOpenShiftOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
+			final String appName) {
 		KeycloakRealmImportOpenShiftOperatorProvisioner operatorProvisioner = new KeycloakRealmImportOpenShiftOperatorProvisioner(
 				new KeycloakRealmImportOperatorApplication() {
 
@@ -130,9 +132,10 @@ public class KeycloakRealmImportOpenShiftOperatorProvisionerTest implements Proj
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
 		matchLabels.put("app", "sso");
-		IntersmashExtension.operatorCleanup();
+		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
+		OpenShifts.adminBinary().execute("apply", "-f",
+				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 	}
 
 	@AfterAll

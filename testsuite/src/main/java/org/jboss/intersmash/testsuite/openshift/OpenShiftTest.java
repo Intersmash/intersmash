@@ -1,10 +1,10 @@
 package org.jboss.intersmash.testsuite.openshift;
 
-import org.junit.jupiter.api.Tag;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.Tag;
 
 /**
  * Mark test that runs against OpenShift.
