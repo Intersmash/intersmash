@@ -15,8 +15,14 @@
  */
 package org.jboss.intersmash.tools.provision.k8s;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jboss.intersmash.tools.application.Application;
 import org.jboss.intersmash.tools.application.openshift.HasConfigMaps;
@@ -27,12 +33,31 @@ import org.jboss.intersmash.tools.provision.Provisioner;
 import org.jboss.intersmash.tools.provision.openshift.HasPods;
 import org.jboss.intersmash.tools.provision.openshift.Scalable;
 
+import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
+
 /**
  * Provisioner that is supposed to deploy an application on Kubernetes.
  */
 public interface KubernetesProvisioner<T extends Application> extends Provisioner<T>, Scalable, HasPods {
 
 	Kubernetes kubernetes = Kuberneteses.master();
+
+	static Secret createTlsSecret(final String namespace, final String secretName, final Path key, final Path certificate)
+			throws IOException {
+		Map<String, String> data = new HashMap<>();
+		String keyDerData = Files.readString(key);
+		String crtDerData = Files.readString(certificate);
+		data.put("tls.key", Base64.getEncoder().encodeToString(keyDerData.getBytes()));
+		data.put("tls.crt", Base64.getEncoder().encodeToString(crtDerData.getBytes()));
+		final Secret secret = new SecretBuilder()
+				.withNewMetadata().withName(secretName).endMetadata()
+				.withType("kubernetes.io/tls")
+				.withImmutable(false)
+				.addToData(data)
+				.build();
+		return kubernetes.secrets().inNamespace(namespace).createOrReplace(secret);
+	}
 
 	@Override
 	default void preDeploy() {

@@ -15,8 +15,14 @@
  */
 package org.jboss.intersmash.tools.provision.openshift;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jboss.intersmash.tools.application.Application;
 import org.jboss.intersmash.tools.application.openshift.HasConfigMaps;
@@ -25,6 +31,8 @@ import org.jboss.intersmash.tools.provision.Provisioner;
 
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
+import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
 
 /**
  * Provisioner that is supposed to deploy an application on OpenShift.
@@ -34,6 +42,22 @@ public interface OpenShiftProvisioner<T extends Application> extends Provisioner
 	String APP_LABEL_KEY = "intersmash.app";
 
 	OpenShift openShift = OpenShifts.master();
+
+	static Secret createTlsSecret(final String namespace, final String secretName, final Path key, final Path certificate)
+			throws IOException {
+		Map<String, String> data = new HashMap<>();
+		String keyDerData = Files.readString(key);
+		String crtDerData = Files.readString(certificate);
+		data.put("tls.key", Base64.getEncoder().encodeToString(keyDerData.getBytes()));
+		data.put("tls.crt", Base64.getEncoder().encodeToString(crtDerData.getBytes()));
+		final Secret secret = new SecretBuilder()
+				.withNewMetadata().withName(secretName).endMetadata()
+				.withType("kubernetes.io/tls")
+				.withImmutable(false)
+				.addToData(data)
+				.build();
+		return openShift.secrets().inNamespace(namespace).createOrReplace(secret);
+	}
 
 	@Override
 	default void preDeploy() {

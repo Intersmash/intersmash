@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.jboss.intersmash.tools.k8s.KubernetesConfig;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -395,6 +396,11 @@ public class Kubernetes extends DefaultKubernetesClient {
 			log.debug(strBuilderResourcesToDelete.toString());
 		}
 		return isClean;
+	}
+
+	public String generateHostname() {
+		log.info("Kubernetes generateHostname returns: " + KubernetesConfig.getKubernetesHostname());
+		return KubernetesConfig.getKubernetesHostname();
 	}
 
 }

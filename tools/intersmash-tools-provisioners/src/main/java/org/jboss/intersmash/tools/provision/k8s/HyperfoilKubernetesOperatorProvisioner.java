@@ -17,7 +17,6 @@ package org.jboss.intersmash.tools.provision.k8s;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,24 +24,14 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.application.operator.HyperfoilOperatorApplication;
 import org.jboss.intersmash.tools.k8s.KubernetesConfig;
 import org.jboss.intersmash.tools.k8s.client.Kuberneteses;
-import org.jboss.intersmash.tools.provision.openshift.WaitersUtil;
 import org.jboss.intersmash.tools.provision.operator.HyperfoilOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.operator.OperatorProvisioner;
-import org.slf4j.event.Level;
 
-import io.fabric8.kubernetes.api.model.ObjectMeta;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.api.model.networking.v1.HTTPIngressPathBuilder;
-import io.fabric8.kubernetes.api.model.networking.v1.HTTPIngressRuleValueBuilder;
 import io.fabric8.kubernetes.api.model.networking.v1.Ingress;
-import io.fabric8.kubernetes.api.model.networking.v1.IngressBackendBuilder;
-import io.fabric8.kubernetes.api.model.networking.v1.IngressBuilder;
-import io.fabric8.kubernetes.api.model.networking.v1.IngressRuleBuilder;
-import io.fabric8.kubernetes.api.model.networking.v1.IngressServiceBackendBuilder;
-import io.fabric8.kubernetes.api.model.networking.v1.IngressSpecBuilder;
-import io.fabric8.kubernetes.api.model.networking.v1.ServiceBackendPortBuilder;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -92,46 +81,13 @@ public class HyperfoilKubernetesOperatorProvisioner
 
 	@Override
 	public void deploy() {
+		// TODO routes/ingresses ?
 		HyperfoilOperatorProvisioner.super.deploy();
-		// on k8s we need to explicitly create one Ingress for external access
-		ObjectMeta metadata = new ObjectMeta();
-		metadata.setName(getApplication().getName());
-		Ingress ingress = new IngressBuilder().withMetadata(metadata).withSpec(
-				new IngressSpecBuilder().withRules(
-						new IngressRuleBuilder()
-								.withHost(getApplication().getName())
-								.withHttp(
-										new HTTPIngressRuleValueBuilder()
-												.withPaths(Collections.singletonList(
-														new HTTPIngressPathBuilder().withPath("/").withPathType("Prefix")
-																.withBackend(
-																		new IngressBackendBuilder()
-																				.withService(
-																						new IngressServiceBackendBuilder()
-																								.withName("hyperfoil")
-																								.withPort(
-																										new ServiceBackendPortBuilder()
-																												.withNumber(
-																														8090)
-																												.build())
-																								.build())
-																				.build())
-																.build()))
-												.build())
-								.build())
-						.build())
-				.build();
-		Kuberneteses.admin().network().v1().ingresses().create(ingress);
-		WaitersUtil.routeIsUp(getURL().toExternalForm())
-				.level(Level.DEBUG)
-				.waitFor();
 	}
 
 	@Override
 	public void undeploy() {
-		// let's remove the Ingress for external access
-		Kuberneteses.admin().network().v1().ingresses().withName(getApplication().getName());
-
+		// TODO routes/ingresses ?
 		HyperfoilOperatorProvisioner.super.undeploy();
 	}
 
@@ -151,14 +107,39 @@ public class HyperfoilKubernetesOperatorProvisioner
 
 	@Override
 	public URL getURL() {
-		Ingress ingress = retrieveNamedIngress(getApplication().getName());
+		Ingress ingress = retrieveNamedIngress(getApplication().getHyperfoil().getMetadata().getName());
 		if (Objects.nonNull(ingress)) {
-			String host = ingress.getSpec().getRules().get(0).getHost();
-			String url = String.format("http://%s", host);
-			try {
-				return new URL(url);
-			} catch (MalformedURLException e) {
-				throw new RuntimeException(String.format("Hyperfoil operator route \"%s\"is malformed.", url), e);
+			if (ingress.getSpec().getRules().get(0) != null
+					&& ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0) != null) {
+				String host = ingress.getSpec().getRules().get(0).getHost();
+				String url = String.format("%s://%s:%s/%s",
+						ingress.getSpec().getTls() != null ? "https" : "http",
+						host,
+						ingress.getSpec().getTls() != null ? "80" : "8443",
+						ingress.getSpec().getRules().get(0).getHttp().getPaths().get(0).getPath());
+				try {
+					return new URL(url);
+				} catch (MalformedURLException e) {
+					throw new RuntimeException(String.format("Hyperfoil operator route \"%s\"is malformed.", url), e);
+				}
+			}
+		} else {
+			Service service = KubernetesProvisioner.kubernetes.services()
+					.withName(getApplication().getHyperfoil().getMetadata().getName()).get();
+			if (Objects.nonNull(service)) {
+				if (service.getSpec().getPorts().get(0) != null) {
+					// TODO - property for default hostname (e.g. INgresses can't have IP)?
+					final String url = String.format("http://%s:%d",
+							KubernetesProvisioner.kubernetes.generateHostname(),
+							service.getSpec().getPorts().get(0) != null ? service.getSpec().getPorts().get(0).getNodePort()
+									: "80");
+					try {
+						return new URL(url);
+					} catch (MalformedURLException e) {
+						throw new RuntimeException(
+								String.format("Hyperfoil operator service NodePort \"%s\"is malformed.", url), e);
+					}
+				}
 			}
 		}
 		return null;

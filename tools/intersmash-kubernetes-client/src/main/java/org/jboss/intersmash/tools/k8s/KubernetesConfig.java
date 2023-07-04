@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class KubernetesConfig {
 	public static final String KUBERNETES_URL = "intersmash.kubernetes.url";
+	public static final String KUBERNETES_HOSTNAME = "intersmash.kubernetes.hostname";
 	public static final String KUBERNETES_TOKEN = "intersmash.kubernetes.token";
 	public static final String KUBERNETES_VERSION = "intersmash.kubernetes.version";
 	public static final String KUBERNETES_NAMESPACE = "intersmash.kubernetes.namespace";
@@ -42,6 +43,10 @@ public final class KubernetesConfig {
 
 	public static String url() {
 		return XTFConfig.get(KUBERNETES_URL);
+	}
+
+	public static String getKubernetesHostname() {
+		return XTFConfig.get(KUBERNETES_HOSTNAME, "localhost");
 	}
 
 	private static final String CLEAN_KUBERNETES = "intersmash.junit.clean_namespace";

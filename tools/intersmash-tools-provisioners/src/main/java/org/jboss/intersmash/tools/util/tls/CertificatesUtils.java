@@ -6,16 +6,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.MessageFormat;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.Secret;
-import io.fabric8.kubernetes.api.model.SecretBuilder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,11 +60,6 @@ public class CertificatesUtils {
 				caDir.resolve(key).toFile().exists() &&
 				caDir.resolve(truststore).toFile().exists()) {
 			certificateAndKey.existing = true;
-			Secret tlsSecret = OpenShifts.master().getSecret(tlsSecretName);
-			if (Objects.isNull(tlsSecret)) {
-				throw new RuntimeException(MessageFormat.format("Secret {} doesn't exist!", tlsSecretName));
-			}
-			certificateAndKey.tlsSecret = tlsSecret;
 			return certificateAndKey;
 		}
 
@@ -83,17 +70,6 @@ public class CertificatesUtils {
 		// add self-signed certificate to keystore: it's typically used by the clients contacting the endpoints over TLS
 		processCall(caDir, "keytool", "-import", "-noprompt", "-alias", hostname, "-keystore",
 				truststore, "-file", certificate, "-storetype", "JKS", "-storepass", truststorePassword);
-
-		// create secret
-		try {
-			Secret tlsSecret = createTlsSecret(tlsSecretName, certificateAndKey.key, certificateAndKey.certificate);
-			if (Objects.isNull(tlsSecret)) {
-				throw new RuntimeException(MessageFormat.format("Secret {} doesn't exist!", tlsSecretName));
-			}
-			certificateAndKey.tlsSecret = tlsSecret;
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to create secret " + tlsSecretName, e);
-		}
 
 		return certificateAndKey;
 	}
@@ -125,20 +101,5 @@ public class CertificatesUtils {
 		if (result != 0) {
 			throw new RuntimeException("Failed executing " + String.join(" ", args));
 		}
-	}
-
-	public static Secret createTlsSecret(String secretName, Path key, Path certificate) throws IOException {
-		Map<String, String> data = new HashMap<>();
-		String keyDerData = Files.readString(key);
-		String crtDerData = Files.readString(certificate);
-		data.put("tls.key", Base64.getEncoder().encodeToString(keyDerData.getBytes()));
-		data.put("tls.crt", Base64.getEncoder().encodeToString(crtDerData.getBytes()));
-		final Secret secret = new SecretBuilder()
-				.withNewMetadata().withName(secretName).endMetadata()
-				.withType("kubernetes.io/tls")
-				.withImmutable(false)
-				.addToData(data)
-				.build();
-		return OpenShifts.master().secrets().inNamespace(OpenShiftConfig.namespace()).createOrReplace(secret);
 	}
 }

@@ -180,6 +180,7 @@ public class HyperfoilKubernetesOperatorProvisionerTest implements NamespaceCrea
 		logger.debug("JSON: {}", JSON);
 		RunStatisticsWrapper runStatisticsWrapper = new RunStatisticsWrapper(JSON);
 		Assertions.assertTrue(runStatisticsWrapper.getPhaseStats().size() > 0);
+		//		}
 	}
 
 	/**

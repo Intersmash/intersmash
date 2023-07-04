@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.operator.HyperfoilOperatorApplication;
 import org.jboss.intersmash.tools.provision.Provisioner;
+import org.jboss.intersmash.tools.provision.openshift.WaitersUtil;
 import org.slf4j.event.Level;
 
 import com.google.common.base.Strings;
@@ -89,6 +90,9 @@ public interface HyperfoilOperatorProvisioner extends
 		new SimpleWaiter(() -> getPods().size() == 1)
 				.failFast(ffCheck)
 				.reason("Wait for expected number of replicas to be active.")
+				.level(Level.DEBUG)
+				.waitFor();
+		WaitersUtil.routeIsUp(getURL().toExternalForm())
 				.level(Level.DEBUG)
 				.waitFor();
 	}

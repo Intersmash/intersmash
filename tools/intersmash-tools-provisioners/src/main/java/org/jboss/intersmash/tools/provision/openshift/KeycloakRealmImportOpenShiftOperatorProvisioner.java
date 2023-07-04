@@ -15,7 +15,9 @@
  */
 package org.jboss.intersmash.tools.provision.openshift;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -129,6 +131,15 @@ public class KeycloakRealmImportOpenShiftOperatorProvisioner
 	@Override
 	public NonNamespaceOperation<CustomResourceDefinition, CustomResourceDefinitionList, Resource<CustomResourceDefinition>> retrieveCustomResourceDefinitions() {
 		return OpenShifts.admin().apiextensions().v1().customResourceDefinitions();
+	}
+
+	@Override
+	public void createTlsSecret(final String namespace, final String tlsSecretName, final Path key, final Path certificate) {
+		try {
+			OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, key, certificate);
+		} catch (IOException e) {
+			throw new IllegalStateException("Couldn't create the required secret: " + tlsSecretName, e);
+		}
 	}
 
 	@Override

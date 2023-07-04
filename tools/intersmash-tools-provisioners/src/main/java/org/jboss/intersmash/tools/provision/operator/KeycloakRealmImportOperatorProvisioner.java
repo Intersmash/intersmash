@@ -17,6 +17,7 @@ package org.jboss.intersmash.tools.provision.operator;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Http;
 import org.slf4j.event.Level;
 
+import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
@@ -89,12 +91,17 @@ public interface KeycloakRealmImportOperatorProvisioner extends
 		// TODO: https://www.keycloak.org/operator/basic-deployment or ~/projects/keycloak/docs/guides/operator/basic-deployment.adoc
 		if (getApplication().getKeycloak().getSpec().getHttp() == null
 				|| getApplication().getKeycloak().getSpec().getHttp().getTlsSecret() == null) {
+
 			// create key, certificate and tls secret
 			String tlsSecretName = getApplication().getKeycloak().getMetadata().getName() + "-tls-secret";
 			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
 					.generateSelfSignedCertificateAndKey(
 							getApplication().getKeycloak().getSpec().getHostname().getHostname().replaceFirst("[.].*$", ""),
 							tlsSecretName);
+
+			createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, certificateAndKey.key,
+					certificateAndKey.certificate);
+
 			// add config to keycloak
 			if (getApplication().getKeycloak().getSpec().getHttp() == null) {
 				Http http = new Http();
@@ -131,6 +138,8 @@ public interface KeycloakRealmImportOperatorProvisioner extends
 					.waitFor();
 		}
 	}
+
+	void createTlsSecret(final String namespace, final String tlsSecretName, final Path key, final Path certificate);
 
 	default void waitFor(Keycloak keycloak) {
 		Long replicas = keycloak.getSpec().getInstances();
