@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import cz.xtf.core.http.Https;
+import cz.xtf.core.http.HttpsException;
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.core.waiting.Waiter;
@@ -66,8 +67,13 @@ public class WaitersUtil {
 	}
 
 	public static Waiter routeIsUp(String routeURL) {
-		return new SimpleWaiter(
-				() -> Https.getCode(routeURL) != 503)
-				.reason("Wait until the route is ready to serve.");
+		return new SimpleWaiter(() ->
+			{
+				try {
+					return Https.getCode(routeURL) != 503;
+				} catch (HttpsException ex) {
+					return false;
+				}
+			}).reason("Wait until the route is ready to serve.");
 	}
 }
