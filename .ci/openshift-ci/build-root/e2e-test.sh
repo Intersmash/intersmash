@@ -90,4 +90,7 @@ cat test.properties
 
 mkdir local-repo
 mvn clean install -Dmaven.repo.local=./local-repo -DskipTests
-mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.openshift
+mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.openshift \
+ -Dintersmash.olm.operators.catalog_source=redhat-operators \
+ -Dintersmash.olm.operators.namespace=openshift-marketplace \
+ -Dintersmash.hyperfoil.operators.catalog_source=community-operators
