@@ -71,6 +71,10 @@ oc adm policy add-cluster-role-to-user cluster-admin ${TEST_USER_USERNAME}
 
 export TEST_NAMESPACE=intersmash-test
 
+export PULL_SECRET_PATH_REDHAT_REGISTRY_IO=/var/run/registry-redhat-io-fake-pull-secret
+export PULL_SECRET_FILE_REDHAT_REGISTRY_IO=${PULL_SECRET_PATH_REDHAT_REGISTRY_IO}/pull-secret
+export PULL_SECRET_REDHAT_REGISTRY_IO=$(cat "${PULL_SECRET_FILE_REDHAT_REGISTRY_IO}")
+
 cat >> test.properties <<EOL
 xtf.openshift.url=${TEST_CLUSTER_URL}
 xtf.openshift.namespace=${TEST_NAMESPACE}
@@ -83,6 +87,7 @@ xtf.openshift.master.password=${TEST_USER_PASSWORD}
 xtf.openshift.master.token=${USER_TOKEN}
 xtf.openshift.admin.kubeconfig=${KUBECONFIG}
 xtf.openshift.master.kubeconfig=${KUBECONFIG}
+xtf.openshift.pullsecret=${PULL_SECRET_REDHAT_REGISTRY_IO}
 
 EOL
 
