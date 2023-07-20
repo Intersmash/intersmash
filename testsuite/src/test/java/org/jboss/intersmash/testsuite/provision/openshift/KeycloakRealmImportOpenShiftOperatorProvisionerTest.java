@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import io.fabric8.kubernetes.api.model.Secret;
 import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
@@ -190,12 +191,12 @@ public class KeycloakRealmImportOpenShiftOperatorProvisionerTest implements Proj
 		String tlsSecretName = name + "-tls-secret";
 		CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
 				.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
-		OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, certificateAndKey.key,
+		Secret tlsSecret = OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, certificateAndKey.key,
 				certificateAndKey.certificate);
 
 		// add TLS config to keycloak using the secret we just created
 		Http http = new Http();
-		http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
+		http.setTlsSecret(tlsSecret.getMetadata().getName());
 		spec.setHttp(http);
 		spec.setHostname(hostname);
 		keycloak.setSpec(spec);
@@ -250,12 +251,12 @@ public class KeycloakRealmImportOpenShiftOperatorProvisionerTest implements Proj
 					CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
 							.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""),
 									tlsSecretName);
-					OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName,
+					Secret tlsSecret = OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName,
 							certificateAndKey.key, certificateAndKey.certificate);
 
 					// add TLS config to keycloak using the secret we just created
 					Http http = new Http();
-					http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
+					http.setTlsSecret(tlsSecret.getMetadata().getName());
 					spec.setHttp(http);
 					spec.setHostname(hostname);
 					// database

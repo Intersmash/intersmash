@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
+import io.fabric8.kubernetes.api.model.Secret;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.operator.KeycloakRealmImportOperatorApplication;
@@ -134,9 +135,9 @@ public class KeycloakRealmImportOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public void createTlsSecret(final String namespace, final String tlsSecretName, final Path key, final Path certificate) {
+	public Secret createTlsSecret(final String namespace, final String tlsSecretName, final Path key, final Path certificate) {
 		try {
-			OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, key, certificate);
+			return OpenShiftProvisioner.createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, key, certificate);
 		} catch (IOException e) {
 			throw new IllegalStateException("Couldn't create the required secret: " + tlsSecretName, e);
 		}

@@ -32,7 +32,6 @@ public class CertificatesUtils {
 		public String truststorePassword;
 		public String truststoreAlias;
 		public boolean existing = false;
-		public Secret tlsSecret;
 	}
 
 	/**

@@ -25,6 +25,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Collectors;
 
+import io.fabric8.kubernetes.api.model.Secret;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
@@ -99,17 +100,17 @@ public interface KeycloakRealmImportOperatorProvisioner extends
 							getApplication().getKeycloak().getSpec().getHostname().getHostname().replaceFirst("[.].*$", ""),
 							tlsSecretName);
 
-			createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, certificateAndKey.key,
+			Secret tlsSecret = createTlsSecret(OpenShifts.master().getNamespace(), tlsSecretName, certificateAndKey.key,
 					certificateAndKey.certificate);
 
 			// add config to keycloak
 			if (getApplication().getKeycloak().getSpec().getHttp() == null) {
 				Http http = new Http();
-				http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
+				http.setTlsSecret(tlsSecret.getMetadata().getName());
 				getApplication().getKeycloak().getSpec().setHttp(http);
 			} else {
 				getApplication().getKeycloak().getSpec().getHttp()
-						.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
+						.setTlsSecret(tlsSecret.getMetadata().getName());
 			}
 		}
 
@@ -139,7 +140,7 @@ public interface KeycloakRealmImportOperatorProvisioner extends
 		}
 	}
 
-	void createTlsSecret(final String namespace, final String tlsSecretName, final Path key, final Path certificate);
+	Secret createTlsSecret(final String namespace, final String tlsSecretName, final Path key, final Path certificate);
 
 	default void waitFor(Keycloak keycloak) {
 		Long replicas = keycloak.getSpec().getInstances();
