@@ -69,5 +69,10 @@
             <artifactId>http-client</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-kubernetes-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

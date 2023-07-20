@@ -15,8 +15,12 @@
  */
 package org.jboss.intersmash.tools;
 
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
+import com.google.common.base.Strings;
 
 import cz.xtf.core.config.XTFConfig;
 import cz.xtf.core.openshift.OpenShift;
@@ -29,10 +33,15 @@ public class IntersmashConfig {
 	private static final String DEPLOYMENTS_REPOSITORY_REF = "intersmash.deployments.repository.ref";
 
 	// Default Catalog for Operators
-	private static final String DEFAULT_OPERATOR_CATALOG_SOURCE_NAMESPACE = "openshift-marketplace";
+	private static final String KUBERNETES_OPERATOR_CATALOG_SOURCE_NAMESPACE = "olm";
+	private static final String OPENSHIFT_OPERATOR_CATALOG_SOURCE_NAMESPACE = "openshift-marketplace";
+	private static final String DEFAULT_OPERATOR_CATALOG_SOURCE_NAMESPACE = KUBERNETES_OPERATOR_CATALOG_SOURCE_NAMESPACE;
 	private static final String REDHAT_OPERATOR_CATALOG_SOURCE_NAME = "redhat-operators";
 	private static final String COMMUNITY_OPERATOR_CATALOG_SOURCE_NAME = "community-operators";
+	private static final String OPERATORHUB_IO_OPERATOR_CATALOG_SOURCE_NAME = "operatorhubio-catalog";
 	private static final String DEFAULT_OPERATOR_CATALOG_SOURCE_NAME = COMMUNITY_OPERATOR_CATALOG_SOURCE_NAME;
+	private static final String OLM_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.olm.operators.catalog_source";
+	private static final String OLM_OPERATOR_CATALOG_SOURCE_NAMESPACE = "intersmash.olm.operators.namespace";
 
 	// Custom Catalogs for operators
 	private static final String INFINISPAN_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.infinispan.operators.catalog_source";
@@ -116,6 +125,10 @@ public class IntersmashConfig {
 	private static final String MYSQL_IMAGE_URL = "intersmash.mysql.image";
 	private static final String PGSQL_IMAGE_URL = "intersmash.postgresql.image";
 
+	private static final String JUNIT5_EXECUTION_TARGETS = "intersmash.junit5.execution.targets";
+	private static final String JUNIT5_EXECUTION_TARGET_OPENSHIFT = "OpenShift";
+	private static final String JUNIT5_EXECUTION_TARGET_KUBERNETES = "Kubernetes";
+
 	public static boolean skipDeploy() {
 		return XTFConfig.get(SKIP_DEPLOY, "false").equals("true");
 	}
@@ -129,11 +142,11 @@ public class IntersmashConfig {
 	}
 
 	public static String defaultOperatorCatalogSourceName() {
-		return DEFAULT_OPERATOR_CATALOG_SOURCE_NAME;
+		return XTFConfig.get(OLM_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
 	}
 
 	public static String defaultOperatorCatalogSourceNamespace() {
-		return DEFAULT_OPERATOR_CATALOG_SOURCE_NAMESPACE;
+		return XTFConfig.get(OLM_OPERATOR_CATALOG_SOURCE_NAMESPACE, DEFAULT_OPERATOR_CATALOG_SOURCE_NAMESPACE);
 	}
 
 	public static String infinispanOperatorCatalogSource() {
@@ -217,7 +230,7 @@ public class IntersmashConfig {
 	}
 
 	public static String hyperfoilOperatorCatalogSource() {
-		return XTFConfig.get(HYPERFOIL_OPERATOR_CATALOG_SOURCE_NAME, COMMUNITY_OPERATOR_CATALOG_SOURCE_NAME);
+		return XTFConfig.get(HYPERFOIL_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
 	}
 
 	public static String hyperfoilOperatorIndexImage() {
@@ -403,5 +416,23 @@ public class IntersmashConfig {
 	public static String keycloakRealmImportOperatorPackageManifest() {
 		return XTFConfig.get(KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST,
 				DEFAULT_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String[] getJunit5ExecutionTargets() {
+		final String propertyValue = XTFConfig.get(JUNIT5_EXECUTION_TARGETS);
+		if (Strings.isNullOrEmpty(propertyValue)) {
+			return new String[] { JUNIT5_EXECUTION_TARGET_OPENSHIFT };
+		}
+		return XTFConfig.get(JUNIT5_EXECUTION_TARGETS).split(",");
+	}
+
+	public static Boolean testEnvironmentSupportsOpenShift() {
+		return Arrays.stream(getJunit5ExecutionTargets()).collect(Collectors.toList())
+				.contains(JUNIT5_EXECUTION_TARGET_OPENSHIFT);
+	}
+
+	public static Boolean testEnvironmentSupportsKubernetes() {
+		return Arrays.stream(getJunit5ExecutionTargets()).collect(Collectors.toList())
+				.contains(JUNIT5_EXECUTION_TARGET_KUBERNETES);
 	}
 }

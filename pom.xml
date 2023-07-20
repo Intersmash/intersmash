@@ -43,6 +43,8 @@
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
         <version.io.fabric8>6.6.0</version.io.fabric8>
         <version.openshift-client>5.12.2</version.openshift-client>
+        <version.io.fabric8.generator>6.6.0</version.io.fabric8.generator>
+        <version.io.fabric8.kubernetes-client>5.12.2</version.io.fabric8.kubernetes-client>
 
         <!--
             Version used for the activemq-artemis-operator;
@@ -97,6 +99,8 @@
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
+        <version.junit5.platform>1.7.0</version.junit5.platform>
+        <version.assertj-core>3.24.2</version.assertj-core>
     </properties>
 
     <dependencyManagement>
@@ -155,6 +159,11 @@
             </dependency>
             <dependency>
                 <groupId>org.jboss.intersmash</groupId>
+                <artifactId>intersmash-kubernetes-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.intersmash</groupId>
                 <artifactId>intersmash-deployments-provider</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -195,6 +204,11 @@
                 <version>${version.dev-failsafe.failsafe}</version>
             </dependency>
             <!-- JUnit 5 Jupiter -->
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${version.junit5.platform}</version>
+            </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-api</artifactId>
@@ -338,21 +352,32 @@
                 <artifactId>jsr305</artifactId>
                 <version>${version.com.google.code.findbugs}</version>
             </dependency>
-
+            <!-- More deps -->
             <dependency>
                 <groupId>uk.org.webcompere</groupId>
                 <artifactId>system-stubs-jupiter</artifactId>
                 <version>${version.junit5.jupiter.system.stubs}</version>
+                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>io.fabric8</groupId>
                 <artifactId>generator-annotations</artifactId>
-                <version>${version.io.fabric8}</version>
+                <version>${version.io.fabric8.generator}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client</artifactId>
+                <version>${version.io.fabric8.kubernetes-client}</version>
             </dependency>
             <dependency>
                 <groupId>io.fabric8</groupId>
                 <artifactId>openshift-client</artifactId>
                 <version>${version.openshift-client}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.assertj-core}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -466,7 +491,7 @@
                 <plugin>
                     <groupId>io.fabric8</groupId>
                     <artifactId>java-generator-maven-plugin</artifactId>
-                    <version>${version.io.fabric8}</version>
+                    <version>${version.io.fabric8.generator}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

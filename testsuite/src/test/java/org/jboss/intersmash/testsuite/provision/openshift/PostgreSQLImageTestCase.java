@@ -16,6 +16,8 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
+import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
@@ -29,7 +31,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @CleanBeforeAll
 @Slf4j
-public class PostgreSQLImageTestCase {
+@OpenShiftTest
+public class PostgreSQLImageTestCase implements ProjectCreationCapable {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final PostgreSQLImageOpenShiftApplication application = OpenShiftProvisionerTestBase
 			.getPostgreSQLOpenShiftApplication();

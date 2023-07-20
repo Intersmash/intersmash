@@ -16,18 +16,18 @@
 package org.jboss.intersmash.tools.provision.openshift;
 
 import org.jboss.intersmash.tools.application.Application;
-import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.tools.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.provision.ProvisionerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class KafkaOperatorProvisionerFactory implements ProvisionerFactory<KafkaOperatorProvisioner> {
+public class KafkaOperatorProvisionerFactory implements ProvisionerFactory<KafkaOpenShiftOperatorProvisioner> {
 
 	@Override
-	public KafkaOperatorProvisioner getProvisioner(Application application) {
+	public KafkaOpenShiftOperatorProvisioner getProvisioner(Application application) {
 		if (KafkaOperatorApplication.class.isAssignableFrom(application.getClass()))
-			return new KafkaOperatorProvisioner((KafkaOperatorApplication) application);
+			return new KafkaOpenShiftOperatorProvisioner((KafkaOperatorApplication) application);
 		return null;
 	}
 }

@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
@@ -45,7 +47,8 @@ import io.fabric8.openshift.api.model.GitBuildSource;
  * inside the builder image.
  */
 @CleanBeforeAll
-public class WildflyImageProvisionerTestCase {
+@OpenShiftTest
+public class WildflyImageProvisionerTestCase implements ProjectCreationCapable {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final WildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase
 			.getWildflyOpenShiftImageApplication();

@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
@@ -46,7 +48,8 @@ import io.fabric8.kubernetes.api.model.Service;
  * which are compatible with a WildFly/EAP s2i v2 binary build.
  */
 @CleanBeforeAll
-public class WildflyTargetServerTestCase {
+@OpenShiftTest
+public class WildflyTargetServerTestCase implements ProjectCreationCapable {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final WildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase
 			.getWildflyOpenShiftLocalBinaryTargetServerApplication();

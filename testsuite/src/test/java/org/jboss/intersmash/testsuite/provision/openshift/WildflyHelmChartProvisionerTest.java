@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
+import org.jboss.intersmash.testsuite.openshift.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisioner;
@@ -29,7 +31,8 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
  * programmatically
  */
 @CleanBeforeAll
-public class WildflyHelmChartProvisionerTest {
+@OpenShiftTest
+public class WildflyHelmChartProvisionerTest implements ProjectCreationCapable {
 
 	@Test
 	//@Disabled("No artifacts on a Maven repo which is reachable by the Pod")

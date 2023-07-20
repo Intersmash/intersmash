@@ -18,20 +18,20 @@ package org.jboss.intersmash.tools.provision;
 import static org.mockito.Mockito.mock;
 
 import org.jboss.intersmash.tools.application.Application;
-import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
-import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
+import org.jboss.intersmash.tools.application.operator.ActiveMQOperatorApplication;
+import org.jboss.intersmash.tools.application.operator.KafkaOperatorApplication;
+import org.jboss.intersmash.tools.application.operator.WildflyOperatorApplication;
+import org.jboss.intersmash.tools.provision.openshift.ActiveMQOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.KafkaOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.WildflyOpenShiftOperatorProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -103,7 +103,7 @@ public class ProvisionerManagerTestCase {
 		application = mock(WildflyOperatorApplication.class);
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(WildflyOperatorProvisioner.class, actual.getClass());
+		Assertions.assertEquals(WildflyOpenShiftOperatorProvisioner.class, actual.getClass());
 	}
 
 	/**
@@ -114,7 +114,7 @@ public class ProvisionerManagerTestCase {
 		application = mock(ActiveMQOperatorApplication.class);
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(ActiveMQOperatorProvisioner.class, actual.getClass());
+		Assertions.assertEquals(ActiveMQOpenShiftOperatorProvisioner.class, actual.getClass());
 	}
 
 	/**
@@ -125,7 +125,7 @@ public class ProvisionerManagerTestCase {
 		application = mock(KafkaOperatorApplication.class);
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(KafkaOperatorProvisioner.class, actual.getClass());
+		Assertions.assertEquals(KafkaOpenShiftOperatorProvisioner.class, actual.getClass());
 	}
 
 	@Test
