@@ -31,29 +31,68 @@ import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvision
 import org.jboss.intersmash.tools.util.tls.CertificatesUtils;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorKeycloakList;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Http;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.event.helpers.EventHelper;
 import cz.xtf.core.openshift.OpenShiftWaiters;
+import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
-import io.fabric8.kubernetes.api.model.KubernetesResourceList;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
-import io.fabric8.kubernetes.client.DefaultKubernetesClient;
-import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
+import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
 import lombok.NonNull;
 
 /**
  * Keycloak operator provisioner
  */
 public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<KeycloakRealmImportOperatorApplication> {
+	private static final String KEYCLOAK_RESOURCE = "keycloaks.k8s.keycloak.org";
+	private static final String KEYCLOAK_REALM_IMPORT_RESOURCE = "keycloakrealmimports.k8s.keycloak.org";
+	private static NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
+	private static NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
+
+	public NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> keycloakClient() {
+		if (KEYCLOAK_CUSTOM_RESOURCE_CLIENT == null) {
+			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
+					.withName(KEYCLOAK_RESOURCE).get();
+			CustomResourceDefinitionContext crdc = CustomResourceDefinitionContext.fromCrd(crd);
+			if (!getCustomResourceDefinitions().contains(KEYCLOAK_RESOURCE)) {
+				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
+						KEYCLOAK_RESOURCE, OPERATOR_ID));
+			}
+			MixedOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> crClient = OpenShifts
+					.master().newHasMetadataOperation(crdc, Keycloak.class, KeycloakRealmImportOperatorKeycloakList.class);
+			KEYCLOAK_CUSTOM_RESOURCE_CLIENT = crClient.inNamespace(OpenShiftConfig.namespace());
+		}
+		return KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
+	}
+
+	public NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> keycloakRealmImportClient() {
+		if (KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT == null) {
+			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
+					.withName(KEYCLOAK_REALM_IMPORT_RESOURCE).get();
+			CustomResourceDefinitionContext crdc = CustomResourceDefinitionContext.fromCrd(crd);
+			if (!getCustomResourceDefinitions().contains(KEYCLOAK_REALM_IMPORT_RESOURCE)) {
+				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
+						KEYCLOAK_REALM_IMPORT_RESOURCE, OPERATOR_ID));
+			}
+			MixedOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> crClient = OpenShifts
+					.master()
+					.newHasMetadataOperation(crdc, KeycloakRealmImport.class, KeycloakRealmImportOperatorRealmImportList.class);
+			KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT = crClient.inNamespace(OpenShiftConfig.namespace());
+		}
+		return KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
+	}
 
 	private static final String OPERATOR_ID = IntersmashConfig.keycloakRealmImportOperatorPackageManifest();
 	protected FailFastCheck ffCheck = () -> false;
@@ -141,9 +180,10 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 
 		// create custom resources
 		keycloakClient().createOrReplace(getApplication().getKeycloak());
-		if (getApplication().getKeycloakRealmImports().size() > 0)
-			keycloakRealmImportClient()
-					.createOrReplace(getApplication().getKeycloakRealmImports().stream().toArray(KeycloakRealmImport[]::new));
+		if (getApplication().getKeycloakRealmImports().size() > 0) {
+			getApplication().getKeycloakRealmImports().stream()
+					.forEach((i) -> keycloakRealmImportClient().resource(i).create());
+		}
 
 		// Wait for Keycloak (and PostgreSQL) to be ready
 		waitFor(getApplication().getKeycloak());
@@ -323,22 +363,6 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 			return Strings.isNullOrEmpty(host) ? null : new URL(String.format("https://%s", host));
 		} catch (MalformedURLException e) {
 			throw new RuntimeException(String.format("Keycloak operator External URL \"%s\" is malformed.", host), e);
-		}
-	}
-
-	public NonNamespaceOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient() {
-		try (KubernetesClient kubernetesClient = new DefaultKubernetesClient()) {
-			MixedOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient = kubernetesClient
-					.resources(Keycloak.class);
-			return keycloakClient.inNamespace(OpenShiftConfig.namespace());
-		}
-	}
-
-	public NonNamespaceOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient() {
-		try (KubernetesClient kubernetesClient = new DefaultKubernetesClient()) {
-			MixedOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient = kubernetesClient
-					.resources(KeycloakRealmImport.class);
-			return keycloakRealmImportClient.inNamespace(OpenShiftConfig.namespace());
 		}
 	}
 }

@@ -84,7 +84,7 @@ public class HyperfoilOperatorProvisioner extends OperatorProvisioner<HyperfoilO
 						HYPERFOIL_CUSTOM_RESOURCE_DEFINITION, OPERATOR_ID));
 			}
 			MixedOperation<Hyperfoil, HyperfoilList, Resource<Hyperfoil>> hyperfoilCrClient = OpenShifts
-					.master().customResources(crdc, Hyperfoil.class, HyperfoilList.class);
+					.master().newHasMetadataOperation(crdc, Hyperfoil.class, HyperfoilList.class);
 			HYPERFOIL_CUSTOM_RESOURCE_CLIENT = hyperfoilCrClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return HYPERFOIL_CUSTOM_RESOURCE_CLIENT;

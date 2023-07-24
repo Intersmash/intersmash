@@ -77,8 +77,9 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 		// create custom resources
 		int replicas = getApplication().getInfinispan().getSpec().getReplicas();
 		infinispansClient().createOrReplace(getApplication().getInfinispan());
-		if (getApplication().getCaches().size() > 0)
-			cachesClient().createOrReplace(getApplication().getCaches().stream().toArray(Cache[]::new));
+		if (getApplication().getCaches().size() > 0) {
+			getApplication().getCaches().stream().forEach((i) -> cachesClient().resource(i).create());
+		}
 
 		// This might be a litle bit naive, but we need more use cases to see how will this behave and what other
 		// use-cases we have to cover wait for infinispan pods - look for "clusterName" in infinispan pod
@@ -220,10 +221,9 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						INFINISPAN_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<Infinispan, InfinispanList, Resource<Infinispan>> infinispansClient = OpenShifts
 					.master()
-					.customResources(crdc, Infinispan.class, InfinispanList.class);
+					.newHasMetadataOperation(crdc, Infinispan.class, InfinispanList.class);
 			INFINISPAN_CLIENT = infinispansClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return INFINISPAN_CLIENT;
@@ -254,10 +254,9 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						INFINISPAN_CACHE_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<Cache, CacheList, Resource<Cache>> cachesClient = OpenShifts
 					.master()
-					.customResources(crdc, Cache.class, CacheList.class);
+					.newHasMetadataOperation(crdc, Cache.class, CacheList.class);
 			INFINISPAN_CACHES_CLIENT = cachesClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return INFINISPAN_CACHES_CLIENT;

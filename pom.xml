@@ -25,10 +25,9 @@
 
         <!--
             Using XTF snapshot in order to include fixes in:
-            https://github.com/xtf-cz/xtf/commit/a833c545082b314db538ed0c73e93310752654f7
-            https://github.com/xtf-cz/xtf/commit/0ed7dc16c88087ce9073a447311be6c01a520f8a
+            https://github.com/xtf-cz/xtf/pull/532
         -->
-        <xtf.version>0.31-202305291230-SNAPSHOT</xtf.version>
+        <xtf.version>0.31-update_kn_client-SNAPSHOT</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 
@@ -39,10 +38,11 @@
         <version.logback>1.2.3</version.logback>
         <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.ide-config>1.1</version.ide-config>
-        <version.io.strimzi-api>0.28.0</version.io.strimzi-api>
+        <!-- Strimzi 0.37 SNAPSHOT to have Fabric8 kubernetes client version aligned with XTF (6.8.1) -->
+        <version.io.strimzi-api>0.37.0-SNAPSHOT</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
-        <version.io.fabric8>6.6.0</version.io.fabric8>
-        <version.openshift-client>5.12.2</version.openshift-client>
+        <version.io.fabric8>6.8.1</version.io.fabric8>
+        <version.openshift-client>6.8.1</version.openshift-client>
 
         <!--
             Version used for the activemq-artemis-operator;
@@ -295,6 +295,10 @@
                         <groupId>io.fabric8</groupId>
                         <artifactId>kubernetes-model-common</artifactId>
                     </exclusion>
+                    <exclusion>
+                        <groupId>io.fabric8</groupId>
+                        <artifactId>kubernetes-client-api</artifactId>
+                    </exclusion>
                 </exclusions>
             </dependency>
             <!-- The following ones are used by the generated code for the Hyperfoil APIs -->
@@ -343,6 +347,11 @@
                 <groupId>uk.org.webcompere</groupId>
                 <artifactId>system-stubs-jupiter</artifactId>
                 <version>${version.junit5.jupiter.system.stubs}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-model-core</artifactId>
+                <version>${version.io.fabric8}</version>
             </dependency>
             <dependency>
                 <groupId>io.fabric8</groupId>
@@ -597,6 +606,18 @@
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <!-- Strimzi 0.37 SNAPSHOT to have Fabric8 kubernetes client version aligned with XTF (6.8.1) -->
+        <repository>
+            <id>ossrh-s</id>
+            <name>OSS Sonatype Snapshots Repository</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
             </snapshots>
             <releases>
                 <enabled>false</enabled>

@@ -125,16 +125,18 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 		// create custom resources
 		keycloaksClient().createOrReplace(getApplication().getKeycloak());
-		if (getApplication().getKeycloakRealms().size() > 0)
-			keycloakRealmsClient().createOrReplace(getApplication().getKeycloakRealms().stream().toArray(KeycloakRealm[]::new));
-		if (getApplication().getKeycloakClients().size() > 0)
-			keycloakClientsClient()
-					.createOrReplace(getApplication().getKeycloakClients().stream().toArray(KeycloakClient[]::new));
-		if (getApplication().getKeycloakUsers().size() > 0)
-			keycloakUsersClient().createOrReplace(getApplication().getKeycloakUsers().stream().toArray(KeycloakUser[]::new));
-		if (getApplication().getKeycloakBackups().size() > 0)
-			keycloakBackupsClient()
-					.createOrReplace(getApplication().getKeycloakBackups().stream().toArray(KeycloakBackup[]::new));
+		if (getApplication().getKeycloakRealms().size() > 0) {
+			getApplication().getKeycloakRealms().stream().forEach((i) -> keycloakRealmsClient().resource(i).create());
+		}
+		if (getApplication().getKeycloakClients().size() > 0) {
+			getApplication().getKeycloakClients().stream().forEach((i) -> keycloakClientsClient().resource(i).create());
+		}
+		if (getApplication().getKeycloakUsers().size() > 0) {
+			getApplication().getKeycloakUsers().stream().forEach((i) -> keycloakUsersClient().resource(i).create());
+		}
+		if (getApplication().getKeycloakBackups().size() > 0) {
+			getApplication().getKeycloakBackups().stream().forEach((i) -> keycloakBackupsClient().resource(i).create());
+		}
 
 		// Wait for Keycloak (and PostgreSQL) to be ready
 		waitFor(getApplication().getKeycloak());
@@ -287,10 +289,9 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<Keycloak, KeycloakList, Resource<Keycloak>> keycloaksClient = OpenShifts
 					.master()
-					.customResources(crdc, Keycloak.class, KeycloakList.class);
+					.newHasMetadataOperation(crdc, Keycloak.class, KeycloakList.class);
 			KEYCLOAKS_CLIENT = keycloaksClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAKS_CLIENT;
@@ -321,10 +322,9 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_REALM_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<KeycloakRealm, KeycloakRealmList, Resource<KeycloakRealm>> keycloakRealmsClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakRealm.class, KeycloakRealmList.class);
+					.newHasMetadataOperation(crdc, KeycloakRealm.class, KeycloakRealmList.class);
 			KEYCLOAK_REALMS_CLIENT = keycloakRealmsClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_REALMS_CLIENT;
@@ -372,10 +372,9 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_BACKUP_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<KeycloakBackup, KeycloakBackupList, Resource<KeycloakBackup>> keycloakBackupsClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakBackup.class, KeycloakBackupList.class);
+					.newHasMetadataOperation(crdc, KeycloakBackup.class, KeycloakBackupList.class);
 			KEYCLOAK_BACKUPS_CLIENT = keycloakBackupsClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_BACKUPS_CLIENT;
@@ -423,10 +422,9 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_CLIENT_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<KeycloakClient, KeycloakClientList, Resource<KeycloakClient>> keycloakClientsClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakClient.class, KeycloakClientList.class);
+					.newHasMetadataOperation(crdc, KeycloakClient.class, KeycloakClientList.class);
 			KEYCLOAK_CLIENTS_CLIENT = keycloakClientsClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_CLIENTS_CLIENT;
@@ -474,10 +472,9 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_USER_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<KeycloakUser, KeycloakUserList, Resource<KeycloakUser>> keycloakUsersClient = OpenShifts
 					.master()
-					.customResources(crdc, KeycloakUser.class, KeycloakUserList.class);
+					.newHasMetadataOperation(crdc, KeycloakUser.class, KeycloakUserList.class);
 			KEYCLOAK_USERS_CLIENT = keycloakUsersClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_USERS_CLIENT;

@@ -43,7 +43,8 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 		super();
 	}
 
-	private SubscriptionFluent.SpecNested<SubscriptionBuilder> getConfiguredSubscriptionBuilder(String sourceNamespace,
+	private SubscriptionFluent<SubscriptionBuilder>.SpecNested<SubscriptionBuilder> getConfiguredSubscriptionBuilder(
+			String sourceNamespace,
 			String source, String name, String channel,
 			String installPlanApproval) {
 		return new SubscriptionBuilder()
