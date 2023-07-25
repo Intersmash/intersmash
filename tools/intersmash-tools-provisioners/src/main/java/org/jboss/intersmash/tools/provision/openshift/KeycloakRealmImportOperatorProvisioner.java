@@ -218,13 +218,13 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 					&& Objects.nonNull(res.get().getStatus())) {
 				KeycloakRealmImport imp = res.get();
 				return imp.getStatus().getConditions().stream().filter(
-						cond -> cond.getStatus()
+						cond -> cond.getStatus() != null
 								&& "Done".equalsIgnoreCase(cond.getType())
 								&& com.google.common.base.Strings.isNullOrEmpty(cond.getMessage()))
 						.count() == 1
 						&&
 						imp.getStatus().getConditions().stream().filter(
-								cond -> !cond.getStatus()
+								cond -> cond.getStatus() == null
 										&& "HasErrors".equalsIgnoreCase(cond.getType())
 										&& com.google.common.base.Strings.isNullOrEmpty(cond.getMessage()))
 								.count() == 1;
@@ -237,13 +237,13 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 		new SimpleWaiter(
 				() -> keycloak().get().getStatus().getConditions().stream().anyMatch(
 						condition -> "Ready".equalsIgnoreCase(condition.getType())
-								&& condition.getStatus()))
+								&& condition.getStatus() != null))
 				.reason("Wait for Keycloak resource to be ready").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakRealmImports().size() > 0)
 			new SimpleWaiter(() -> keycloakRealmImports().stream().allMatch(
 					realmImport -> realmImport.getStatus().getConditions().stream().anyMatch(
 							condition -> "Done".equalsIgnoreCase(condition.getType())
-									&& condition.getStatus())))
+									&& condition.getStatus() != null)))
 					.reason("Wait for KeycloakRealmImports to be done.").level(Level.DEBUG).waitFor();
 	}
 
@@ -320,7 +320,7 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 		new SimpleWaiter(
 				() -> keycloak().get().getStatus().getConditions().stream().anyMatch(
 						condition -> "Ready".equalsIgnoreCase(condition.getType())
-								&& condition.getStatus()))
+								&& condition.getStatus() != null))
 				.reason("Wait for Keycloak resource to be ready").level(Level.DEBUG).waitFor();
 		// check that route is up
 		if (originalReplicas == 0 && replicas > 0) {
