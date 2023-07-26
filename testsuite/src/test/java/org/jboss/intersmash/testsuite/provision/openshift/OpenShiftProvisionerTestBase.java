@@ -28,6 +28,7 @@ import java.util.Map;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
+import org.jboss.intersmash.deployments.IntersmashSharedDeploymentsProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
@@ -37,7 +38,6 @@ import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApp
 import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
-import org.jboss.intersmash.tools.util.IntersmashToolsProvisionersProperties;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
@@ -204,8 +204,8 @@ public class OpenShiftProvisionerTestBase {
 				mavenAdditionalArgs = mavenAdditionalArgs.concat(generateAdditionalMavenArgs());
 				// let's pass the profile for building the deployment too...
 				mavenAdditionalArgs = mavenAdditionalArgs.concat(
-						(Strings.isNullOrEmpty(IntersmashToolsProvisionersProperties.getWildflyDeploymentsBuildProfile()) ? ""
-								: " -Pwildfly-deployments-build." + IntersmashToolsProvisionersProperties.getWildflyDeploymentsBuildProfile()));
+						(Strings.isNullOrEmpty(IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()) ? ""
+								: " -Pwildfly-deployments-build." + IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()));
 				list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				list.add(new EnvVarBuilder().withName("ARTIFACT_DIR").withValue(deploymentRelativePath + "target").build());
 
@@ -306,8 +306,8 @@ public class OpenShiftProvisionerTestBase {
 				String mavenAdditionalArgs = generateAdditionalMavenArgs();
 				// let's pass the profile for building the deployment too...
 				mavenAdditionalArgs = mavenAdditionalArgs.concat(
-						(Strings.isNullOrEmpty(IntersmashToolsProvisionersProperties.getWildflyDeploymentsBuildProfile()) ? ""
-								: " -Pwildfly-deployments-build." + IntersmashToolsProvisionersProperties.getWildflyDeploymentsBuildProfile()));
+						(Strings.isNullOrEmpty(IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()) ? ""
+								: " -Pwildfly-deployments-build." + IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()));
 				if (!Strings.isNullOrEmpty(mavenAdditionalArgs)) {
 					list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				}
