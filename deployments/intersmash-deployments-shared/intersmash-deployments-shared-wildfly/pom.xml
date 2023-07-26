@@ -141,7 +141,31 @@
 
     <profiles>
         <profile>
-            <id>deployments.eap</id>
+            <id>wildfly-deployments-build.eap</id>
+            <properties>
+                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>1.0.0.Beta6-redhat-00001</wildfly-maven-plugin.version>
+                <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+                <bom.wildfly-ee.groupId>org.jboss.bom</bom.wildfly-ee.groupId>
+                <bom.wildfly-ee.artifactId>jboss-eap-ee</bom.wildfly-ee.artifactId>
+                <bom.wildfly-ee.version>8.0.0.Beta-redhat-00004</bom.wildfly-ee.version>
+                <!--
+                    EAP8 feature packs and channel:
+
+                        - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                        - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                        - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+                    Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
+                    Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+                -->
+                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.Beta-redhat-00003</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.Beta-redhat-00003</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Beta2-redhat-00001</wildfly.cloud-feature-pack.location>
+                <wildfly.ee-channel.location></wildfly.ee-channel.location> <!-- TODO: add channel configuration to wildfly-maven-plugin -->
+            </properties>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -218,7 +242,7 @@
 
         <profile>
             <!-- Configuration settings for testing EAP XP -->
-            <id>deployments.eapxp</id>
+            <id>wildfly-deployments-build.eapxp</id>
             <!-- TODO Currently tested EAP XP is not available yet, and configuration, e.g. the Bootable JAR plugin one - will be needed once it's ready -->
         </profile>
 

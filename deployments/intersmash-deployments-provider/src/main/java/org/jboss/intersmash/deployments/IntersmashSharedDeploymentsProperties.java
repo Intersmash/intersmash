@@ -27,7 +27,6 @@ public class IntersmashSharedDeploymentsProperties {
 	private static String GROUPD_ID = "groupID";
 	private static String DEPLOYMENTS_PROVIDER_PATH = "deploymentsProviderPath";
 	private static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE = "wildflyDeploymentsBuildProfile";
-	public static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_WILDFLY = "wildfly";
 	public static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP = "eap";
 	public static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP_XP = "eapxp";
 
@@ -54,5 +53,17 @@ public class IntersmashSharedDeploymentsProperties {
 
 	public static String getWildflyDeploymentsBuildProfile() {
 		return properties.getProperty(WILDFLY_DEPLOYMENTS_BUILD_PROFILE);
+	}
+
+	public static Boolean isWildFlyDeploymentsBuildProfileEnabled() {
+		return "".equals(getWildflyDeploymentsBuildProfile());
+	}
+
+	public static Boolean isEapDeploymentsBuildProfileEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP.equals(getWildflyDeploymentsBuildProfile());
+	}
+
+	public static Boolean isEapXpDeploymentsBuildProfileEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP_XP.equals(getWildflyDeploymentsBuildProfile());
 	}
 }
