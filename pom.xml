@@ -97,6 +97,12 @@
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
+
+        <!--
+            By default, the follwing prop is empty, stating that the build profile (community vs. productized bits)
+            for WildFly deployment is none
+        -->
+        <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
     </properties>
 
     <dependencyManagement>

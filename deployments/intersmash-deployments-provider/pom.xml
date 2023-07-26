@@ -82,10 +82,12 @@
 
     <profiles>
         <profile>
-            <id>deployments.eap</id>
+            <id>wildfly-deployments-build.eap</id>
             <properties>
-                <!-- By default, the following prop is empty, stating that the build profile is none -->
-                <intersmash.deployments.wildfly.build.profile>deployments.eap</intersmash.deployments.wildfly.build.profile>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see IntersmashSharedDeploymentsProperties#getWildflyDeploymentsBuildProfile -->
+                <intersmash.deployments.wildfly.build.profile>eap</intersmash.deployments.wildfly.build.profile>
             </properties>
         </profile>
     </profiles>
