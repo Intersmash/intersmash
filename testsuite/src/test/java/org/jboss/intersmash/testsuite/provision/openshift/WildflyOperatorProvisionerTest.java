@@ -45,7 +45,7 @@ public class WildflyOperatorProvisionerTest {
 					@Override
 					public WildFlyServer getWildflyServer() {
 						return new WildFlyServerBuilder(getName())
-								.applicationImage("quay.io/wildfly/wildfly")
+								.applicationImage("quay.io/wildfly-quickstarts/wildfly-operator-quickstart:18.0")
 								.replicas(1)
 								.build();
 					}
