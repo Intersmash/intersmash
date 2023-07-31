@@ -53,7 +53,8 @@ public class WildflyHelmChartOpenShiftExampleApplicaton
 		// let's pass the profile for building the deployment too...
 		mavenAdditionalArgs = mavenAdditionalArgs.concat(
 				(Strings.isNullOrEmpty(IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()) ? ""
-						: " -Pwildfly-deployments-build." + IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()));
+						: " -Pwildfly-deployments-build."
+								+ IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()));
 		// ok, let's configure the release via the fluent(-ish) API
 		List<Env> environmentVariables = new ArrayList();
 		release
