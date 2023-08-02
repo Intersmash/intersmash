@@ -18,6 +18,8 @@ package org.jboss.intersmash.tools.provision.openshift.operator.wildfly;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.wildfly.v1alpha1.WildFlyServer;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import io.fabric8.kubernetes.api.model.ListMeta;

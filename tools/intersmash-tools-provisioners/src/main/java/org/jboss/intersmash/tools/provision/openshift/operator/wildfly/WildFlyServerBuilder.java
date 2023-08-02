@@ -19,12 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.spec.StandaloneConfigMapSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.spec.StorageSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.spec.WildFlyServerSpec;
+import org.wildfly.v1alpha1.WildFlyServer;
+import org.wildfly.v1alpha1.WildFlyServerSpec;
+import org.wildfly.v1alpha1.wildflyserverspec.Env;
+import org.wildfly.v1alpha1.wildflyserverspec.EnvFrom;
+import org.wildfly.v1alpha1.wildflyserverspec.StandaloneConfigMap;
+import org.wildfly.v1alpha1.wildflyserverspec.Storage;
 
-import io.fabric8.kubernetes.api.model.EnvFromSource;
-import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
 public final class WildFlyServerBuilder {
@@ -32,11 +33,11 @@ public final class WildFlyServerBuilder {
 	private Map<String, String> labels;
 	private String applicationImage;
 	private Integer replicas;
-	private StandaloneConfigMapSpec standaloneConfigMap;
-	private StorageSpec storage;
+	private StandaloneConfigMap standaloneConfigMap;
+	private Storage storage;
 	private String serviceAccountName;
-	private List<EnvFromSource> envFrom;
-	private List<EnvVar> env;
+	private List<EnvFrom> envFrom;
+	private List<Env> env;
 	private Boolean sessionAffinity;
 	private List<String> secrets;
 	private List<String> configMaps;
@@ -74,7 +75,7 @@ public final class WildFlyServerBuilder {
 	}
 
 	/**
-	 * Number of instances for a {@link WildFlyServer} resource.
+	 * Number of instances for a {@link org.wildfly.v1alpha1.WildFlyServer} resource.
 	 *
 	 * @param replicas Desired number of instances to be deployed
 	 * @return this
@@ -87,11 +88,11 @@ public final class WildFlyServerBuilder {
 	/**
 	 * Spec to specify how standalone configuration can be read from a ConfigMap.
 	 *
-	 * @param standaloneConfigMap {@link StandaloneConfigMapSpec} instance that stores the desired standalone
+	 * @param standaloneConfigMap {@link StandaloneConfigMap} instance that stores the desired standalone
 	 *                                                           configuration
 	 * @return this
 	 */
-	public WildFlyServerBuilder standaloneConfigMap(StandaloneConfigMapSpec standaloneConfigMap) {
+	public WildFlyServerBuilder standaloneConfigMap(StandaloneConfigMap standaloneConfigMap) {
 		this.standaloneConfigMap = standaloneConfigMap;
 		return this;
 	}
@@ -99,10 +100,10 @@ public final class WildFlyServerBuilder {
 	/**
 	 * Storage spec to specify how storage should be used.
 	 *
-	 * @param storage {@link StandaloneConfigMapSpec} instance that contains the storage configuration
+	 * @param storage {@link StandaloneConfigMap} instance that contains the storage configuration
 	 * @return this
 	 */
-	public WildFlyServerBuilder storage(StorageSpec storage) {
+	public WildFlyServerBuilder storage(Storage storage) {
 		this.storage = storage;
 		return this;
 	}
@@ -124,7 +125,7 @@ public final class WildFlyServerBuilder {
 	 * @param envFrom Desired list of environment variable to be set in the containers from source (either ConfigMap or Secret).
 	 * @return this
 	 */
-	public WildFlyServerBuilder envFrom(List<EnvFromSource> envFrom) {
+	public WildFlyServerBuilder envFrom(List<EnvFrom> envFrom) {
 		this.envFrom = envFrom;
 		return this;
 	}
@@ -135,7 +136,7 @@ public final class WildFlyServerBuilder {
 	 * @param envFrom Desired environment variable to be set in the containers from source (either ConfigMap or Secret).
 	 * @return this
 	 */
-	public WildFlyServerBuilder envFrom(EnvFromSource envFrom) {
+	public WildFlyServerBuilder envFrom(EnvFrom envFrom) {
 		if (this.envFrom == null) {
 			this.envFrom = new ArrayList<>();
 		}
@@ -149,7 +150,7 @@ public final class WildFlyServerBuilder {
 	 * @param env Desired List of environment variable to be set in the containers.
 	 * @return this
 	 */
-	public WildFlyServerBuilder env(List<EnvVar> env) {
+	public WildFlyServerBuilder env(List<Env> env) {
 		this.env = env;
 		return this;
 	}
@@ -160,7 +161,7 @@ public final class WildFlyServerBuilder {
 	 * @param env Desired environment variable to be set in the containers
 	 * @return this
 	 */
-	public WildFlyServerBuilder env(EnvVar env) {
+	public WildFlyServerBuilder env(Env env) {
 		if (this.env == null) {
 			this.env = new ArrayList<>();
 		}

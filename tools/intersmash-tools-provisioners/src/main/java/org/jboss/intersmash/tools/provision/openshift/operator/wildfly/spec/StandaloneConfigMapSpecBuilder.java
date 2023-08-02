@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.wildfly.spec;
 
+import org.wildfly.v1alpha1.wildflyserverspec.StandaloneConfigMap;
+
 public final class StandaloneConfigMapSpecBuilder {
 	private String name;
 	private String key;
@@ -41,8 +43,8 @@ public final class StandaloneConfigMapSpecBuilder {
 		return this;
 	}
 
-	public StandaloneConfigMapSpec build() {
-		StandaloneConfigMapSpec standaloneConfigMapSpec = new StandaloneConfigMapSpec();
+	public StandaloneConfigMap build() {
+		StandaloneConfigMap standaloneConfigMapSpec = new StandaloneConfigMap();
 		standaloneConfigMapSpec.setName(name);
 		standaloneConfigMapSpec.setKey(key);
 		return standaloneConfigMapSpec;
