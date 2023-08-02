@@ -15,12 +15,16 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.wildfly.spec;
 
+import org.wildfly.v1alpha1.wildflyserverspec.Storage;
+import org.wildfly.v1alpha1.wildflyserverspec.storage.EmptyDir;
+import org.wildfly.v1alpha1.wildflyserverspec.storage.VolumeClaimTemplate;
+
 import io.fabric8.kubernetes.api.model.EmptyDirVolumeSource;
 import io.fabric8.kubernetes.api.model.PersistentVolumeClaim;
 
 public final class StorageSpecBuilder {
-	private EmptyDirVolumeSource emptyDir;
-	private PersistentVolumeClaim volumeClaimTemplate;
+	private EmptyDir emptyDir;
+	private VolumeClaimTemplate volumeClaimTemplate;
 
 	/**
 	 * Set the {@link EmptyDirVolumeSource} to be used by the WildFly
@@ -30,7 +34,7 @@ public final class StorageSpecBuilder {
 	 * {@link io.fabric8.kubernetes.api.model.apps.StatefulSet}
 	 * @return this
 	 */
-	public StorageSpecBuilder emptyDir(EmptyDirVolumeSource emptyDir) {
+	public StorageSpecBuilder emptyDir(EmptyDir emptyDir) {
 		this.emptyDir = emptyDir;
 		return this;
 	}
@@ -43,15 +47,15 @@ public final class StorageSpecBuilder {
 	 * {@link io.fabric8.kubernetes.api.model.apps.StatefulSet}
 	 * @return this
 	 */
-	public StorageSpecBuilder volumeClaimTemplate(PersistentVolumeClaim volumeClaimTemplate) {
+	public StorageSpecBuilder volumeClaimTemplate(VolumeClaimTemplate volumeClaimTemplate) {
 		this.volumeClaimTemplate = volumeClaimTemplate;
 		return this;
 	}
 
-	public StorageSpec build() {
-		StorageSpec storageSpec = new StorageSpec();
-		storageSpec.setEmptyDir(emptyDir);
-		storageSpec.setVolumeClaimTemplate(volumeClaimTemplate);
+	public org.wildfly.v1alpha1.wildflyserverspec.Storage build() {
+		Storage storageSpec = new Storage();
+		storageSpec.setEmptyDir(this.emptyDir);
+		storageSpec.setVolumeClaimTemplate(this.volumeClaimTemplate);
 		return storageSpec;
 	}
 }
