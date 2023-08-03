@@ -187,15 +187,13 @@
                 </executions>
                 <configuration>
                     <target>target/generated-sources</target>
-                    <source>src/main/resources/crds/wildfly.org_wildflyservers_crd.yaml</source>
+                    <!-- WildFly Operator -->
+                    <source>src/main/resources/crds</source>
                     <urls>
                         <!-- ActiveMQ Operator -->
                         <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemises.yaml</url>
                         <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisaddresses.yaml</url>
                         <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisscaledowns.yaml</url>
-                        <!-- Keycloak Operator -->
-                        <url>https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.1/kubernetes/keycloaks.k8s.keycloak.org-v1.yml</url>
-                        <url>https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.1/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml</url>
                     </urls>
                 </configuration>
             </plugin>
