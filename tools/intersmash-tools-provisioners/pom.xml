@@ -188,12 +188,6 @@
                 <configuration>
                     <target>target/generated-sources</target>
                     <source>src/main/resources/crds</source>
-                    <urls>
-                        <!-- ActiveMQ Operator -->
-                        <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemises.yaml</url>
-                        <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisaddresses.yaml</url>
-                        <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisscaledowns.yaml</url>
-                    </urls>
                 </configuration>
             </plugin>
 
