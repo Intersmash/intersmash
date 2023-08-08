@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 
+import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
 import org.jboss.intersmash.tools.application.openshift.HyperfoilOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.HyperfoilOperatorProvisioner;
@@ -48,6 +49,7 @@ import io.hyperfoil.v1alpha2.Hyperfoil;
 import io.hyperfoil.v1alpha2.HyperfoilBuilder;
 
 @CleanBeforeAll
+@NotForProductizedExecutionProfile
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Disabled("https://github.com/Intersmash/intersmash/issues/78")
 public class HyperfoilOperatorProvisionerTest {
