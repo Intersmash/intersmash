@@ -96,23 +96,23 @@ cat test.properties
 # start tests
 mkdir local-repo
 mvn clean install -Dmaven.repo.local=./local-repo -DskipTests -Pwildfly-deployments-build.eap
-mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ \
+mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.prod \
  -Dintersmash.wildfly.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-builder-openshift-rhel8:1.0.0.Beta \
  -Dintersmash.wildfly.runtime.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-runtime-openshift-rhel8:1.0.0.Beta \
- -Dintersmash.keycloak.image=registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:latest \
- -Dintersmash.infinispan.image=registry.redhat.io/jboss-datagrid-7/datagrid73-openshift:latest \
- -Dintersmash.activemq.image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.0 \
- -Dintersmash.wildfly.helm.charts.repo=https://github.com/jbossas/eap-charts.git \
- -Dintersmash.wildfly.helm.charts.branch=eap8-dev \
- -Dintersmash.wildfly.helm.charts.name=eap8 \
- -Dintersmash.activemq.operators.catalog_source=redhat-operators \
- -Dintersmash.activemq.operators.package_manifest=amq-broker-rhel8 \
- -Dintersmash.activemq.operators.channel=7.11.x \
  -Dintersmash.wildfly.operators.catalog_source=redhat-operators \
  -Dintersmash.wildfly.operators.package_manifest=eap \
  -Dintersmash.wildfly.operators.channel=stable \
+ -Dintersmash.wildfly.helm.charts.repo=https://github.com/jbossas/eap-charts.git \
+ -Dintersmash.wildfly.helm.charts.branch=eap8-dev \
+ -Dintersmash.wildfly.helm.charts.name=eap8 \
+ -Dintersmash.activemq.image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.0 \
+ -Dintersmash.activemq.operators.catalog_source=redhat-operators \
+ -Dintersmash.activemq.operators.package_manifest=amq-broker-rhel8 \
+ -Dintersmash.activemq.operators.channel=7.11.x \
+ -Dintersmash.keycloak.image=registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:latest \
  -Dintersmash.keycloak.operators.catalog_source=redhat-operators \
  -Dintersmash.keycloak.operators.package_manifest=rhsso-operator \
+ -Dintersmash.infinispan.image=registry.redhat.io/jboss-datagrid-7/datagrid73-openshift:latest \
  -Dintersmash.infinispan.operators.catalog_source=redhat-operators \
  -Dintersmash.infinispan.operators.package_manifest=datagrid \
  -Dintersmash.kafka.operators.catalog_source=redhat-operators \

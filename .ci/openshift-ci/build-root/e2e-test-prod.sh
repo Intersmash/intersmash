@@ -95,9 +95,9 @@ cat test.properties
 
 # start tests
 mkdir local-repo
-mvn clean install -Dmaven.repo.local=./local-repo -DskipTests -Pwildfly-deployments-build.eap
-mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ \
- -Dintersmash.wildfly.image=quay.io/wildfly/wildfly-s2i-jdk17:latest
+mvn clean install -Dmaven.repo.local=./local-repo -DskipTests
+mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.community \
+ -Dintersmash.wildfly.image=quay.io/wildfly/wildfly-s2i-jdk17:latest \
  -Dintersmash.wildfly.runtime.image=quay.io/wildfly/wildfly-runtime-jdk17:latest \
  -Dintersmash.wildfly.operators.catalog_source=community-operators-wildfly-operator \
  -Dintersmash.wildfly.operators.index_image=quay.io/operatorhubio/catalog:latest \
@@ -110,8 +110,10 @@ mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ \
  -Dintersmash.activemq.operators.index_image=quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11 \
  -Dintersmash.activemq.operators.package_manifest=activemq-artemis-operator \
  -Dintersmash.activemq.operators.channel=upstream \
- -Dintersmash.kafka.operators.channel=strimzi-0.29.x \
  -Dintersmash.keycloak.realm_import.image=quay.io/keycloak/keycloak:21.1.1 \
  -Dintersmash.keycloak.realm_import.operators.catalog_source=community-operators \
  -Dintersmash.keycloak.realm_import.operators.index_image=registry.redhat.io/redhat/community-operator-index:v4.12 \
  -Dintersmash.keycloak.realm_import.operators.channel=fast
+ -Dintersmash.kafka.operators.channel=strimzi-0.29.x \
+ -Dintersmash.hyperfoil.operators.catalog_source=community-operators \
+ -Dintersmash.hyperfoil.operators.package_manifest=hyperfoil-bundle

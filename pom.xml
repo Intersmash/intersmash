@@ -103,6 +103,12 @@
             for WildFly deployment is none
         -->
         <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
+
+        <!--
+            By default, the following prop is set to community, stating that the test execution profile is using
+            community images and deliverables
+        -->
+        <intersmash.test.execution.profile>community</intersmash.test.execution.profile>
     </properties>
 
     <dependencyManagement>
