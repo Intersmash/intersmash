@@ -54,4 +54,23 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>ts.prod</id>
+            <properties>
+            <!-- Set the intersmash.test.execution.profile property to `prod`, it is read by test classes -->
+            <intersmash.test.execution.profile>prod</intersmash.test.execution.profile>
+            </properties>
+        </profile>
+    </profiles>
+
 </project>
