@@ -17,10 +17,12 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -35,13 +37,25 @@ public class ProvisionerCleanupTestCase {
 	protected static final OpenShift openShift = OpenShifts.master();
 
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
-		return Stream.of(
+		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+			return Stream.of(
 				new WildflyBootableJarImageOpenShiftProvisioner(
 						OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
 				new WildflyBootableJarImageOpenShiftProvisioner(
 						OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication()),
 				new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
-				new PostgreSQLImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication()));
+				new PostgreSQLImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication())
+			);
+		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+			return Stream.of(
+					new WildflyImageOpenShiftProvisioner(
+							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication())
+			);
+		} else {
+			throw new IllegalStateException(
+					String.format("Unknown Intersmash test suite execution profile: %s",
+							IntersmashTestsuiteProperties.getTestExecutionProfile()));
+		}
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
