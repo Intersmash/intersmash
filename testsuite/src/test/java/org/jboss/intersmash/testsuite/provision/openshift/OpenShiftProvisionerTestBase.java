@@ -29,6 +29,7 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
 import org.jboss.intersmash.deployments.IntersmashSharedDeploymentsProperties;
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
@@ -442,7 +443,6 @@ public class OpenShiftProvisionerTestBase {
 	public static KafkaOperatorApplication getKafkaApplication() {
 		return new KafkaOperatorApplication() {
 			static final String NAME = "kafka-test";
-			private static final String KAFKA_VERSION = KafkaOperatorApplication.KAFKA_VERSION;
 			private static final String INTER_BROKER_PROTOCOL_VERSION = KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION;
 			private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;
 			private static final int TOPIC_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.TOPIC_RECONCILIATION_INTERVAL_SECONDS;
@@ -457,6 +457,17 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public Kafka getKafka() {
 				if (kafka == null) {
+					final String kafkaVersion;
+					if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+						kafkaVersion = KafkaOperatorApplication.KAFKA_VERSION;
+					} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+						kafkaVersion = "3.2.3";
+					} else {
+						throw new IllegalStateException(
+								String.format("Unknown Intersmash test suite execution profile: %s",
+										IntersmashTestsuiteProperties.getTestExecutionProfile()));
+					}
+
 					Map<String, Object> config = new HashMap<>();
 					config.put("inter.broker.protocol.version", INTER_BROKER_PROTOCOL_VERSION);
 					config.put("offsets.topic.replication.factor", KAFKA_INSTANCE_NUM);
@@ -489,7 +500,7 @@ public class OpenShiftProvisionerTestBase {
 							.endKafkaAuthorizationSimple()
 							.withReplicas(KAFKA_INSTANCE_NUM)
 							.withNewEphemeralStorage().endEphemeralStorage()
-							.withVersion(KAFKA_VERSION)
+							.withVersion(kafkaVersion)
 							.endKafka()
 							.withNewZookeeper()
 							.withReplicas(KAFKA_INSTANCE_NUM)
