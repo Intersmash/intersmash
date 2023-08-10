@@ -106,6 +106,7 @@ mvn test -Dmaven.repo.local=./local-repo -pl testsuite/ -Pts.prod \
  -Dintersmash.wildfly.helm.charts.branch=eap8-dev \
  -Dintersmash.wildfly.helm.charts.name=eap8 \
  -Dintersmash.activemq.image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.0 \
+ -Dintersmash.activemq.init.image=registry.redhat.io/amq7/amq-broker-init-rhel8:7.11.0 \
  -Dintersmash.activemq.operators.catalog_source=redhat-operators \
  -Dintersmash.activemq.operators.package_manifest=amq-broker-rhel8 \
  -Dintersmash.activemq.operators.channel=7.11.x \

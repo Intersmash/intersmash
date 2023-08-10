@@ -21,6 +21,7 @@ import io.amq.broker.v1beta1.activemqartemisspec.DeploymentPlan;
 
 public class DeploymentPlanBuilder {
 	private String image = IntersmashConfig.activeMQImageUrl();
+	private String initImage = IntersmashConfig.activeMQInitImageUrl();
 	private String journalType;
 	private Boolean messageMigration;
 	private Boolean persistenceEnabled;
@@ -35,6 +36,17 @@ public class DeploymentPlanBuilder {
 	 */
 	public DeploymentPlanBuilder image(String image) {
 		this.image = image;
+		return this;
+	}
+
+	/**
+	 * The init image used for the broker deployment.
+	 *
+	 * @param initImage The desired init Image to be used for deployment
+	 * @return this
+	 */
+	public DeploymentPlanBuilder initImage(String initImage) {
+		this.initImage = initImage;
 		return this;
 	}
 
@@ -96,6 +108,7 @@ public class DeploymentPlanBuilder {
 	public DeploymentPlan build() {
 		DeploymentPlan deploymentPlan = new DeploymentPlan();
 		deploymentPlan.setImage(image);
+		deploymentPlan.setInitImage(initImage);
 		deploymentPlan.setJournalType(journalType);
 		deploymentPlan.setMessageMigration(messageMigration);
 		deploymentPlan.setPersistenceEnabled(persistenceEnabled);
