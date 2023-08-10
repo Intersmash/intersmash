@@ -39,18 +39,16 @@ public class ProvisionerCleanupTestCase {
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			return Stream.of(
-				new WildflyBootableJarImageOpenShiftProvisioner(
-						OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
-				new WildflyBootableJarImageOpenShiftProvisioner(
-						OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication()),
-				new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
-				new PostgreSQLImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication())
-			);
+					new WildflyBootableJarImageOpenShiftProvisioner(
+							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
+					new WildflyBootableJarImageOpenShiftProvisioner(
+							OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication()),
+					new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
+					new PostgreSQLImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					new WildflyImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication())
-			);
+							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",

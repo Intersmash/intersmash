@@ -111,6 +111,7 @@ public class IntersmashConfig {
 
 	// ACTIVEMQ
 	private static final String ACTIVEMQ_IMAGE_URL = "intersmash.activemq.image";
+	private static final String ACTIVEMQ_INIT_IMAGE_URL = "intersmash.activemq.init.image";
 
 	// DB
 	private static final String MYSQL_IMAGE_URL = "intersmash.mysql.image";
@@ -288,6 +289,10 @@ public class IntersmashConfig {
 
 	public static String activeMQImageUrl() {
 		return XTFConfig.get(ACTIVEMQ_IMAGE_URL);
+	}
+
+	public static String activeMQInitImageUrl() {
+		return XTFConfig.get(ACTIVEMQ_INIT_IMAGE_URL);
 	}
 
 	public static String getPostgreSQLImage() {

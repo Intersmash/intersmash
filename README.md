@@ -464,6 +464,8 @@ The following properties could be used to configure Intersmash:
 | intersmash.kafka.operators.index_image           | Kafka custom index image for Operator                                               |
 | intersmash.kafka.operators.package_manifest      | Kafka custom package manifest for Operator                                          |
 | intersmash.kafka.operators.channel               | Kafka desired channel for Operator                                                  |
+| intersmash.activemq.image                        | ActiveMQ Broker image                                                               |
+| intersmash.activemq.init.image                   | ActiveMQ Broker init image                                                          |
 | intersmash.activemq.operators.catalog_source     | ActiveMQ custom catalog for Operator (must be in namespace openshift-marketplace)   |
 | intersmash.activemq.operators.index_image        | ActiveMQ custom index image for Operators                                           |
 | intersmash.activemq.operators.package_manifest   | ActiveMQ custom package manifest for Operators                                      |
