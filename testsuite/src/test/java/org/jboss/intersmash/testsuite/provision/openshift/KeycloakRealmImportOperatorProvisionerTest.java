@@ -33,6 +33,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
@@ -70,6 +71,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
+@Disabled("https://github.com/Intersmash/intersmash/issues/76")
 public class KeycloakRealmImportOperatorProvisionerTest {
 	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
