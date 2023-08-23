@@ -250,12 +250,14 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 					db.setHost(POSTGRESQL_IMAGE_PROVISIONER.getServiceName());
 					db.setPort(Integer.toUnsignedLong(POSTGRESQL_IMAGE_PROVISIONER.getPort()));
 					UsernameSecret usernameSecret = new UsernameSecret();
-					usernameSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
-					usernameSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_USER_KEY);
+					usernameSecret.setName(
+							POSTGRESQL_IMAGE_PROVISIONER.getApplication().getApplicationSecretName());
+					usernameSecret.setKey(PostgreSQLImageOpenShiftApplication.POSTGRESQL_USER_KEY);
 					db.setUsernameSecret(usernameSecret);
 					PasswordSecret passwordSecret = new PasswordSecret();
-					passwordSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
-					passwordSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_PASSWORD_KEY);
+					passwordSecret.setName(
+							POSTGRESQL_IMAGE_PROVISIONER.getApplication().getApplicationSecretName());
+					passwordSecret.setKey(PostgreSQLImageOpenShiftApplication.POSTGRESQL_PASSWORD_KEY);
 					db.setPasswordSecret(passwordSecret);
 					db.setDatabase(POSTGRESQL_IMAGE_PROVISIONER.getApplication().getDbName());
 					spec.setDb(db);

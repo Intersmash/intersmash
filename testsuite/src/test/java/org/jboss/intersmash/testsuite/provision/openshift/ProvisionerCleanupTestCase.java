@@ -42,7 +42,7 @@ public class ProvisionerCleanupTestCase {
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
 	@MethodSource("provisionerProvider")
-	public void undeploy(OpenShiftProvisioner provisioner) {
+	public void testProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) {
 		provisioner.configure();
 		try {
 			provisioner.preDeploy();
