@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
-import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
+import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
@@ -25,17 +25,22 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 /**
  * Test case to verify the basic {@link HelmChartOpenShiftProvisioner}
- * life cycle management operations on a WildFly application which release definition is loaded
- * programmatically
+ * life cycle management operations on a WildFly application which provides
+ * a Helm values file AND {@code --set} overrides
  */
 @CleanBeforeAll
 public class WildflyHelmChartExistingValuesProvisionerTest {
 
 	@Test
-	//@Disabled("No artifacts on a Maven repo which is reachable by the Pod")
 	public void basicProvisioningTest() {
 		// initialize the application service descriptor
-		final WildflyHelmChartOpenShiftApplication application = new WildflyHelmChartExistingValuesOpenShiftExampleApplicaton();
+		final WildflyHelmChartExistingValuesOpenShiftExampleApplicaton application = new WildflyHelmChartExistingValuesOpenShiftExampleApplicaton();
+		application
+				.addSetOverride("build.uri", IntersmashConfig.deploymentsRepositoryUrl())
+				.addSetOverride("build.ref", IntersmashConfig.deploymentsRepositoryRef())
+				.addSetOverride("deploy.builderImage", application.getBuilderImage())
+				.addSetOverride("deployRuntimeImage", application.getRuntimeImage());
+
 		// and now get an EAP 8/WildFly provisioner for that application
 		final WildflyHelmChartOpenShiftProvisioner provisioner = new WildflyHelmChartOpenShiftProvisioner(application);
 		// deploy

@@ -18,7 +18,9 @@ package org.jboss.intersmash.tools.provision.helm;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +131,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 		List<String> arguments = Stream.of("upgrade", application.getName(), helmChartPath.toAbsolutePath().toString())
 				.collect(Collectors.toList());
 		arguments.addAll(Arrays.asList(getHelmChartValuesFilesArguments(application)));
+		arguments.addAll(getSetOverrideArguments(application));
 		arguments.addAll(Arrays.asList(
 				"--kubeconfig", OpenShifts.adminBinary().getOcConfigPath(),
 				// since we deploy from cloned charts repository, we need to set the "--dependency-update"
@@ -143,6 +146,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 		List<String> arguments = Stream.of("install", application.getName(), helmChartPath.toAbsolutePath().toString(),
 				"--replace").collect(Collectors.toList());
 		arguments.addAll(Arrays.asList(getHelmChartValuesFilesArguments(application)));
+		arguments.addAll(getSetOverrideArguments(application));
 		arguments.addAll(Arrays.asList(
 				"--kubeconfig", OpenShifts.adminBinary().getOcConfigPath(),
 				// since we deploy from cloned charts repository, we need to set the "--dependency-update"
@@ -167,6 +171,19 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 						.map(file -> Arrays.asList("-f", file.toAbsolutePath().toString()))
 						.flatMap(List::stream).collect(Collectors.toList()));
 		return arguments.stream().toArray(String[]::new);
+	}
+
+	private static List<String> getSetOverrideArguments(HelmChartOpenShiftApplication application) {
+		Map<String, String> setOverrides = application.getSetOverrides();
+		if (setOverrides.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<String> arguments = new ArrayList<>();
+		for (Map.Entry<String, String> entry : setOverrides.entrySet()) {
+			arguments.add("--set");
+			arguments.add(entry.getKey() + "=" + entry.getValue());
+		}
+		return arguments;
 	}
 
 	protected Map<String, Path> getHelmCharts() {

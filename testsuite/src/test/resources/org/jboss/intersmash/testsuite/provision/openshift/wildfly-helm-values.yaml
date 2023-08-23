@@ -1,9 +1,7 @@
 build:
   enabled: true
   mode: "s2i"
-  # Specify these two as helm arguments
-  uri: "https://github.com/Intersmash/intersmash.git"
-  ref: "main"
+  # uri and ref will be specified via Helm --set arguments
   contextDir: "deployments/openshift-jakarta-sample-standalone"
   env:
     - name: "MAVEN_ARGS_APPEND"
@@ -11,9 +9,7 @@ build:
   s2i:
     kind: "DockerImage"
     buildApplicationImage: true
-    # Specify these two as helm arguments
-    builderImage: "quay.io/wildfly/wildfly-s2i-jdk17:latest"
-    runtimeImage: "quay.io/wildfly/wildfly-runtime-jdk17:latest"
+    # builderImage and runtimeImage will be specified via Helm --set arguments
 deploy:
   enabled: true
   replicas: 1

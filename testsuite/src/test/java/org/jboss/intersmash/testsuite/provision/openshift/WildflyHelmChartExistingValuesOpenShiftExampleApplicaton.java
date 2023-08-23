@@ -18,7 +18,9 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
@@ -37,15 +39,26 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplicaton
 	private static final String APP_NAME = "wildfly-helm-helloworld-qs";
 
 	private final HelmChartRelease release;
+	private final Map<String, String> setOverrides = new HashMap<>();
 
 	public WildflyHelmChartExistingValuesOpenShiftExampleApplicaton() {
 		this.release = new HelmChartRelease(loadRelease());
 	}
 
+	WildflyHelmChartExistingValuesOpenShiftExampleApplicaton addSetOverride(String name, String value) {
+		setOverrides.put(name, value);
+		return this;
+	}
+
+	@Override
+	public Map<String, String> getSetOverrides() {
+		return setOverrides;
+	}
+
 	private HelmWildflyRelease loadRelease() {
-		URL url = this.getClass().getResource("helm-values.yaml");
+		URL url = this.getClass().getResource("wildfly-helm-values.yaml");
 		if (url == null) {
-			throw new IllegalStateException("No helm-values.yaml found");
+			throw new IllegalStateException("No wildfly-helm-values.yaml found");
 		}
 		try {
 			Path valuePath = Path.of(url.toURI());
