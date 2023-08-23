@@ -15,6 +15,9 @@
  */
 package org.jboss.intersmash.tools.application.openshift.helm;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.jboss.intersmash.tools.application.openshift.HasSecrets;
 import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
@@ -48,4 +51,12 @@ public interface HelmChartOpenShiftApplication extends OpenShiftApplication, Has
 	 * @return A string that identifies the used Helm Charts repository name
 	 */
 	String getHelmChartsRepositoryName();
+
+	/**
+	 * Get values that should be overridden via {@code --set} parameters when running {@code helm install}
+	 * @return A map of name/value pairs to override. May not be {@code null}
+	 */
+	default Map<String, String> getSetOverrides() {
+		return Collections.emptyMap();
+	}
 }
