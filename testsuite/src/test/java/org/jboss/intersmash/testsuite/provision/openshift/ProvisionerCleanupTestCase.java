@@ -17,7 +17,9 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -35,14 +37,16 @@ public class ProvisionerCleanupTestCase {
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		return Stream.of(
 				new WildflyBootableJarImageOpenShiftProvisioner(
-						(OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication())),
+						OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
 				new WildflyBootableJarImageOpenShiftProvisioner(
-						(OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication())));
+						OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication()),
+				new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
+				new PostgreSQLImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication()));
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
 	@MethodSource("provisionerProvider")
-	public void undeploy(OpenShiftProvisioner provisioner) {
+	public void testProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) {
 		provisioner.configure();
 		try {
 			provisioner.preDeploy();

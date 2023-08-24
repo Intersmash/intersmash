@@ -33,6 +33,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
@@ -70,6 +71,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
+@Disabled("https://github.com/Intersmash/intersmash/issues/76")
 public class KeycloakRealmImportOperatorProvisionerTest {
 	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
@@ -250,12 +252,14 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 					db.setHost(POSTGRESQL_IMAGE_PROVISIONER.getServiceName());
 					db.setPort(Integer.toUnsignedLong(POSTGRESQL_IMAGE_PROVISIONER.getPort()));
 					UsernameSecret usernameSecret = new UsernameSecret();
-					usernameSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
-					usernameSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_USER_KEY);
+					usernameSecret.setName(
+							POSTGRESQL_IMAGE_PROVISIONER.getApplication().getApplicationSecretName());
+					usernameSecret.setKey(PostgreSQLImageOpenShiftApplication.POSTGRESQL_USER_KEY);
 					db.setUsernameSecret(usernameSecret);
 					PasswordSecret passwordSecret = new PasswordSecret();
-					passwordSecret.setName(POSTGRESQL_IMAGE_PROVISIONER.getSecretName());
-					passwordSecret.setKey(PostgreSQLImageOpenShiftProvisioner.POSTGRESQL_PASSWORD_KEY);
+					passwordSecret.setName(
+							POSTGRESQL_IMAGE_PROVISIONER.getApplication().getApplicationSecretName());
+					passwordSecret.setKey(PostgreSQLImageOpenShiftApplication.POSTGRESQL_PASSWORD_KEY);
 					db.setPasswordSecret(passwordSecret);
 					db.setDatabase(POSTGRESQL_IMAGE_PROVISIONER.getApplication().getDbName());
 					spec.setDb(db);

@@ -145,11 +145,4 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		return dbApplication.getName() + "-service";
 	}
 
-	/**
-	 * @return name of the secret containing username and password for the database
-	 */
-	public String getSecretName() {
-		return dbApplication.getName() + "-credentials";
-	}
-
 }

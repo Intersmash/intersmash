@@ -15,7 +15,14 @@
  */
 package org.jboss.intersmash.tools.application.openshift;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+
+import cz.xtf.builder.builders.SecretBuilder;
+import cz.xtf.builder.builders.secret.SecretType;
+import io.fabric8.kubernetes.api.model.Secret;
 
 /**
  * End user Application interface which presents PostgreSQL image application on OpenShift Container Platform.
@@ -33,7 +40,22 @@ import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftPr
  *     <li>{@link PostgreSQLImageOpenShiftProvisioner}</li>
  * </ul>
  */
-public interface PostgreSQLImageOpenShiftApplication extends DBImageOpenShiftApplication {
+public interface PostgreSQLImageOpenShiftApplication extends DBImageOpenShiftApplication, HasSecrets {
+
+	String POSTGRESQL_USER = "POSTGRESQL_USER";
+	String POSTGRESQL_PASSWORD = "POSTGRESQL_PASSWORD";
+	String POSTGRESQL_ADMIN_PASSWORD = "POSTGRESQL_ADMIN_PASSWORD";
+
+	String POSTGRESQL_USER_KEY = POSTGRESQL_USER.replace("_", "-").toLowerCase();
+	String POSTGRESQL_PASSWORD_KEY = POSTGRESQL_PASSWORD.replace("_", "-").toLowerCase();
+	String POSTGRESQL_ADMIN_PASSWORD_KEY = POSTGRESQL_ADMIN_PASSWORD.replace("_", "-").toLowerCase();
+
+	/**
+	 * @return name of the secret containing username and password for the database
+	 */
+	default String getApplicationSecretName() {
+		return getName() + "-credentials";
+	}
 
 	default String getName() {
 		return "postgresql";
@@ -41,5 +63,15 @@ public interface PostgreSQLImageOpenShiftApplication extends DBImageOpenShiftApp
 
 	default String getAdminPassword() {
 		return "admin123";
+	}
+
+	@Override
+	default List<Secret> getSecrets() {
+		return Collections.singletonList(new SecretBuilder(getApplicationSecretName())
+				.setType(SecretType.OPAQUE).addData(POSTGRESQL_USER_KEY, getUser().getBytes())
+				.addData(POSTGRESQL_PASSWORD_KEY, getPassword().getBytes())
+				.addData(POSTGRESQL_ADMIN_PASSWORD_KEY,
+						getAdminPassword().getBytes())
+				.build());
 	}
 }
