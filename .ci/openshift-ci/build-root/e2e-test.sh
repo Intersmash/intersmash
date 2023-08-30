@@ -69,58 +69,9 @@ oc adm policy add-cluster-role-to-user cluster-admin ${TEST_ADMIN_USERNAME}
 # cluster-admin as well, see https://github.com/Intersmash/intersmash/issues/48
 oc adm policy add-cluster-role-to-user cluster-admin ${TEST_USER_USERNAME}
 
-# COMMUNITY
-export TEST_NAMESPACE=intersmash-com
-cat >> test.properties <<EOL
-xtf.openshift.url=${TEST_CLUSTER_URL}
-xtf.openshift.namespace=${TEST_NAMESPACE}
-xtf.bm.namespace=${TEST_NAMESPACE}-builds
-xtf.openshift.admin.username=${TEST_ADMIN_USERNAME}
-xtf.openshift.admin.password=${TEST_ADMIN_PASSWORD}
-xtf.openshift.admin.token=${ADMIN_TOKEN}
-xtf.openshift.master.username=${TEST_USER_USERNAME}
-xtf.openshift.master.password=${TEST_USER_PASSWORD}
-xtf.openshift.master.token=${USER_TOKEN}
-xtf.openshift.admin.kubeconfig=${KUBECONFIG}
-xtf.openshift.master.kubeconfig=${KUBECONFIG}
+## COMMUNITY
+#export TEST_NAMESPACE=intersmash-com
 
-EOL
-
-cat test.properties
-mkdir local-repo-community
-mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests
-mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/ -Pts.community \
--Dintersmash.wildfly.image=quay.io/wildfly/wildfly-s2i-jdk17:latest \
--Dintersmash.wildfly.runtime.image=quay.io/wildfly/wildfly-runtime-jdk17:latest \
--Dintersmash.wildfly.operators.catalog_source=community-operators-wildfly-operator \
--Dintersmash.wildfly.operators.index_image=quay.io/operatorhubio/catalog:latest \
--Dintersmash.wildfly.operators.package_manifest=wildfly \
--Dintersmash.wildfly.operators.channel=alpha \
--Dintersmash.wildfly.helm.charts.repo=https://github.com/wildfly/wildfly-charts.git \
--Dintersmash.wildfly.helm.charts.branch=wildfly-2.3.2 \
--Dintersmash.wildfly.helm.charts.name=wildfly \
--Dintersmash.activemq.operators.catalog_source=intersmash-activemq-operator-index \
--Dintersmash.activemq.operators.index_image=quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11 \
--Dintersmash.activemq.operators.package_manifest=activemq-artemis-operator \
--Dintersmash.activemq.operators.channel=upstream \
--Dintersmash.keycloak.realm_import.image=quay.io/keycloak/keycloak:21.1.1 \
--Dintersmash.keycloak.realm_import.operators.catalog_source=community-operators \
--Dintersmash.keycloak.realm_import.operators.index_image=registry.redhat.io/redhat/community-operator-index:v4.12 \
--Dintersmash.keycloak.realm_import.operators.channel=fast \
--Dintersmash.kafka.operators.channel=strimzi-0.29.x \
--Dintersmash.hyperfoil.operators.catalog_source=community-operators \
--Dintersmash.hyperfoil.operators.package_manifest=hyperfoil-bundle
-
-
-## PROD
-#rm test.properties
-#
-#export TEST_NAMESPACE=intersmash-prod
-#
-#export PULL_SECRET_PATH_REDHAT_REGISTRY_IO=/var/run/registry-redhat-io-pull-secret
-#export PULL_SECRET_FILE_REDHAT_REGISTRY_IO=${PULL_SECRET_PATH_REDHAT_REGISTRY_IO}/pull-secret
-#export PULL_SECRET_REDHAT_REGISTRY_IO=$(cat "${PULL_SECRET_FILE_REDHAT_REGISTRY_IO}")
-#
 #cat >> test.properties <<EOL
 #xtf.openshift.url=${TEST_CLUSTER_URL}
 #xtf.openshift.namespace=${TEST_NAMESPACE}
@@ -133,37 +84,85 @@ mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/ -Pts.community
 #xtf.openshift.master.token=${USER_TOKEN}
 #xtf.openshift.admin.kubeconfig=${KUBECONFIG}
 #xtf.openshift.master.kubeconfig=${KUBECONFIG}
-#xtf.openshift.pullsecret=${PULL_SECRET_REDHAT_REGISTRY_IO}
 #
 #EOL
 #
 #cat test.properties
 #
-## start tests
-#mkdir local-repo-prod
-#mvn clean install -Dmaven.repo.local=./local-repo-prod -DskipTests -Pwildfly-deployments-build.eap
-#mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/ -Pts.prod \
-# -Dintersmash.wildfly.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-builder-openshift-rhel8:1.0.0.Beta \
-# -Dintersmash.wildfly.runtime.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-runtime-openshift-rhel8:1.0.0.Beta \
-# -Dintersmash.wildfly.operators.catalog_source=redhat-operators \
-# -Dintersmash.wildfly.operators.package_manifest=eap \
-# -Dintersmash.wildfly.operators.channel=stable \
-# -Dintersmash.wildfly.helm.charts.repo=https://github.com/jbossas/eap-charts.git \
-# -Dintersmash.wildfly.helm.charts.branch=eap8-dev \
-# -Dintersmash.wildfly.helm.charts.name=eap8 \
-# -Dintersmash.activemq.image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.0 \
-# -Dintersmash.activemq.init.image=registry.redhat.io/amq7/amq-broker-init-rhel8:7.11.0 \
-# -Dintersmash.activemq.operators.catalog_source=redhat-operators \
-# -Dintersmash.activemq.operators.package_manifest=amq-broker-rhel8 \
-# -Dintersmash.activemq.operators.channel=7.11.x \
-# -Dintersmash.keycloak.image=registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:latest \
-# -Dintersmash.keycloak.operators.catalog_source=redhat-operators \
-# -Dintersmash.keycloak.operators.package_manifest=rhsso-operator \
-# -Dintersmash.infinispan.image=registry.redhat.io/jboss-datagrid-7/datagrid73-openshift:latest \
-# -Dintersmash.infinispan.operators.catalog_source=redhat-operators \
-# -Dintersmash.infinispan.operators.package_manifest=datagrid \
-# -Dintersmash.kafka.operators.catalog_source=redhat-operators \
-# -Dintersmash.kafka.operators.package_manifest=amq-streams \
-# -Dintersmash.kafka.operators.channel=amq-streams-2.3.x \
-# -Dintersmash.hyperfoil.operators.catalog_source=community-operators \
-# -Dintersmash.hyperfoil.operators.package_manifest=hyperfoil-bundle
+#mkdir local-repo-community
+#mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests
+#mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/ -Pts.community \
+#-Dintersmash.wildfly.image=quay.io/wildfly/wildfly-s2i-jdk17:latest \
+#-Dintersmash.wildfly.runtime.image=quay.io/wildfly/wildfly-runtime-jdk17:latest \
+#-Dintersmash.wildfly.operators.catalog_source=community-operators-wildfly-operator \
+#-Dintersmash.wildfly.operators.index_image=quay.io/operatorhubio/catalog:latest \
+#-Dintersmash.wildfly.operators.package_manifest=wildfly \
+#-Dintersmash.wildfly.operators.channel=alpha \
+#-Dintersmash.wildfly.helm.charts.repo=https://github.com/wildfly/wildfly-charts.git \
+#-Dintersmash.wildfly.helm.charts.branch=wildfly-2.3.2 \
+#-Dintersmash.wildfly.helm.charts.name=wildfly \
+#-Dintersmash.activemq.operators.catalog_source=intersmash-activemq-operator-index \
+#-Dintersmash.activemq.operators.index_image=quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11 \
+#-Dintersmash.activemq.operators.package_manifest=activemq-artemis-operator \
+#-Dintersmash.activemq.operators.channel=upstream \
+#-Dintersmash.keycloak.realm_import.image=quay.io/keycloak/keycloak:21.1.1 \
+#-Dintersmash.keycloak.realm_import.operators.catalog_source=community-operators \
+#-Dintersmash.keycloak.realm_import.operators.index_image=registry.redhat.io/redhat/community-operator-index:v4.12 \
+#-Dintersmash.keycloak.realm_import.operators.channel=fast \
+#-Dintersmash.kafka.operators.channel=strimzi-0.29.x \
+#-Dintersmash.hyperfoil.operators.catalog_source=community-operators \
+#-Dintersmash.hyperfoil.operators.package_manifest=hyperfoil-bundle
+
+
+# PROD
+export TEST_NAMESPACE=intersmash-prod
+
+export PULL_SECRET_PATH_REDHAT_REGISTRY_IO=/var/run/registry-redhat-io-pull-secret
+export PULL_SECRET_FILE_REDHAT_REGISTRY_IO=${PULL_SECRET_PATH_REDHAT_REGISTRY_IO}/pull-secret
+export PULL_SECRET_REDHAT_REGISTRY_IO=$(cat "${PULL_SECRET_FILE_REDHAT_REGISTRY_IO}")
+
+cat >> test.properties <<EOL
+xtf.openshift.url=${TEST_CLUSTER_URL}
+xtf.openshift.namespace=${TEST_NAMESPACE}
+xtf.bm.namespace=${TEST_NAMESPACE}-builds
+xtf.openshift.admin.username=${TEST_ADMIN_USERNAME}
+xtf.openshift.admin.password=${TEST_ADMIN_PASSWORD}
+xtf.openshift.admin.token=${ADMIN_TOKEN}
+xtf.openshift.master.username=${TEST_USER_USERNAME}
+xtf.openshift.master.password=${TEST_USER_PASSWORD}
+xtf.openshift.master.token=${USER_TOKEN}
+xtf.openshift.admin.kubeconfig=${KUBECONFIG}
+xtf.openshift.master.kubeconfig=${KUBECONFIG}
+xtf.openshift.pullsecret=${PULL_SECRET_REDHAT_REGISTRY_IO}
+
+EOL
+
+cat test.properties
+
+mkdir local-repo-prod
+mvn clean install -Dmaven.repo.local=./local-repo-prod -DskipTests -Pwildfly-deployments-build.eap
+mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/ -Pts.prod \
+ -Dintersmash.wildfly.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-builder-openshift-rhel8:1.0.0.Beta \
+ -Dintersmash.wildfly.runtime.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-runtime-openshift-rhel8:1.0.0.Beta \
+ -Dintersmash.wildfly.operators.catalog_source=redhat-operators \
+ -Dintersmash.wildfly.operators.package_manifest=eap \
+ -Dintersmash.wildfly.operators.channel=stable \
+ -Dintersmash.wildfly.helm.charts.repo=https://github.com/jbossas/eap-charts.git \
+ -Dintersmash.wildfly.helm.charts.branch=eap8-dev \
+ -Dintersmash.wildfly.helm.charts.name=eap8 \
+ -Dintersmash.activemq.image=registry.redhat.io/amq7/amq-broker-rhel8:7.11.0 \
+ -Dintersmash.activemq.init.image=registry.redhat.io/amq7/amq-broker-init-rhel8:7.11.0 \
+ -Dintersmash.activemq.operators.catalog_source=redhat-operators \
+ -Dintersmash.activemq.operators.package_manifest=amq-broker-rhel8 \
+ -Dintersmash.activemq.operators.channel=7.11.x \
+ -Dintersmash.keycloak.image=registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:latest \
+ -Dintersmash.keycloak.operators.catalog_source=redhat-operators \
+ -Dintersmash.keycloak.operators.package_manifest=rhsso-operator \
+ -Dintersmash.infinispan.image=registry.redhat.io/jboss-datagrid-7/datagrid73-openshift:latest \
+ -Dintersmash.infinispan.operators.catalog_source=redhat-operators \
+ -Dintersmash.infinispan.operators.package_manifest=datagrid \
+ -Dintersmash.kafka.operators.catalog_source=redhat-operators \
+ -Dintersmash.kafka.operators.package_manifest=amq-streams \
+ -Dintersmash.kafka.operators.channel=amq-streams-2.3.x \
+ -Dintersmash.hyperfoil.operators.catalog_source=community-operators \
+ -Dintersmash.hyperfoil.operators.package_manifest=hyperfoil-bundle
