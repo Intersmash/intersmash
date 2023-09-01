@@ -70,9 +70,8 @@ public class WildflyOperatorProvisioner extends OperatorProvisioner<WildflyOpera
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						WILDFLY_SERVER_RESOURCE, OPERATOR_ID));
 			}
-
 			MixedOperation<WildFlyServer, WildFlyServerList, Resource<WildFlyServer>> wildflyServersClient = OpenShifts
-					.master().customResources(crdc, WildFlyServer.class, WildFlyServerList.class);
+					.master().newHasMetadataOperation(crdc, WildFlyServer.class, WildFlyServerList.class);
 			WILDFLY_SERVERS_CLIENT = wildflyServersClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return WILDFLY_SERVERS_CLIENT;

@@ -145,7 +145,16 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>generator-annotations</artifactId>
-            <version>6.6.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-model-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
 
     </dependencies>
@@ -194,8 +203,8 @@
                         <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisaddresses.yaml</url>
                         <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemisscaledowns.yaml</url>
                         <!-- Keycloak Operator -->
-                        <url>https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/21.1.1/kubernetes/keycloaks.k8s.keycloak.org-v1.yml</url>
-                        <url>https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/21.1.1/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml</url>
+                        <url>https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.1/kubernetes/keycloaks.k8s.keycloak.org-v1.yml</url>
+                        <url>https://raw.githubusercontent.com/keycloak/keycloak-k8s-resources/22.0.1/kubernetes/keycloakrealmimports.k8s.keycloak.org-v1.yml</url>
                     </urls>
                 </configuration>
             </plugin>

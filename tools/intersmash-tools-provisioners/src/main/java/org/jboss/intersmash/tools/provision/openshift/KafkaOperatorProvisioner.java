@@ -252,7 +252,7 @@ public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorA
 		// delete the resources
 
 		if (getApplication().getUsers() != null) {
-			if (!kafkasUserClient().delete()) {
+			if (kafkasUserClient().delete().isEmpty()) {
 				log.warn("Wasn't able to remove all relevant 'Kafka User' resources created for '" + getApplication().getName()
 						+ "' instance!");
 			}
@@ -261,7 +261,7 @@ public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorA
 		}
 
 		if (getApplication().getTopics() != null) {
-			if (!kafkasTopicClient().delete()) {
+			if (kafkasTopicClient().delete().isEmpty()) {
 				log.warn("Wasn't able to remove all relevant 'Kafka Topic' resources created for '" + getApplication().getName()
 						+ "' instance!");
 			}
@@ -270,7 +270,7 @@ public class KafkaOperatorProvisioner extends OperatorProvisioner<KafkaOperatorA
 		}
 
 		if (getApplication().getKafka() != null) {
-			if (!kafka().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete()) {
+			if (kafka().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete().isEmpty()) {
 				log.warn("Wasn't able to remove all relevant 'Kafka' resources created for '" + getApplication().getName()
 						+ "' instance!");
 			}

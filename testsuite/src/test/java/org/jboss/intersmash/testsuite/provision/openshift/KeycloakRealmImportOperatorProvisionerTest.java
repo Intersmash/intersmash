@@ -37,6 +37,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorKeycloakList;
+import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImportSpec;
 import org.keycloak.k8s.v2alpha1.KeycloakSpec;
 import org.keycloak.k8s.v2alpha1.keycloakrealmimportspec.Realm;
@@ -55,7 +57,6 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
-import io.fabric8.kubernetes.api.model.KubernetesResourceList;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -315,9 +316,9 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 	}
 
 	private void verifyKeycloak(Keycloak keycloak, KeycloakRealmImport realmImport, boolean waitForPods) {
-		NonNamespaceOperation<Keycloak, KubernetesResourceList<Keycloak>, Resource<Keycloak>> keycloakClient = KEYCLOAK_OPERATOR_PROVISIONER
+		NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> keycloakClient = KEYCLOAK_OPERATOR_PROVISIONER
 				.keycloakClient();
-		NonNamespaceOperation<KeycloakRealmImport, KubernetesResourceList<KeycloakRealmImport>, Resource<KeycloakRealmImport>> keycloakRealmImportClient = KEYCLOAK_OPERATOR_PROVISIONER
+		NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> keycloakRealmImportClient = KEYCLOAK_OPERATOR_PROVISIONER
 				.keycloakRealmImportClient();
 		// create and verify that object exists
 		keycloakClient.createOrReplace(keycloak);
