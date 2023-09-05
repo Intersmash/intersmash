@@ -123,21 +123,28 @@ public class WildflyHelmChartOpenShiftExampleApplicaton
 
 	@Override
 	public String eeFeaturePackLocation() {
-		// this value is supposed to be overridden by the CI Jenkins job by passing e.g.
+		// this value is supposed to be overridden externally by passing e.g.
 		// "mvn ... -Dwildfly.ee-feature-pack.location="
 		return IntersmashConfig.getWildflyEeFeaturePackLocation();
 	}
 
 	@Override
+	public String featurePackLocation() {
+		// this value is supposed to be overridden externally by passing e.g.
+		// "mvn ... -Dwildfly.feature-pack.location="
+		return IntersmashConfig.getWildflyFeaturePackLocation();
+	}
+
+	@Override
 	public String cloudFeaturePackLocation() {
-		// this value is supposed to be overridden by the CI Jenkins job by passing e.g.
+		// this value is supposed to be overridden externally by passing e.g.
 		// "mvn ... -Dwildfly.cloud-feature-pack.location="
 		return IntersmashConfig.getWildflyCloudFeaturePackLocation();
 	}
 
 	@Override
 	public String eeChannelLocation() {
-		// this value is supposed to be overridden by the CI Jenkins job by passing e.g.
+		// this value is supposed to be overridden externally by passing e.g.
 		// "mvn ... -Dwildfly.ee-channel.location="
 		return IntersmashConfig.getWildflyEeChannelLocation();
 	}

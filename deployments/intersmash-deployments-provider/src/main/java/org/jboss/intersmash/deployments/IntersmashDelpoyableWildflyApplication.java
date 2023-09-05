@@ -49,6 +49,13 @@ public interface IntersmashDelpoyableWildflyApplication {
 	String eeFeaturePackLocation();
 
 	/**
+	 * "wildfly-galleon-pack" feature pack GAV
+	 *
+	 * @return "wildfly-galleon-pack" feature pack GAV e.g. org.wildfly:wildfly-galleon-pack:27.0.0.Alpha4
+	 */
+	String featurePackLocation();
+
+	/**
 	 * "wildfly-cloud-galleon-pack" feature pack GAV
 	 *
 	 * @return "wildfly-cloud-galleon-pack" feature pack GAV e.g. org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.0.Alpha4
@@ -144,6 +151,9 @@ public interface IntersmashDelpoyableWildflyApplication {
 		String result = "".concat(((Strings.isNullOrEmpty(this.eeFeaturePackLocation()) ? ""
 				: (" -D" + this.eeFeaturePackLocationVarName() + "="
 						+ this.eeFeaturePackLocation())))
+				+ ((Strings.isNullOrEmpty(this.featurePackLocation()) ? ""
+						: (" -D" + this.featurePackLocation() + "="
+								+ this.featurePackLocation())))
 				+ ((Strings.isNullOrEmpty(this.cloudFeaturePackLocation()) ? ""
 						: (" -D" + this.cloudFeaturePackLocationVarName() + "="
 								+ this.cloudFeaturePackLocation())))
