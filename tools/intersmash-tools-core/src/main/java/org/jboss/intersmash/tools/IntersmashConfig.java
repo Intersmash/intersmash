@@ -97,6 +97,10 @@ public class IntersmashConfig {
 	private static final String WILDFLY_HELM_CHARTS_BRANCH = "intersmash.wildfly.helm.charts.branch";
 	private static final String WILDFLY_HELM_CHARTS_NAME = "intersmash.wildfly.helm.charts.name";
 
+	// EAP 7.z (i.e. Jakarta EE 8 based WildFly)
+	private static final String EAP7_IMAGE_URL = "intersmash.eap7.image";
+	private static final String EAP7_RUNTIME_IMAGE_URL = "intersmash.eap7.runtime.image";
+
 	//	WildFLy Maven Plugin
 	private static final String WILDFLY_MAVEN_PLUGIN_GROUPID = "wildfly-maven-plugin.groupId";
 	private static final String WILDFLY_MAVEN_PLUGIN_ARTIFACTID = "wildfly-maven-plugin.artifactId";
@@ -244,6 +248,18 @@ public class IntersmashConfig {
 
 	public static String wildflyRuntimeImageURL() {
 		return XTFConfig.get(WILDFLY_RUNTIME_IMAGE_URL);
+	}
+
+	public static String eap7ImageURL() {
+		return XTFConfig.get(EAP7_IMAGE_URL);
+	}
+
+	public static String eap7RuntimeImageUrl() {
+		return XTFConfig.get(EAP7_RUNTIME_IMAGE_URL);
+	}
+
+	public static String wildflyJakartaEe8ProductCode() {
+		return getProductCode(eap7ImageURL());
 	}
 
 	public static String getProductCode(final String image) {
