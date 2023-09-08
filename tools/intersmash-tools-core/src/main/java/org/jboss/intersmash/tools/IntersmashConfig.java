@@ -89,6 +89,7 @@ public class IntersmashConfig {
 	private static final String WILDFLY_IMAGE_URL = "intersmash.wildfly.image";
 	private static final String WILDFLY_RUNTIME_IMAGE_URL = "intersmash.wildfly.runtime.image";
 	private static final String WILDFLY_EE_FEATURE_PACK_LOCATION = "wildfly.ee-feature-pack.location";
+	private static final String WILDFLY_FEATURE_PACK_LOCATION = "wildfly.feature-pack.location";
 	private static final String WILDFLY_CLOUD_FEATURE_PACK_LOCATION = "wildfly.cloud-feature-pack.location";
 	private static final String WILDFLY_EE_CHANNEL_LOCATION = "wildfly.ee-channel.location";
 	private static final String WILDFLY_BOMS_EE_SERVER_VERSION = "bom.wildfly-ee.version";
@@ -111,6 +112,7 @@ public class IntersmashConfig {
 
 	// ACTIVEMQ
 	private static final String ACTIVEMQ_IMAGE_URL = "intersmash.activemq.image";
+	private static final String ACTIVEMQ_INIT_IMAGE_URL = "intersmash.activemq.init.image";
 
 	// DB
 	private static final String MYSQL_IMAGE_URL = "intersmash.mysql.image";
@@ -290,6 +292,10 @@ public class IntersmashConfig {
 		return XTFConfig.get(ACTIVEMQ_IMAGE_URL);
 	}
 
+	public static String activeMQInitImageUrl() {
+		return XTFConfig.get(ACTIVEMQ_INIT_IMAGE_URL);
+	}
+
 	public static String getPostgreSQLImage() {
 		return XTFConfig.get(PGSQL_IMAGE_URL);
 	}
@@ -358,6 +364,10 @@ public class IntersmashConfig {
 
 	public static String getWildflyEeFeaturePackLocation() {
 		return XTFConfig.get(WILDFLY_EE_FEATURE_PACK_LOCATION);
+	}
+
+	public static String getWildflyFeaturePackLocation() {
+		return XTFConfig.get(WILDFLY_FEATURE_PACK_LOCATION);
 	}
 
 	public static String getWildflyCloudFeaturePackLocation() {

@@ -17,6 +17,7 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
 
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
@@ -41,11 +42,22 @@ public class WildflyOperatorProvisionerTest {
 
 	private static WildflyOperatorProvisioner initializeOperatorProvisioner() {
 		WildflyOperatorProvisioner operatorProvisioner = new WildflyOperatorProvisioner(
+
 				new WildflyOperatorApplication() {
 					@Override
 					public WildFlyServer getWildflyServer() {
+						String image;
+						if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+							image = "quay.io/wildfly-quickstarts/wildfly-operator-quickstart:latest";
+						} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+							image = "registry.redhat.io/jboss-eap-7/eap74-openjdk11-openshift-rhel8:latest";
+						} else {
+							throw new IllegalStateException(
+									String.format("Unknown Intersmash test suite execution profile: %s",
+											IntersmashTestsuiteProperties.getTestExecutionProfile()));
+						}
 						return new WildFlyServerBuilder(getName())
-								.applicationImage("quay.io/wildfly/wildfly")
+								.applicationImage(image)
 								.replicas(1)
 								.build();
 					}

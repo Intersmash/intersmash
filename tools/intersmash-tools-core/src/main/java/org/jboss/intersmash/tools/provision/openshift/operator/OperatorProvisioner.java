@@ -125,7 +125,7 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 
 	/**
 	 * The CatalogSource is in the "openshift-marketplace" namespace by default;
-	 * When a custom operator image must be used, then a custom CatalogSource will be created in the current namespace;	 *
+	 * When a custom operator image must be used, then a custom CatalogSource will be created in the current namespace;
 	 * @return namespace where the custom CatalogSource is located
 	 */
 	private String getCatalogSourceNamespace() {

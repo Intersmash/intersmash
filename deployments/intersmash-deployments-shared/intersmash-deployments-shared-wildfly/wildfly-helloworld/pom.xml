@@ -33,4 +33,14 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!-- _Each_ EAP 8 deployment should use the WildFly/EAP Maven plugin -->
+            <plugin>
+                <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

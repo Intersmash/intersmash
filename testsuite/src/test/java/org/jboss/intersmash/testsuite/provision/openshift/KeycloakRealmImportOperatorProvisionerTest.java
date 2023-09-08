@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
 import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
@@ -72,7 +73,8 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-@Disabled("https://github.com/Intersmash/intersmash/issues/76")
+@NotForProductizedExecutionProfile
+@Disabled("Need updated JOSDK, i.e. XTF supporting Fabric8 kubernetes-client v. 6")
 public class KeycloakRealmImportOperatorProvisionerTest {
 	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 

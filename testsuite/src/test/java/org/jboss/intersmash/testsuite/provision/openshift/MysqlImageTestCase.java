@@ -16,6 +16,7 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
+import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @CleanBeforeAll
 @Slf4j
+@NotForProductizedExecutionProfile
 public class MysqlImageTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final MysqlImageOpenShiftApplication application = OpenShiftProvisionerTestBase

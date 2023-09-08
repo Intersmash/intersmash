@@ -160,16 +160,6 @@
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources/filtered</directory>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
         <plugins>
             <!--
                 We want for tests to be executed by Surefire, but we also add an XTF system property to the inherited

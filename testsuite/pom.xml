@@ -54,4 +54,36 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>ts.prod</id>
+            <properties>
+                <!-- Set the intersmash.test.execution.profile property to `prod`, it is read by test classes -->
+                <intersmash.test.execution.profile>prod</intersmash.test.execution.profile>
+                <!-- Exclude tests that shouldn't be executed when dealing with products -->
+                <intersmash.test.execution.excludedGroups>ts.not-for-prod</intersmash.test.execution.excludedGroups>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.execution.excludedGroups}</excludedGroups>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>
