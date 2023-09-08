@@ -123,6 +123,16 @@ public class IntersmashConfig {
 	private static final String MYSQL_IMAGE_URL = "intersmash.mysql.image";
 	private static final String PGSQL_IMAGE_URL = "intersmash.postgresql.image";
 
+	// 3scale
+
+	private static final String PRODUCT_THREE_SCALE_OPERATOR_PACKAGE_MANIFEST = "3scale-operator";
+	private static final String COMMUNITY_THREE_SCALE_OPERATOR_PACKAGE_MANIFEST = "3scale-operator"; //TODO: go back to 3scale-community-operator once it supports all CRDs
+	private static final String DEFAULT_THREE_SCALE_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_THREE_SCALE_OPERATOR_PACKAGE_MANIFEST;
+	private static final String THREE_SCALE_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.3scale.operators.catalog_source";
+	private static final String THREE_SCALE_OPERATOR_INDEX_IMAGE = "intersmash.3scale.operators.index_image";
+	private static final String THREE_SCALE_OPERATOR_PACKAGE_MANIFEST = "intersmash.3scale.operators.package_manifest";
+	private static final String THREE_SCALE_OPERATOR_CHANNEL = "intersmash.3scale.operators.channel";
+
 	public static boolean skipDeploy() {
 		return XTFConfig.get(SKIP_DEPLOY, "false").equals("true");
 	}
@@ -444,5 +454,21 @@ public class IntersmashConfig {
 
 	public static String keycloakOperatorPackageManifest() {
 		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String threeScaleOperatorCatalogSource() {
+		return XTFConfig.get(THREE_SCALE_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
+	}
+
+	public static String threeScaleOperatorIndexImage() {
+		return XTFConfig.get(THREE_SCALE_OPERATOR_INDEX_IMAGE);
+	}
+
+	public static String threeScaleOperatorChannel() {
+		return XTFConfig.get(THREE_SCALE_OPERATOR_CHANNEL);
+	}
+
+	public static String threeScaleOperatorPackageManifest() {
+		return XTFConfig.get(THREE_SCALE_OPERATOR_PACKAGE_MANIFEST, DEFAULT_THREE_SCALE_OPERATOR_PACKAGE_MANIFEST);
 	}
 }

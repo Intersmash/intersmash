@@ -202,6 +202,17 @@
                 <configuration>
                     <target>target/generated-sources</target>
                     <source>src/main/resources/crds</source>
+                    <urls>
+                        <!-- 3scale Operator -->
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/apps.3scale.net_apimanagers.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_developeraccounts.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_developerusers.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_backends.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_products.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_applications.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_proxyconfigpromotes.yaml</url>
+                        <url>https://raw.githubusercontent.com/3scale/3scale-operator/master/bundle/manifests/capabilities.3scale.net_tenants.yaml</url>
+                    </urls>
                     <!--
                         This is needed to force the Java generator from CRD to stick with the original names
                         for enums, and avoi to uppercase them, since this could generate duplicate names,
@@ -212,6 +223,11 @@
                         The following is required in order to generate Sundrio and Lombok annotations
                     -->
                     <extraAnnotations>true</extraAnnotations>
+                    <packageOverrides>
+                        <net.3scale.apps.v1alpha1>net.threescale.apps.v1alpha1</net.3scale.apps.v1alpha1>
+                        <net.3scale.capabilities.v1beta1>net.threescale.capabilities.v1beta1</net.3scale.capabilities.v1beta1>
+                        <net.3scale.capabilities.v1alpha1>net.threescale.capabilities.v1alpha1</net.3scale.capabilities.v1alpha1>
+                    </packageOverrides>
                 </configuration>
             </plugin>
 
