@@ -111,7 +111,7 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 					IntersmashConfig.eap7ImageURL(),
 					binarySource.getArchive(),
 					environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
-					application.getName() + "-" + IntersmashConfig.wildflyJakartaEe8ProductCode());
+					application.getName() + "-" + IntersmashConfig.eap7ProductCode());
 			ManagedBuildReference reference = BuildManagers.get().deploy(build);
 			BuildManagers.get().hasBuildCompleted(build).level(Level.DEBUG).waitFor();
 

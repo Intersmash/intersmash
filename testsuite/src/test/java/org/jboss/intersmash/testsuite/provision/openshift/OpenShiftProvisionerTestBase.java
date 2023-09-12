@@ -33,6 +33,7 @@ import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.Eap7ImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
@@ -40,6 +41,7 @@ import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApp
 import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
+import org.jboss.intersmash.tools.application.openshift.template.Eap7Template;
 import org.jboss.intersmash.tools.util.wildfly.Eap7CliScriptBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
@@ -77,6 +79,44 @@ public class OpenShiftProvisionerTestBase {
 
 	static final String EAP7_TEST_APP_REPO = "https://github.com/openshift/openshift-jee-sample.git";
 	static final String EAP7_TEST_APP_REF = "master";
+
+	static Eap7TemplateOpenShiftApplication getEap7OpenShiftTemplateApplication() {
+		return new Eap7TemplateOpenShiftApplication() {
+
+			@Override
+			public List<String> getCliScript() {
+				Eap7CliScriptBuilder eapCliScriptBuilder = new Eap7CliScriptBuilder();
+				eapCliScriptBuilder.addCommand(
+						String.format("/system-property=%s:add(value=\"%s\")", WILDFLY_TEST_PROPERTY, WILDFLY_TEST_PROPERTY));
+				return eapCliScriptBuilder.build();
+			}
+
+			@Override
+			public Map<String, String> getParameters() {
+				Map<String, String> map = new HashMap<>();
+				map.put("SOURCE_REPOSITORY_URL", EAP7_TEST_APP_REPO);
+				map.put("SOURCE_REPOSITORY_REF", EAP7_TEST_APP_REF);
+				return Collections.unmodifiableMap(map);
+			}
+
+			@Override
+			public List<Secret> getSecrets() {
+				List<Secret> secrets = new ArrayList<>();
+				secrets.add(TEST_SECRET);
+				return Collections.unmodifiableList(secrets);
+			}
+
+			@Override
+			public Eap7Template getTemplate() {
+				return Eap7Template.BASIC;
+			}
+
+			@Override
+			public String getName() {
+				return "eap-test-app";
+			}
+		};
+	}
 
 	static BootableJarOpenShiftApplication getWildflyBootableJarOpenShiftApplication() {
 		return new BootableJarOpenShiftApplication() {

@@ -26,7 +26,6 @@ import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.Template;
-import io.fabric8.openshift.client.dsl.TemplateResource;
 
 /**
  * Provisioner for OpenShift templates. Its goal is to unify the basic operations we need to do with OpenShift templates.
@@ -91,7 +90,7 @@ public interface OpenShiftTemplateProvisioner {
 		String url = getTemplateFileUrl(openShiftTemplate);
 		try (InputStream is = new URL(url).openStream()) {
 			// workaround for the API version in the data (v1) does not match the expected API version (image.template.io/v1)
-			template = (Template) ((TemplateResource) openShift.templates().load(is)).get();
+			template = openShift.templates().load(is).item();
 			template.setApiVersion("template.openshift.io/v1");
 			if (openShift.getTemplate(template.getMetadata().getName()) == null) {
 				openShift.createTemplate(template);
