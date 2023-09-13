@@ -117,6 +117,6 @@ mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/ -Pts.prod \
  -Dintersmash.infinispan.operators.package_manifest=datagrid \
  -Dintersmash.kafka.operators.catalog_source=redhat-operators \
  -Dintersmash.kafka.operators.package_manifest=amq-streams \
- -Dintersmash.kafka.operators.channel=amq-streams-2.3.x \
+ -Dintersmash.kafka.operators.channel=stable \
  -Dintersmash.hyperfoil.operators.catalog_source=community-operators \
  -Dintersmash.hyperfoil.operators.package_manifest=hyperfoil-bundle

@@ -457,7 +457,6 @@ public class OpenShiftProvisionerTestBase {
 	public static KafkaOperatorApplication getKafkaApplication() {
 		return new KafkaOperatorApplication() {
 			static final String NAME = "kafka-test";
-			private static final String INTER_BROKER_PROTOCOL_VERSION = KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION;
 			private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;
 			private static final int TOPIC_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.TOPIC_RECONCILIATION_INTERVAL_SECONDS;
 			private static final long USER_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.USER_RECONCILIATION_INTERVAL_SECONDS;
@@ -471,11 +470,13 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public Kafka getKafka() {
 				if (kafka == null) {
-					final String kafkaVersion;
+					final String kafkaVersion, kafkaProtocol;
 					if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 						kafkaVersion = KafkaOperatorApplication.KAFKA_VERSION;
+						kafkaProtocol = KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION;
 					} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
-						kafkaVersion = "3.2.3";
+						kafkaVersion = "3.4.0";
+						kafkaProtocol = "3.4";
 					} else {
 						throw new IllegalStateException(
 								String.format("Unknown Intersmash test suite execution profile: %s",
@@ -483,7 +484,7 @@ public class OpenShiftProvisionerTestBase {
 					}
 
 					Map<String, Object> config = new HashMap<>();
-					config.put("inter.broker.protocol.version", INTER_BROKER_PROTOCOL_VERSION);
+					config.put("inter.broker.protocol.version", kafkaProtocol);
 					config.put("offsets.topic.replication.factor", KAFKA_INSTANCE_NUM);
 					config.put("transaction.state.log.min.isr", KAFKA_INSTANCE_NUM);
 					config.put("transaction.state.log.replication.factor", KAFKA_INSTANCE_NUM);
