@@ -18,7 +18,8 @@ package io.hyperfoil.v1alpha2;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
 public final class HyperfoilBuilder {
-	private String name;
+	private final String name;
+	private final String version;
 
 	//TODO: complete with all hyperfoil ino
 
@@ -27,8 +28,9 @@ public final class HyperfoilBuilder {
 	 *
 	 * @param name resource object name
 	 */
-	public HyperfoilBuilder(String name) {
+	public HyperfoilBuilder(final String name, final String version) {
 		this.name = name;
+		this.version = version;
 	}
 
 	public Hyperfoil build() {
@@ -37,6 +39,7 @@ public final class HyperfoilBuilder {
 		hyperfoil.getMetadata().setName(name);
 
 		HyperfoilSpec spec = new HyperfoilSpec();
+		spec.setVersion(version);
 		hyperfoil.setSpec(spec);
 
 		return hyperfoil;

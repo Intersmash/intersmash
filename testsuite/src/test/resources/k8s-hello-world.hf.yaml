@@ -1,12 +1,17 @@
 name: k8s-hello-world
+# List of agents the Controller should deploy
 agents:
-  agent-one:
+  # This defines the agent using SSH connection to localhost, port 22
+  agent-one: localhost:22
+  # Another agent on localhost, this time defined using properties
   agent-two:
+    host: localhost
+    port: 22
 http:
   host: !param HOST_URL
-duration: 120s
 usersPerSec: 2
+duration: 120s
 scenario:
-- test:
-  - httpRequest:
-      GET: /
+  - test:
+      - httpRequest:
+          GET: /

@@ -35,7 +35,6 @@ import org.jboss.intersmash.tools.provision.openshift.operator.resources.Operato
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -51,7 +50,6 @@ import io.hyperfoil.v1alpha2.HyperfoilBuilder;
 @CleanBeforeAll
 @NotForProductizedExecutionProfile
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Disabled("https://github.com/Intersmash/intersmash/issues/78")
 public class HyperfoilOperatorProvisionerTest {
 	private static final Logger logger = LoggerFactory.getLogger(HyperfoilOperatorProvisionerTest.class);
 	private static final String NAME = "hyperfoil";
@@ -62,8 +60,11 @@ public class HyperfoilOperatorProvisionerTest {
 				new HyperfoilOperatorApplication() {
 					@Override
 					public Hyperfoil getHyperfoil() {
-						return new HyperfoilBuilder(getName())
-								.build();
+						return new HyperfoilBuilder(
+								getName(),
+								// see https://github.com/Hyperfoil/hyperfoil-operator/issues/18, "latest" (default) would fail.
+								"0.24.2"
+						).build();
 					}
 
 					@Override
