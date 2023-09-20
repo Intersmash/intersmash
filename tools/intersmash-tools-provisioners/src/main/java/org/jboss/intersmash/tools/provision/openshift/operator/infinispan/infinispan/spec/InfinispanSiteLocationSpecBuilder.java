@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.service.sites.Locations;
+
 public final class InfinispanSiteLocationSpecBuilder {
 	private String name;
 	private String url;
@@ -53,8 +55,8 @@ public final class InfinispanSiteLocationSpecBuilder {
 		return this;
 	}
 
-	public InfinispanSiteLocationSpec build() {
-		InfinispanSiteLocationSpec infinispanSiteLocationSpec = new InfinispanSiteLocationSpec();
+	public Locations build() {
+		Locations infinispanSiteLocationSpec = new Locations();
 		infinispanSiteLocationSpec.setName(name);
 		infinispanSiteLocationSpec.setUrl(url);
 		infinispanSiteLocationSpec.setSecretName(secretName);

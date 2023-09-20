@@ -17,13 +17,14 @@ package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infin
 
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.Autoscale;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.ExposeSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanContainerSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanLoggingSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanSecurity;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanServiceSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanSpec;
+import org.infinispan.v1.Infinispan;
+import org.infinispan.v1.InfinispanSpec;
+import org.infinispan.v1.infinispanspec.Autoscale;
+import org.infinispan.v1.infinispanspec.Container;
+import org.infinispan.v1.infinispanspec.Expose;
+import org.infinispan.v1.infinispanspec.Logging;
+import org.infinispan.v1.infinispanspec.Security;
+import org.infinispan.v1.infinispanspec.Service;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
@@ -32,11 +33,11 @@ public final class InfinispanBuilder {
 	private Map<String, String> labels;
 	private int replicas;
 	private String image;
-	private InfinispanSecurity security;
-	private InfinispanContainerSpec container;
-	private InfinispanServiceSpec service;
-	private InfinispanLoggingSpec logging;
-	private ExposeSpec expose;
+	private Security security;
+	private Container container;
+	private Service service;
+	private Logging logging;
+	private Expose expose;
 	private Autoscale autoscale;
 
 	/**
@@ -72,7 +73,6 @@ public final class InfinispanBuilder {
 
 	/**
 	 * Lets you specify a Infinispan image to use
-	 * see https://infinispan.org/infinispan-operator/2.0.x/operator.html#ref_image_crd-ref
 	 *
 	 * @param image Infinispan image to be deployed
 	 * @return this
@@ -84,36 +84,33 @@ public final class InfinispanBuilder {
 
 	/**
 	 * Set Infinispan security info for the user application connection
-	 * see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L14
 	 *
-	 * @param security {@link InfinispanSecurity} info for the user application connection
+	 * @param security {@link Security} info for the user application connection
 	 * @return this
 	 */
-	public InfinispanBuilder security(InfinispanSecurity security) {
+	public InfinispanBuilder security(Security security) {
 		this.security = security;
 		return this;
 	}
 
 	/**
 	 * Specify resource requirements per container
-	 * see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L46
 	 *
-	 * @param container {@link InfinispanContainerSpec} instance storing resource requirements per container
+	 * @param container {@link Container} instance storing resource requirements per container
 	 * @return this
 	 */
-	public InfinispanBuilder container(InfinispanContainerSpec container) {
+	public InfinispanBuilder container(Container container) {
 		this.container = container;
 		return this;
 	}
 
 	/**
 	 * Specify configuration for specific service
-	 * see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L68
 	 *
-	 * @param service {@link InfinispanServiceSpec} instance representing configuration for specific service
+	 * @param service {@link Service} instance representing configuration for specific service
 	 * @return this
 	 */
-	public InfinispanBuilder service(InfinispanServiceSpec service) {
+	public InfinispanBuilder service(Service service) {
 		this.service = service;
 		return this;
 	}
@@ -121,29 +118,27 @@ public final class InfinispanBuilder {
 	/**
 	 * Specify configuration for the logging functionality
 	 *
-	 * @param logging {@link InfinispanLoggingSpec} instance representing configuration for the logging functionality
+	 * @param logging {@link Logging} instance representing configuration for the logging functionality
 	 * @return this
 	 */
-	public InfinispanBuilder logging(InfinispanLoggingSpec logging) {
+	public InfinispanBuilder logging(Logging logging) {
 		this.logging = logging;
 		return this;
 	}
 
 	/**
 	 * Describe how Infinispan will be exposed externally
-	 * see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L122
 	 *
-	 * @param expose {@link ExposeSpec} instance, describing how Infinispan will be exposed externally
+	 * @param expose {@link Expose} instance, describing how Infinispan will be exposed externally
 	 * @return this
 	 */
-	public InfinispanBuilder expose(ExposeSpec expose) {
+	public InfinispanBuilder expose(Expose expose) {
 		this.expose = expose;
 		return this;
 	}
 
 	/**
 	 * Describe autoscaling configuration for the cluster
-	 * see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L130
 	 *
 	 * @param autoscale {@link Autoscale} instance, describing autoscaling configuration for the cluster
 	 * @return this

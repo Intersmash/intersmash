@@ -15,9 +15,12 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.service.sites.Local;
+import org.infinispan.v1.infinispanspec.service.sites.local.Expose;
+
 public final class InfinispanSitesLocalSpecBuilder {
 	private String name;
-	private ExposeSpec expose;
+	private Expose expose;
 
 	/**
 	 * Set the local site name
@@ -33,16 +36,16 @@ public final class InfinispanSitesLocalSpecBuilder {
 	/**
 	 * Describe how the local site will be exposed externally
 	 *
-	 * @param expose {@link ExposeSpec} instance describing how the local site will be exposed externally
+	 * @param expose {@link Expose} instance describing how the local site will be exposed externally
 	 * @return this
 	 */
-	public InfinispanSitesLocalSpecBuilder expose(ExposeSpec expose) {
+	public InfinispanSitesLocalSpecBuilder expose(Expose expose) {
 		this.expose = expose;
 		return this;
 	}
 
-	public InfinispanSitesLocalSpec build() {
-		InfinispanSitesLocalSpec infinispanSitesLocalSpec = new InfinispanSitesLocalSpec();
+	public Local build() {
+		Local infinispanSitesLocalSpec = new Local();
 		infinispanSitesLocalSpec.setName(name);
 		infinispanSitesLocalSpec.setExpose(expose);
 		return infinispanSitesLocalSpec;

@@ -17,8 +17,9 @@ package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache
 
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.spec.AdminAuth;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.spec.CacheSpec;
+import org.infinispan.v2alpha1.Cache;
+import org.infinispan.v2alpha1.CacheSpec;
+import org.infinispan.v2alpha1.cachespec.AdminAuth;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 

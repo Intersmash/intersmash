@@ -22,12 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.infinispan.v1.Infinispan;
+import org.infinispan.v1.infinispanspec.Service;
+import org.infinispan.v2alpha1.Cache;
 import org.jboss.intersmash.tools.application.openshift.InfinispanOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.Cache;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.CacheBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.Infinispan;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.InfinispanBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.AutoscaleBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanServiceSpecBuilder;
@@ -175,7 +176,7 @@ public class InfinispanOperatorProvisionerTest {
 			name = "example-infinispan";
 			Infinispan infinispan = new InfinispanBuilder(name, matchLabels)
 					.replicas(2)
-					.service(new InfinispanServiceSpecBuilder().type(InfinispanServiceSpecBuilder.ServiceType.Cache)
+					.service(new InfinispanServiceSpecBuilder().type(Service.Type.Cache)
 							.build())
 					.build();
 
@@ -200,13 +201,13 @@ public class InfinispanOperatorProvisionerTest {
 			Infinispan infinispan = new InfinispanBuilder(name, matchLabels)
 					.replicas(2)
 					.service(new InfinispanServiceSpecBuilder()
-							.type(InfinispanServiceSpecBuilder.ServiceType.Cache)
+							.type(Service.Type.Cache)
 							.build())
 					.autoscale(new AutoscaleBuilder()
 							.maxReplicas(5)
-							.maxMemUsagePercent(70)
+							.maxMemUsagePercent(70L)
 							.minReplicas(2)
-							.minMemUsagePercent(30).build())
+							.minMemUsagePercent(30L).build())
 					.build();
 
 			verifyMinimalCacheServiceInfinispanWithAutoscale(infinispan, true);
@@ -229,7 +230,7 @@ public class InfinispanOperatorProvisionerTest {
 			final String clusterName = "example-infinispan";
 			Infinispan infinispan = new InfinispanBuilder(clusterName, matchLabels)
 					.replicas(1)
-					.service(new InfinispanServiceSpecBuilder().type(InfinispanServiceSpecBuilder.ServiceType.DataGrid)
+					.service(new InfinispanServiceSpecBuilder().type(Service.Type.DataGrid)
 							.build())
 					.build();
 			createAndVerifyInfinispan(infinispan);

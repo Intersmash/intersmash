@@ -15,8 +15,10 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.security.EndpointEncryption;
+
 public final class EndpointEncryptionBuilder {
-	private String type;
+	private EndpointEncryption.Type type;
 	private String certServiceName;
 	private String certSecretName;
 
@@ -26,8 +28,8 @@ public final class EndpointEncryptionBuilder {
 	 * @param type The configured endpoint encryption type
 	 * @return this
 	 */
-	public EndpointEncryptionBuilder type(CertificateSourceType type) {
-		this.type = type.getValue();
+	public EndpointEncryptionBuilder type(EndpointEncryption.Type type) {
+		this.type = type;
 		return this;
 	}
 
@@ -59,41 +61,5 @@ public final class EndpointEncryptionBuilder {
 		endpointEncryption.setCertServiceName(certServiceName);
 		endpointEncryption.setCertSecretName(certSecretName);
 		return endpointEncryption;
-	}
-
-	/**
-	 * CertificateSourceType specifies all the possible sources for the encryption certificate
-	 */
-	public enum CertificateSourceType {
-		/**
-		 * CertificateSourceTypeNoneNoEncryption no certificate encryption disabled
-		 */
-		CertificateSourceTypeNoneNoEncryption("None"),
-		/**
-		 * CertificateSourceTypeService certificate coming from a cluster service
-		 */
-		CertificateSourceTypeService("Service"),
-		/**
-		 * CertificateSourceTypeServiceLowCase certificate coming from a cluster service
-		 */
-		CertificateSourceTypeServiceLowCase("service"),
-		/**
-		 * CertificateSourceTypeSecret certificate coming from a user provided secret
-		 */
-		CertificateSourceTypeSecret("Secret"),
-		/**
-		 * CertificateSourceTypeSecretLowCase certificate coming from a user provided secret
-		 */
-		CertificateSourceTypeSecretLowCase("secret");
-
-		private String value;
-
-		CertificateSourceType(String value) {
-			this.value = value;
-		}
-
-		public String getValue() {
-			return value;
-		}
 	}
 }

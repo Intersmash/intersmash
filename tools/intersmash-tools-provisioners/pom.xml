@@ -188,6 +188,7 @@
                 <configuration>
                     <target>target/generated-sources</target>
                     <source>src/main/resources/crds</source>
+                    <enumUppercase>false</enumUppercase>
                 </configuration>
             </plugin>
 

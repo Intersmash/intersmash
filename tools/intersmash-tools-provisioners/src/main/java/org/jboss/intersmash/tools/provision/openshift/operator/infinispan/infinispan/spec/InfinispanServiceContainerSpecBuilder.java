@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.service.Container;
+
 public final class InfinispanServiceContainerSpecBuilder {
 	private String storage;
 
@@ -29,8 +31,8 @@ public final class InfinispanServiceContainerSpecBuilder {
 		return this;
 	}
 
-	public InfinispanServiceContainerSpec build() {
-		InfinispanServiceContainerSpec infinispanServiceContainerSpec = new InfinispanServiceContainerSpec();
+	public Container build() {
+		Container infinispanServiceContainerSpec = new Container();
 		infinispanServiceContainerSpec.setStorage(storage);
 		return infinispanServiceContainerSpec;
 	}
