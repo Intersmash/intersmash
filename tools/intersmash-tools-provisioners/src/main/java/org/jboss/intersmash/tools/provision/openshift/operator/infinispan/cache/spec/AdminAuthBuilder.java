@@ -15,10 +15,14 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.spec;
 
+import org.infinispan.v2alpha1.cachespec.AdminAuth;
+import org.infinispan.v2alpha1.cachespec.adminauth.Password;
+import org.infinispan.v2alpha1.cachespec.adminauth.Username;
+
 public final class AdminAuthBuilder {
 	private String secretName;
-	private String username;
-	private String password;
+	private Username username;
+	private Password password;
 
 	/**
 	 * Set the name of the secret containing both admin username and password
@@ -37,7 +41,7 @@ public final class AdminAuthBuilder {
 	 * @param username Secret and key containing the admin username for authentication
 	 * @return this
 	 */
-	public AdminAuthBuilder username(String username) {
+	public AdminAuthBuilder username(Username username) {
 		this.username = username;
 		return this;
 	}
@@ -48,7 +52,7 @@ public final class AdminAuthBuilder {
 	 * @param password Secret and key containing the admin password for authentication
 	 * @return this
 	 */
-	public AdminAuthBuilder password(String password) {
+	public AdminAuthBuilder password(Password password) {
 		this.password = password;
 		return this;
 	}

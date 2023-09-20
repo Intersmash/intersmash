@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan;
 
+import org.infinispan.v1.Infinispan;
+
 import io.fabric8.kubernetes.client.CustomResourceList;
 
 public class InfinispanList extends CustomResourceList<Infinispan> {

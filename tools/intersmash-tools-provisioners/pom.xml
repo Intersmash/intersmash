@@ -188,6 +188,12 @@
                 <configuration>
                     <target>target/generated-sources</target>
                     <source>src/main/resources/crds</source>
+                    <!--
+                        This is needed to force the Java generator from CRD to stick with the original names
+                        for enums, and avoi to uppercase them, since this could generate duplicate names,
+                        as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                     -->
+                    <enumUppercase>false</enumUppercase>
                 </configuration>
             </plugin>
 

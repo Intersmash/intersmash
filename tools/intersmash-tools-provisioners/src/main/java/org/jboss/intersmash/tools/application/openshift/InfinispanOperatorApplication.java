@@ -17,12 +17,13 @@ package org.jboss.intersmash.tools.application.openshift;
 
 import java.util.List;
 
+import org.infinispan.v1.Infinispan;
+import org.infinispan.v2alpha1.Cache;
 import org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.Cache;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.Infinispan;
 
 /**
  * End user Application interface which presents Infinispan operator application on OpenShift Container Platform.
+ * Only relevant model APIs are currently exposed, more would be added on demand (e.g.: backups, restores, etc.)
  *
  * The application will be deployed by:
  * <ul>

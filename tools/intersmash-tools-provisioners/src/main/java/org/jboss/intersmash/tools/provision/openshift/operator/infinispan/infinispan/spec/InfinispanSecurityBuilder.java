@@ -15,6 +15,9 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.Security;
+import org.infinispan.v1.infinispanspec.security.EndpointEncryption;
+
 public final class InfinispanSecurityBuilder {
 	private String endpointSecretName;
 	private EndpointEncryption endpointEncryption;
@@ -41,8 +44,8 @@ public final class InfinispanSecurityBuilder {
 		return this;
 	}
 
-	public InfinispanSecurity build() {
-		InfinispanSecurity infinispanSecurity = new InfinispanSecurity();
+	public Security build() {
+		Security infinispanSecurity = new Security();
 		infinispanSecurity.setEndpointSecretName(endpointSecretName);
 		infinispanSecurity.setEndpointEncryption(endpointEncryption);
 		return infinispanSecurity;

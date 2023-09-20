@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.Container;
+
 public final class InfinispanContainerSpecBuilder {
 	private String extraJvmOpts;
 	private String memory;
@@ -53,8 +55,8 @@ public final class InfinispanContainerSpecBuilder {
 		return this;
 	}
 
-	public InfinispanContainerSpec build() {
-		InfinispanContainerSpec infinispanContainerSpec = new InfinispanContainerSpec();
+	public Container build() {
+		Container infinispanContainerSpec = new Container();
 		infinispanContainerSpec.setExtraJvmOpts(extraJvmOpts);
 		infinispanContainerSpec.setMemory(memory);
 		infinispanContainerSpec.setCpu(cpu);
