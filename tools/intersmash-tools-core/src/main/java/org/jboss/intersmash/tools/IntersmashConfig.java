@@ -51,10 +51,11 @@ public class IntersmashConfig {
 	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_CHANNEL = "intersmash.keycloak.realm_import.operators.channel";
 	private static final String KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.operators.package_manifest";
 	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.realm_import.operators.package_manifest";
-	private static final String COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "keycloak-operator";
+	private static final String COMMUNITY_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = "keycloak-operator";
+	private static final String COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "keycloak-realm-operator";
 	private static final String PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "rhsso-operator";
 	private static final String DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST;
-	private static final String DEFAULT_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST;
+	private static final String DEFAULT_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST;
 	private static final String WILDFLY_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.wildfly.operators.catalog_source";
 	private static final String WILDFLY_OPERATOR_INDEX_IMAGE = "intersmash.wildfly.operators.index_image";
 	private static final String WILDFLY_OPERATOR_CHANNEL = "intersmash.wildfly.operators.channel";

@@ -16,49 +16,54 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackupBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.spec.KeycloakAWSSpecBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClient;
+import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClientBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.spec.KeycloakAPIClientBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.KeycloakBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakExternalAccessBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealm;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealmBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.KeycloakAPIRealmBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.RedirectorIdentityProviderOverrideBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUser;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUserBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakAPIUserBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakCredential;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakCredentialBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.keycloak.k8s.legacy.v1alpha1.ExternalKeycloak;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakClient;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakRealm;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakUser;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakclientspec.Client;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakclientspec.RealmSelector;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.InstanceSelector;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.users.Credentials;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.User;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.mockito.Mockito;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
-import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.Service;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -72,21 +77,21 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
 public class KeycloakOperatorProvisionerTest {
-	// Be aware that since we're using the static mock application, not all provisioner methods will work as expected!
-	private static final KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
+	private static final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
 
-	private static KeycloakOperatorProvisioner initializeOperatorProvisioner() {
-		KeycloakOperatorProvisioner operatorProvisioner = new KeycloakOperatorProvisioner(
-				new KeycloakOperatorApplication() {
-					private static final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
+	/**
+	 * This is the reference to the current keycloak operator
+	 */
+	private static final KeycloakRealmImportOperatorProvisioner KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER = initializeKeycloakRealmImportOperatorProvisioner();
 
+	private static KeycloakRealmImportOperatorProvisioner initializeKeycloakRealmImportOperatorProvisioner() {
+		return new KeycloakRealmImportOperatorProvisioner(
+				new KeycloakRealmImportOperatorApplication() {
 					@Override
 					public Keycloak getKeycloak() {
 						return new KeycloakBuilder(DEFAULT_KEYCLOAK_APP_NAME, matchLabels)
 								.instances(1)
-								.externalAccess(new KeycloakExternalAccessBuilder().enabled(true).build())
 								.build();
 					}
 
@@ -95,8 +100,14 @@ public class KeycloakOperatorProvisionerTest {
 						return DEFAULT_KEYCLOAK_APP_NAME;
 					}
 				});
-		return operatorProvisioner;
 	}
+
+	/**
+	 * This is the reference to the legacy Keycloak operator that now only exposes the CRDs that the current one
+	 * lacks.
+	 */
+	private static final KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = new KeycloakOperatorProvisioner(
+			Mockito.mock(KeycloakOperatorApplication.class));
 
 	private String name;
 
@@ -104,35 +115,30 @@ public class KeycloakOperatorProvisionerTest {
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
-		KEYCLOAK_OPERATOR_PROVISIONER.configure();
 		matchLabels.put("app", "sso");
+		// the keycloak-realm-operator (they call the legacy/"old-fashioned" one this way) needs a _current_ keycloak
+		// operator deployment first, see https://github.com/keycloak/keycloak-realm-operator#example
+		// Anyway, this is done in basicProvisioningTest() so here we just care about generic cleanup
 		IntersmashExtension.operatorCleanup();
-		// create operator group - this should be done by InteropExtension
+		// create operator group - this is usually done by IntersmahExtension when using the junit5 extension
 		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
-		// clean any leftovers
-		KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 	}
 
 	@AfterAll
 	public static void removeOperatorGroup() {
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
-		KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
 	}
 
 	@AfterEach
 	public void customResourcesCleanup() {
-		// delete backups
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakBackupsClient().list().getItems().stream()
-				.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
-						.keycloakBackupsClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
+		// delete external keycloaks
+		KEYCLOAK_OPERATOR_PROVISIONER.externalKeycloak(KEYCLOAK_OPERATOR_PROVISIONER.getApplication().getName())
+				.withPropagationPolicy(DeletionPropagation.FOREGROUND)
+				.delete();
 		// delete clients
 		KEYCLOAK_OPERATOR_PROVISIONER.keycloakClientsClient().list().getItems().stream()
 				.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
 						.keycloakClientsClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
-		// delete keycloaks
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloaksClient().list().getItems().stream()
-				.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
-						.keycloaksClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
 		// delete realms
 		KEYCLOAK_OPERATOR_PROVISIONER.keycloakRealmsClient().list().getItems().stream()
 				.map(resource -> resource.getMetadata().getName()).forEach(name -> KEYCLOAK_OPERATOR_PROVISIONER
@@ -144,76 +150,22 @@ public class KeycloakOperatorProvisionerTest {
 	}
 
 	/**
-	 * This test case creates and validates a one-time AWS {@link KeycloakBackup} CR
+	 * This test case creates and validates a {@link ExternalKeycloak} CR
 	 *
 	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
 	 * model specification.
-	 *
-	 * See
-	 * <br> - https://github.com/keycloak/keycloak-operator/blob/master/deploy/examples/backup/OneTimeAwsBackup.yaml
 	 */
 	@Test
-	public void oneTimeAwsBackup() {
+	public void externalKeycloak() {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
-			name = "example-keycloakbackup";
-			KeycloakBackup keycloakBackup = new KeycloakBackupBuilder(name, matchLabels)
-					.aws(new KeycloakAWSSpecBuilder()
-							.credentialsSecretName("s3-backup")
-							.build())
-					//				.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
-					.build();
-			verifyBackup(keycloakBackup);
-		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
-		}
-	}
-
-	/**
-	 * This test case creates and validates a one-time local {@link KeycloakBackup} CR
-	 *
-	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
-	 * model specification.
-	 *
-	 * See
-	 * <br> - https://github.com/keycloak/keycloak-operator/blob/master/deploy/examples/backup/OneTimeLocalBackup.yaml
-	 */
-	@Test
-	public void oneTimeLocalBackup() {
-		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
-		try {
-			name = "example-keycloakbackup";
-			KeycloakBackup keycloakBackup = new KeycloakBackupBuilder(name, matchLabels)
-					//				.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
-					.build();
-			verifyBackup(keycloakBackup);
-		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
-		}
-	}
-
-	/**
-	 * This test case creates and validates a periodic and AWS-specific {@link KeycloakBackup} CR
-	 *
-	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
-	 * model specification.
-	 *
-	 * See
-	 * <br> - https://github.com/keycloak/keycloak-operator/blob/master/deploy/examples/backup/PeriodicAwsBackup.yaml
-	 */
-	@Test
-	public void periodicAwsBackup() {
-		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
-		try {
-			name = "example-keycloakbackup";
-			KeycloakBackup keycloakBackup = new KeycloakBackupBuilder(name, matchLabels)
-					.aws(new KeycloakAWSSpecBuilder()
-							.schedule("*/2 * * * *")
-							.credentialsSecretName("s3-backup")
-							.build())
-					//				.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
-					.build();
-			verifyBackup(keycloakBackup);
+			name = "example-external-keycloak";
+			ObjectMeta metadata = new ObjectMeta();
+			metadata.setName(name);
+			metadata.setLabels(matchLabels);
+			ExternalKeycloak externalKeycloak = new ExternalKeycloak();
+			externalKeycloak.setMetadata(metadata);
+			verifyExternalKeycloak(externalKeycloak);
 		} finally {
 			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
 		}
@@ -234,14 +186,18 @@ public class KeycloakOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "client-secret";
+			RealmSelector realmSelector = new RealmSelector();
+			realmSelector.setMatchLabels(matchLabels);
+
+			Client client = new Client();
+			client.setClientId("client-secret");
+			client.setSecret("client-secret");
+			client.setClientAuthenticatorType("client-secret");
+			client.setProtocol("openid-connect");
+
 			KeycloakClient keycloakClient = new KeycloakClientBuilder(name, matchLabels)
-					.realmSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
-					.client(new KeycloakAPIClientBuilder()
-							.clientId("client-secret")
-							.secret("client-secret")
-							.clientAuthenticatorType("client-secret")
-							.protocol("openid-connect")
-							.build())
+					.realmSelector(realmSelector)
+					.client(client)
 					.build();
 			verifyClient(keycloakClient);
 		} finally {
@@ -249,79 +205,9 @@ public class KeycloakOperatorProvisionerTest {
 		}
 	}
 
-	//	/**
-	//	 * https://github.com/keycloak/keycloak-operator/blob/master/deploy/examples/keycloak/external-keycloak.yaml
-	//	 */
-	//	@Test
-	//	public void externalKeycloak() {
-	//		name = "example-external-keycloak";
-	//		Keycloak keycloak = new KeycloakBuilder(name, matchLabels)
-	//				.unmanaged(true)
-	//				.external(new KeycloakExternalBuilder()
-	//						.enabled(true)
-	//						.url("https://some.external.keycloak")
-	//						.build())
-	//				.build();
-	//
-	//		verifyKeycloak(keycloak, false);
-	//	}
-
 	/**
-	 * This test case creates and validates a basic {@link Keycloak} CR
-	 *
-	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
-	 * model specification.
-	 *
-	 * See
-	 * <br> - https://github.com/keycloak/keycloak-operator/tree/master/deploy/examples/keycloak
-	 */
-	@Test
-	public void exampleSso() {
-		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
-		try {
-			name = "example-sso";
-			Keycloak keycloak = new KeycloakBuilder(name, matchLabels)
-					.instances(1)
-					.externalAccess(new KeycloakExternalAccessBuilder().enabled(true).build())
-					.build();
-
-			verifyKeycloak(keycloak, true);
-		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
-		}
-	}
-
-	//	/**
-	//	 * https://github.com/keycloak/keycloak-operator/blob/master/deploy/examples/keycloak/keycloak-with-experimental-settings.yaml
-	//	 */
-	//	@Test
-	//	public void keycloakWithExperimentalSettings() {
-	//		ConfigMap configMap = createTestConfigMap();
-	//
-	//		name = "example-keycloak";
-	//		Keycloak keycloak = new KeycloakBuilder(name, matchLabels)
-	//				.instances(1)
-	//				.externalAccess(new KeycloakExternalAccessBuilder().enabled(true).build())
-	//				.keycloakDeploymentSpec(new KeycloakDeploymentSpecBuilder()
-	//						.experimental(new ExperimentalSpecBuilder()
-	//								.args("-Djboss.as.management.blocking.timeout=600")
-	//								.env(new EnvVarBuilder().withName("PROXY_ADDRESS_FORWARDING").withValue("false").build())
-	//								.volumes(new VolumesSpecBuilder()
-	//										.defaultMode(0777)
-	//										.items(new VolumeSpecBuilder().configMap(new ConfigMapVolumeSpecBuilder()
-	//												.name(configMap.getMetadata().getName()).mountPath("/test-config").build())
-	//												.build())
-	//										.build())
-	//								.build())
-	//						.build())
-	//				.build();
-	//
-	//		verifyKeycloak(keycloak, false);
-	//		deleteTestConfigMap(configMap);
-	//	}
-
-	/**
-	 * This test case creates and validates a {@link KeycloakRealm} CR with related {@link KeycloakUser} instances
+	 * This test case creates and validates a {@link org.keycloak.k8s.legacy.v1alpha1.KeycloakRealm} CR with related
+	 * {@link org.keycloak.k8s.legacy.v1alpha1.KeycloakUser} instances
 	 *
 	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
 	 * model specification.
@@ -334,6 +220,8 @@ public class KeycloakOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-keycloakrealm";
+			InstanceSelector instanceSelector = new InstanceSelector();
+			instanceSelector.setMatchLabels(matchLabels);
 			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
 					.realm(new KeycloakAPIRealmBuilder()
 							.id("basic")
@@ -361,7 +249,7 @@ public class KeycloakOperatorProvisionerTest {
 							.forFlow("browser")
 							.identityProvider("openshift-v4")
 							.build())
-					.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.instanceSelector(instanceSelector)
 					.build();
 
 			verifyRealm(keycloakRealm);
@@ -381,19 +269,24 @@ public class KeycloakOperatorProvisionerTest {
 	 */
 	@Test
 	public void basicRealm() {
-		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
+		KEYCLOAK_OPERATOR_PROVISIONER.configure();
 		try {
-			name = "example-keycloakrealm";
-			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
-					.realm(new KeycloakAPIRealmBuilder()
-							.id("user_realm")
-							.realm("user_realm")
-							.build())
-					.build();
+			KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
+			try {
+				name = "example-keycloakrealm";
+				KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
+						.realm(new KeycloakAPIRealmBuilder()
+								.id("user_realm")
+								.realm("user_realm")
+								.build())
+						.build();
 
-			verifyRealm(keycloakRealm);
+				verifyRealm(keycloakRealm);
+			} finally {
+				KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+			}
 		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
+			KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
 		}
 	}
 
@@ -411,6 +304,12 @@ public class KeycloakOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-keycloakrealm";
+			InstanceSelector instanceSelector = new InstanceSelector();
+			instanceSelector.setMatchLabels(matchLabels);
+
+			Credentials credentials = new Credentials();
+			credentials.setType("password");
+			credentials.setValue("password");
 			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
 					.realm(new KeycloakAPIRealmBuilder()
 							.id("saml-demo")
@@ -425,10 +324,7 @@ public class KeycloakOperatorProvisionerTest {
 									.enabled(true)
 									.emailVerified(false)
 									.realmRoles("manager")
-									.credentials(new KeycloakCredentialBuilder()
-											.type("password")
-											.value("password")
-											.build())
+									.credentials(Collections.singletonList(credentials))
 									.build())
 							.clients(new KeycloakAPIClientBuilder()
 									.clientId("http://localhost:8080/sales-post-enc/")
@@ -453,7 +349,7 @@ public class KeycloakOperatorProvisionerTest {
 									.protocol("saml")
 									.build())
 							.build())
-					.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.instanceSelector(instanceSelector)
 					.build();
 
 			verifyRealm(keycloakRealm);
@@ -476,6 +372,13 @@ public class KeycloakOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-keycloakrealm";
+			InstanceSelector instanceSelector = new InstanceSelector();
+			instanceSelector.setMatchLabels(matchLabels);
+
+			Credentials credentials = new Credentials();
+			credentials.setType("password");
+			credentials.setValue("password");
+
 			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
 					.realm(new KeycloakAPIRealmBuilder()
 							.id("openid-demo")
@@ -490,10 +393,7 @@ public class KeycloakOperatorProvisionerTest {
 									.enabled(true)
 									.emailVerified(false)
 									.realmRoles("manager")
-									.credentials(new KeycloakCredentialBuilder()
-											.type("password")
-											.value("password")
-											.build())
+									.credentials(Collections.singletonList(credentials))
 									.build())
 							.clients(new KeycloakAPIClientBuilder()
 									.clientId("openid-realm-client")
@@ -503,7 +403,7 @@ public class KeycloakOperatorProvisionerTest {
 									.protocol("openid-connect")
 									.build())
 							.build())
-					.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.instanceSelector(instanceSelector)
 					.build();
 
 			verifyRealm(keycloakRealm);
@@ -528,16 +428,19 @@ public class KeycloakOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-realm-user";
+			User user = new User();
+			user.setUsername("realm_user");
+			user.setFirstName("John");
+			user.setLastName("Doe");
+			user.setEmail("user@example.com");
+			user.setEnabled(true);
+			user.setEmailVerified(false);
+
+			org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.RealmSelector();
+			realmSelector.setMatchLabels(matchLabels);
 			KeycloakUser keycloakUser = new KeycloakUserBuilder(name, matchLabels)
-					.user(new KeycloakAPIUserBuilder()
-							.username("realm_user")
-							.firstName("John")
-							.lastName("Doe")
-							.email("user@example.com")
-							.enabled(true)
-							.emailVerified(false)
-							.build())
-					.realmSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.user(user)
+					.realmSelector(realmSelector)
 					.build();
 
 			verifyUser(keycloakUser);
@@ -548,7 +451,7 @@ public class KeycloakOperatorProvisionerTest {
 
 	/**
 	 * This test case creates and validates a {@link KeycloakUser} CR with a related
-	 * {@link KeycloakCredential}
+	 * {@link org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.user.Credentials}
 	 * instance
 	 *
 	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
@@ -563,20 +466,33 @@ public class KeycloakOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-realm-user-with-creds";
+			User user = new User();
+			user.setUsername("realm_user");
+			user.setFirstName("John");
+			user.setLastName("Doe");
+			user.setEmail("user@example.com");
+			user.setEnabled(true);
+			user.setEmailVerified(false);
+			user.setCredentials(
+					Collections.singletonList(new KeycloakCredentialBuilder().type("password").value("12345").build()));
+
+			org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.user.Credentials realUserCredentials = new org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.user.Credentials();
+			realUserCredentials.setType("password");
+			realUserCredentials.setValue("12345");
+			user.setCredentials(Collections.singletonList(realUserCredentials));
+
+			user.setRealmRoles(Collections.singletonList("offline_access"));
+
+			HashMap<String, List<String>> clientRoles = new HashMap();
+			clientRoles.put("account", Stream.of("manage-account").collect(Collectors.toList()));
+			clientRoles.put("realm-management", Stream.of("manage-users").collect(Collectors.toList()));
+			user.setClientRoles(clientRoles);
+
+			org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.RealmSelector();
+			realmSelector.setMatchLabels(matchLabels);
 			KeycloakUser keycloakUser = new KeycloakUserBuilder(name, matchLabels)
-					.user(new KeycloakAPIUserBuilder()
-							.username("creds_user")
-							.firstName("Creds")
-							.lastName("User")
-							.email("creds_user@redhat.com")
-							.enabled(true)
-							.emailVerified(false)
-							.credentials(new KeycloakCredentialBuilder().type("password").value("12345").build())
-							.realmRoles("offline_access")
-							.clientRole("account", Stream.of("manage-account").collect(Collectors.toList()))
-							.clientRole("realm-management", Stream.of("manage-users").collect(Collectors.toList()))
-							.build())
-					.realmSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.user(user)
+					.realmSelector(realmSelector)
 					.build();
 
 			verifyUser(keycloakUser);
@@ -596,20 +512,65 @@ public class KeycloakOperatorProvisionerTest {
 	 */
 	@Test
 	public void basicProvisioningTest() {
-		KEYCLOAK_OPERATOR_PROVISIONER.deploy();
+		KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.configure();
 		try {
-			Assertions.assertEquals(1, KEYCLOAK_OPERATOR_PROVISIONER.getPods().size(),
-					"Unexpected number of cluster operator pods for '" + KEYCLOAK_OPERATOR_PROVISIONER.getOperatorId()
-							+ "' after deploy");
+			KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.preDeploy();
+			try {
+				KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.deploy();
+				try {
+					KeycloakOperatorProvisioner keycloakOperatorProvisioner = new KeycloakOperatorProvisioner(
+							new KeycloakOperatorApplication() {
 
-			int scaledNum = KEYCLOAK_OPERATOR_PROVISIONER.getApplication().getKeycloak().getSpec().getInstances() + 1;
-			KEYCLOAK_OPERATOR_PROVISIONER.scale(scaledNum, true);
-			Assertions.assertEquals(scaledNum, KEYCLOAK_OPERATOR_PROVISIONER.getPods().size(),
-					"Unexpected number of cluster operator pods for '" + KEYCLOAK_OPERATOR_PROVISIONER.getOperatorId()
-							+ "' after scaling");
+								@Override
+								public Service getExternalKeycloakService() {
+									return OpenShifts.master().getService(
+											KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.getApplication()
+													.getKeycloak().getMetadata().getName());
+								}
+
+								@Override
+								public String getName() {
+									return DEFAULT_KEYCLOAK_APP_NAME;
+								}
+							});
+
+					keycloakOperatorProvisioner.configure();
+					try {
+						keycloakOperatorProvisioner.preDeploy();
+						try {
+							keycloakOperatorProvisioner.deploy();
+							try {
+								Assertions.assertEquals(1, KEYCLOAK_OPERATOR_PROVISIONER.getPods().size(),
+										"Unexpected number of cluster operator pods for '"
+												+ KEYCLOAK_OPERATOR_PROVISIONER.getOperatorId()
+												+ "' after deploy");
+
+								Long scaledNum = KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.getApplication().getKeycloak()
+										.getSpec().getInstances() + 1;
+								KEYCLOAK_OPERATOR_PROVISIONER.scale(scaledNum.intValue(), true);
+								Assertions.assertEquals(scaledNum, KEYCLOAK_OPERATOR_PROVISIONER.getPods().size(),
+										"Unexpected number of cluster operator pods for '"
+												+ KEYCLOAK_OPERATOR_PROVISIONER.getOperatorId()
+												+ "' after scaling");
+							} finally {
+								KEYCLOAK_OPERATOR_PROVISIONER.undeploy();
+							}
+						} finally {
+							keycloakOperatorProvisioner.postUndeploy();
+						}
+					} finally {
+						keycloakOperatorProvisioner.dismiss();
+					}
+				} finally {
+					KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.undeploy();
+				}
+			} finally {
+				KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.postUndeploy();
+			}
 		} finally {
-			KEYCLOAK_OPERATOR_PROVISIONER.undeploy();
+			KEYCLOAK_REALM_IMPORT_OPERATOR_PROVISIONER.dismiss();
 		}
+
 	}
 
 	private void verifyUser(KeycloakUser keycloakUser) {
@@ -645,42 +606,19 @@ public class KeycloakOperatorProvisionerTest {
 				.waitFor();
 	}
 
-	private void verifyKeycloak(Keycloak keycloak, boolean waitForPods) {
+	private void verifyExternalKeycloak(ExternalKeycloak externalKeycloak) {
 		// create and verify that object exists
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloaksClient().createOrReplace(keycloak);
-		KEYCLOAK_OPERATOR_PROVISIONER.waitFor(keycloak);
-		// two pods expected keycloak-0 and keycloak-postgresql-*, keycloak-0 won't start unless keycloak-postgresql-* is ready
-		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(2, "app", keycloak.getKind().toLowerCase()).level(Level.DEBUG).waitFor();
-			log.debug(KEYCLOAK_OPERATOR_PROVISIONER.keycloaksClient().withName(name).get().getStatus().toString());
-		}
-		Assertions.assertEquals(keycloak.getSpec(),
-				KEYCLOAK_OPERATOR_PROVISIONER.keycloaksClient().withName(name).get().getSpec());
-
-		// delete and verify that object was removed
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloaksClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND)
-				.delete();
-		new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.keycloaksClient().list().getItems().size() == 0).level(Level.DEBUG)
-				.waitFor();
-		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(0, "app", keycloak.getKind().toLowerCase()).level(Level.DEBUG).waitFor();
-		}
-	}
-
-	private void verifyBackup(KeycloakBackup keycloakBackup) {
-		// create and verify that object exists
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakBackupsClient().createOrReplace(keycloakBackup);
-		new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.keycloakBackupsClient().list().getItems().size() == 1)
+		KEYCLOAK_OPERATOR_PROVISIONER.externalKeycloaksClient().createOrReplace(externalKeycloak);
+		new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.externalKeycloaksClient().list().getItems().size() == 1)
 				.level(Level.DEBUG).waitFor();
-		Assertions.assertEquals(keycloakBackup.getSpec(), KEYCLOAK_OPERATOR_PROVISIONER.keycloakBackup(name).get().getSpec());
+		Assertions.assertEquals(externalKeycloak.getSpec(),
+				KEYCLOAK_OPERATOR_PROVISIONER.externalKeycloak(name).get().getSpec());
 
 		// delete and verify that object was removed
-		KEYCLOAK_OPERATOR_PROVISIONER.keycloakBackupsClient().withName(name)
+		KEYCLOAK_OPERATOR_PROVISIONER.externalKeycloaksClient().withName(name)
 				.withPropagationPolicy(DeletionPropagation.FOREGROUND)
 				.delete();
-		new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.keycloakBackupsClient().list().getItems().size() == 0)
+		new SimpleWaiter(() -> KEYCLOAK_OPERATOR_PROVISIONER.externalKeycloaksClient().list().getItems().size() == 0)
 				.level(Level.DEBUG).waitFor();
 	}
 

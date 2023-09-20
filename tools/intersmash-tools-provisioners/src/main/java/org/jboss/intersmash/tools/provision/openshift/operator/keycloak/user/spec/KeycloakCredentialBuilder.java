@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec;
 
+import org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.user.Credentials;
+
 public final class KeycloakCredentialBuilder {
 	private String type;
 	private String value;
@@ -53,8 +55,8 @@ public final class KeycloakCredentialBuilder {
 		return this;
 	}
 
-	public KeycloakCredential build() {
-		KeycloakCredential keycloakCredential = new KeycloakCredential();
+	public Credentials build() {
+		Credentials keycloakCredential = new Credentials();
 		keycloakCredential.setType(type);
 		keycloakCredential.setValue(value);
 		keycloakCredential.setTemporary(temporary);

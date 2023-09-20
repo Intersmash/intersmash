@@ -19,28 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakExternalAccess;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakExternalDatabase;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.PodDisruptionBudgetConfig;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.KeycloakSpec;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
 public final class KeycloakBuilder {
 	private String name;
 	private Map<String, String> labels;
-	//	private boolean unmanaged;
-	//	private KeycloakExternal external;
 	private List<String> extensions;
 	private int instances;
-	private KeycloakExternalAccess externalAccess;
-	private KeycloakExternalDatabase externalDatabase;
 	private String profile;
-	private PodDisruptionBudgetConfig podDisruptionBudget;
-	//	private KeycloakDeploymentSpec keycloakDeploymentSpec;
-	//	private PostgresqlDeploymentSpec postgresDeploymentSpec;
-	//	private MigrateConfig migration;
-	//	private String storageClassName;
 
 	/**
 	 * Initialize the {@link KeycloakBuilder} with given resource name.
@@ -117,53 +106,6 @@ public final class KeycloakBuilder {
 	}
 
 	/**
-	 * Controls external Ingress/Route settings.
-	 *
-	 * @param externalAccess Stores external access configuration for Keycloak
-	 * @return this
-	 */
-	public KeycloakBuilder externalAccess(KeycloakExternalAccess externalAccess) {
-		this.externalAccess = externalAccess;
-		return this;
-	}
-
-	/**
-	 * 	Controls external database settings.
-	 * 	Using an external database requires providing a secret containing credentials
-	 * 	as well as connection details. Here's an example of such secret:
-	 *
-	 * 	    apiVersion: v1
-	 * 	    kind: Secret
-	 * 	    metadata:
-	 * 	        name: keycloak-db-secret
-	 * 	        namespace: keycloak
-	 * 	    stringData:
-	 * 	        POSTGRES_DATABASE: &lt;Database Name&gt;
-	 * 	        POSTGRES_EXTERNAL_ADDRESS: &lt;External Database IP or URL (resolvable by K8s)&gt;
-	 * 	        POSTGRES_EXTERNAL_PORT: &lt;External Database Port&gt;
-	 * 	        # Strongly recommended to use &lt;'Keycloak CR Name'-postgresql&gt;
-	 * 	        POSTGRES_HOST: &lt;Database Service Name&gt;
-	 * 	        POSTGRES_PASSWORD: &lt;Database Password&gt;
-	 * 	        # Required for AWS Backup functionality
-	 * 	        POSTGRES_SUPERUSER: true
-	 * 	        POSTGRES_USERNAME: &lt;Database Username&gt;
-	 * 	     type: Opaque
-	 *
-	 * 	Both POSTGRES_EXTERNAL_ADDRESS and POSTGRES_EXTERNAL_PORT are specifically required for creating
-	 * 	connection to the external database. The secret name is created using the following convention:
-	 * 	      &lt;Custom Resource Name&gt;-db-secret
-	 *
-	 * 	For more information, please refer to the Operator documentation.
-	 *
-	 * @param externalDatabase Stores external database configuration for Keycloak
-	 * @return this
-	 */
-	public KeycloakBuilder externalDatabase(KeycloakExternalDatabase externalDatabase) {
-		this.externalDatabase = externalDatabase;
-		return this;
-	}
-
-	/**
 	 * Profile used for controlling Operator behavior. Default is empty.
 	 *
 	 * @param profile Profile that should be used
@@ -174,49 +116,6 @@ public final class KeycloakBuilder {
 		return this;
 	}
 
-	/**
-	 * Specify PodDisruptionBudget configuration.
-	 *
-	 * @param podDisruptionBudget Stores pod disruption budget configuration
-	 * @return this
-	 */
-	public KeycloakBuilder podDisruptionBudget(PodDisruptionBudgetConfig podDisruptionBudget) {
-		this.podDisruptionBudget = podDisruptionBudget;
-		return this;
-	}
-
-	//	/**
-	//	 * Resources (Requests and Limits) for KeycloakDeployment.
-	//	 */
-	//	public KeycloakBuilder keycloakDeploymentSpec(KeycloakDeploymentSpec keycloakDeploymentSpec) {
-	//		this.keycloakDeploymentSpec = keycloakDeploymentSpec;
-	//		return this;
-	//	}
-	//
-	//	/**
-	//	 * Resources (Requests and Limits) for PostgresDeployment.
-	//	 */
-	//	public KeycloakBuilder postgresDeploymentSpec(PostgresqlDeploymentSpec postgresDeploymentSpec) {
-	//		this.postgresDeploymentSpec = postgresDeploymentSpec;
-	//		return this;
-	//	}
-	//
-	//	/**
-	//	 * Specify Migration configuration.
-	//	 */
-	//	public KeycloakBuilder migration(MigrateConfig migration) {
-	//		this.migration = migration;
-	//		return this;
-	//	}
-	//
-	//	/**
-	//	 * Name of the StorageClass for Postgresql Persistent Volume Claim.
-	//	 */
-	//	public KeycloakBuilder storageClassName(String storageClassName) {
-	//		this.storageClassName = storageClassName;
-	//		return this;
-	//	}
-
 	public Keycloak build() {
 		Keycloak keycloak = new Keycloak();
 		keycloak.setMetadata(new ObjectMeta());
@@ -224,18 +123,7 @@ public final class KeycloakBuilder {
 		keycloak.getMetadata().setLabels(labels);
 
 		KeycloakSpec keycloakSpec = new KeycloakSpec();
-		//		keycloakSpec.setUnmanaged(unmanaged);
-		//		keycloakSpec.setExternal(external);
-		keycloakSpec.setExtensions(extensions);
-		keycloakSpec.setInstances(instances);
-		keycloakSpec.setExternalAccess(externalAccess);
-		keycloakSpec.setExternalDatabase(externalDatabase);
-		keycloakSpec.setProfile(profile);
-		keycloakSpec.setPodDisruptionBudget(podDisruptionBudget);
-		//		keycloakSpec.setKeycloakDeploymentSpec(keycloakDeploymentSpec);
-		//		keycloakSpec.setPostgresDeploymentSpec(postgresDeploymentSpec);
-		//		keycloakSpec.setMigration(migration);
-		//		keycloakSpec.setStorageClassName(storageClassName);
+		keycloakSpec.setInstances(Integer.valueOf(instances).longValue());
 		keycloak.setSpec(keycloakSpec);
 		return keycloak;
 	}

@@ -15,8 +15,6 @@
  */
 package org.jboss.intersmash.tools.provision.openshift;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -27,23 +25,20 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackupList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClient;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClientList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.KeycloakList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealm;
+import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.external.ExternalKeycloakList;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealmList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUser;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUserList;
+import org.keycloak.k8s.legacy.v1alpha1.ExternalKeycloak;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakClient;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakRealm;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakUser;
+import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.openshift.helpers.ResourceParsers;
 import cz.xtf.core.waiting.SimpleWaiter;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -59,14 +54,14 @@ import lombok.NonNull;
  * Keycloak operator provisioner
  */
 public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOperatorApplication> {
-	private static final String KEYCLOAK_RESOURCE = "keycloaks.keycloak.org";
-	private static NonNamespaceOperation<Keycloak, KeycloakList, Resource<Keycloak>> KEYCLOAKS_CLIENT;
+	//	private static final String KEYCLOAK_RESOURCE = "keycloaks.keycloak.org";
+	//	private static NonNamespaceOperation<Keycloak, KeycloakList, Resource<Keycloak>> KEYCLOAKS_CLIENT;
 
 	private static final String KEYCLOAK_REALM_RESOURCE = "keycloakrealms.keycloak.org";
 	private static NonNamespaceOperation<KeycloakRealm, KeycloakRealmList, Resource<KeycloakRealm>> KEYCLOAK_REALMS_CLIENT;
 
-	private static final String KEYCLOAK_BACKUP_RESOURCE = "keycloakbackups.keycloak.org";
-	private static NonNamespaceOperation<KeycloakBackup, KeycloakBackupList, Resource<KeycloakBackup>> KEYCLOAK_BACKUPS_CLIENT;
+	private static final String KEYCLOAK_EXTERNAL_KEYCLOAK_RESOURCE = "externalkeycloaks.legacy.k8s.keycloak.org";
+	private static NonNamespaceOperation<ExternalKeycloak, ExternalKeycloakList, Resource<ExternalKeycloak>> KEYCLOAK_EXTERNAL_KEYCLOAK_CLIENT;
 
 	private static final String KEYCLOAK_CLIENT_RESOURCE = "keycloakclients.keycloak.org";
 	private static NonNamespaceOperation<KeycloakClient, KeycloakClientList, Resource<KeycloakClient>> KEYCLOAK_CLIENTS_CLIENT;
@@ -119,12 +114,14 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	public void deploy() {
 		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
 				getApplication().getName());
-		// Keycloak Operator codebase contains the name of the Keycloak image to deploy: user can override Keycloak image to
-		// deploy using environment variables in Keycloak Operator Subscription
+		//		 Keycloak Operator codebase contains the name of the Keycloak image to deploy: user can override Keycloak image to
+		//		 deploy using environment variables in Keycloak Operator Subscription
 		subscribe();
 
-		// create custom resources
-		keycloaksClient().createOrReplace(getApplication().getKeycloak());
+		//		// create custom resources
+
+		externalKeycloaksClient().resource(getApplication().getExternalKeycloak()).create();
+
 		if (getApplication().getKeycloakRealms().size() > 0) {
 			getApplication().getKeycloakRealms().stream().forEach((i) -> keycloakRealmsClient().resource(i).create());
 		}
@@ -134,80 +131,62 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 		if (getApplication().getKeycloakUsers().size() > 0) {
 			getApplication().getKeycloakUsers().stream().forEach((i) -> keycloakUsersClient().resource(i).create());
 		}
-		if (getApplication().getKeycloakBackups().size() > 0) {
-			getApplication().getKeycloakBackups().stream().forEach((i) -> keycloakBackupsClient().resource(i).create());
-		}
 
-		// Wait for Keycloak (and PostgreSQL) to be ready
-		waitFor(getApplication().getKeycloak());
+		//		// Wait for Keycloak (and PostgreSQL) to be ready
+		//		waitFor(getApplication().getKeycloak());
 		// wait for all resources to be ready
 		waitForKeycloakResourceReadiness();
-		// check that route is up, only if there's a valid external URL available
-		URL externalUrl = getURL();
-		if ((getApplication().getKeycloak().getSpec().getInstances() > 0) && (externalUrl != null)) {
-			WaitersUtil.routeIsUp(externalUrl.toExternalForm())
-					.level(Level.DEBUG)
-					.waitFor();
-		}
+		//		// check that route is up, only if there's a valid external URL available
+		//		URL externalUrl = getURL();
+		//		if ((getApplication().getKeycloak().getSpec().getInstances() > 0) && (externalUrl != null)) {
+		//			WaitersUtil.routeIsUp(externalUrl.toExternalForm())
+		//					.level(Level.DEBUG)
+		//					.waitFor();
+		//		}
 	}
 
-	/**
-	 * Wait for Keycloak and PostgreSQL (in case no external database is used) to be ready
-	 *
-	 * @param keycloak Concrete {@link Keycloak} instance which the method should be wait for
-	 */
-	public void waitFor(Keycloak keycloak) {
-		int replicas = keycloak.getSpec().getInstances();
-		if (replicas > 0) {
-			// 1. check externalDatabase
-			if (keycloak.getSpec().getExternalDatabase() == null || !keycloak.getSpec().getExternalDatabase().isEnabled()) {
-				// 2. wait for PostgreSQL to be ready (Service "keycloak-postgresql" is guaranteed to exist by documentation)
-				new SimpleWaiter(() -> OpenShiftProvisioner.openShift.getPods()
-						.stream()
-						.filter(
-								pod -> OpenShiftProvisioner.openShift.getService("keycloak-postgresql") != null
-										&& pod.getMetadata().getLabels().entrySet().containsAll(
-												OpenShiftProvisioner.openShift.getService("keycloak-postgresql").getSpec()
-														.getSelector().entrySet())
-										&& ResourceParsers.isPodReady(pod))
-						.count() > 0).level(Level.DEBUG).waitFor();
-			}
-			// 4. wait for >= 1 pods with label controller-revision-hash=keycloak-d86bb6ddc
-			String controllerRevisionHash = getStatefulSet().getStatus().getUpdateRevision();
-			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
-					.areExactlyNPodsReady(replicas, "controller-revision-hash",
-							controllerRevisionHash)
-					.waitFor();
-		}
-	}
+	//	/**
+	//	 * Wait for Keycloak and PostgreSQL (in case no external database is used) to be ready
+	//	 *
+	//	 * @param keycloak Concrete {@link Keycloak} instance which the method should be wait for
+	//	 */
+	//	public void waitFor(Keycloak keycloak) {
+	//		Long replicas = keycloak.getSpec().getInstances();
+	//		if (replicas > 0) {
+	//			// wait for >= 1 pods with label controller-revision-hash=keycloak-d86bb6ddc
+	//			String controllerRevisionHash = getStatefulSet().getStatus().getUpdateRevision();
+	//			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
+	//					.areExactlyNPodsReady(replicas.intValue(), "controller-revision-hash",
+	//							controllerRevisionHash)
+	//					.waitFor();
+	//		}
+	//	}
 
 	private void waitForKeycloakResourceReadiness() {
-		new SimpleWaiter(() -> keycloak().get().getStatus().isReady())
-				.reason("Wait for keycloak resource to be ready").level(Level.DEBUG).waitFor();
+		//		new SimpleWaiter(
+		//				() -> keycloak().get().getStatus().getConditions().stream().anyMatch(
+		//						condition -> "Ready".equalsIgnoreCase(condition.getType())
+		//								&& condition.getStatus() != null))
+		//				.reason("Wait for keycloak resource to be ready").level(Level.DEBUG).waitFor();
+
+		new SimpleWaiter(() -> externalKeycloak(getApplication().getName()).get().getStatus().getReady() == true)
+				.reason("Wait for externalkeycloak to be ready.").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakRealms().size() > 0)
-			new SimpleWaiter(() -> keycloakRealms().stream().map(realm -> realm.get().getStatus().isReady())
+			new SimpleWaiter(() -> keycloakRealms().stream().map(realm -> realm.get().getStatus().getReady())
 					.reduce(Boolean::logicalAnd).get())
 					.reason("Wait for keycloakrealms to be ready.").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakClients().size() > 0)
-			new SimpleWaiter(() -> keycloakClients().stream().map(realm -> realm.get().getStatus().isReady())
+			new SimpleWaiter(() -> keycloakClients().stream().map(realm -> realm.get().getStatus().getReady())
 					.reduce(Boolean::logicalAnd).get())
 					.reason("Wait for keycloakclients to be ready.").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakUsers().size() > 0)
 			new SimpleWaiter(() -> keycloakUsersClient().list().getItems().size() == getApplication().getKeycloakUsers().size())
 					.reason("Wait for keycloakusers to be ready.").level(Level.DEBUG).waitFor(); // no isReady() for users
-		if (getApplication().getKeycloakBackups().size() > 0)
-			new SimpleWaiter(() -> keycloakBackups().stream().map(realm -> realm.get().getStatus().isReady())
-					.reduce(Boolean::logicalAnd).get())
-					.reason("Wait for keycloakbackups to be ready.").level(Level.DEBUG).waitFor();
 	}
 
 	@Override
 	public void undeploy() {
 		// delete custom resources
-		keycloakBackups()
-				.forEach(keycloakBackup -> keycloakBackup.withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
-		new SimpleWaiter(() -> keycloakBackupsClient().list().getItems().size() == 0)
-				.reason("Wait for all keycloakbackups instances to be deleted.").level(Level.DEBUG).waitFor();
 		keycloakUsers().forEach(keycloakUser -> keycloakUser.withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
 		new SimpleWaiter(() -> keycloakUsersClient().list().getItems().size() == 0)
 				.reason("Wait for all keycloakusers instances to be deleted.").level(Level.DEBUG).waitFor();
@@ -219,39 +198,42 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 		keycloakRealms().forEach(keycloakRealm -> keycloakRealm.withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
 		new SimpleWaiter(() -> keycloakRealmsClient().list().getItems().size() == 0)
 				.reason("Wait for all keycloakrealms instances to be deleted.").level(Level.DEBUG).waitFor();
-		keycloak().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		new SimpleWaiter(() -> keycloaksClient().list().getItems().size() == 0)
-				.reason("Wait for all keycloakrealms instances to be deleted.").level(Level.DEBUG).waitFor();
+		//		keycloak().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		//		new SimpleWaiter(() -> keycloaksClient().list().getItems().size() == 0)
+		//				.reason("Wait for all keycloakrealms instances to be deleted.").level(Level.DEBUG).waitFor();
 
-		// wait for 0 pods
-		OpenShiftWaiters.get(OpenShiftProvisioner.openShift, () -> false)
-				.areExactlyNPodsReady(0, "app", getApplication().getKeycloak().getKind().toLowerCase()).level(Level.DEBUG)
-				.waitFor();
+		//		// wait for 0 pods
+		//		OpenShiftWaiters.get(OpenShiftProvisioner.openShift, () -> false)
+		//				.areExactlyNPodsReady(0, "app", getApplication().getKeycloak().getKind().toLowerCase()).level(Level.DEBUG)
+		//				.waitFor();
 		unsubscribe();
 	}
 
-	@Override
-	public void scale(int replicas, boolean wait) {
-		String controllerRevisionHash = getStatefulSet().getStatus().getUpdateRevision();
-		Keycloak tmpKeycloak = keycloak().get();
-		int originalReplicas = tmpKeycloak.getSpec().getInstances();
-		tmpKeycloak.getSpec().setInstances(replicas);
-		keycloak().replace(tmpKeycloak);
-		if (wait) {
-			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
-					.areExactlyNPodsReady(replicas, "controller-revision-hash", controllerRevisionHash)
-					.level(Level.DEBUG)
-					.waitFor();
-		}
-		new SimpleWaiter(() -> keycloak().get().getStatus().isReady())
-				.reason("Wait for keycloak resource to be ready").level(Level.DEBUG).waitFor();
-		// check that route is up
-		if (originalReplicas == 0 && replicas > 0) {
-			WaitersUtil.routeIsUp(getURL().toExternalForm())
-					.level(Level.DEBUG)
-					.waitFor();
-		}
-	}
+	//	@Override
+	//	public void scale(int replicas, boolean wait) {
+	//		String controllerRevisionHash = getStatefulSet().getStatus().getUpdateRevision();
+	//		Keycloak tmpKeycloak = keycloak().get();
+	//		Long originalReplicas = tmpKeycloak.getSpec().getInstances();
+	//		tmpKeycloak.getSpec().setInstances(Integer.toUnsignedLong(replicas));
+	//		keycloak().replace(tmpKeycloak);
+	//		if (wait) {
+	//			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
+	//					.areExactlyNPodsReady(replicas, "controller-revision-hash", controllerRevisionHash)
+	//					.level(Level.DEBUG)
+	//					.waitFor();
+	//		}
+	//		new SimpleWaiter(
+	//				() -> keycloak().get().getStatus().getConditions().stream().anyMatch(
+	//						condition -> "Ready".equalsIgnoreCase(condition.getType())
+	//								&& condition.getStatus() != null))
+	//				.reason("Wait for Keycloak resource to be ready").level(Level.DEBUG).waitFor();
+	//		// check that route is up
+	//		if (originalReplicas == 0 && replicas > 0) {
+	//			WaitersUtil.routeIsUp(getURL().toExternalForm())
+	//					.level(Level.DEBUG)
+	//					.waitFor();
+	//		}
+	//	}
 
 	@Override
 	public List<Pod> getPods() {
@@ -262,49 +244,64 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				: Lists.emptyList();
 	}
 
-	@Override
-	public URL getURL() {
-		// https://github.com/keycloak/keycloak-operator/blob/15.0.2/pkg/apis/keycloak/v1alpha1/keycloak_types.go#L232
-		String externalUrl = keycloak().get().getStatus().getExternalURL();
-		try {
-			return Strings.isNullOrEmpty(externalUrl) ? null : new URL(externalUrl);
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(String.format("Keycloak operator External URL \"%s\" is malformed.", externalUrl), e);
-		}
-	}
+	//	@Override
+	//	public URL getURL() {
+	//		String host = OpenShiftProvisioner.openShift.routes().list().getItems()
+	//				.stream().filter(
+	//						route -> route.getMetadata().getName().startsWith(
+	//								keycloak().get().getMetadata().getName())
+	//								&&
+	//								route.getMetadata().getLabels().entrySet()
+	//										.stream().filter(
+	//												label -> label.getKey().equalsIgnoreCase("app")
+	//														&&
+	//														label.getValue().equalsIgnoreCase(
+	//																keycloak().get().getMetadata().getLabels().get("app")))
+	//										.count() == 1
+	//
+	//				).findFirst()
+	//				.orElseThrow(() -> new RuntimeException(
+	//						String.format("No route for Keycloak %s!", keycloak().get().getMetadata().getName())))
+	//				.getSpec().getHost();
+	//		try {
+	//			return Strings.isNullOrEmpty(host) ? null : new URL(String.format("https://%s", host));
+	//		} catch (MalformedURLException e) {
+	//			throw new RuntimeException(String.format("Keycloak operator External URL \"%s\" is malformed.", host), e);
+	//		}
+	//	}
 
-	// keycloaks.keycloak.org
+	//	// keycloaks.keycloak.org
+	//
+	//	/**
+	//	 * Get a client capable of working with {@link #KEYCLOAK_RESOURCE} custom resource.
+	//	 *
+	//	 * @return client for operations with {@link #KEYCLOAK_RESOURCE} custom resource
+	//	 */
+	//	public NonNamespaceOperation<Keycloak, KeycloakList, Resource<Keycloak>> keycloaksClient() {
+	//		if (KEYCLOAKS_CLIENT == null) {
+	//			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
+	//					.withName(KEYCLOAK_RESOURCE).get();
+	//			CustomResourceDefinitionContext crdc = CustomResourceDefinitionContext.fromCrd(crd);
+	//			if (!getCustomResourceDefinitions().contains(KEYCLOAK_RESOURCE)) {
+	//				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
+	//						KEYCLOAK_RESOURCE, OPERATOR_ID));
+	//			}
+	//			MixedOperation<Keycloak, KeycloakList, Resource<Keycloak>> keycloaksClient = OpenShifts
+	//					.master()
+	//					.newHasMetadataOperation(crdc, Keycloak.class, KeycloakList.class);
+	//			KEYCLOAKS_CLIENT = keycloaksClient.inNamespace(OpenShiftConfig.namespace());
+	//		}
+	//		return KEYCLOAKS_CLIENT;
+	//	}
 
-	/**
-	 * Get a client capable of working with {@link #KEYCLOAK_RESOURCE} custom resource.
-	 *
-	 * @return client for operations with {@link #KEYCLOAK_RESOURCE} custom resource
-	 */
-	public NonNamespaceOperation<Keycloak, KeycloakList, Resource<Keycloak>> keycloaksClient() {
-		if (KEYCLOAKS_CLIENT == null) {
-			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
-					.withName(KEYCLOAK_RESOURCE).get();
-			CustomResourceDefinitionContext crdc = CustomResourceDefinitionContext.fromCrd(crd);
-			if (!getCustomResourceDefinitions().contains(KEYCLOAK_RESOURCE)) {
-				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
-						KEYCLOAK_RESOURCE, OPERATOR_ID));
-			}
-			MixedOperation<Keycloak, KeycloakList, Resource<Keycloak>> keycloaksClient = OpenShifts
-					.master()
-					.newHasMetadataOperation(crdc, Keycloak.class, KeycloakList.class);
-			KEYCLOAKS_CLIENT = keycloaksClient.inNamespace(OpenShiftConfig.namespace());
-		}
-		return KEYCLOAKS_CLIENT;
-	}
-
-	/**
-	 * Get a reference to keycloak object. Use get() to get the actual object, or null in case it does not
-	 * exist on tested cluster.
-	 * @return A concrete {@link Resource} instance representing the {@link Keycloak} resource definition
-	 */
-	public Resource<Keycloak> keycloak() {
-		return keycloaksClient().withName(getApplication().getKeycloak().getMetadata().getName());
-	}
+	//	/**
+	//	 * Get a reference to keycloak object. Use get() to get the actual object, or null in case it does not
+	//	 * exist on tested cluster.
+	//	 * @return A concrete {@link Resource} instance representing the {@link Keycloak} resource definition
+	//	 */
+	//	public Resource<Keycloak> keycloak() {
+	//		return keycloaksClient().withName(getApplication().getKeycloak().getMetadata().getName());
+	//	}
 
 	// keycloakrealms.keycloak.org
 
@@ -356,54 +353,37 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				.collect(Collectors.toList());
 	}
 
-	// keycloakbackups.keycloak.org
-
 	/**
-	 * Get a client capable of working with {@link #KEYCLOAK_BACKUP_RESOURCE} custom resource.
+	 * Get a client capable of working with {@link #KEYCLOAK_EXTERNAL_KEYCLOAK_RESOURCE} custom resource.
 	 *
-	 * @return client for operations with {@link #KEYCLOAK_BACKUP_RESOURCE} custom resource
+	 * @return client for operations with {@link #KEYCLOAK_EXTERNAL_KEYCLOAK_RESOURCE} custom resource
 	 */
-	public NonNamespaceOperation<KeycloakBackup, KeycloakBackupList, Resource<KeycloakBackup>> keycloakBackupsClient() {
-		if (KEYCLOAK_BACKUPS_CLIENT == null) {
+	public NonNamespaceOperation<ExternalKeycloak, ExternalKeycloakList, Resource<ExternalKeycloak>> externalKeycloaksClient() {
+		if (KEYCLOAK_EXTERNAL_KEYCLOAK_CLIENT == null) {
 			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
-					.withName(KEYCLOAK_BACKUP_RESOURCE).get();
+					.withName(KEYCLOAK_EXTERNAL_KEYCLOAK_RESOURCE).get();
 			CustomResourceDefinitionContext crdc = CustomResourceDefinitionContext.fromCrd(crd);
-			if (!getCustomResourceDefinitions().contains(KEYCLOAK_BACKUP_RESOURCE)) {
+			if (!getCustomResourceDefinitions().contains(KEYCLOAK_EXTERNAL_KEYCLOAK_RESOURCE)) {
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
-						KEYCLOAK_BACKUP_RESOURCE, OPERATOR_ID));
+						KEYCLOAK_EXTERNAL_KEYCLOAK_RESOURCE, OPERATOR_ID));
 			}
-			MixedOperation<KeycloakBackup, KeycloakBackupList, Resource<KeycloakBackup>> keycloakBackupsClient = OpenShifts
+			MixedOperation<ExternalKeycloak, ExternalKeycloakList, Resource<ExternalKeycloak>> keycloakBackupsClient = OpenShifts
 					.master()
-					.newHasMetadataOperation(crdc, KeycloakBackup.class, KeycloakBackupList.class);
-			KEYCLOAK_BACKUPS_CLIENT = keycloakBackupsClient.inNamespace(OpenShiftConfig.namespace());
+					.newHasMetadataOperation(crdc, ExternalKeycloak.class, ExternalKeycloakList.class);
+			KEYCLOAK_EXTERNAL_KEYCLOAK_CLIENT = keycloakBackupsClient.inNamespace(OpenShiftConfig.namespace());
 		}
-		return KEYCLOAK_BACKUPS_CLIENT;
+		return KEYCLOAK_EXTERNAL_KEYCLOAK_CLIENT;
 	}
 
 	/**
-	 * Get a reference to keycloakbackup object. Use get() to get the actual object, or null in case it does not
+	 * Get a reference to externalkeycloak object. Use get() to get the actual object, or null in case it does not
 	 * exist on tested cluster.
 	 *
-	 * @param name name of the {@link KeycloakBackup} custom resource
-	 * @return A concrete {@link Resource} instance representing the {@link KeycloakBackup} resource definition
+	 * @param name name of the {@link ExternalKeycloak} custom resource
+	 * @return A concrete {@link Resource} instance representing the {@link ExternalKeycloak} resource definition
 	 */
-	public Resource<KeycloakBackup> keycloakBackup(String name) {
-		return keycloakBackupsClient().withName(name);
-	}
-
-	/**
-	 * Get all keycloakbackups maintained by the current operator instance.
-	 *
-	 * Be aware that this method return just a references to the addresses, they might not actually exist on the cluster.
-	 * Use get() to get the actual object, or null in case it does not exist on tested cluster.
-	 * @return A list of {@link Resource} instances representing the {@link KeycloakBackup} resource definitions
-	 */
-	public List<Resource<KeycloakBackup>> keycloakBackups() {
-		KeycloakOperatorApplication keycloakOperatorApplication = getApplication();
-		return keycloakOperatorApplication.getKeycloakBackups().stream()
-				.map(keycloakBackup -> keycloakBackup.getMetadata().getName())
-				.map(this::keycloakBackup)
-				.collect(Collectors.toList());
+	public Resource<ExternalKeycloak> externalKeycloak(String name) {
+		return externalKeycloaksClient().withName(name);
 	}
 
 	// keycloakclients.keycloak.org
@@ -506,16 +486,22 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 				.collect(Collectors.toList());
 	}
 
-	/**
-	 * @return the underlying StatefulSet which provisions the cluster
-	 */
-	private StatefulSet getStatefulSet() {
-		StatefulSet statefulSet = OpenShiftProvisioner.openShift.getStatefulSet(STATEFUL_SET_NAME);
-		if (Objects.isNull(statefulSet)) {
-			throw new IllegalStateException(String.format(
-					"Impossible to find StatefulSet with name=\"%s\"!",
-					STATEFUL_SET_NAME));
-		}
-		return statefulSet;
+//	/**
+//	 * @return the underlying StatefulSet which provisions the cluster
+//	 */
+//	private StatefulSet getStatefulSet() {
+//		StatefulSet statefulSet = OpenShiftProvisioner.openShift.getStatefulSet(STATEFUL_SET_NAME);
+//		if (Objects.isNull(statefulSet)) {
+//			throw new IllegalStateException(String.format(
+//					"Impossible to find StatefulSet with name=\"%s\"!",
+//					STATEFUL_SET_NAME));
+//		}
+//		return statefulSet;
+//	}
+
+	@Override
+	public void scale(int replicas, boolean wait) {
+		throw new UnsupportedOperationException(
+				"The scale operation is not implemented by this provisioner. The current Keycloak provisioner should be used");
 	}
 }

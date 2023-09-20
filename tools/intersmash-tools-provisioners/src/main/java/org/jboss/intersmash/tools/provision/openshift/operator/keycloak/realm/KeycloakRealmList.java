@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm;
 
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakRealm;
+
 import io.fabric8.kubernetes.client.CustomResourceList;
 
 public class KeycloakRealmList extends CustomResourceList<KeycloakRealm> {

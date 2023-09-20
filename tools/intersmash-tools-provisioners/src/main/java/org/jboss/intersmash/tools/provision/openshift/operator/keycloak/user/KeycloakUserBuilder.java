@@ -17,17 +17,18 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user;
 
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakAPIUser;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakUserSpec;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakUser;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakUserSpec;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.RealmSelector;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.User;
 
-import io.fabric8.kubernetes.api.model.LabelSelector;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
 public final class KeycloakUserBuilder {
 	private String name;
 	private Map<String, String> labels;
-	private LabelSelector realmSelector;
-	private KeycloakAPIUser user;
+	private RealmSelector realmSelector;
+	private User user;
 
 	/**
 	 * Initialize the {@link KeycloakUserBuilder} with given resource name.
@@ -55,7 +56,7 @@ public final class KeycloakUserBuilder {
 	 * @param realmSelector The selector for looking up KeycloakRealm Custom Resources
 	 * @return this
 	 */
-	public KeycloakUserBuilder realmSelector(LabelSelector realmSelector) {
+	public KeycloakUserBuilder realmSelector(RealmSelector realmSelector) {
 		this.realmSelector = realmSelector;
 		return this;
 	}
@@ -66,7 +67,7 @@ public final class KeycloakUserBuilder {
 	 * @param user The Keycloak User REST object.
 	 * @return this
 	 */
-	public KeycloakUserBuilder user(KeycloakAPIUser user) {
+	public KeycloakUserBuilder user(User user) {
 		this.user = user;
 		return this;
 	}

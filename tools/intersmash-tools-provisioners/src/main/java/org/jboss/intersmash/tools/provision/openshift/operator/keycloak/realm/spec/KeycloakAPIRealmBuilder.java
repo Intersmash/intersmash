@@ -15,21 +15,25 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.spec.KeycloakAPIClient;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakAPIUser;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakclientspec.Client;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.Realm;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.Clients;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.IdentityProviders;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.Users;
 
 public final class KeycloakAPIRealmBuilder {
 	private String id;
 	private String realm;
 	private boolean enabled;
 	private String displayName;
-	private Set<KeycloakAPIUser> users;
-	private Set<KeycloakAPIClient> clients;
-	private Set<KeycloakIdentityProvider> identityProviders;
-	private Set<String> eventsListeners;
+	private List<Users> users;
+	private List<Clients> clients;
+	private List<IdentityProviders> identityProviders;
+	private List<String> eventsListeners;
 	private boolean eventsEnabled;
 	private boolean adminEventsEnabled;
 	private boolean adminEventsDetailsEnabled;
@@ -89,10 +93,10 @@ public final class KeycloakAPIRealmBuilder {
 	/**
 	 * Set Keycloak users
 	 *
-	 * @param users A {@link Set} of {@link KeycloakAPIUser} instances
+	 * @param users A {@link Set} of {@link Users} instances
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder users(Set<KeycloakAPIUser> users) {
+	public KeycloakAPIRealmBuilder users(List<Users> users) {
 		this.users = users;
 		return this;
 	}
@@ -100,12 +104,12 @@ public final class KeycloakAPIRealmBuilder {
 	/**
 	 * Add one Keycloak User
 	 *
-	 * @param user The {@link KeycloakAPIUser} instance representing the user that should be added
+	 * @param user The {@link Users} instance representing the user that should be added
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder users(KeycloakAPIUser user) {
+	public KeycloakAPIRealmBuilder users(Users user) {
 		if (users == null) {
-			users = new HashSet<>();
+			users = new ArrayList<>();
 		}
 		users.add(user);
 		return this;
@@ -114,10 +118,10 @@ public final class KeycloakAPIRealmBuilder {
 	/**
 	 *  Set Keycloak Clients.
 	 *
-	 * @param clients A {@link Set} of {@link KeycloakAPIClient} instances
+	 * @param clients A {@link Set} of {@link org.keycloak.k8s.legacy.v1alpha1.keycloakclientspec.Client} instances
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder clients(Set<KeycloakAPIClient> clients) {
+	public KeycloakAPIRealmBuilder clients(List<Clients> clients) {
 		this.clients = clients;
 		return this;
 	}
@@ -125,12 +129,12 @@ public final class KeycloakAPIRealmBuilder {
 	/**
 	 *  Add one Keycloak Client.
 	 *
-	 * @param client The {@link KeycloakAPIClient} instance representing the client that should be added
+	 * @param client The {@link Clients} instance representing the client that should be added
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder clients(KeycloakAPIClient client) {
+	public KeycloakAPIRealmBuilder clients(Clients client) {
 		if (clients == null) {
-			clients = new HashSet<>();
+			clients = new ArrayList<>();
 		}
 		clients.add(client);
 		return this;
@@ -139,10 +143,10 @@ public final class KeycloakAPIRealmBuilder {
 	/**
 	 * Set Identity Providers.
 	 *
-	 * @param identityProviders A {@link Set} of {@link KeycloakIdentityProvider} instances
+	 * @param identityProviders A {@link Set} of {@link IdentityProviders} instances
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder identityProviders(Set<KeycloakIdentityProvider> identityProviders) {
+	public KeycloakAPIRealmBuilder identityProviders(List<IdentityProviders> identityProviders) {
 		this.identityProviders = identityProviders;
 		return this;
 	}
@@ -150,13 +154,13 @@ public final class KeycloakAPIRealmBuilder {
 	/**
 	 * Add one Identity Provider.
 	 *
-	 * @param identityProvider The {@link KeycloakIdentityProvider} instance representing the identity provider that
+	 * @param identityProvider The {@link IdentityProviders} instance representing the identity provider that
 	 *                         should be added
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder identityProviders(KeycloakIdentityProvider identityProvider) {
+	public KeycloakAPIRealmBuilder identityProviders(IdentityProviders identityProvider) {
 		if (identityProviders == null) {
-			identityProviders = new HashSet<>();
+			identityProviders = new ArrayList<>();
 		}
 		identityProviders.add(identityProvider);
 		return this;
@@ -168,7 +172,7 @@ public final class KeycloakAPIRealmBuilder {
 	 * @param eventsListeners A {@link Set} of events listeners
 	 * @return this
 	 */
-	public KeycloakAPIRealmBuilder eventsListeners(Set<String> eventsListeners) {
+	public KeycloakAPIRealmBuilder eventsListeners(List<String> eventsListeners) {
 		this.eventsListeners = eventsListeners;
 		return this;
 	}
@@ -182,7 +186,7 @@ public final class KeycloakAPIRealmBuilder {
 	 */
 	public KeycloakAPIRealmBuilder eventsListeners(String eventsListener) {
 		if (eventsListeners == null) {
-			eventsListeners = new HashSet<>();
+			eventsListeners = new ArrayList<>();
 		}
 		eventsListeners.add(eventsListener);
 		return this;
@@ -389,8 +393,8 @@ public final class KeycloakAPIRealmBuilder {
 	//		return this;
 	//	}
 
-	public KeycloakAPIRealm build() {
-		KeycloakAPIRealm keycloakAPIRealm = new KeycloakAPIRealm();
+	public Realm build() {
+		Realm keycloakAPIRealm = new Realm();
 		keycloakAPIRealm.setId(id);
 		keycloakAPIRealm.setRealm(realm);
 		keycloakAPIRealm.setEnabled(enabled);

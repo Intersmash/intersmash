@@ -19,11 +19,15 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClient;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealm;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUser;
+import org.keycloak.k8s.legacy.v1alpha1.ExternalKeycloak;
+import org.keycloak.k8s.legacy.v1alpha1.ExternalKeycloakSpec;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakClient;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakRealm;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakUser;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.Service;
 
 /**
  * End user Application interface which presents Keycloak operator application on OpenShift Container Platform.
@@ -35,10 +39,21 @@ import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.Key
  */
 public interface KeycloakOperatorApplication extends OperatorApplication {
 
-	Keycloak getKeycloak();
+	//	Keycloak getKeycloak();
 
-	default List<KeycloakBackup> getKeycloakBackups() {
-		return Collections.emptyList();
+	Service getExternalKeycloakService();
+
+	default ExternalKeycloak getExternalKeycloak() {
+		ExternalKeycloakSpec externalKeycloakSpec = new ExternalKeycloakSpec();
+		externalKeycloakSpec.setContextRoot("/");
+		final String internalUrl = "http://" + getExternalKeycloakService().getSpec().getClusterIP() + ":8080";
+		externalKeycloakSpec.setUrl(internalUrl);
+		ExternalKeycloak externalKeycloak = new ExternalKeycloak();
+		externalKeycloak.setSpec(externalKeycloakSpec);
+		ObjectMeta metadata = new ObjectMeta();
+		metadata.setName(getName());
+		externalKeycloak.setMetadata(metadata);
+		return externalKeycloak;
 	}
 
 	default List<KeycloakClient> getKeycloakClients() {

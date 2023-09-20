@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client;
 
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakClient;
+
 import io.fabric8.kubernetes.client.CustomResourceList;
 
 public class KeycloakClientList extends CustomResourceList<KeycloakClient> {

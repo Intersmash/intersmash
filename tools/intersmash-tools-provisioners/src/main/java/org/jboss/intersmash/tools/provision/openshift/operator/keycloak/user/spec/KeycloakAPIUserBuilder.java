@@ -15,11 +15,15 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.Users;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.users.Credentials;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.realm.users.FederatedIdentities;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakuserspec.User;
 
 public final class KeycloakAPIUserBuilder {
 	private String id;
@@ -29,12 +33,12 @@ public final class KeycloakAPIUserBuilder {
 	private String email;
 	private boolean emailVerified;
 	private boolean enabled;
-	private Set<String> realmRoles;
+	private List<String> realmRoles;
 	private Map<String, List<String>> clientRoles;
-	private Set<String> requiredActions;
-	private Set<String> groups;
-	private Set<FederatedIdentity> federatedIdentities;
-	private Set<KeycloakCredential> credentials;
+	private List<String> requiredActions;
+	private List<String> groups;
+	private List<FederatedIdentities> federatedIdentities;
+	private List<Credentials> credentials;
 	//	private Map<String, List<String>> attributes;
 
 	/**
@@ -120,7 +124,7 @@ public final class KeycloakAPIUserBuilder {
 	 * @param realmRoles A set of Realm Roles that should be added the user
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder realmRoles(Set<String> realmRoles) {
+	public KeycloakAPIUserBuilder realmRoles(List<String> realmRoles) {
 		this.realmRoles = realmRoles;
 		return this;
 	}
@@ -133,7 +137,7 @@ public final class KeycloakAPIUserBuilder {
 	 */
 	public KeycloakAPIUserBuilder realmRoles(String realmRole) {
 		if (realmRoles == null) {
-			realmRoles = new HashSet<>();
+			realmRoles = new ArrayList<>();
 		}
 		realmRoles.add(realmRole);
 		return this;
@@ -171,7 +175,7 @@ public final class KeycloakAPIUserBuilder {
 	 * @param requiredActions A set of Required Actions that should be added the user
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder requiredActions(Set<String> requiredActions) {
+	public KeycloakAPIUserBuilder requiredActions(List<String> requiredActions) {
 		this.requiredActions = requiredActions;
 		return this;
 	}
@@ -184,7 +188,7 @@ public final class KeycloakAPIUserBuilder {
 	 */
 	public KeycloakAPIUserBuilder requiredActions(String requiredAction) {
 		if (requiredActions == null) {
-			requiredActions = new HashSet<>();
+			requiredActions = new ArrayList<>();
 		}
 		requiredActions.add(requiredAction);
 		return this;
@@ -196,7 +200,7 @@ public final class KeycloakAPIUserBuilder {
 	 * @param groups A set of Groups that should be added the user
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder groups(Set<String> groups) {
+	public KeycloakAPIUserBuilder groups(List<String> groups) {
 		this.groups = groups;
 		return this;
 	}
@@ -209,7 +213,7 @@ public final class KeycloakAPIUserBuilder {
 	 */
 	public KeycloakAPIUserBuilder groups(String group) {
 		if (groups == null) {
-			groups = new HashSet<>();
+			groups = new ArrayList<>();
 		}
 		groups.add(group);
 		return this;
@@ -221,7 +225,7 @@ public final class KeycloakAPIUserBuilder {
 	 * @param federatedIdentities A set of Federated Identities that should be added the user
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder federatedIdentities(Set<FederatedIdentity> federatedIdentities) {
+	public KeycloakAPIUserBuilder federatedIdentities(List<FederatedIdentities> federatedIdentities) {
 		this.federatedIdentities = federatedIdentities;
 		return this;
 	}
@@ -232,9 +236,9 @@ public final class KeycloakAPIUserBuilder {
 	 * @param federatedIdentity The Federated Identity that should be added to the user ones
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder federatedIdentities(FederatedIdentity federatedIdentity) {
+	public KeycloakAPIUserBuilder federatedIdentities(FederatedIdentities federatedIdentity) {
 		if (federatedIdentities == null) {
-			federatedIdentities = new HashSet<>();
+			federatedIdentities = new ArrayList<>();
 		}
 		federatedIdentities.add(federatedIdentity);
 		return this;
@@ -246,7 +250,7 @@ public final class KeycloakAPIUserBuilder {
 	 * @param credentials A set of credential that should be added the user
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder credentials(Set<KeycloakCredential> credentials) {
+	public KeycloakAPIUserBuilder credentials(List<Credentials> credentials) {
 		this.credentials = credentials;
 		return this;
 	}
@@ -257,9 +261,9 @@ public final class KeycloakAPIUserBuilder {
 	 * @param credential The credential that should be added to the user ones
 	 * @return this
 	 */
-	public KeycloakAPIUserBuilder credentials(KeycloakCredential credential) {
+	public KeycloakAPIUserBuilder credentials(Credentials credential) {
 		if (credentials == null) {
-			credentials = new HashSet<>();
+			credentials = new ArrayList<>();
 		}
 		credentials.add(credential);
 		return this;
@@ -284,8 +288,8 @@ public final class KeycloakAPIUserBuilder {
 	//		return this;
 	//	}
 
-	public KeycloakAPIUser build() {
-		KeycloakAPIUser keycloakAPIUser = new KeycloakAPIUser();
+	public Users build() {
+		Users keycloakAPIUser = new Users();
 		keycloakAPIUser.setId(id);
 		keycloakAPIUser.setUsername(username);
 		keycloakAPIUser.setFirstName(firstName);

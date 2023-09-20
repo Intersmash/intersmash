@@ -13,27 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
+package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.external;
 
-import java.util.List;
+import org.keycloak.k8s.legacy.v1alpha1.ExternalKeycloak;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import io.fabric8.kubernetes.client.CustomResourceList;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown = true)
-@Getter
-@Setter
-@EqualsAndHashCode
-@ToString
-public class VolumesSpec {
-
-	private List<VolumeSpec> items;
-
-	private int defaultMode;
+public class ExternalKeycloakList extends CustomResourceList<ExternalKeycloak> {
 }

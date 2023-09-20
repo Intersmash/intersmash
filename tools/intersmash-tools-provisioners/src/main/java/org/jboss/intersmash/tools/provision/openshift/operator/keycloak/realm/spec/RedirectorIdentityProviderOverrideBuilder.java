@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec;
 
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.RealmOverrides;
+
 public final class RedirectorIdentityProviderOverrideBuilder {
 	private String identityProvider;
 	private String forFlow;
@@ -41,8 +43,8 @@ public final class RedirectorIdentityProviderOverrideBuilder {
 		return this;
 	}
 
-	public RedirectorIdentityProviderOverride build() {
-		RedirectorIdentityProviderOverride redirectorIdentityProviderOverride = new RedirectorIdentityProviderOverride();
+	public RealmOverrides build() {
+		RealmOverrides redirectorIdentityProviderOverride = new RealmOverrides();
 		redirectorIdentityProviderOverride.setIdentityProvider(identityProvider);
 		redirectorIdentityProviderOverride.setForFlow(forFlow);
 		return redirectorIdentityProviderOverride;

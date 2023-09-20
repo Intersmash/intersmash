@@ -19,9 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.KeycloakAPIRealm;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.KeycloakRealmSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.RedirectorIdentityProviderOverride;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakRealm;
+import org.keycloak.k8s.legacy.v1alpha1.KeycloakRealmSpec;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.InstanceSelector;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.Realm;
+import org.keycloak.k8s.legacy.v1alpha1.keycloakrealmspec.RealmOverrides;
 
 import io.fabric8.kubernetes.api.model.LabelSelector;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
@@ -30,9 +32,11 @@ public final class KeycloakRealmBuilder {
 	private String name;
 	private Map<String, String> labels;
 	//	private boolean unmanaged;
-	private LabelSelector instanceSelector;
-	private KeycloakAPIRealm realm;
-	private List<RedirectorIdentityProviderOverride> realmOverrides;
+	private InstanceSelector instanceSelector;
+	private Realm realm;
+	private List<RealmOverrides> realmOverrides;
+
+	private Boolean unmanaged;
 
 	/**
 	 * Initialize the {@link KeycloakRealmBuilder} with given resource name.
@@ -54,14 +58,14 @@ public final class KeycloakRealmBuilder {
 		this.labels = labels;
 	}
 
-	//	/**
-	//	 * When set to true, this KeycloakRealm will be marked as unmanaged and not be managed by this operator.
-	//	 * It can then be used for targeting purposes.
-	//	 */
-	//	public KeycloakRealmBuilder unmanaged(boolean unmanaged) {
-	//		this.unmanaged = unmanaged;
-	//		return this;
-	//	}
+	/**
+	 * When set to true, this KeycloakRealm will be marked as unmanaged and not be managed by this operator.
+	 * It can then be used for targeting purposes.
+	 */
+	public KeycloakRealmBuilder isUnmanaged(Boolean unmanaged) {
+		this.unmanaged = unmanaged;
+		return this;
+	}
 
 	/**
 	 * Set a selector for looking up Keycloak Custom Resources.
@@ -69,7 +73,7 @@ public final class KeycloakRealmBuilder {
 	 * @param instanceSelector {@link LabelSelector} instance that should be used for looking up Keycloak Custom Resources.
 	 * @return this
 	 */
-	public KeycloakRealmBuilder instanceSelector(LabelSelector instanceSelector) {
+	public KeycloakRealmBuilder instanceSelector(InstanceSelector instanceSelector) {
 		this.instanceSelector = instanceSelector;
 		return this;
 	}
@@ -77,10 +81,10 @@ public final class KeycloakRealmBuilder {
 	/**
 	 * Keycloak Realm REST object.
 	 *
-	 * @param realm {@link KeycloakAPIRealm} instance that should be used as the realm REST client
+	 * @param realm {@link Realm} instance that should be used as the realm REST client
 	 * @return this
 	 */
-	public KeycloakRealmBuilder realm(KeycloakAPIRealm realm) {
+	public KeycloakRealmBuilder realm(Realm realm) {
 		this.realm = realm;
 		return this;
 	}
@@ -88,11 +92,11 @@ public final class KeycloakRealmBuilder {
 	/**
 	 * A list of overrides to the default Realm behavior.
 	 *
-	 * @param realmOverrides A list of {@link RedirectorIdentityProviderOverride} instances that should be used to
+	 * @param realmOverrides A list of {@link RealmOverrides} instances that should be used to
 	 *                       override the default realm behavior
 	 * @return this
 	 */
-	public KeycloakRealmBuilder realmOverrides(List<RedirectorIdentityProviderOverride> realmOverrides) {
+	public KeycloakRealmBuilder realmOverrides(List<RealmOverrides> realmOverrides) {
 		this.realmOverrides = realmOverrides;
 		return this;
 	}
@@ -100,11 +104,11 @@ public final class KeycloakRealmBuilder {
 	/**
 	 * Add an override to the default Realm behavior.
 	 *
-	 * @param realmOverride A {@link RedirectorIdentityProviderOverride} instance that should be added to
+	 * @param realmOverride A {@link RealmOverrides} instance that should be added to
 	 *                       override the default realm behavior
 	 * @return this
 	 */
-	public KeycloakRealmBuilder realmOverrides(RedirectorIdentityProviderOverride realmOverride) {
+	public KeycloakRealmBuilder realmOverrides(RealmOverrides realmOverride) {
 		if (realmOverrides == null) {
 			realmOverrides = new ArrayList<>();
 		}
@@ -119,7 +123,7 @@ public final class KeycloakRealmBuilder {
 		keycloakRealm.getMetadata().setLabels(labels);
 
 		KeycloakRealmSpec keycloakRealmSpec = new KeycloakRealmSpec();
-		//		keycloakRealmSpec.setUnmanaged(unmanaged);
+		keycloakRealmSpec.setUnmanaged(unmanaged);
 		keycloakRealmSpec.setInstanceSelector(instanceSelector);
 		keycloakRealmSpec.setRealm(realm);
 		keycloakRealmSpec.setRealmOverrides(realmOverrides);

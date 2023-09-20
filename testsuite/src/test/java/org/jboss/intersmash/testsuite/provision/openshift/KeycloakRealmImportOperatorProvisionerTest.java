@@ -34,7 +34,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
@@ -74,14 +73,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CleanBeforeAll
 @NotForProductizedExecutionProfile
-@Disabled("Need updated JOSDK, i.e. XTF supporting Fabric8 kubernetes-client v. 6")
 public class KeycloakRealmImportOperatorProvisionerTest {
 	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
 	private static final String POSTGRESQL_NAME = "postgresql";
 	private static final String POSTGRESQL_DATABASE = "keycloak";
-	private static final String POSTGRESQL_PASSWORD = "pippobaudo1234";
-	private static final String POSTGRESQL_USER = "user09M";
 
 	private static final PostgreSQLImageOpenShiftApplication pgSQLApplication = new PostgreSQLImageOpenShiftApplication() {
 		@Override
@@ -179,9 +175,11 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 		keycloak.getMetadata().setLabels(matchLabels);
 		KeycloakSpec spec = new KeycloakSpec();
 		spec.setInstances(1L);
+
 		Ingress ingress = new Ingress();
 		ingress.setEnabled(true);
 		spec.setIngress(ingress);
+
 		Hostname hostname = new Hostname();
 		hostname.setHostname(OpenShifts.master().generateHostname(name));
 		// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
@@ -193,6 +191,7 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 		http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
 		spec.setHttp(http);
 		spec.setHostname(hostname);
+
 		keycloak.setSpec(spec);
 
 		KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner(keycloak, name);
@@ -234,9 +233,11 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 					KeycloakSpec spec = new KeycloakSpec();
 					keycloak.setSpec(spec);
 					spec.setInstances(1L);
+
 					Ingress ingress = new Ingress();
 					ingress.setEnabled(true);
 					spec.setIngress(ingress);
+
 					Hostname hostname = new Hostname();
 					hostname.setHostname(OpenShifts.master().generateHostname(name));
 					// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
@@ -249,6 +250,7 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 					http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
 					spec.setHttp(http);
 					spec.setHostname(hostname);
+
 					// database
 					Db db = new Db();
 					db.setVendor("postgres");
