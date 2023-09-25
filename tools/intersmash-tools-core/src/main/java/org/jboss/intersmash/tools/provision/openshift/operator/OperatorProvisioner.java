@@ -61,7 +61,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class OperatorProvisioner<T extends OperatorApplication> implements OpenShiftProvisioner<T> {
 	// cache the current csv and list of provided custom resource definitions
-	static String currentCSV;
+	private String currentCSV;
 	final String packageManifestName;
 	private CatalogSource catalogSource;
 	private final T operatorApplication;
@@ -78,6 +78,7 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 			.withMaxRetries(3)
 			.build();
 	public static final String INSTALLPLAN_APPROVAL_MANUAL = "Manual";
+	public static final String INSTALLPLAN_APPROVAL_AUTOMATIC = "Automatic";
 
 	public OperatorProvisioner(T operatorApplication, String packageManifestName) {
 		this.operatorApplication = operatorApplication;
@@ -453,7 +454,7 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 				"--ignore-not-found"));
 	}
 
-	protected static String getCurrentCSV() {
+	protected String getCurrentCSV() {
 		return currentCSV;
 	}
 
