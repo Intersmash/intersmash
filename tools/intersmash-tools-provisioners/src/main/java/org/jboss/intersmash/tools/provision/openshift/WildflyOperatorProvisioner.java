@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServer;
 import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServerList;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.status.PodStatus;
 import org.slf4j.event.Level;
+import org.wildfly.v1alpha1.WildFlyServer;
+import org.wildfly.v1alpha1.wildflyserverstatus.Pods;
 
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.event.helpers.EventHelper;
@@ -149,8 +149,8 @@ public class WildflyOperatorProvisioner extends OperatorProvisioner<WildflyOpera
 	public List<Pod> getPods() {
 		List<Pod> pods = OpenShiftProvisioner.openShift.getPods();
 		List<String> activeOperatorPodNames = wildFlyServer().get().getStatus().getPods().stream()
-				.filter(podStatus -> podStatus.getState().equals("ACTIVE"))
-				.map(PodStatus::getName)
+				.filter(podStatus -> podStatus.getState().equals(Pods.State.ACTIVE))
+				.map(Pods::getName)
 				.collect(Collectors.toList());
 		return pods.stream()
 				.filter(pod -> activeOperatorPodNames.contains(pod.getMetadata().getName()))

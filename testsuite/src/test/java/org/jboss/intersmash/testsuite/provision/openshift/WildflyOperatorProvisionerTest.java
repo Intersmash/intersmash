@@ -23,13 +23,13 @@ import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServer;
 import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServerBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.wildfly.v1alpha1.WildFlyServer;
 
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;

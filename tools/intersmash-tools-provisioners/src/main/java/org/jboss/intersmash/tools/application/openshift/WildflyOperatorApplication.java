@@ -16,7 +16,7 @@
 package org.jboss.intersmash.tools.application.openshift;
 
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServer;
+import org.wildfly.v1alpha1.WildFlyServer;
 
 /**
  * End user Application interface which presents WILDFLY operator application on OpenShift Container Platform.

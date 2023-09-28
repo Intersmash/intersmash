@@ -187,6 +187,7 @@
                 </executions>
                 <configuration>
                     <target>target/generated-sources</target>
+                    <source>src/main/resources/crds/wildfly.org_wildflyservers_crd.yaml</source>
                     <urls>
                         <!-- ActiveMQ Operator -->
                         <url>https://raw.githubusercontent.com/artemiscloud/activemq-artemis-operator/${version.intersmash.activemq.operators}/bundle/manifests/broker.amq.io_activemqartemises.yaml</url>
