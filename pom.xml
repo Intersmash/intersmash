@@ -588,6 +588,15 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>demo</id>
+            <modules>
+                <module>demos</module>
+            </modules>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>redhat-ga-repository</id>

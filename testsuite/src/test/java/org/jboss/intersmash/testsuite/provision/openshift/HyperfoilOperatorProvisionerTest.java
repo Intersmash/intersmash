@@ -63,8 +63,7 @@ public class HyperfoilOperatorProvisionerTest {
 						return new HyperfoilBuilder(
 								getName(),
 								// see https://github.com/Hyperfoil/hyperfoil-operator/issues/18, "latest" (default) would fail.
-								"0.24.2"
-						).build();
+								"0.24.2").build();
 					}
 
 					@Override
