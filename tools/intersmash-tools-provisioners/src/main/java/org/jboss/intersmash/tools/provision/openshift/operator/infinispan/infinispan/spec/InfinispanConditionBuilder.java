@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanstatus.Conditions;
+
 public final class InfinispanConditionBuilder {
 	private String type;
 	private String status;
@@ -55,8 +57,8 @@ public final class InfinispanConditionBuilder {
 		return this;
 	}
 
-	public InfinispanCondition build() {
-		InfinispanCondition infinispanCondition = new InfinispanCondition();
+	public Conditions build() {
+		Conditions infinispanCondition = new Conditions();
 		infinispanCondition.setType(type);
 		infinispanCondition.setStatus(status);
 		infinispanCondition.setMessage(message);

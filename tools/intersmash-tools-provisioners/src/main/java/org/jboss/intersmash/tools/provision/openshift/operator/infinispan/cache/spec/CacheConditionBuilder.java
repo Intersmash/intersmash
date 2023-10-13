@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.spec;
 
+import org.infinispan.v2alpha1.cachestatus.Conditions;
+
 public final class CacheConditionBuilder {
 	private String type;
 	private String status;
@@ -53,8 +55,8 @@ public final class CacheConditionBuilder {
 		return this;
 	}
 
-	public CacheCondition build() {
-		CacheCondition cacheCondition = new CacheCondition();
+	public Conditions build() {
+		Conditions cacheCondition = new Conditions();
 		cacheCondition.setType(type);
 		cacheCondition.setStatus(status);
 		cacheCondition.setMessage(message);

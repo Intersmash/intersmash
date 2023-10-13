@@ -17,8 +17,10 @@ package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infin
 
 import java.util.Map;
 
+import org.infinispan.v1.infinispanspec.Logging;
+
 public final class InfinispanLoggingSpecBuilder {
-	private Map<String, String> categories;
+	private Map<String, Logging.Categories> categories;
 
 	/**
 	 * Names logging categories and levels
@@ -26,13 +28,13 @@ public final class InfinispanLoggingSpecBuilder {
 	 * @param categories Map storing logging categories and levels
 	 * @return this
 	 */
-	public InfinispanLoggingSpecBuilder categories(Map<String, String> categories) {
+	public InfinispanLoggingSpecBuilder categories(Map<String, Logging.Categories> categories) {
 		this.categories = categories;
 		return this;
 	}
 
-	public InfinispanLoggingSpec build() {
-		InfinispanLoggingSpec infinispanLoggingSpec = new InfinispanLoggingSpec();
+	public Logging build() {
+		Logging infinispanLoggingSpec = new Logging();
 		infinispanLoggingSpec.setCategories(categories);
 		return infinispanLoggingSpec;
 	}

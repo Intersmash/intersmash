@@ -22,14 +22,14 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.assertj.core.util.Lists;
+import org.infinispan.v1.Infinispan;
+import org.infinispan.v1.infinispanspec.Expose;
+import org.infinispan.v2alpha1.Cache;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.InfinispanOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.Cache;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.cache.CacheList;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.Infinispan;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.InfinispanList;
-import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.ExposeSpecBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec.InfinispanConditionBuilder;
 import org.slf4j.event.Level;
 
@@ -171,8 +171,8 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 		String internalUrl = "http://" + defaultInternalService.getSpec().getClusterIP() + ":11222";
 		String externalUrl = null;
 		if (getApplication().getInfinispan().getSpec().getExpose() != null) {
-			final String exposedType = getApplication().getInfinispan().getSpec().getExpose().getType();
-			switch (ExposeSpecBuilder.ExposeType.valueOf(exposedType)) {
+			final Expose.Type exposedType = getApplication().getInfinispan().getSpec().getExpose().getType();
+			switch (exposedType) {
 				case NodePort:
 					//	TODO - check
 					// see see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L107

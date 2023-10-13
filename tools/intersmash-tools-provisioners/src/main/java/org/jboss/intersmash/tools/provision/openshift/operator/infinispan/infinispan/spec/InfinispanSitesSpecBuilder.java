@@ -17,17 +17,21 @@ package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infin
 
 import java.util.List;
 
+import org.infinispan.v1.infinispanspec.service.Sites;
+import org.infinispan.v1.infinispanspec.service.sites.Local;
+import org.infinispan.v1.infinispanspec.service.sites.Locations;
+
 public final class InfinispanSitesSpecBuilder {
-	private InfinispanSitesLocalSpec local;
-	private List<InfinispanSiteLocationSpec> locations;
+	private Local local;
+	private List<Locations> locations;
 
 	/**
 	 * Specify the local site
 	 *
-	 * @param local {@link InfinispanSitesLocalSpec} that defines the local site configuration
+	 * @param local {@link Local} that defines the local site configuration
 	 * @return this
 	 */
-	public InfinispanSitesSpecBuilder local(InfinispanSitesLocalSpec local) {
+	public InfinispanSitesSpecBuilder local(Local local) {
 		this.local = local;
 		return this;
 	}
@@ -35,16 +39,16 @@ public final class InfinispanSitesSpecBuilder {
 	/**
 	 * Specify the backup locations
 	 *
-	 * @param locations List of {@link InfinispanSiteLocationSpec} that describe the backup locations configuration
+	 * @param locations List of {@link Locations} that describe the backup locations configuration
 	 * @return this
 	 */
-	public InfinispanSitesSpecBuilder locations(List<InfinispanSiteLocationSpec> locations) {
+	public InfinispanSitesSpecBuilder locations(List<Locations> locations) {
 		this.locations = locations;
 		return this;
 	}
 
-	public InfinispanSitesSpec build() {
-		InfinispanSitesSpec infinispanSitesSpec = new InfinispanSitesSpec();
+	public Sites build() {
+		Sites infinispanSitesSpec = new Sites();
 		infinispanSitesSpec.setLocal(local);
 		infinispanSitesSpec.setLocations(locations);
 		return infinispanSitesSpec;

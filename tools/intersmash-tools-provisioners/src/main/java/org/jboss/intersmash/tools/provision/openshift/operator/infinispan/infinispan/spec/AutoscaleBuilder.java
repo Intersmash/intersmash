@@ -15,11 +15,13 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.infinispan.infinispan.spec;
 
+import org.infinispan.v1.infinispanspec.Autoscale;
+
 public final class AutoscaleBuilder {
 	private int maxReplicas;
 	private int minReplicas;
-	private int maxMemUsagePercent;
-	private int minMemUsagePercent;
+	private Long maxMemUsagePercent;
+	private Long minMemUsagePercent;
 
 	/**
 	 * Defines the maximum number of nodes for the cluster.
@@ -49,7 +51,7 @@ public final class AutoscaleBuilder {
 	 * @param maxMemUsagePercent Maximum threshold, as a percentage, for memory usage on each node
 	 * @return this
 	 */
-	public AutoscaleBuilder maxMemUsagePercent(int maxMemUsagePercent) {
+	public AutoscaleBuilder maxMemUsagePercent(Long maxMemUsagePercent) {
 		this.maxMemUsagePercent = maxMemUsagePercent;
 		return this;
 	}
@@ -60,7 +62,7 @@ public final class AutoscaleBuilder {
 	 * @param minMemUsagePercent Minimum threshold, as a percentage, for memory usage on each node
 	 * @return this
 	 */
-	public AutoscaleBuilder minMemUsagePercent(int minMemUsagePercent) {
+	public AutoscaleBuilder minMemUsagePercent(Long minMemUsagePercent) {
 		this.minMemUsagePercent = minMemUsagePercent;
 		return this;
 	}
