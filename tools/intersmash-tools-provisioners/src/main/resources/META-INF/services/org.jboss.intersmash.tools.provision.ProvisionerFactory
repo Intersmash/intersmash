@@ -8,3 +8,4 @@ org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvision
 org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisionerFactory
 org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisionerFactory
