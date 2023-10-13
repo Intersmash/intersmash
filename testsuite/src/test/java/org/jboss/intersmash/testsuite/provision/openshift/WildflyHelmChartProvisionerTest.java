@@ -32,7 +32,6 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 public class WildflyHelmChartProvisionerTest {
 
 	@Test
-	//@Disabled("No artifacts on a Maven repo which is reachable by the Pod")
 	public void basicProvisioningTest() {
 		// initialize the application service descriptor
 		final WildflyHelmChartOpenShiftApplication application = new WildflyHelmChartOpenShiftExampleApplicaton();
