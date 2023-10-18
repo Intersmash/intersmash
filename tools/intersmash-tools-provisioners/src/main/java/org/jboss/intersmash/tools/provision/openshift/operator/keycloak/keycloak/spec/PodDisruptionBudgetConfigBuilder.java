@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
+import org.keycloak.v1alpha1.keycloakspec.PodDisruptionBudget;
+
 /**
  * Specify PodDisruptionBudget configuration.
  */
@@ -33,8 +35,8 @@ public final class PodDisruptionBudgetConfigBuilder {
 		return this;
 	}
 
-	public PodDisruptionBudgetConfig build() {
-		PodDisruptionBudgetConfig podDisruptionBudgetConfig = new PodDisruptionBudgetConfig();
+	public PodDisruptionBudget build() {
+		PodDisruptionBudget podDisruptionBudgetConfig = new PodDisruptionBudget();
 		podDisruptionBudgetConfig.setEnabled(enabled);
 		return podDisruptionBudgetConfig;
 	}

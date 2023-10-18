@@ -42,14 +42,14 @@ public class IntersmashConfig {
 	private static final String COMMUNITY_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = "infinispan";
 	private static final String PRODUCT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = "datagrid";
 	private static final String DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_INFINISPAN_OPERATOR_PACKAGE_MANIFEST;
-	private static final String RHSSO_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.keycloak.operators.catalog_source";
+	private static final String RHSSO_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.rhsso.operators.catalog_source";
 	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.keycloak.realm_import.operators.catalog_source";
 
-	private static final String RHSSO_OPERATOR_INDEX_IMAGE = "intersmash.keycloak.operators.index_image";
+	private static final String RHSSO_OPERATOR_INDEX_IMAGE = "intersmash.rhsso.operators.index_image";
 	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_INDEX_IMAGE = "intersmash.keycloak.realm_import.operators.index_image";
-	private static final String RHSSO_OPERATOR_CHANNEL = "intersmash.keycloak.operators.channel";
+	private static final String RHSSO_OPERATOR_CHANNEL = "intersmash.rhsso.operators.channel";
 	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_CHANNEL = "intersmash.keycloak.realm_import.operators.channel";
-	private static final String KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.operators.package_manifest";
+	private static final String RHSSO_OPERATOR_PACKAGE_MANIFEST = "intersmash.rhsso.operators.package_manifest";
 	private static final String KEYCLOAK_REALM_IMPORT_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.realm_import.operators.package_manifest";
 	private static final String COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "keycloak-operator";
 	private static final String PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "rhsso-operator";
@@ -171,7 +171,7 @@ public class IntersmashConfig {
 	}
 
 	public static String rhSsoOperatorPackageManifest() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+		return XTFConfig.get(RHSSO_OPERATOR_PACKAGE_MANIFEST, PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String wildflyOperatorCatalogSource() {

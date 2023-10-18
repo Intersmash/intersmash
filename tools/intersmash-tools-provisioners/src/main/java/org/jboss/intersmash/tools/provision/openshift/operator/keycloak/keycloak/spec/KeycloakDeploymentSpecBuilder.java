@@ -15,14 +15,16 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
-import io.fabric8.kubernetes.api.model.ResourceRequirements;
+import org.keycloak.v1alpha1.keycloakspec.KeycloakDeploymentSpec;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.Experimental;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.Resources;
 
 /**
  * Resources (Requests and Limits) for KeycloakDeployment.
  */
 public final class KeycloakDeploymentSpecBuilder {
-	private ResourceRequirements resources;
-	private ExperimentalSpec experimental;
+	private Resources resources;
+	private Experimental experimental;
 
 	/**
 	 * Set the Resources (Requests and Limits) for the Pods.
@@ -30,7 +32,7 @@ public final class KeycloakDeploymentSpecBuilder {
 	 * @param resources The Resources (Requests and Limits) for the Pods
 	 * @return this
 	 */
-	public KeycloakDeploymentSpecBuilder resources(ResourceRequirements resources) {
+	public KeycloakDeploymentSpecBuilder resources(Resources resources) {
 		this.resources = resources;
 		return this;
 	}
@@ -43,7 +45,7 @@ public final class KeycloakDeploymentSpecBuilder {
 	 * @param experimental The experimental section definition
 	 * @return this
 	 */
-	public KeycloakDeploymentSpecBuilder experimental(ExperimentalSpec experimental) {
+	public KeycloakDeploymentSpecBuilder experimental(Experimental experimental) {
 		this.experimental = experimental;
 		return this;
 	}

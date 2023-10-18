@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
+import org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisioner;
 
 import io.fabric8.kubernetes.api.model.EnvVar;
-import org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisioner;
 
 /**
  * End user Application descriptor interface which presents a AP 7.z (i.e. Jakarta EE 8 based WildFly) application on

@@ -15,13 +15,14 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
-import io.fabric8.kubernetes.api.model.ResourceRequirements;
+import org.keycloak.v1alpha1.keycloakspec.PostgresDeploymentSpec;
+import org.keycloak.v1alpha1.keycloakspec.postgresdeploymentspec.Resources;
 
 /**
  * Resources (Requests and Limits) for PostgresDeployment.
  */
 public final class PostgresqlDeploymentSpecBuilder {
-	private ResourceRequirements resources;
+	private Resources resources;
 
 	/**
 	 * Set the Resources (Requests and Limits) for the Pods.
@@ -29,13 +30,13 @@ public final class PostgresqlDeploymentSpecBuilder {
 	 * @param resources The Resources (Requests and Limits) for the Pods
 	 * @return this
 	 */
-	public PostgresqlDeploymentSpecBuilder resources(ResourceRequirements resources) {
+	public PostgresqlDeploymentSpecBuilder resources(Resources resources) {
 		this.resources = resources;
 		return this;
 	}
 
-	public PostgresqlDeploymentSpec build() {
-		PostgresqlDeploymentSpec postgresqlDeploymentSpec = new PostgresqlDeploymentSpec();
+	public PostgresDeploymentSpec build() {
+		PostgresDeploymentSpec postgresqlDeploymentSpec = new PostgresDeploymentSpec();
 		postgresqlDeploymentSpec.setResources(resources);
 		return postgresqlDeploymentSpec;
 	}

@@ -16,31 +16,27 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.tools.application.openshift.RhSsoOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
 import org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackupBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.spec.KeycloakAWSSpecBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClient;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClientBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.spec.KeycloakAPIClientBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.KeycloakBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakExternalAccessBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealm;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealmBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.KeycloakAPIRealmBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec.RedirectorIdentityProviderOverrideBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUser;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUserBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakAPIUserBuilder;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakCredential;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec.KeycloakCredentialBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.junit.jupiter.api.AfterAll;
@@ -49,6 +45,16 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.keycloak.v1alpha1.Keycloak;
+import org.keycloak.v1alpha1.KeycloakBackup;
+import org.keycloak.v1alpha1.KeycloakClient;
+import org.keycloak.v1alpha1.KeycloakRealm;
+import org.keycloak.v1alpha1.KeycloakUser;
+import org.keycloak.v1alpha1.keycloakclientspec.Client;
+import org.keycloak.v1alpha1.keycloakclientspec.RealmSelector;
+import org.keycloak.v1alpha1.keycloakrealmspec.InstanceSelector;
+import org.keycloak.v1alpha1.keycloakuserspec.User;
+import org.keycloak.v1alpha1.keycloakuserspec.user.Credentials;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.openshift.OpenShiftWaiters;
@@ -58,7 +64,6 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
-import io.fabric8.kubernetes.api.model.LabelSelectorBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -72,7 +77,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-@Disabled("WIP - Disabled until global-test.properties is configured with the required property")
+@NotForCommunityExecutionProfile
 public class RhSsoOperatorProvisionerTest {
 	// Be aware that since we're using the static mock application, not all provisioner methods will work as expected!
 	private static final RhSsoOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
@@ -234,14 +239,17 @@ public class RhSsoOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "client-secret";
+			RealmSelector realmSelector = new RealmSelector();
+			realmSelector.setMatchLabels(matchLabels);
+			Client client = new Client();
+			client.setClientId("client-secret");
+			client.setSecret("client-secret");
+			client.setClientAuthenticatorType("client-secret");
+			client.setProtocol("openid-connect");
+
 			KeycloakClient keycloakClient = new KeycloakClientBuilder(name, matchLabels)
-					.realmSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
-					.client(new KeycloakAPIClientBuilder()
-							.clientId("client-secret")
-							.secret("client-secret")
-							.clientAuthenticatorType("client-secret")
-							.protocol("openid-connect")
-							.build())
+					.realmSelector(realmSelector)
+					.client(client)
 					.build();
 			verifyClient(keycloakClient);
 		} finally {
@@ -334,6 +342,8 @@ public class RhSsoOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-keycloakrealm";
+			InstanceSelector instanceSelector = new InstanceSelector();
+			instanceSelector.setMatchLabels(matchLabels);
 			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
 					.realm(new KeycloakAPIRealmBuilder()
 							.id("basic")
@@ -361,7 +371,7 @@ public class RhSsoOperatorProvisionerTest {
 							.forFlow("browser")
 							.identityProvider("openshift-v4")
 							.build())
-					.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.instanceSelector(instanceSelector)
 					.build();
 
 			verifyRealm(keycloakRealm);
@@ -411,6 +421,8 @@ public class RhSsoOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-keycloakrealm";
+			InstanceSelector instanceSelector = new InstanceSelector();
+			instanceSelector.setMatchLabels(matchLabels);
 			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
 					.realm(new KeycloakAPIRealmBuilder()
 							.id("saml-demo")
@@ -453,7 +465,7 @@ public class RhSsoOperatorProvisionerTest {
 									.protocol("saml")
 									.build())
 							.build())
-					.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.instanceSelector(instanceSelector)
 					.build();
 
 			verifyRealm(keycloakRealm);
@@ -476,6 +488,8 @@ public class RhSsoOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-keycloakrealm";
+			InstanceSelector instanceSelector = new InstanceSelector();
+			instanceSelector.setMatchLabels(matchLabels);
 			KeycloakRealm keycloakRealm = new KeycloakRealmBuilder(name, matchLabels)
 					.realm(new KeycloakAPIRealmBuilder()
 							.id("openid-demo")
@@ -503,7 +517,7 @@ public class RhSsoOperatorProvisionerTest {
 									.protocol("openid-connect")
 									.build())
 							.build())
-					.instanceSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.instanceSelector(instanceSelector)
 					.build();
 
 			verifyRealm(keycloakRealm);
@@ -528,16 +542,18 @@ public class RhSsoOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-realm-user";
+			org.keycloak.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.keycloak.v1alpha1.keycloakuserspec.RealmSelector();
+			realmSelector.setMatchLabels(matchLabels);
+			User user = new User();
+			user.setUsername("realm_user");
+			user.setFirstName("John");
+			user.setLastName("Doe");
+			user.setEmail("user@example.com");
+			user.setEnabled(true);
+			user.setEmailVerified(false);
 			KeycloakUser keycloakUser = new KeycloakUserBuilder(name, matchLabels)
-					.user(new KeycloakAPIUserBuilder()
-							.username("realm_user")
-							.firstName("John")
-							.lastName("Doe")
-							.email("user@example.com")
-							.enabled(true)
-							.emailVerified(false)
-							.build())
-					.realmSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.user(user)
+					.realmSelector(realmSelector)
 					.build();
 
 			verifyUser(keycloakUser);
@@ -547,9 +563,7 @@ public class RhSsoOperatorProvisionerTest {
 	}
 
 	/**
-	 * This test case creates and validates a {@link KeycloakUser} CR with a related
-	 * {@link KeycloakCredential}
-	 * instance
+	 * This test case creates and validates a {@link KeycloakUser} CR with related credentials
 	 *
 	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
 	 * model specification.
@@ -563,20 +577,24 @@ public class RhSsoOperatorProvisionerTest {
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-realm-user-with-creds";
+			org.keycloak.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.keycloak.v1alpha1.keycloakuserspec.RealmSelector();
+			Credentials credentials = new Credentials();
+			credentials.setType("password");
+			credentials.setValue("12345");
+			User user = new User();
+			user.setUsername("creds_user");
+			user.setFirstName("Creds");
+			user.setLastName("User");
+			user.setEmail("creds_user@redhat.com");
+			user.setEnabled(true);
+			user.setEmailVerified(false);
+			user.setCredentials(Collections.singletonList(credentials));
+			user.setRealmRoles(Collections.singletonList("offline_access"));
+			user.getClientRoles().put("account", Stream.of("manage-account").collect(Collectors.toList()));
+			user.getClientRoles().put("realm-management", Stream.of("manage-users").collect(Collectors.toList()));
 			KeycloakUser keycloakUser = new KeycloakUserBuilder(name, matchLabels)
-					.user(new KeycloakAPIUserBuilder()
-							.username("creds_user")
-							.firstName("Creds")
-							.lastName("User")
-							.email("creds_user@redhat.com")
-							.enabled(true)
-							.emailVerified(false)
-							.credentials(new KeycloakCredentialBuilder().type("password").value("12345").build())
-							.realmRoles("offline_access")
-							.clientRole("account", Stream.of("manage-account").collect(Collectors.toList()))
-							.clientRole("realm-management", Stream.of("manage-users").collect(Collectors.toList()))
-							.build())
-					.realmSelector(new LabelSelectorBuilder().withMatchLabels(matchLabels).build())
+					.user(user)
+					.realmSelector(realmSelector)
 					.build();
 
 			verifyUser(keycloakUser);
@@ -602,7 +620,8 @@ public class RhSsoOperatorProvisionerTest {
 					"Unexpected number of cluster operator pods for '" + KEYCLOAK_OPERATOR_PROVISIONER.getOperatorId()
 							+ "' after deploy");
 
-			int scaledNum = KEYCLOAK_OPERATOR_PROVISIONER.getApplication().getKeycloak().getSpec().getInstances() + 1;
+			int scaledNum = KEYCLOAK_OPERATOR_PROVISIONER.getApplication().getKeycloak().getSpec().getInstances().intValue()
+					+ 1;
 			KEYCLOAK_OPERATOR_PROVISIONER.scale(scaledNum, true);
 			Assertions.assertEquals(scaledNum, KEYCLOAK_OPERATOR_PROVISIONER.getPods().size(),
 					"Unexpected number of cluster operator pods for '" + KEYCLOAK_OPERATOR_PROVISIONER.getOperatorId()

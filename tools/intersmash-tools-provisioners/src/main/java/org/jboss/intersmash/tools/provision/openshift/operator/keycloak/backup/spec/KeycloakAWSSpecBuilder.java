@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.spec;
 
+import org.keycloak.v1alpha1.keycloakbackupspec.Aws;
+
 /**
  * If provided, an automatic database backup will be created on AWS S3 instead of
  * a local Persistent Volume. If this property is not provided - a local
@@ -85,8 +87,8 @@ public final class KeycloakAWSSpecBuilder {
 		return this;
 	}
 
-	public KeycloakAWSSpec build() {
-		KeycloakAWSSpec keycloakAWSSpec = new KeycloakAWSSpec();
+	public Aws build() {
+		Aws keycloakAWSSpec = new Aws();
 		keycloakAWSSpec.setEncryptionKeySecretName(encryptionKeySecretName);
 		keycloakAWSSpec.setCredentialsSecretName(credentialsSecretName);
 		keycloakAWSSpec.setSchedule(schedule);

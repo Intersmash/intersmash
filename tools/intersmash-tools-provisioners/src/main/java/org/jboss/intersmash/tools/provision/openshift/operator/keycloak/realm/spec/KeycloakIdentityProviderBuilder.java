@@ -18,6 +18,8 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.s
 import java.util.HashMap;
 import java.util.Map;
 
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.IdentityProviders;
+
 public final class KeycloakIdentityProviderBuilder {
 	private String alias;
 	private String displayName;
@@ -179,8 +181,8 @@ public final class KeycloakIdentityProviderBuilder {
 		return this;
 	}
 
-	public KeycloakIdentityProvider build() {
-		KeycloakIdentityProvider keycloakIdentityProvider = new KeycloakIdentityProvider();
+	public IdentityProviders build() {
+		IdentityProviders keycloakIdentityProvider = new IdentityProviders();
 		keycloakIdentityProvider.setAlias(alias);
 		keycloakIdentityProvider.setDisplayName(displayName);
 		keycloakIdentityProvider.setInternalId(internalId);
@@ -192,7 +194,7 @@ public final class KeycloakIdentityProviderBuilder {
 		keycloakIdentityProvider.setFirstBrokerLoginFlowAlias(firstBrokerLoginFlowAlias);
 		keycloakIdentityProvider.setPostBrokerLoginFlowAlias(postBrokerLoginFlowAlias);
 		keycloakIdentityProvider.setLinkOnly(linkOnly);
-		keycloakIdentityProvider.setOmitempty(omitempty);
+		///keycloakIdentityProvider.setOmitempty(omitempty);
 		return keycloakIdentityProvider;
 	}
 }

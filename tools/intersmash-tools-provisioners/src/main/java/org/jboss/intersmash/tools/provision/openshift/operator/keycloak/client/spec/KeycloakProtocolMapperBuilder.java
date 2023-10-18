@@ -18,6 +18,8 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.
 import java.util.HashMap;
 import java.util.Map;
 
+import org.keycloak.v1alpha1.keycloakclientspec.client.ProtocolMappers;
+
 public final class KeycloakProtocolMapperBuilder {
 	private String id;
 	private String name;
@@ -119,8 +121,8 @@ public final class KeycloakProtocolMapperBuilder {
 		return this;
 	}
 
-	public KeycloakProtocolMapper build() {
-		KeycloakProtocolMapper keycloakProtocolMapper = new KeycloakProtocolMapper();
+	public ProtocolMappers build() {
+		ProtocolMappers keycloakProtocolMapper = new ProtocolMappers();
 		keycloakProtocolMapper.setId(id);
 		keycloakProtocolMapper.setName(name);
 		keycloakProtocolMapper.setProtocol(protocol);

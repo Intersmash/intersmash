@@ -19,10 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakExternalAccess;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakExternalDatabase;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.KeycloakSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec.PodDisruptionBudgetConfig;
+import org.keycloak.v1alpha1.Keycloak;
+import org.keycloak.v1alpha1.KeycloakSpec;
+import org.keycloak.v1alpha1.keycloakspec.ExternalAccess;
+import org.keycloak.v1alpha1.keycloakspec.ExternalDatabase;
+import org.keycloak.v1alpha1.keycloakspec.PodDisruptionBudget;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
@@ -32,11 +33,11 @@ public final class KeycloakBuilder {
 	//	private boolean unmanaged;
 	//	private KeycloakExternal external;
 	private List<String> extensions;
-	private int instances;
-	private KeycloakExternalAccess externalAccess;
-	private KeycloakExternalDatabase externalDatabase;
+	private long instances;
+	private ExternalAccess externalAccess;
+	private ExternalDatabase externalDatabase;
 	private String profile;
-	private PodDisruptionBudgetConfig podDisruptionBudget;
+	private PodDisruptionBudget podDisruptionBudget;
 	//	private KeycloakDeploymentSpec keycloakDeploymentSpec;
 	//	private PostgresqlDeploymentSpec postgresDeploymentSpec;
 	//	private MigrateConfig migration;
@@ -122,7 +123,7 @@ public final class KeycloakBuilder {
 	 * @param externalAccess Stores external access configuration for Keycloak
 	 * @return this
 	 */
-	public KeycloakBuilder externalAccess(KeycloakExternalAccess externalAccess) {
+	public KeycloakBuilder externalAccess(ExternalAccess externalAccess) {
 		this.externalAccess = externalAccess;
 		return this;
 	}
@@ -158,7 +159,7 @@ public final class KeycloakBuilder {
 	 * @param externalDatabase Stores external database configuration for Keycloak
 	 * @return this
 	 */
-	public KeycloakBuilder externalDatabase(KeycloakExternalDatabase externalDatabase) {
+	public KeycloakBuilder externalDatabase(ExternalDatabase externalDatabase) {
 		this.externalDatabase = externalDatabase;
 		return this;
 	}
@@ -180,7 +181,7 @@ public final class KeycloakBuilder {
 	 * @param podDisruptionBudget Stores pod disruption budget configuration
 	 * @return this
 	 */
-	public KeycloakBuilder podDisruptionBudget(PodDisruptionBudgetConfig podDisruptionBudget) {
+	public KeycloakBuilder podDisruptionBudget(PodDisruptionBudget podDisruptionBudget) {
 		this.podDisruptionBudget = podDisruptionBudget;
 		return this;
 	}

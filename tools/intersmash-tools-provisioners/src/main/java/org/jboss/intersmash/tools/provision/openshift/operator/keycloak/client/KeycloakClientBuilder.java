@@ -17,17 +17,18 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client;
 
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.spec.KeycloakAPIClient;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.spec.KeycloakClientSpec;
+import org.keycloak.v1alpha1.KeycloakClient;
+import org.keycloak.v1alpha1.KeycloakClientSpec;
+import org.keycloak.v1alpha1.keycloakclientspec.Client;
+import org.keycloak.v1alpha1.keycloakclientspec.RealmSelector;
 
-import io.fabric8.kubernetes.api.model.LabelSelector;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
 public final class KeycloakClientBuilder {
 	private String name;
 	private Map<String, String> labels;
-	private LabelSelector realmSelector;
-	private KeycloakAPIClient client;
+	private RealmSelector realmSelector;
+	private Client client;
 
 	/**
 	 * Initialize the {@link KeycloakClientBuilder} with given resource name.
@@ -55,7 +56,7 @@ public final class KeycloakClientBuilder {
 	 * @param realmSelector Label selector for looking up KeycloakRealm Custom Resources.
 	 * @return this
 	 */
-	public KeycloakClientBuilder realmSelector(LabelSelector realmSelector) {
+	public KeycloakClientBuilder realmSelector(RealmSelector realmSelector) {
 		this.realmSelector = realmSelector;
 		return this;
 	}
@@ -66,7 +67,7 @@ public final class KeycloakClientBuilder {
 	 * @param client Keycloak REST API client.
 	 * @return this
 	 */
-	public KeycloakClientBuilder client(KeycloakAPIClient client) {
+	public KeycloakClientBuilder client(Client client) {
 		this.client = client;
 		return this;
 	}

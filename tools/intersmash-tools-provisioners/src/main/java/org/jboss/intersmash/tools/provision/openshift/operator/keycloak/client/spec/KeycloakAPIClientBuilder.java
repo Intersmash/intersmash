@@ -20,6 +20,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.Clients;
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.clients.ProtocolMappers;
+
 /**
  * Keycloak Client REST object.
  */
@@ -38,7 +41,7 @@ public final class KeycloakAPIClientBuilder {
 	private List<String> defaultRoles;
 	private List<String> redirectUris;
 	private List<String> webOrigins;
-	private int notBefore;
+	private long notBefore;
 	private boolean bearerOnly;
 	private boolean consentRequired;
 	private boolean standardFlowEnabled;
@@ -50,8 +53,8 @@ public final class KeycloakAPIClientBuilder {
 	private String protocol;
 	private Map<String, String> attributes;
 	private boolean fullScopeAllowed;
-	private int nodeReRegistrationTimeout;
-	private List<KeycloakProtocolMapper> protocolMappers;
+	private long nodeReRegistrationTimeout;
+	private List<ProtocolMappers> protocolMappers;
 	private boolean useTemplateConfig;
 	private boolean useTemplateScope;
 	private boolean useTemplateMappers;
@@ -416,10 +419,10 @@ public final class KeycloakAPIClientBuilder {
 	/**
 	 * Set the Protocol Mappers.
 	 *
-	 * @param protocolMappers List of {@link KeycloakProtocolMapper} instances that should be used
+	 * @param protocolMappers List of {@link ProtocolMappers} instances that should be used
 	 * @return this
 	 */
-	public KeycloakAPIClientBuilder protocolMappers(List<KeycloakProtocolMapper> protocolMappers) {
+	public KeycloakAPIClientBuilder protocolMappers(List<ProtocolMappers> protocolMappers) {
 		this.protocolMappers = protocolMappers;
 		return this;
 	}
@@ -427,10 +430,10 @@ public final class KeycloakAPIClientBuilder {
 	/**
 	 * Add a Protocol Mapper.
 	 *
-	 * @param protocolMapper {@link KeycloakProtocolMapper} instance that should be added
+	 * @param protocolMapper {@link ProtocolMappers} instance that should be added
 	 * @return this
 	 */
-	public KeycloakAPIClientBuilder protocolMappers(KeycloakProtocolMapper protocolMapper) {
+	public KeycloakAPIClientBuilder protocolMappers(ProtocolMappers protocolMapper) {
 		if (protocolMappers == null) {
 			protocolMappers = new ArrayList<>();
 		}
@@ -545,8 +548,8 @@ public final class KeycloakAPIClientBuilder {
 	//		return this;
 	//	}
 
-	public KeycloakAPIClient build() {
-		KeycloakAPIClient keycloakAPIClient = new KeycloakAPIClient();
+	public Clients build() {
+		Clients keycloakAPIClient = new Clients();
 		keycloakAPIClient.setId(id);
 		keycloakAPIClient.setClientId(clientId);
 		keycloakAPIClient.setName(name);

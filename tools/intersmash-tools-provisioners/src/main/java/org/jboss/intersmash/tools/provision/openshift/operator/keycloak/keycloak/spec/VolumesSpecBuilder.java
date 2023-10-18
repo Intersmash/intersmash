@@ -18,16 +18,19 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloa
 import java.util.ArrayList;
 import java.util.List;
 
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Volumes;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
+
 public final class VolumesSpecBuilder {
-	private List<VolumeSpec> items;
+	private List<Items> items;
 	private int defaultMode;
 
-	public VolumesSpecBuilder items(List<VolumeSpec> items) {
+	public VolumesSpecBuilder items(List<Items> items) {
 		this.items = items;
 		return this;
 	}
 
-	public VolumesSpecBuilder items(VolumeSpec item) {
+	public VolumesSpecBuilder items(Items item) {
 		if (items == null) {
 			items = new ArrayList<>();
 		}
@@ -40,8 +43,8 @@ public final class VolumesSpecBuilder {
 		return this;
 	}
 
-	public VolumesSpec build() {
-		VolumesSpec volumesSpec = new VolumesSpec();
+	public Volumes build() {
+		Volumes volumesSpec = new Volumes();
 		volumesSpec.setItems(items);
 		volumesSpec.setDefaultMode(defaultMode);
 		return volumesSpec;

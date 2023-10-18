@@ -27,16 +27,16 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.RhSsoOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackupList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClient;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClientList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.KeycloakList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealm;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.KeycloakRealmList;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUser;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.KeycloakUserList;
+import org.keycloak.v1alpha1.Keycloak;
+import org.keycloak.v1alpha1.KeycloakBackup;
+import org.keycloak.v1alpha1.KeycloakClient;
+import org.keycloak.v1alpha1.KeycloakRealm;
+import org.keycloak.v1alpha1.KeycloakUser;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.config.OpenShiftConfig;
@@ -157,10 +157,10 @@ public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorA
 	 * @param keycloak Concrete {@link Keycloak} instance which the method should be wait for
 	 */
 	public void waitFor(Keycloak keycloak) {
-		int replicas = keycloak.getSpec().getInstances();
+		int replicas = keycloak.getSpec().getInstances().intValue();
 		if (replicas > 0) {
 			// 1. check externalDatabase
-			if (keycloak.getSpec().getExternalDatabase() == null || !keycloak.getSpec().getExternalDatabase().isEnabled()) {
+			if (keycloak.getSpec().getExternalDatabase() == null || !keycloak.getSpec().getExternalDatabase().getEnabled()) {
 				// 2. wait for PostgreSQL to be ready (Service "keycloak-postgresql" is guaranteed to exist by documentation)
 				new SimpleWaiter(() -> OpenShiftProvisioner.openShift.getPods()
 						.stream()
@@ -182,21 +182,21 @@ public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorA
 	}
 
 	private void waitForKeycloakResourceReadiness() {
-		new SimpleWaiter(() -> keycloak().get().getStatus().isReady())
+		new SimpleWaiter(() -> keycloak().get().getStatus().getReady())
 				.reason("Wait for keycloak resource to be ready").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakRealms().size() > 0)
-			new SimpleWaiter(() -> keycloakRealms().stream().map(realm -> realm.get().getStatus().isReady())
+			new SimpleWaiter(() -> keycloakRealms().stream().map(realm -> realm.get().getStatus().getReady())
 					.reduce(Boolean::logicalAnd).get())
 					.reason("Wait for keycloakrealms to be ready.").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakClients().size() > 0)
-			new SimpleWaiter(() -> keycloakClients().stream().map(realm -> realm.get().getStatus().isReady())
+			new SimpleWaiter(() -> keycloakClients().stream().map(realm -> realm.get().getStatus().getReady())
 					.reduce(Boolean::logicalAnd).get())
 					.reason("Wait for keycloakclients to be ready.").level(Level.DEBUG).waitFor();
 		if (getApplication().getKeycloakUsers().size() > 0)
 			new SimpleWaiter(() -> keycloakUsersClient().list().getItems().size() == getApplication().getKeycloakUsers().size())
 					.reason("Wait for keycloakusers to be ready.").level(Level.DEBUG).waitFor(); // no isReady() for users
 		if (getApplication().getKeycloakBackups().size() > 0)
-			new SimpleWaiter(() -> keycloakBackups().stream().map(realm -> realm.get().getStatus().isReady())
+			new SimpleWaiter(() -> keycloakBackups().stream().map(realm -> realm.get().getStatus().getReady())
 					.reduce(Boolean::logicalAnd).get())
 					.reason("Wait for keycloakbackups to be ready.").level(Level.DEBUG).waitFor();
 	}
@@ -234,8 +234,8 @@ public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorA
 	public void scale(int replicas, boolean wait) {
 		String controllerRevisionHash = getStatefulSet().getStatus().getUpdateRevision();
 		Keycloak tmpKeycloak = keycloak().get();
-		int originalReplicas = tmpKeycloak.getSpec().getInstances();
-		tmpKeycloak.getSpec().setInstances(replicas);
+		int originalReplicas = tmpKeycloak.getSpec().getInstances().intValue();
+		tmpKeycloak.getSpec().setInstances(Long.valueOf(replicas));
 		keycloak().replace(tmpKeycloak);
 		if (wait) {
 			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
@@ -243,7 +243,7 @@ public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorA
 					.level(Level.DEBUG)
 					.waitFor();
 		}
-		new SimpleWaiter(() -> keycloak().get().getStatus().isReady())
+		new SimpleWaiter(() -> keycloak().get().getStatus().getReady())
 				.reason("Wait for keycloak resource to be ready").level(Level.DEBUG).waitFor();
 		// check that route is up
 		if (originalReplicas == 0 && replicas > 0) {

@@ -15,9 +15,13 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec;
 
+import java.util.Map;
+
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.AuthenticatorConfig;
+
 public final class KeycloakAPIAuthenticatorConfigBuilder {
 	private String alias;
-	private String config;
+	private Map<String, String> config;
 	private String id;
 
 	/**
@@ -37,7 +41,7 @@ public final class KeycloakAPIAuthenticatorConfigBuilder {
 	 * @param config The Config that should be used
 	 * @return this
 	 */
-	public KeycloakAPIAuthenticatorConfigBuilder config(String config) {
+	public KeycloakAPIAuthenticatorConfigBuilder config(Map<String, String> config) {
 		this.config = config;
 		return this;
 	}
@@ -53,8 +57,8 @@ public final class KeycloakAPIAuthenticatorConfigBuilder {
 		return this;
 	}
 
-	public KeycloakAPIAuthenticatorConfig build() {
-		KeycloakAPIAuthenticatorConfig keycloakAPIAuthenticatorConfig = new KeycloakAPIAuthenticatorConfig();
+	public AuthenticatorConfig build() {
+		AuthenticatorConfig keycloakAPIAuthenticatorConfig = new AuthenticatorConfig();
 		keycloakAPIAuthenticatorConfig.setAlias(alias);
 		keycloakAPIAuthenticatorConfig.setConfig(config);
 		keycloakAPIAuthenticatorConfig.setId(id);

@@ -18,9 +18,12 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.s
 import java.util.ArrayList;
 import java.util.List;
 
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.AuthenticationFlows;
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.authenticationflows.AuthenticationExecutions;
+
 public final class KeycloakAPIAuthenticationFlowBuilder {
 	private String alias;
-	private List<KeycloakAPIAuthenticationExecution> authenticationExecutions;
+	private List<AuthenticationExecutions> authenticationExecutions;
 	private boolean builtIn;
 	private String description;
 	private String id;
@@ -45,7 +48,7 @@ public final class KeycloakAPIAuthenticationFlowBuilder {
 	 * @return this
 	 */
 	public KeycloakAPIAuthenticationFlowBuilder authenticationExecutions(
-			List<KeycloakAPIAuthenticationExecution> authenticationExecutions) {
+			List<AuthenticationExecutions> authenticationExecutions) {
 		this.authenticationExecutions = authenticationExecutions;
 		return this;
 	}
@@ -57,7 +60,7 @@ public final class KeycloakAPIAuthenticationFlowBuilder {
 	 * @return this
 	 */
 	public KeycloakAPIAuthenticationFlowBuilder authenticationExecutions(
-			KeycloakAPIAuthenticationExecution authenticationExecution) {
+			AuthenticationExecutions authenticationExecution) {
 		if (authenticationExecutions == null) {
 			authenticationExecutions = new ArrayList<>();
 		}
@@ -120,8 +123,8 @@ public final class KeycloakAPIAuthenticationFlowBuilder {
 		return this;
 	}
 
-	public KeycloakAPIAuthenticationFlow build() {
-		KeycloakAPIAuthenticationFlow keycloakAPIAuthenticationFlow = new KeycloakAPIAuthenticationFlow();
+	public AuthenticationFlows build() {
+		AuthenticationFlows keycloakAPIAuthenticationFlow = new AuthenticationFlows();
 		keycloakAPIAuthenticationFlow.setAlias(alias);
 		keycloakAPIAuthenticationFlow.setAuthenticationExecutions(authenticationExecutions);
 		keycloakAPIAuthenticationFlow.setBuiltIn(builtIn);
