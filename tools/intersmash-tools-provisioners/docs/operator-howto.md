@@ -54,8 +54,8 @@ community project operator sources and CRDs could be a year away from the one su
 * add a new test to OperatorSubscriptionTestCase
 
 #### Example Outcome
-* `openshift.application.org.jboss.intersmash.tools.KeycloakOperatorApplication`
-* `openshift.provision.org.jboss.intersmash.tools.KeycloakOperatorProvisioner`
+* `openshift.application.org.jboss.intersmash.tools.KeycloakRealmImportOperatorApplication`
+* `openshift.provision.org.jboss.intersmash.tools.KeycloakRealmImportOperatorProvisioner`
     * operator id = `keycloak-operator`
 
 ### Create builders
@@ -172,7 +172,7 @@ https://github.com/fabric8io/kubernetes-client/blob/master/kubernetes-examples/s
 Update the ${PRODUCT}OperatorProvisioner. Create CR na name constant and NonNamespaceOperation for every custom resource provided by an operator (look into existing operator Provisioners for more details). Create method to initialize the client and to obtain a reference to custom resource instance running on OPC (this one will have to be parametrized in case there could be more than one resource of same kind managed by a single operator - e.g. ActiveMQ operator can have multiple addresses).
 
 #### Example Output
-KeycloakOperatorProvisioner Keycloak client methods example. The methods and resources names are aligned with CR name and kind.
+`KeycloakRealmImportOperatorProvisioner` client methods example. The methods and resources names are aligned with CR name and kind.
 ```java
     public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<KeycloakRealmImportOperatorApplication> {
     private static final String KEYCLOAK_RESOURCE = "keycloaks.k8s.keycloak.org";
