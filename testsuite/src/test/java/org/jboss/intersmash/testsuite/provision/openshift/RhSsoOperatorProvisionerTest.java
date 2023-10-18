@@ -18,6 +18,7 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -590,8 +591,10 @@ public class RhSsoOperatorProvisionerTest {
 			user.setEmailVerified(false);
 			user.setCredentials(Collections.singletonList(credentials));
 			user.setRealmRoles(Collections.singletonList("offline_access"));
-			user.getClientRoles().put("account", Stream.of("manage-account").collect(Collectors.toList()));
-			user.getClientRoles().put("realm-management", Stream.of("manage-users").collect(Collectors.toList()));
+			Map<String, List<String>> clientRoles = new HashMap<>();
+			clientRoles.put("account", Stream.of("manage-account").collect(Collectors.toList()));
+			clientRoles.put("realm-management", Stream.of("manage-users").collect(Collectors.toList()));
+			user.setClientRoles(clientRoles);
 			KeycloakUser keycloakUser = new KeycloakUserBuilder(name, matchLabels)
 					.user(user)
 					.realmSelector(realmSelector)

@@ -18,12 +18,15 @@ package org.jboss.intersmash.testsuite.provision.openshift.operator;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.HyperfoilOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.InfinispanOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.RhSsoOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
@@ -31,6 +34,7 @@ import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisione
 import org.jboss.intersmash.tools.provision.openshift.HyperfoilOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
@@ -52,15 +56,26 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CleanBeforeAll
 public class OperatorSubscriptionTestCase {
+	private static final Stream<OperatorProvisioner> COMMON_PROVISIONERS = Stream.of(
+			new ActiveMQOperatorProvisioner(mock(ActiveMQOperatorApplication.class)),
+			new InfinispanOperatorProvisioner(mock(InfinispanOperatorApplication.class)),
+			new KafkaOperatorProvisioner(mock(KafkaOperatorApplication.class)),
+			new WildflyOperatorProvisioner(mock(WildflyOperatorApplication.class)));
+
+	private static final Stream<OperatorProvisioner> COMMUNITY_ONLY_PROVISIONERS = Stream.of(
+			new HyperfoilOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
+			new KeycloakRealmImportOperatorProvisioner(mock(KeycloakRealmImportOperatorApplication.class)));
+
+	private static final Stream<OperatorProvisioner> PRODUCT_ONLY_PROVISIONERS = Stream.of(
+			new RhSsoOperatorProvisioner(mock(RhSsoOperatorApplication.class)));
 
 	private static Stream<OperatorProvisioner> provisionerProvider() {
-		return Stream.of(
-				new ActiveMQOperatorProvisioner(mock(ActiveMQOperatorApplication.class)),
-				new HyperfoilOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
-				new InfinispanOperatorProvisioner(mock(InfinispanOperatorApplication.class)),
-				new KafkaOperatorProvisioner(mock(KafkaOperatorApplication.class)),
-				new RhSsoOperatorProvisioner(mock(RhSsoOperatorApplication.class)),
-				new WildflyOperatorProvisioner(mock(WildflyOperatorApplication.class)));
+		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+			return Stream.concat(COMMON_PROVISIONERS, COMMUNITY_ONLY_PROVISIONERS);
+		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+			return Stream.concat(COMMON_PROVISIONERS, PRODUCT_ONLY_PROVISIONERS);
+		}
+		throw new IllegalStateException("Unknown test execution profile.");
 	}
 
 	@BeforeAll
