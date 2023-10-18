@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Dependencies: org.jboss.ws.cxf.jbossws-cxf-client
+jbws-COMMENT: https://jbossws.github.io/documentation/7.0.0.Final/JBossWS-CXF/#advanced-user-guide   5.13.4. A Basic WS-Trust Scenario, MANIFEST.MF
+
