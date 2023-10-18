@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
-import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.RhSsoOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackupList;
@@ -58,7 +58,7 @@ import lombok.NonNull;
 /**
  * Keycloak operator provisioner
  */
-public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOperatorApplication> {
+public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorApplication> {
 	private static final String KEYCLOAK_RESOURCE = "keycloaks.keycloak.org";
 	private static NonNamespaceOperation<Keycloak, KeycloakList, Resource<Keycloak>> KEYCLOAKS_CLIENT;
 
@@ -75,11 +75,11 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	private static NonNamespaceOperation<KeycloakUser, KeycloakUserList, Resource<KeycloakUser>> KEYCLOAK_USERS_CLIENT;
 
 	// oc get packagemanifest rhsso-operator -n openshift-marketplace
-	private static final String OPERATOR_ID = IntersmashConfig.keycloakOperatorPackageManifest();
+	private static final String OPERATOR_ID = IntersmashConfig.rhSsoOperatorPackageManifest();
 	private static final String STATEFUL_SET_NAME = "keycloak";
 
-	public KeycloakOperatorProvisioner(@NonNull KeycloakOperatorApplication keycloakOperatorApplication) {
-		super(keycloakOperatorApplication, OPERATOR_ID);
+	public RhSsoOperatorProvisioner(@NonNull RhSsoOperatorApplication rhSsoOperatorApplication) {
+		super(rhSsoOperatorApplication, OPERATOR_ID);
 	}
 
 	public static String getOperatorId() {
@@ -88,17 +88,17 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 
 	@Override
 	protected String getOperatorCatalogSource() {
-		return IntersmashConfig.keycloakOperatorCatalogSource();
+		return IntersmashConfig.rhSsoOperatorCatalogSource();
 	}
 
 	@Override
 	protected String getOperatorIndexImage() {
-		return IntersmashConfig.keycloakOperatorIndexImage();
+		return IntersmashConfig.rhSsoOperatorIndexImage();
 	}
 
 	@Override
 	protected String getOperatorChannel() {
-		return IntersmashConfig.keycloakOperatorChannel();
+		return IntersmashConfig.rhSsoOperatorChannel();
 	}
 
 	@Override
@@ -349,8 +349,8 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	 * @return A list of {@link Resource} instances representing the {@link KeycloakRealm} resource definitions
 	 */
 	public List<Resource<KeycloakRealm>> keycloakRealms() {
-		KeycloakOperatorApplication keycloakOperatorApplication = getApplication();
-		return keycloakOperatorApplication.getKeycloakRealms().stream()
+		RhSsoOperatorApplication rhSsoOperatorApplication = getApplication();
+		return rhSsoOperatorApplication.getKeycloakRealms().stream()
 				.map(keycloakRealm -> keycloakRealm.getMetadata().getName())
 				.map(this::keycloakRealm)
 				.collect(Collectors.toList());
@@ -399,8 +399,8 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	 * @return A list of {@link Resource} instances representing the {@link KeycloakBackup} resource definitions
 	 */
 	public List<Resource<KeycloakBackup>> keycloakBackups() {
-		KeycloakOperatorApplication keycloakOperatorApplication = getApplication();
-		return keycloakOperatorApplication.getKeycloakBackups().stream()
+		RhSsoOperatorApplication rhSsoOperatorApplication = getApplication();
+		return rhSsoOperatorApplication.getKeycloakBackups().stream()
 				.map(keycloakBackup -> keycloakBackup.getMetadata().getName())
 				.map(this::keycloakBackup)
 				.collect(Collectors.toList());
@@ -449,8 +449,8 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	 * @return A list of {@link Resource} instances representing the {@link KeycloakClient} resource definitions
 	 */
 	public List<Resource<KeycloakClient>> keycloakClients() {
-		KeycloakOperatorApplication keycloakOperatorApplication = getApplication();
-		return keycloakOperatorApplication.getKeycloakClients().stream()
+		RhSsoOperatorApplication rhSsoOperatorApplication = getApplication();
+		return rhSsoOperatorApplication.getKeycloakClients().stream()
 				.map(keycloakClient -> keycloakClient.getMetadata().getName())
 				.map(this::keycloakClient)
 				.collect(Collectors.toList());
@@ -499,8 +499,8 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	 * @return A list of {@link Resource} instances representing the {@link KeycloakUser} resource definitions
 	 */
 	public List<Resource<KeycloakUser>> keycloakUsers() {
-		KeycloakOperatorApplication keycloakOperatorApplication = getApplication();
-		return keycloakOperatorApplication.getKeycloakUsers().stream()
+		RhSsoOperatorApplication rhSsoOperatorApplication = getApplication();
+		return rhSsoOperatorApplication.getKeycloakUsers().stream()
 				.map(keycloakUser -> keycloakUser.getMetadata().getName())
 				.map(this::keycloakUser)
 				.collect(Collectors.toList());

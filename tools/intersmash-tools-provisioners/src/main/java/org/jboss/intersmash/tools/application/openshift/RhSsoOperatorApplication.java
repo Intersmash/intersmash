@@ -18,7 +18,7 @@ package org.jboss.intersmash.tools.application.openshift;
 import java.util.Collections;
 import java.util.List;
 
-import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.KeycloakClient;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak;
@@ -30,10 +30,10 @@ import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.Key
  *
  * The application will be deployed by:
  * <ul>
- *     <li>{@link KeycloakOperatorProvisioner}</li>
+ *     <li>{@link RhSsoOperatorProvisioner}</li>
  * </ul>
  */
-public interface KeycloakOperatorApplication extends OperatorApplication {
+public interface RhSsoOperatorApplication extends OperatorApplication {
 
 	Keycloak getKeycloak();
 

@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.RhSsoOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
-import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackup;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.KeycloakBackupBuilder;
 import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.spec.KeycloakAWSSpecBuilder;
@@ -73,13 +73,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CleanBeforeAll
 @Disabled("WIP - Disabled until global-test.properties is configured with the required property")
-public class KeycloakOperatorProvisionerTest {
+public class RhSsoOperatorProvisionerTest {
 	// Be aware that since we're using the static mock application, not all provisioner methods will work as expected!
-	private static final KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
+	private static final RhSsoOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
 
-	private static KeycloakOperatorProvisioner initializeOperatorProvisioner() {
-		KeycloakOperatorProvisioner operatorProvisioner = new KeycloakOperatorProvisioner(
-				new KeycloakOperatorApplication() {
+	private static RhSsoOperatorProvisioner initializeOperatorProvisioner() {
+		RhSsoOperatorProvisioner operatorProvisioner = new RhSsoOperatorProvisioner(
+				new RhSsoOperatorApplication() {
 					private static final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
 
 					@Override
@@ -590,9 +590,9 @@ public class KeycloakOperatorProvisionerTest {
 	 *
 	 * Does subscribe/unsubscribe on its own, so no need to call explicitly here.
 	 *
-	 * This test adds no further checks after {@link KeycloakOperatorProvisioner#undeploy()} based on
-	 * {@link KeycloakOperatorProvisioner#getPods()}, since it looks for a stateful set which would be null at this point.
-	 * There is room for evaluating whether to revisit {@link KeycloakOperatorProvisioner} with respect to such logic
+	 * This test adds no further checks after {@link RhSsoOperatorProvisioner#undeploy()} based on
+	 * {@link RhSsoOperatorProvisioner#getPods()}, since it looks for a stateful set which would be null at this point.
+	 * There is room for evaluating whether to revisit {@link RhSsoOperatorProvisioner} with respect to such logic
 	 */
 	@Test
 	public void basicProvisioningTest() {
