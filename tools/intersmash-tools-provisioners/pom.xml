@@ -156,6 +156,20 @@
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-yaml</artifactId>
         </dependency>
+        <!--
+            The following dependencies are required by the Fabric8 Kubernetes client Java generator plugin, see below
+            Since the generated classes will use Sundrio and Lombok annotations
+        -->
+        <dependency>
+            <groupId>io.sundr</groupId>
+            <artifactId>builder-annotations</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 
@@ -194,6 +208,10 @@
                         as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
                      -->
                     <enumUppercase>false</enumUppercase>
+                    <!--
+                        The following is required in order to generate Sundrio and Lombok annotations
+                    -->
+                    <extraAnnotations>true</extraAnnotations>
                 </configuration>
             </plugin>
 
