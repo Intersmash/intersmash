@@ -18,7 +18,6 @@ package org.jboss.intersmash.testsuite.provision.openshift.operator;
 import static org.mockito.Mockito.mock;
 
 import java.io.IOException;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
