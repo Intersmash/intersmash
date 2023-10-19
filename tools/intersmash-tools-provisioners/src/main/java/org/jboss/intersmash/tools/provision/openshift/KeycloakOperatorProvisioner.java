@@ -26,13 +26,13 @@ import java.util.stream.Collectors;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.tools.IntersmashConfig;
-import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
 import org.jboss.intersmash.tools.util.tls.CertificatesUtils;
 import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.KeycloakOperatorKeycloakList;
+import org.keycloak.k8s.v2alpha1.KeycloakOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorKeycloakList;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Http;
 import org.slf4j.event.Level;
 
@@ -55,13 +55,13 @@ import lombok.NonNull;
 /**
  * Keycloak operator provisioner
  */
-public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<KeycloakRealmImportOperatorApplication> {
+public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOperatorApplication> {
 	private static final String KEYCLOAK_RESOURCE = "keycloaks.k8s.keycloak.org";
 	private static final String KEYCLOAK_REALM_IMPORT_RESOURCE = "keycloakrealmimports.k8s.keycloak.org";
-	private static NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
-	private static NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
+	private static NonNamespaceOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
+	private static NonNamespaceOperation<KeycloakRealmImport, KeycloakOperatorRealmImportList, Resource<KeycloakRealmImport>> KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
 
-	public NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> keycloakClient() {
+	public NonNamespaceOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> keycloakClient() {
 		if (KEYCLOAK_CUSTOM_RESOURCE_CLIENT == null) {
 			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
 					.withName(KEYCLOAK_RESOURCE).get();
@@ -70,14 +70,14 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_RESOURCE, OPERATOR_ID));
 			}
-			MixedOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> crClient = OpenShifts
-					.master().newHasMetadataOperation(crdc, Keycloak.class, KeycloakRealmImportOperatorKeycloakList.class);
+			MixedOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> crClient = OpenShifts
+					.master().newHasMetadataOperation(crdc, Keycloak.class, KeycloakOperatorKeycloakList.class);
 			KEYCLOAK_CUSTOM_RESOURCE_CLIENT = crClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
 	}
 
-	public NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> keycloakRealmImportClient() {
+	public NonNamespaceOperation<KeycloakRealmImport, KeycloakOperatorRealmImportList, Resource<KeycloakRealmImport>> keycloakRealmImportClient() {
 		if (KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT == null) {
 			CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
 					.withName(KEYCLOAK_REALM_IMPORT_RESOURCE).get();
@@ -86,18 +86,18 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
 						KEYCLOAK_REALM_IMPORT_RESOURCE, OPERATOR_ID));
 			}
-			MixedOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> crClient = OpenShifts
+			MixedOperation<KeycloakRealmImport, KeycloakOperatorRealmImportList, Resource<KeycloakRealmImport>> crClient = OpenShifts
 					.master()
-					.newHasMetadataOperation(crdc, KeycloakRealmImport.class, KeycloakRealmImportOperatorRealmImportList.class);
+					.newHasMetadataOperation(crdc, KeycloakRealmImport.class, KeycloakOperatorRealmImportList.class);
 			KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT = crClient.inNamespace(OpenShiftConfig.namespace());
 		}
 		return KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
 	}
 
-	private static final String OPERATOR_ID = IntersmashConfig.keycloakRealmImportOperatorPackageManifest();
+	private static final String OPERATOR_ID = IntersmashConfig.keycloakOperatorPackageManifest();
 	protected FailFastCheck ffCheck = () -> false;
 
-	public KeycloakRealmImportOperatorProvisioner(@NonNull KeycloakRealmImportOperatorApplication application) {
+	public KeycloakOperatorProvisioner(@NonNull KeycloakOperatorApplication application) {
 		super(application, OPERATOR_ID);
 	}
 
@@ -107,22 +107,22 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 
 	@Override
 	protected String getOperatorCatalogSource() {
-		return IntersmashConfig.keycloakRealmImportOperatorCatalogSource();
+		return IntersmashConfig.keycloakOperatorCatalogSource();
 	}
 
 	@Override
 	protected String getOperatorIndexImage() {
-		return IntersmashConfig.keycloakRealmImportOperatorIndexImage();
+		return IntersmashConfig.keycloakOperatorIndexImage();
 	}
 
 	@Override
 	protected String getOperatorChannel() {
-		return IntersmashConfig.keycloakRealmImportOperatorChannel();
+		return IntersmashConfig.keycloakOperatorChannel();
 	}
 
 	@Override
 	public void subscribe() {
-		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakRealmImportImageURL())) {
+		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakImageURL())) {
 			super.subscribe();
 		} else {
 			subscribe(
@@ -131,7 +131,7 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 							// Custom Keycloak image to be used: overrides the Keycloak image at the operator level: all
 							// Keycloak instances will be spun out of this image
 							// e.g. OPERATOR_KEYCLOAK_IMAGE=quay.io/keycloak/keycloak:21.1.1 --> operator.keycloak.image
-							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakRealmImportImageURL()));
+							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakImageURL()));
 		}
 	}
 
@@ -145,8 +145,8 @@ public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<
 
 		// Custom Keycloak image to be used: overrides the Keycloak image at the Keycloak level: just this Keycloak
 		// instance will be spun out of this image
-		if (!Strings.isNullOrEmpty(IntersmashConfig.keycloakRealmImportImageURL())) {
-			getApplication().getKeycloak().getSpec().setImage(IntersmashConfig.keycloakRealmImportImageURL());
+		if (!Strings.isNullOrEmpty(IntersmashConfig.keycloakImageURL())) {
+			getApplication().getKeycloak().getSpec().setImage(IntersmashConfig.keycloakImageURL());
 		}
 
 		// create keys/certificates and add them to the Keycloak resource:

@@ -23,10 +23,10 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
-import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
-import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
 import org.jboss.intersmash.tools.util.tls.CertificatesUtils;
@@ -36,9 +36,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.KeycloakOperatorKeycloakList;
+import org.keycloak.k8s.v2alpha1.KeycloakOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorKeycloakList;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImportOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImportSpec;
 import org.keycloak.k8s.v2alpha1.KeycloakSpec;
 import org.keycloak.k8s.v2alpha1.keycloakrealmimportspec.Realm;
@@ -73,8 +73,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CleanBeforeAll
 @NotForProductizedExecutionProfile
-public class KeycloakRealmImportOperatorProvisionerTest {
-	private static KeycloakRealmImportOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
+public class KeycloakOperatorProvisionerTest {
+	private static KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
 	private static final String POSTGRESQL_NAME = "postgresql";
 	private static final String POSTGRESQL_DATABASE = "keycloak";
@@ -105,10 +105,10 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 	private static final PostgreSQLImageOpenShiftProvisioner POSTGRESQL_IMAGE_PROVISIONER = new PostgreSQLImageOpenShiftProvisioner(
 			pgSQLApplication);
 
-	private static KeycloakRealmImportOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
+	private static KeycloakOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
 			final String appName) {
-		KeycloakRealmImportOperatorProvisioner operatorProvisioner = new KeycloakRealmImportOperatorProvisioner(
-				new KeycloakRealmImportOperatorApplication() {
+		KeycloakOperatorProvisioner operatorProvisioner = new KeycloakOperatorProvisioner(
+				new KeycloakOperatorApplication() {
 
 					@Override
 					public Keycloak getKeycloak() {
@@ -316,9 +316,9 @@ public class KeycloakRealmImportOperatorProvisionerTest {
 	}
 
 	private void verifyKeycloak(Keycloak keycloak, KeycloakRealmImport realmImport, boolean waitForPods) {
-		NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> keycloakClient = KEYCLOAK_OPERATOR_PROVISIONER
+		NonNamespaceOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> keycloakClient = KEYCLOAK_OPERATOR_PROVISIONER
 				.keycloakClient();
-		NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> keycloakRealmImportClient = KEYCLOAK_OPERATOR_PROVISIONER
+		NonNamespaceOperation<KeycloakRealmImport, KeycloakOperatorRealmImportList, Resource<KeycloakRealmImport>> keycloakRealmImportClient = KEYCLOAK_OPERATOR_PROVISIONER
 				.keycloakRealmImportClient();
 		// create and verify that object exists
 		keycloakClient.createOrReplace(keycloak);

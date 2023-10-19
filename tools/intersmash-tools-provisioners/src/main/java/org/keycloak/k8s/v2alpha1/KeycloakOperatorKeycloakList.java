@@ -17,6 +17,5 @@ package org.keycloak.k8s.v2alpha1;
 
 import io.fabric8.kubernetes.client.CustomResourceList;
 
-public class KeycloakRealmImportOperatorRealmImportList
-		extends CustomResourceList<org.keycloak.k8s.v2alpha1.KeycloakRealmImport> {
+public class KeycloakOperatorKeycloakList extends CustomResourceList<org.keycloak.k8s.v2alpha1.Keycloak> {
 }

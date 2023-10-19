@@ -18,7 +18,7 @@ package org.jboss.intersmash.tools.application.openshift;
 import java.util.Collections;
 import java.util.List;
 
-import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
 
@@ -27,10 +27,10 @@ import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
  *
  * The application will be deployed by:
  * <ul>
- *     <li>{@link KeycloakRealmImportOperatorProvisioner}</li>
+ *     <li>{@link KeycloakOperatorProvisioner}</li>
  * </ul>
  */
-public interface KeycloakRealmImportOperatorApplication extends OperatorApplication {
+public interface KeycloakOperatorApplication extends OperatorApplication {
 
 	Keycloak getKeycloak();
 

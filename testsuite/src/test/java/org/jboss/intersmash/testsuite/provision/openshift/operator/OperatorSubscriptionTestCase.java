@@ -25,7 +25,7 @@ import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplicat
 import org.jboss.intersmash.tools.application.openshift.HyperfoilOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.InfinispanOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.tools.application.openshift.KeycloakRealmImportOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.RhSsoOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.junit5.IntersmashExtension;
@@ -33,7 +33,7 @@ import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisione
 import org.jboss.intersmash.tools.provision.openshift.HyperfoilOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
@@ -63,7 +63,7 @@ public class OperatorSubscriptionTestCase {
 
 	private static final Stream<OperatorProvisioner> COMMUNITY_ONLY_PROVISIONERS = Stream.of(
 			new HyperfoilOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
-			new KeycloakRealmImportOperatorProvisioner(mock(KeycloakRealmImportOperatorApplication.class)));
+			new KeycloakOperatorProvisioner(mock(KeycloakOperatorApplication.class)));
 
 	private static final Stream<OperatorProvisioner> PRODUCT_ONLY_PROVISIONERS = Stream.of(
 			new RhSsoOperatorProvisioner(mock(RhSsoOperatorApplication.class)));

@@ -103,14 +103,14 @@ public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorA
 
 	@Override
 	public void subscribe() {
-		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakImageURL())) {
+		if (Strings.isNullOrEmpty(IntersmashConfig.rhSsoImageURL())) {
 			super.subscribe();
 		} else {
 			// RELATED_IMAGE_RHSSO_OPENJ9 and RELATED_IMAGE_RHSSO_OPENJDK, determine the final value for RELATED_IMAGE_RHSSO
 			subscribe(
 					INSTALLPLAN_APPROVAL_MANUAL,
 					Map.of(
-							"RELATED_IMAGE_RHSSO", IntersmashConfig.keycloakImageURL(),
+							"RELATED_IMAGE_RHSSO", IntersmashConfig.rhSsoImageURL(),
 							"PROFILE", "RHSSO"));
 		}
 	}
