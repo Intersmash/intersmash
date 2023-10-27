@@ -61,7 +61,7 @@ public interface OpenShiftTemplateProvisioner {
 
 	/**
 	 * Get a template file name format. Having a template name (e.g. "basic") is not sufficient, as the actual template
-	 * file name could differ between products (e.g. "datagrid73-basic.json" VS "eap73-basic-s2i.json").
+	 * file name could differ between products.
 	 *
 	 * @param openShiftTemplate template
 	 * @return file name of template source file

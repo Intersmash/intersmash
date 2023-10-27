@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2023 Red Hat, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jboss.intersmash.tools.provision.openshift;
 
 import java.util.Collections;
@@ -102,16 +117,7 @@ public class Eap7TemplateOpenShiftProvisioner
 		// env vars
 		Map<String, String> params = new HashMap<>(application.getParameters());
 
-		// Let's be sure that the used template params do carry a reference to the deployed EAP 7 image stream name,
-		// since the defaults could not be correct.
-		// For instance, as in the case of EAP 74, where a unique template file exists for each template type,
-		// and the default value for EAP_IMAGE_NAME would be the one in there, i.e.
-		// "jboss-eap74-openjdk11-openshift:7.4.0", currently.
-		// In such a scenario the provisioning would fail if the EAP image is based on open JDK 8, since the deployed
-		// EAP 7 image stream name would be "jboss-eap74-openjdk8-openshift:7.3" in that case, see:
-		// * https://github.com/jboss-container-images/jboss-eap-openshift-templates/blob/eap74/eap74-openjdk8-image-stream.json#L16
-		// * https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.4/html/getting_started_with_jboss_eap_for_openshift_container_platform/build_run_java_app_s2i#import_imagestreams_templates
-		// For the reasons above, here we'll set the expected template EAP_IMAGE_URL and EAP_RUNTIME_IMAGE_URL param
+		// Here we'll set the expected template EAP_IMAGE_URL and EAP_RUNTIME_IMAGE_URL param
 		// values explicitly, based on the previously deployed resources, in case those were not provided.
 		if (!params.containsKey("EAP_IMAGE_NAME")) {
 			// let's build a consistent value for the expected builder image name
@@ -160,8 +166,7 @@ public class Eap7TemplateOpenShiftProvisioner
 		postDeploy(application);
 
 		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(application.getName()).level(Level.DEBUG).waitFor();
-		// by default in all 73 templates there is hardcoded value 1
-		// however this is still risky as a template might change or get parametrized
+		// TODO - this is still risky as a template might change or get parametrized
 		waitForReplicas(1);
 	}
 

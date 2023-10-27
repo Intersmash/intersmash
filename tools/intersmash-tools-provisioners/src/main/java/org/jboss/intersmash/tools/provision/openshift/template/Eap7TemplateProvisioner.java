@@ -1,3 +1,18 @@
+/**
+ * Copyright (C) 2023 Red Hat, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jboss.intersmash.tools.provision.openshift.template;
 
 import java.io.IOException;
@@ -44,11 +59,9 @@ public class Eap7TemplateProvisioner implements OpenShiftTemplateProvisioner {
 		if (!List.of(SUPPORTED_JDK_VERSIONS).stream().anyMatch(allowed -> allowed.equals(eapJdk))) {
 			throw new IllegalStateException("Unsupported JDK version: " + eapJdk);
 		}
-		// Don't add any JDK info when dealing with EAP 73 OpenJDK 8 based images or EAP 74 OpenJDK based images since
-		// template files never include the OpenJDK info, e.g.:
+		// E.g.:
 		// https://raw.githubusercontent.com/jboss-container-images/jboss-eap-openshift-templates/eap74/templates/eap74-basic-s2i.json
 		// https://raw.githubusercontent.com/jboss-container-images/jboss-eap-openshift-templates/eap74/templates/eap74-https-s2i.json
-		// https://raw.githubusercontent.com/jboss-container-images/jboss-eap-7-openshift-image/eap73/templates/eap73-basic-s2i.json
 		return String.format("%s-%s-s2i", eapProductCode, openShiftTemplate.getLabel());
 	}
 
@@ -98,16 +111,7 @@ public class Eap7TemplateProvisioner implements OpenShiftTemplateProvisioner {
 
 	@Override
 	public String getProductCode() {
-		final String image = IntersmashConfig.eap7ImageURL();
-		if (image.matches(".*eap-xp\\d+.*")) {
-			return image.replaceFirst(".*eap-xp(\\d+).*", "eap-xp$1");
-		} else if (image.contains("eap-cd")) {
-			return "eap-cd";
-		} else if (image.matches(".*eap\\d\\d.*")) {
-			return image.replaceFirst(".*eap(\\d\\d?).*", "eap$1");
-		} else {
-			return IntersmashConfig.getProductCode(image);
-		}
+		return IntersmashConfig.eap7ProductCode();
 	}
 
 	/**

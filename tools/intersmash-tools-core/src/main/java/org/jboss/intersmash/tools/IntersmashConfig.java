@@ -260,7 +260,14 @@ public class IntersmashConfig {
 	}
 
 	public static String eap7ProductCode() {
-		return getProductCode(eap7ImageURL());
+		final String image = eap7ImageURL();
+		if (image.matches(".*eap-xp\\d+.*")) {
+			return image.replaceFirst(".*eap-xp(\\d+).*", "eap-xp$1");
+		} else if (image.matches(".*eap\\d\\d.*")) {
+			return image.replaceFirst(".*eap(\\d\\d?).*", "eap$1");
+		} else {
+			return IntersmashConfig.getProductCode(image);
+		}
 	}
 
 	public static String eap7Templates() {
