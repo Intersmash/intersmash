@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
+import org.keycloak.v1alpha1.keycloakspec.External;
+
 /**
  * Contains configuration for external Keycloak instances. Unmanaged needs to be set to true to use this.
  */
@@ -45,8 +47,8 @@ public final class KeycloakExternalBuilder {
 		return this;
 	}
 
-	public KeycloakExternal build() {
-		KeycloakExternal keycloakExternal = new KeycloakExternal();
+	public External build() {
+		External keycloakExternal = new External();
 		keycloakExternal.setEnabled(enabled);
 		keycloakExternal.setUrl(url);
 		return keycloakExternal;

@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
+import org.keycloak.v1alpha1.keycloakspec.ExternalDatabase;
+
 /**
  * 	Controls external database settings.
  * 	Using an external database requires providing a secret containing credentials
@@ -57,8 +59,8 @@ public final class KeycloakExternalDatabaseBuilder {
 		return this;
 	}
 
-	public KeycloakExternalDatabase build() {
-		KeycloakExternalDatabase keycloakExternalDatabase = new KeycloakExternalDatabase();
+	public ExternalDatabase build() {
+		ExternalDatabase keycloakExternalDatabase = new ExternalDatabase();
 		keycloakExternalDatabase.setEnabled(enabled);
 		return keycloakExternalDatabase;
 	}

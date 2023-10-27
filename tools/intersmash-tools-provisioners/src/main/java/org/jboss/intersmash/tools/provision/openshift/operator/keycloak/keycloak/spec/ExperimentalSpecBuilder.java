@@ -18,7 +18,10 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloa
 import java.util.ArrayList;
 import java.util.List;
 
-import io.fabric8.kubernetes.api.model.EnvVar;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.Experimental;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Env;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Volumes;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
 
 /**
  * Experimental section
@@ -28,8 +31,8 @@ import io.fabric8.kubernetes.api.model.EnvVar;
 public final class ExperimentalSpecBuilder {
 	private List<String> args;
 	private List<String> command;
-	private List<EnvVar> env;
-	private VolumesSpec volumes;
+	private List<Env> env;
+	private Volumes volumes;
 
 	/**
 	 * Set the arguments to the entrypoint. Translates into Container CMD.
@@ -87,7 +90,7 @@ public final class ExperimentalSpecBuilder {
 	 * @param env List of environment variables
 	 * @return this
 	 */
-	public ExperimentalSpecBuilder env(List<EnvVar> env) {
+	public ExperimentalSpecBuilder env(List<Env> env) {
 		this.env = env;
 		return this;
 	}
@@ -98,7 +101,7 @@ public final class ExperimentalSpecBuilder {
 	 * @param env Environment variable that should be added
 	 * @return this
 	 */
-	public ExperimentalSpecBuilder env(EnvVar env) {
+	public ExperimentalSpecBuilder env(Env env) {
 		if (this.env == null) {
 			this.env = new ArrayList<>();
 		}
@@ -109,16 +112,16 @@ public final class ExperimentalSpecBuilder {
 	/**
 	 * Additional volume mounts.
 	 *
-	 * @param volumes {@link VolumesSpec} instance storing volume mount definitions
+	 * @param volumes {@link Items} instance storing volume mount definitions
 	 * @return this
 	 */
-	public ExperimentalSpecBuilder volumes(VolumesSpec volumes) {
+	public ExperimentalSpecBuilder volumes(Volumes volumes) {
 		this.volumes = volumes;
 		return this;
 	}
 
-	public ExperimentalSpec build() {
-		ExperimentalSpec experimentalSpec = new ExperimentalSpec();
+	public Experimental build() {
+		Experimental experimentalSpec = new Experimental();
 		experimentalSpec.setArgs(args);
 		experimentalSpec.setCommand(command);
 		experimentalSpec.setEnv(env);

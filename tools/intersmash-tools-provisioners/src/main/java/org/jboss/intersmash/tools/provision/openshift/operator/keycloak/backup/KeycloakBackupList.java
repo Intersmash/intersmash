@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup;
 
+import org.keycloak.v1alpha1.KeycloakBackup;
+
 import io.fabric8.kubernetes.client.CustomResourceList;
 
 public class KeycloakBackupList extends CustomResourceList<KeycloakBackup> {

@@ -18,6 +18,8 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.s
 import java.util.HashMap;
 import java.util.Map;
 
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.UserFederationMappers;
+
 public final class KeycloakAPIUserFederationMapperBuilder {
 	private Map<String, String> config;
 	private String name;
@@ -95,8 +97,8 @@ public final class KeycloakAPIUserFederationMapperBuilder {
 		return this;
 	}
 
-	public KeycloakAPIUserFederationMapper build() {
-		KeycloakAPIUserFederationMapper keycloakAPIUserFederationMapper = new KeycloakAPIUserFederationMapper();
+	public UserFederationMappers build() {
+		UserFederationMappers keycloakAPIUserFederationMapper = new UserFederationMappers();
 		keycloakAPIUserFederationMapper.setConfig(config);
 		keycloakAPIUserFederationMapper.setName(name);
 		keycloakAPIUserFederationMapper.setId(id);

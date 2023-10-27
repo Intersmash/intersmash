@@ -18,23 +18,38 @@ package org.jboss.intersmash.tools.application.openshift;
 import java.util.Collections;
 import java.util.List;
 
-import org.jboss.intersmash.tools.provision.openshift.KeycloakRealmImportOperatorProvisioner;
-import org.keycloak.k8s.v2alpha1.Keycloak;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
+import org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisioner;
+import org.keycloak.v1alpha1.Keycloak;
+import org.keycloak.v1alpha1.KeycloakBackup;
+import org.keycloak.v1alpha1.KeycloakClient;
+import org.keycloak.v1alpha1.KeycloakRealm;
+import org.keycloak.v1alpha1.KeycloakUser;
 
 /**
  * End user Application interface which presents Keycloak operator application on OpenShift Container Platform.
  *
  * The application will be deployed by:
  * <ul>
- *     <li>{@link KeycloakRealmImportOperatorProvisioner}</li>
+ *     <li>{@link RhSsoOperatorProvisioner}</li>
  * </ul>
  */
-public interface KeycloakRealmImportOperatorApplication extends OperatorApplication {
+public interface RhSsoOperatorApplication extends OperatorApplication {
 
 	Keycloak getKeycloak();
 
-	default List<KeycloakRealmImport> getKeycloakRealmImports() {
+	default List<KeycloakBackup> getKeycloakBackups() {
+		return Collections.emptyList();
+	}
+
+	default List<KeycloakClient> getKeycloakClients() {
+		return Collections.emptyList();
+	}
+
+	default List<KeycloakRealm> getKeycloakRealms() {
+		return Collections.emptyList();
+	}
+
+	default List<KeycloakUser> getKeycloakUsers() {
 		return Collections.emptyList();
 	}
 }

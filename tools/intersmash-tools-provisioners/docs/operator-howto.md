@@ -53,11 +53,6 @@ community project operator sources and CRDs could be a year away from the one su
     * use `throw new UnsupportedOperationException("TODO");` to implement the mandatory methods inherited from Provisioner interfaces for now
 * add a new test to OperatorSubscriptionTestCase
 
-#### Example Outcome
-* `openshift.application.org.jboss.intersmash.tools.KeycloakOperatorApplication`
-* `openshift.provision.org.jboss.intersmash.tools.KeycloakOperatorProvisioner`
-    * operator id = `keycloak-operator`
-
 ### Create builders
 It's useful to have two kinds of builders for `*Spec` model classes. 
 The one for the ${CR_KIND}Spec class, which will act as an entry point for users to build the ${CR_KIND} objects, and the rest for the remaining model classes in `spec` package. Prefer using some plugin (e.g. https://plugins.jetbrains.com/plugin/6585-builder-generator) rather than creating builders manually.
@@ -172,15 +167,15 @@ https://github.com/fabric8io/kubernetes-client/blob/master/kubernetes-examples/s
 Update the ${PRODUCT}OperatorProvisioner. Create CR na name constant and NonNamespaceOperation for every custom resource provided by an operator (look into existing operator Provisioners for more details). Create method to initialize the client and to obtain a reference to custom resource instance running on OPC (this one will have to be parametrized in case there could be more than one resource of same kind managed by a single operator - e.g. ActiveMQ operator can have multiple addresses).
 
 #### Example Output
-KeycloakOperatorProvisioner Keycloak client methods example. The methods and resources names are aligned with CR name and kind.
+`KeycloakOperatorProvisioner` client methods example. The methods and resources names are aligned with CR name and kind.
 ```java
-    public class KeycloakRealmImportOperatorProvisioner extends OperatorProvisioner<KeycloakRealmImportOperatorApplication> {
+    public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOperatorApplication> {
     private static final String KEYCLOAK_RESOURCE = "keycloaks.k8s.keycloak.org";
     private static final String KEYCLOAK_REALM_IMPORT_RESOURCE = "keycloakrealmimports.k8s.keycloak.org";
-    private static NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
-    private static NonNamespaceOperation<KeycloakRealmImport, KeycloakRealmImportOperatorRealmImportList, Resource<KeycloakRealmImport>> KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
+    private static NonNamespaceOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> KEYCLOAK_CUSTOM_RESOURCE_CLIENT;
+    private static NonNamespaceOperation<KeycloakRealmImport, KeycloakOperatorRealmImportList, Resource<KeycloakRealmImport>> KEYCLOAK_REALM_IMPORT_CUSTOM_RESOURCE_CLIENT;
 
-    public NonNamespaceOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> keycloakClient() {
+    public NonNamespaceOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> keycloakClient() {
         if (KEYCLOAK_CUSTOM_RESOURCE_CLIENT == null) {
             CustomResourceDefinition crd = OpenShifts.admin().apiextensions().v1().customResourceDefinitions()
                     .withName(KEYCLOAK_RESOURCE).get();
@@ -189,7 +184,7 @@ KeycloakOperatorProvisioner Keycloak client methods example. The methods and res
                 throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
                         KEYCLOAK_RESOURCE, OPERATOR_ID));
             }
-            MixedOperation<Keycloak, KeycloakRealmImportOperatorKeycloakList, Resource<Keycloak>> crClient = OpenShifts
+            MixedOperation<Keycloak, KeycloakOperatorKeycloakList, Resource<Keycloak>> crClient = OpenShifts
                     .master().newHasMetadataOperation(crdc, Keycloak.class, KeycloakRealmImportOperatorKeycloakList.class);
             KEYCLOAK_CUSTOM_RESOURCE_CLIENT = crClient.inNamespace(OpenShiftConfig.namespace());
         }

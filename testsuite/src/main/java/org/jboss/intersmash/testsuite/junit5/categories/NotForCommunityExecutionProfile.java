@@ -1,10 +1,10 @@
 package org.jboss.intersmash.testsuite.junit5.categories;
 
-import org.junit.jupiter.api.Tag;
-
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.junit.jupiter.api.Tag;
 
 /**
  * Mark a test that does not support community deliverables.

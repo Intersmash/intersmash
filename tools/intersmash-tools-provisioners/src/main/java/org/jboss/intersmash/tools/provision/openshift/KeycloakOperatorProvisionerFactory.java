@@ -22,7 +22,8 @@ import org.jboss.intersmash.tools.provision.ProvisionerFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class KeycloakOperatorProvisionerFactory implements ProvisionerFactory<KeycloakOperatorProvisioner> {
+public class KeycloakOperatorProvisionerFactory
+		implements ProvisionerFactory<KeycloakOperatorProvisioner> {
 
 	@Override
 	public KeycloakOperatorProvisioner getProvisioner(Application application) {

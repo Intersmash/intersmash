@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.user.spec;
 
+import org.keycloak.v1alpha1.keycloakuserspec.user.FederatedIdentities;
+
 public final class FederatedIdentityBuilder {
 	private String identityProvider;
 	private String userId;
@@ -53,8 +55,8 @@ public final class FederatedIdentityBuilder {
 		return this;
 	}
 
-	public FederatedIdentity build() {
-		FederatedIdentity federatedIdentity = new FederatedIdentity();
+	public FederatedIdentities build() {
+		FederatedIdentities federatedIdentity = new FederatedIdentities();
 		federatedIdentity.setIdentityProvider(identityProvider);
 		federatedIdentity.setUserId(userId);
 		federatedIdentity.setUserName(userName);

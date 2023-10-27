@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.client.spec.KeycloakProtocolMapper;
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.ClientScopes;
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.clientscopes.ProtocolMappers;
 
 public final class KeycloakClientScopeBuilder {
 	private Map<String, String> attributes;
@@ -27,7 +28,7 @@ public final class KeycloakClientScopeBuilder {
 	private String id;
 	private String name;
 	private String protocol;
-	private List<KeycloakProtocolMapper> protocolMappers;
+	private List<ProtocolMappers> protocolMappers;
 
 	/**
 	 * Add a list of attributes.
@@ -105,13 +106,13 @@ public final class KeycloakClientScopeBuilder {
 	 * @param protocolMappers A list of protocol mappers that should be used
 	 * @return this
 	 */
-	public KeycloakClientScopeBuilder protocolMappers(List<KeycloakProtocolMapper> protocolMappers) {
+	public KeycloakClientScopeBuilder protocolMappers(List<ProtocolMappers> protocolMappers) {
 		this.protocolMappers = protocolMappers;
 		return this;
 	}
 
-	public KeycloakClientScope build() {
-		KeycloakClientScope keycloakClientScope = new KeycloakClientScope();
+	public ClientScopes build() {
+		ClientScopes keycloakClientScope = new ClientScopes();
 		keycloakClientScope.setAttributes(attributes);
 		keycloakClientScope.setDescription(description);
 		keycloakClientScope.setId(id);

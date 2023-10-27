@@ -18,12 +18,12 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloa
 import java.util.ArrayList;
 import java.util.List;
 
-import io.fabric8.kubernetes.api.model.KeyToPath;
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.items.Items;
 
 public final class ConfigMapVolumeSpecBuilder {
 	private String name;
 	private String mountPath;
-	private List<KeyToPath> items;
+	private List<Items> items;
 
 	/**
 	 * Set the ConfigMap name.
@@ -50,10 +50,10 @@ public final class ConfigMapVolumeSpecBuilder {
 	/**
 	 * ConfigMap mount details.
 	 *
-	 * @param items List of {@link KeyToPath} instances representing the ConfigMap mount details
+	 * @param items List of {@link Items} instances representing the ConfigMap mount details
 	 * @return this
 	 */
-	public ConfigMapVolumeSpecBuilder items(List<KeyToPath> items) {
+	public ConfigMapVolumeSpecBuilder items(List<Items> items) {
 		this.items = items;
 		return this;
 	}
@@ -61,10 +61,10 @@ public final class ConfigMapVolumeSpecBuilder {
 	/**
 	 * Add one ConfigMap mount detail item.
 	 *
-	 * @param item {@link KeyToPath} instances representing the ConfigMap mount details that should be added
+	 * @param item {@link Items} instances representing the ConfigMap mount details that should be added
 	 * @return this
 	 */
-	public ConfigMapVolumeSpecBuilder items(KeyToPath item) {
+	public ConfigMapVolumeSpecBuilder items(Items item) {
 		if (items == null) {
 			items = new ArrayList<>();
 		}
@@ -72,8 +72,8 @@ public final class ConfigMapVolumeSpecBuilder {
 		return this;
 	}
 
-	public ConfigMapVolumeSpec build() {
-		ConfigMapVolumeSpec configMapVolumeSpec = new ConfigMapVolumeSpec();
+	public org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items build() {
+		org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items configMapVolumeSpec = new org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items();
 		configMapVolumeSpec.setName(name);
 		configMapVolumeSpec.setMountPath(mountPath);
 		configMapVolumeSpec.setItems(items);

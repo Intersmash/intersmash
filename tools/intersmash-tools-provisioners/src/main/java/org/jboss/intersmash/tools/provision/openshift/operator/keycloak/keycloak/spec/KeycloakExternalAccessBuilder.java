@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
+import org.keycloak.v1alpha1.keycloakspec.ExternalAccess;
+
 /**
  * Controls external Ingress/Route settings.
  */
@@ -59,8 +61,8 @@ public final class KeycloakExternalAccessBuilder {
 	//		return this;
 	//	}
 
-	public KeycloakExternalAccess build() {
-		KeycloakExternalAccess keycloakExternalAccess = new KeycloakExternalAccess();
+	public ExternalAccess build() {
+		ExternalAccess keycloakExternalAccess = new ExternalAccess();
 		keycloakExternalAccess.setEnabled(enabled);
 		//		keycloakExternalAccess.setTlsTermination(tlsTermination);
 		//		keycloakExternalAccess.setHost(host);

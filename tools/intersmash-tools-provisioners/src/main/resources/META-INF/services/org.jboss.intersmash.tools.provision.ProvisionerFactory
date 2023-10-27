@@ -6,6 +6,6 @@ org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.InfinispanOperatorProvisionerFactory
-org.jboss.intersmash.tools.provision.openshift.KeycloakOperatorProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisionerFactory
 org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisionerFactory

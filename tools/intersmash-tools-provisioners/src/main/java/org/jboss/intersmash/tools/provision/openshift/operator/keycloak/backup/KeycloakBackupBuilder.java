@@ -17,8 +17,9 @@ package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup;
 
 import java.util.Map;
 
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.spec.KeycloakAWSSpec;
-import org.jboss.intersmash.tools.provision.openshift.operator.keycloak.backup.spec.KeycloakBackupSpec;
+import org.keycloak.v1alpha1.KeycloakBackup;
+import org.keycloak.v1alpha1.KeycloakBackupSpec;
+import org.keycloak.v1alpha1.keycloakbackupspec.Aws;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
@@ -26,7 +27,7 @@ public final class KeycloakBackupBuilder {
 	private String name;
 	private Map<String, String> labels;
 	private boolean restore;
-	private KeycloakAWSSpec aws;
+	private Aws aws;
 	//	private LabelSelector instanceSelector;
 	//	private String storageClassName;
 
@@ -73,10 +74,10 @@ public final class KeycloakBackupBuilder {
 	 * a local Persistent Volume. If this property is not provided - a local
 	 * Persistent Volume backup will be chosen.
 	 *
-	 * @param aws A {@link KeycloakAWSSpec} instance storing configuration for creating a backup on AWS
+	 * @param aws A {@link Aws} instance storing configuration for creating a backup on AWS
 	 * @return this
 	 */
-	public KeycloakBackupBuilder aws(KeycloakAWSSpec aws) {
+	public KeycloakBackupBuilder aws(Aws aws) {
 		this.aws = aws;
 		return this;
 	}

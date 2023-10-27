@@ -15,8 +15,12 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.spec;
 
+import java.util.List;
+
+import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
+
 public final class VolumeSpecBuilder {
-	private ConfigMapVolumeSpec configMap;
+	private List<String> configMap;
 
 	/**
 	 * Set the ConfigMap mount.
@@ -24,14 +28,14 @@ public final class VolumeSpecBuilder {
 	 * @param configMap The ConfigMap mount configuration
 	 * @return this
 	 */
-	public VolumeSpecBuilder configMap(ConfigMapVolumeSpec configMap) {
+	public VolumeSpecBuilder configMap(List<String> configMap) {
 		this.configMap = configMap;
 		return this;
 	}
 
-	public VolumeSpec build() {
-		VolumeSpec volumeSpec = new VolumeSpec();
-		volumeSpec.setConfigMap(configMap);
+	public Items build() {
+		Items volumeSpec = new Items();
+		volumeSpec.setConfigMaps(configMap);
 		return volumeSpec;
 	}
 }

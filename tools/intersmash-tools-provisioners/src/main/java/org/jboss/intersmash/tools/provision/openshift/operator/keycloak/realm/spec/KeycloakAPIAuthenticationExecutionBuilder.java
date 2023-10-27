@@ -15,10 +15,12 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.keycloak.realm.spec;
 
+import org.keycloak.v1alpha1.keycloakrealmspec.realm.authenticationflows.AuthenticationExecutions;
+
 public final class KeycloakAPIAuthenticationExecutionBuilder {
 	private String authenticator;
 	private String authenticatorConfig;
-	private String authenticatorFlow;
+	private boolean authenticatorFlow;
 	private String flowAlias;
 	private int priority;
 	private String requirement;
@@ -52,7 +54,7 @@ public final class KeycloakAPIAuthenticationExecutionBuilder {
 	 * @param authenticatorFlow String representing a valid authenticator flow
 	 * @return this
 	 */
-	public KeycloakAPIAuthenticationExecutionBuilder authenticatorFlow(String authenticatorFlow) {
+	public KeycloakAPIAuthenticationExecutionBuilder authenticatorFlow(boolean authenticatorFlow) {
 		this.authenticatorFlow = authenticatorFlow;
 		return this;
 	}
@@ -101,8 +103,8 @@ public final class KeycloakAPIAuthenticationExecutionBuilder {
 		return this;
 	}
 
-	public KeycloakAPIAuthenticationExecution build() {
-		KeycloakAPIAuthenticationExecution keycloakAPIAuthenticationExecution = new KeycloakAPIAuthenticationExecution();
+	public AuthenticationExecutions build() {
+		AuthenticationExecutions keycloakAPIAuthenticationExecution = new AuthenticationExecutions();
 		keycloakAPIAuthenticationExecution.setAuthenticator(authenticator);
 		keycloakAPIAuthenticationExecution.setAuthenticatorConfig(authenticatorConfig);
 		keycloakAPIAuthenticationExecution.setAuthenticatorFlow(authenticatorFlow);
