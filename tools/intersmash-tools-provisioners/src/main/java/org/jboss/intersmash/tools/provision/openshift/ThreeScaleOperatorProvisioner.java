@@ -1,18 +1,6 @@
 package org.jboss.intersmash.tools.provision.openshift;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.assertj.core.util.Lists;
-import org.jboss.intersmash.tools.IntersmashConfig;
-import org.jboss.intersmash.tools.application.openshift.ThreeScaleOperatorApplication;
-import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.slf4j.event.Level;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.event.helpers.EventHelper;
 import cz.xtf.core.openshift.OpenShift;
@@ -22,6 +10,7 @@ import cz.xtf.core.waiting.SimpleWaiter;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.KubernetesResourceList;
 import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
@@ -32,23 +21,25 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.threescale.apps.v1alpha1.APIManager;
+import net.threescale.apps.v1alpha1.APIManagerBuilder;
 import net.threescale.apps.v1alpha1.APIManagerSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.Apicast;
-import net.threescale.apps.v1alpha1.apimanagerspec.Zync;
-import net.threescale.apps.v1alpha1.apimanagerspec.apicast.ProductionSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.apicast.StagingSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.backend.CronSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.backend.ListenerSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.backend.WorkerSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.system.AppSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.system.SidekiqSpec;
-import net.threescale.apps.v1alpha1.apimanagerspec.zync.QueSpec;
+import net.threescale.apps.v1alpha1.APIManagerSpecBuilder;
 import net.threescale.capabilities.v1beta1.Application;
 import net.threescale.capabilities.v1beta1.Backend;
 import net.threescale.capabilities.v1beta1.DeveloperAccount;
 import net.threescale.capabilities.v1beta1.DeveloperUser;
 import net.threescale.capabilities.v1beta1.Product;
 import net.threescale.capabilities.v1beta1.ProxyConfigPromote;
+import org.assertj.core.util.Lists;
+import org.jboss.intersmash.tools.IntersmashConfig;
+import org.jboss.intersmash.tools.application.openshift.ThreeScaleOperatorApplication;
+import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
+import org.slf4j.event.Level;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScaleOperatorApplication> {
@@ -109,51 +100,49 @@ public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScal
 		String wildcardDomain = openshiftConsoleHost.replaceFirst("^[^.]+", OpenShiftConfig.namespace());
 
 		// APIManager
-		APIManagerSpec apiManagerSpec = new APIManagerSpec();
+		APIManagerSpec apiManagerSpec = new APIManagerSpecBuilder()
+				.withNewSystem()
+					.withNewAppSpec()
+						.withReplicas(1L)
+					.endAppSpec()
+					.withNewSidekiqSpec()
+						.withReplicas(1L)
+					.endSidekiqSpec()
+				.endSystem()
+				.withNewZync()
+					.withNewZyncAppSpec()
+						.withReplicas(1L)
+					.endZyncAppSpec()
+					.withNewQueSpec()
+						.withReplicas(1L)
+					.endQueSpec()
+				.endZync()
+				.withNewBackend()
+					.withNewCronSpec()
+						.withReplicas(1L)
+					.endCronSpec()
+					.withNewListenerSpec()
+						.withReplicas(1L)
+					.endListenerSpec()
+					.withNewWorkerSpec()
+						.withReplicas(1L)
+					.endWorkerSpec()
+				.endBackend()
+				.withNewApicast()
+					.withNewProductionSpec()
+						.withReplicas(1L)
+					.endProductionSpec()
+					.withNewStagingSpec()
+						.withReplicas(1L)
+					.endStagingSpec()
+				.endApicast()
+				.build();
 		apiManagerSpec.setWildcardDomain(wildcardDomain);
 
-		net.threescale.apps.v1alpha1.apimanagerspec.System system = new net.threescale.apps.v1alpha1.apimanagerspec.System();
-		AppSpec appSpec = new AppSpec();
-		appSpec.setReplicas(1L);
-		system.setAppSpec(appSpec);
-		SidekiqSpec sidekiqSpec = new SidekiqSpec();
-		sidekiqSpec.setReplicas(1L);
-		system.setSidekiqSpec(sidekiqSpec);
-		apiManagerSpec.setSystem(system);
-
-		Zync zync = new Zync();
-		net.threescale.apps.v1alpha1.apimanagerspec.zync.AppSpec appSpecZ = new net.threescale.apps.v1alpha1.apimanagerspec.zync.AppSpec();
-		appSpecZ.setReplicas(1L);
-		zync.setAppSpec(appSpecZ);
-		QueSpec queSpec = new QueSpec();
-		queSpec.setReplicas(1L);
-		zync.setQueSpec(queSpec);
-		apiManagerSpec.setZync(zync);
-
-		net.threescale.apps.v1alpha1.apimanagerspec.Backend backend = new net.threescale.apps.v1alpha1.apimanagerspec.Backend();
-		CronSpec cronSpec = new CronSpec();
-		cronSpec.setReplicas(1L);
-		backend.setCronSpec(cronSpec);
-		ListenerSpec listenerSpec = new ListenerSpec();
-		listenerSpec.setReplicas(1L);
-		backend.setListenerSpec(listenerSpec);
-		WorkerSpec workerSpec = new WorkerSpec();
-		workerSpec.setReplicas(1L);
-		backend.setWorkerSpec(workerSpec);
-		apiManagerSpec.setBackend(backend);
-
-		Apicast apicast = new Apicast();
-		ProductionSpec productionSpec = new ProductionSpec();
-		productionSpec.setReplicas(1L);
-		apicast.setProductionSpec(productionSpec);
-		StagingSpec stagingSpec = new StagingSpec();
-		stagingSpec.setReplicas(1L);
-		apicast.setStagingSpec(stagingSpec);
-		apiManagerSpec.setApicast(apicast);
-
-		APIManager apiManager = new APIManager();
-		ObjectMeta metadata = new ObjectMeta();
+		ObjectMeta metadata = new ObjectMetaBuilder().build();
 		metadata.setName(getApplication().getName());
+
+		APIManager apiManager = new APIManagerBuilder().build();
 		apiManager.setMetadata(metadata);
 		apiManager.setSpec(apiManagerSpec);
 
