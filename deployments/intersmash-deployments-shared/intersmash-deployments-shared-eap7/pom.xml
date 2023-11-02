@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash</groupId>
+        <artifactId>intersmash-deployments-shared</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <packaging>pom</packaging>
+    <artifactId>intersmash-deployments-shared-eap7</artifactId>
+
+    <name>Intersmash Shared Deployments: EAP 7 aggregator</name>
+
+    <properties>
+        <!-- EAP 7 deployments must run on JDK 8 too -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Default EAP 7 version -->
+        <jboss-eap7.version>7.4.13.GA</jboss-eap7.version>
+        <!-- Default EAP `ee` BOMs version is set here for pulling the right EAP BOM -->
+        <bom.jboss-eap7-jakartaee.groupId>org.jboss.bom</bom.jboss-eap7-jakartaee.groupId>
+        <bom.jboss-eap7jakartaee.artifactId>jboss-eap-jakartaee8</bom.jboss-eap7jakartaee.artifactId>
+        <bom.jboss-eap7-jakartaee.version>${jboss-eap7.version}</bom.jboss-eap7-jakartaee.version>
+    </properties>
+
+    <modules>
+        <module>eap7-helloworld</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Lock all the provided dependencies to match the WildFly/EAP version -->
+            <dependency>
+                <groupId>${bom.jboss-eap7-jakartaee.groupId}</groupId>
+                <artifactId>${bom.jboss-eap7jakartaee.artifactId}</artifactId>
+                <version>${bom.jboss-eap7-jakartaee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
