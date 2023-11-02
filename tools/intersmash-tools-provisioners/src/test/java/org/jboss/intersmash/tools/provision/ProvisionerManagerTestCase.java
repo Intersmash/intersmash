@@ -20,12 +20,14 @@ import static org.mockito.Mockito.mock;
 import org.jboss.intersmash.tools.application.Application;
 import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
 import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
@@ -42,7 +44,7 @@ import org.junit.jupiter.api.Test;
  * | InfinispanImageOpenShiftApplication     | IMAGE    | InfinispanImageOpenShiftProvisioner     		|
  * | MysqlImageOpenShiftApplication          | IMAGE    | MysqlImageOpenShiftProvisioner          		|
  * | PostgreSQLImageOpenShiftApplication     | IMAGE    | PostgreSQLImageOpenShiftProvisioner     		|
- * | EapS2iBuildTemplateApplication          | TEMPLATE | EapS2iBuildTemplateProvisioner          		|
+ * | Eap7LegacyS2iBuildTemplateApplication   | TEMPLATE | Eap7LegacyS2iBuildTemplateProvisioner    		|
  * | WildflyOperatorApplication              | OPERATOR | WildflyOperatorProvisioner              		|
 *  | ActiveMQOperatorApplication             | OPERATOR | ActiveMQOperatorProvisioner             		|
  * | KafkaOperatorApplication           	 | OPERATOR | KafkaOperatorProvisioner           	  		|
@@ -126,6 +128,17 @@ public class ProvisionerManagerTestCase {
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
 		Assertions.assertEquals(KafkaOperatorProvisioner.class, actual.getClass());
+	}
+
+	/**
+	 * Eap7LegacyS2iBuildTemplateApplication/Eap7LegacyS2iBuildTemplateProvisioner
+	 */
+	@Test
+	public void eapS2iBuildTemplateProvisioner() {
+		application = mock(Eap7LegacyS2iBuildTemplateApplication.class);
+
+		Provisioner actual = ProvisionerManager.getProvisioner(application);
+		Assertions.assertEquals(Eap7LegacyS2iBuildTemplateProvisioner.class, actual.getClass());
 	}
 
 	@Test

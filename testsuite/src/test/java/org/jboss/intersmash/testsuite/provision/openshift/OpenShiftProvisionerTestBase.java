@@ -33,6 +33,7 @@ import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.Eap7ImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
 import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
@@ -42,10 +43,12 @@ import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.tools.application.openshift.template.Eap7Template;
+import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.tools.util.wildfly.Eap7CliScriptBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
+import cz.xtf.core.config.OpenShiftConfig;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -114,6 +117,51 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getName() {
 				return "eap-test-app";
+			}
+		};
+	}
+
+	public static Eap7LegacyS2iBuildTemplateApplication getEap7LegacyS2iBuildTemplateApplication() {
+		return new Eap7LegacyS2iBuildTemplateApplication() {
+			private String eapImage;
+			private String eapRuntimeImage;
+			private final Map<String, String> parameters;
+			private final List<EnvVar> envVars;
+
+			{
+				eapImage = WildflyOpenShiftUtils.importBuilderImage(IntersmashConfig.eap7ImageURL()).getMetadata().getName();
+				eapRuntimeImage = WildflyOpenShiftUtils.importRuntimeImage(IntersmashConfig.eap7RuntimeImageUrl()).getMetadata()
+						.getName();
+				String deployment = "deployments/intersmash-deployments-shared/intersmash-deployments-shared-eap7/eap7-helloworld";
+				//params
+				parameters = new HashMap<>();
+				parameters.put("APPLICATION_IMAGE", getName());
+				parameters.put("EAP_IMAGE", eapImage);
+				parameters.put("EAP_RUNTIME_IMAGE", eapRuntimeImage);
+				parameters.put("EAP_IMAGESTREAM_NAMESPACE", OpenShiftConfig.namespace());
+				parameters.put("SOURCE_REPOSITORY_URL", IntersmashConfig.deploymentsRepositoryUrl());
+				parameters.put("SOURCE_REPOSITORY_REF", IntersmashConfig.deploymentsRepositoryRef());
+				parameters.put("ARTIFACT_DIR", deployment + "/target");
+
+				// envvars
+				envVars = new ArrayList<>();
+				// Set to allow cloning from Gitlab - any value here do the job
+				envVars.add(new EnvVarBuilder().withName("GIT_SSL_NO_VERIFY").withValue("").build());
+			}
+
+			@Override
+			public List<EnvVar> getEnvVars() {
+				return envVars;
+			}
+
+			@Override
+			public Map<String, String> getParameters() {
+				return parameters;
+			}
+
+			@Override
+			public String getName() {
+				return "eap-s2i-build-application";
 			}
 		};
 	}
