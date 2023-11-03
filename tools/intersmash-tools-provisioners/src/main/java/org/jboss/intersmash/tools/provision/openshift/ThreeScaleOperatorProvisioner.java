@@ -1,6 +1,15 @@
 package org.jboss.intersmash.tools.provision.openshift;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.assertj.core.util.Lists;
+import org.jboss.intersmash.tools.IntersmashConfig;
+import org.jboss.intersmash.tools.application.openshift.ThreeScaleOperatorApplication;
+import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
+import org.slf4j.event.Level;
+
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.event.helpers.EventHelper;
 import cz.xtf.core.openshift.OpenShift;
@@ -9,37 +18,24 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.KubernetesResourceList;
-import io.fabric8.kubernetes.api.model.ObjectMeta;
-import io.fabric8.kubernetes.api.model.ObjectMetaBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
 import io.fabric8.kubernetes.client.dsl.MixedOperation;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
+import io.fabric8.openshift.api.model.operatorhub.v1alpha1.StrategyDeploymentSpec;
 import io.fabric8.openshift.client.OpenShiftClient;
+import io.sundr.utils.Maps;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import net.threescale.apps.v1alpha1.APIManager;
-import net.threescale.apps.v1alpha1.APIManagerBuilder;
-import net.threescale.apps.v1alpha1.APIManagerSpec;
-import net.threescale.apps.v1alpha1.APIManagerSpecBuilder;
 import net.threescale.capabilities.v1beta1.Application;
 import net.threescale.capabilities.v1beta1.Backend;
 import net.threescale.capabilities.v1beta1.DeveloperAccount;
 import net.threescale.capabilities.v1beta1.DeveloperUser;
 import net.threescale.capabilities.v1beta1.Product;
 import net.threescale.capabilities.v1beta1.ProxyConfigPromote;
-import org.assertj.core.util.Lists;
-import org.jboss.intersmash.tools.IntersmashConfig;
-import org.jboss.intersmash.tools.application.openshift.ThreeScaleOperatorApplication;
-import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.slf4j.event.Level;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Slf4j
 public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScaleOperatorApplication> {
@@ -47,6 +43,10 @@ public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScal
 	private static final String OPERATOR_ID = IntersmashConfig.threeScaleOperatorPackageManifest();
 	private static final String STATEFUL_SET_NAME = "3scale";
 	private final OpenShiftBinary adminBinary;
+
+	private final Map<String, String> LABELS = Maps.create(
+			"intersmash-provisioner-id", OPERATOR_ID,
+			"intersmash-application-name", getApplication().getName());
 
 	public ThreeScaleOperatorProvisioner(@NonNull ThreeScaleOperatorApplication threeScaleOperatorApplication) {
 		super(threeScaleOperatorApplication, OPERATOR_ID);
@@ -82,82 +82,95 @@ public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScal
 						"THREESCALE_DEBUG", "1"));
 	}
 
-	@Override
-	public void deploy() {
-		subscribe();
-
+	public String getWildcardDomain() {
 		// oc get routes/console -n openshift-console -o template --template '{{.spec.host}}'
 		// e.g. console-openshift-console.apps.mnovak-bnqp.eapqe.psi.redhat.com
-		String openshiftConsoleHost = adminBinary.execute(
+		/*String openshiftConsoleHost = adminBinary.execute(
 				"get",
 				"routes/console",
 				"-n",
 				"openshift-console",
 				"-o",
 				"template",
-				"--template", "{{.spec.host}}");
+				"--template", "{{.spec.host}}");*/
+		//OpenShifts.admin().
+		/*String openshiftConsoleHost = OpenShiftProvisioner.openShift
+				.getClient()
+				.routes()
+				.inNamespace("openshift-console")
+				.withName("console")
+				.get()
+				.getSpec()
+				.getHost();
+		return openshiftConsoleHost.replaceFirst("^[^.]+", OpenShiftConfig.namespace());*/
 		// we want 3scale to handle the current namespace
-		String wildcardDomain = openshiftConsoleHost.replaceFirst("^[^.]+", OpenShiftConfig.namespace());
+		return OpenShifts.master().getOpenshiftUrl().getHost().replaceFirst("^api", OpenShiftConfig.namespace() + ".apps");
+	}
+
+	@Override
+	public void deploy() {
+		subscribe();
 
 		// APIManager
-		APIManagerSpec apiManagerSpec = new APIManagerSpecBuilder()
-				.withNewSystem()
-					.withNewAppSpec()
-						.withReplicas(1L)
-					.endAppSpec()
-					.withNewSidekiqSpec()
-						.withReplicas(1L)
-					.endSidekiqSpec()
-				.endSystem()
-				.withNewZync()
-					.withNewZyncAppSpec()
-						.withReplicas(1L)
-					.endZyncAppSpec()
-					.withNewQueSpec()
-						.withReplicas(1L)
-					.endQueSpec()
-				.endZync()
-				.withNewBackend()
-					.withNewCronSpec()
-						.withReplicas(1L)
-					.endCronSpec()
-					.withNewListenerSpec()
-						.withReplicas(1L)
-					.endListenerSpec()
-					.withNewWorkerSpec()
-						.withReplicas(1L)
-					.endWorkerSpec()
-				.endBackend()
-				.withNewApicast()
-					.withNewProductionSpec()
-						.withReplicas(1L)
-					.endProductionSpec()
-					.withNewStagingSpec()
-						.withReplicas(1L)
-					.endStagingSpec()
-				.endApicast()
-				.build();
-		apiManagerSpec.setWildcardDomain(wildcardDomain);
-
-		ObjectMeta metadata = new ObjectMetaBuilder().build();
-		metadata.setName(getApplication().getName());
-
-		APIManager apiManager = new APIManagerBuilder().build();
-		apiManager.setMetadata(metadata);
-		apiManager.setSpec(apiManagerSpec);
-
+		APIManager apiManager = getApplication().getAPIManager();
+		apiManager.getMetadata().getLabels().putAll(LABELS);
+		apiManager.getSpec().setWildcardDomain(getWildcardDomain());
 		apiManagerClient().resource(apiManager).create();
+
+		getApplication().getDeveloperAccounts().forEach(
+				developerAccount -> {
+					developerAccount.getMetadata().getLabels().putAll(LABELS);
+					developerAccountClient().resource(developerAccount).create();
+				});
+		getApplication().getDeveloperUsers().forEach(
+				developerUser -> {
+					developerUser.getMetadata().getLabels().putAll(LABELS);
+					developerUserClient().resource(developerUser).create();
+				});
+		getApplication().getBackends().forEach(
+				backend -> {
+					backend.getMetadata().getLabels().putAll(LABELS);
+					backendClient().resource(backend).create();
+				});
+		getApplication().getProducts().forEach(
+				product -> {
+					product.getMetadata().getLabels().putAll(LABELS);
+					productClient().resource(product).create();
+				});
+		getApplication().getApplications().forEach(
+				application -> {
+					application.getMetadata().getLabels().putAll(LABELS);
+					applicationClient().resource(application).create();
+				});
+		getApplication().getProxyConfigPromotes().forEach(
+				proxyConfigPromote -> {
+					proxyConfigPromote.getMetadata().getLabels().putAll(LABELS);
+					proxyConfigPromoteClient().resource(proxyConfigPromote).create();
+				});
+
+		// wait for APIManager to be Ready
+		new SimpleWaiter(() -> {
+			return apiManagerClient().withLabels(LABELS).list().getItems().stream().anyMatch(
+					apiManager1 -> {
+						long cnt = apiManager1.getStatus().getConditions().stream().filter(
+								condition -> condition.getType().equalsIgnoreCase("Available")
+										&& condition.getStatus().equalsIgnoreCase("True"))
+								.count();
+						return cnt > 0;
+					});
+		}).level(Level.DEBUG).waitFor();
+		//TODO: create DeveloperAccount etc..
 	}
 
 	@Override
 	public void undeploy() {
-		apiManagerClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		developerAccountClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		developerUserClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		backendClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		productClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		applicationClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-		proxyConfigPromoteClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		apiManagerClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		developerAccountClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		developerUserClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		backendClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		productClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		applicationClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+		proxyConfigPromoteClient().withLabels(LABELS).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
 	}
 
 	@Override
@@ -185,7 +198,7 @@ public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScal
 
 		// Get all deployments defined in the Operator's ClusterServiceVersion
 		// e.g. {"threescale-operator-controller-manager-v2":"1"}
-		String deploymentsJsonStr = adminBinary.execute(
+		/*String deploymentsJsonStr = adminBinary.execute(
 				"get",
 				"csvs",
 				getCurrentCSV(),
@@ -195,15 +208,29 @@ public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScal
 				"{{range .spec.install.spec.deployments}}{{$comma := \"\"}}{{\"{\"}}\"{{.name}}\":\"{{.spec.replicas}}\"{{$comma = \",\"}}{{\"}\"}}{{end}}");
 		Map<String, String> deployments = new ObjectMapper().readValue(
 				deploymentsJsonStr,
-				HashMap.class);
+				HashMap.class);*/
+		// TODO: ^^replace with e.g. OpenShiftProvisioner.openShift...
+		List<StrategyDeploymentSpec> deploymentSpecList = OpenShiftProvisioner.openShift
+				.operatorHub()
+				.clusterServiceVersions()
+				.inNamespace(OpenShiftConfig.namespace())
+				.withName(getCurrentCSV())
+				.get()
+				.getSpec()
+				.getInstall()
+				.getSpec()
+				.getDeployments();
 
-		for (Map.Entry<String, String> deployment : deployments.entrySet()) {
-			String name = deployment.getKey();
-			long replicas = Long.parseLong(deployment.getValue());
+		//for (Map.Entry<String, String> deployment : deployments.entrySet()) {
+		for (StrategyDeploymentSpec deploymentSpec : deploymentSpecList) {
+			//String name = deployment.getKey();
+			//long replicas = Long.parseLong(deployment.getValue());
+			long replicas = deploymentSpec.getSpec().getReplicas();
+			Map<String, String> labels = deploymentSpec.getSpec().getSelector().getMatchLabels();
 
 			// Get all the labels for the current deployment
 			// e.g. {"app":"3scale-api-management","control-plane":"controller-manager"}
-			String labelsJsonStr = adminBinary.execute(
+			/*String labelsJsonStr = adminBinary.execute(
 					"get",
 					"csvs",
 					getCurrentCSV(),
@@ -215,7 +242,8 @@ public class ThreeScaleOperatorProvisioner extends OperatorProvisioner<ThreeScal
 							name));
 			Map<String, String> labels = new ObjectMapper().readValue(
 					labelsJsonStr,
-					HashMap.class);
+					HashMap.class);*/
+			// TODO: ^^replace with e.g. OpenShiftProvisioner.openShift...
 
 			// wait for the number of replicas defined in the current deployment to be Ready
 			new SimpleWaiter(() -> {
