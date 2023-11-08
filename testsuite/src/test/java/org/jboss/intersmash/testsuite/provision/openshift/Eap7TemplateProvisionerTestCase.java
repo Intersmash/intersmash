@@ -15,14 +15,13 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
-import org.jboss.intersmash.tools.application.openshift.Eap7ImageOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApplication;
+import org.jboss.intersmash.tools.provision.openshift.Eap7TemplateOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,17 +31,16 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.openshift.PodShell;
 import cz.xtf.core.openshift.PodShellOutput;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
-import io.fabric8.kubernetes.api.model.Service;
+import io.fabric8.openshift.api.model.BuildConfig;
 import io.fabric8.openshift.api.model.GitBuildSource;
 
 @CleanBeforeAll
 @NotForCommunityExecutionProfile
-public class Eap7ImageProvisionerTestCase {
+public class Eap7TemplateProvisionerTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
-	private static final Eap7ImageOpenShiftApplication application = OpenShiftProvisionerTestBase
-			.getEap7OpenShiftImageApplication();
-	private static final Eap7ImageOpenShiftProvisioner provisioner = new Eap7ImageOpenShiftProvisioner(
-			application);
+	private static final Eap7TemplateOpenShiftApplication application = OpenShiftProvisionerTestBase
+			.getEap7OpenShiftTemplateApplication();
+	private static final Eap7TemplateOpenShiftProvisioner provisioner = new Eap7TemplateOpenShiftProvisioner(application);
 
 	@BeforeAll
 	public static void deploy() {
@@ -69,42 +67,23 @@ public class Eap7ImageProvisionerTestCase {
 				.contains("success", OpenShiftProvisionerTestBase.WILDFLY_TEST_PROPERTY);
 
 		// verify application git
-		GitBuildSource git = openShift.getBuildConfig(application.getName()).getSpec().getSource().getGit();
-		softAssertions.assertThat(git.getUri()).as("Git repository check")
-				.isEqualTo(OpenShiftProvisionerTestBase.EAP7_TEST_APP_REPO);
-		softAssertions.assertThat(git.getRef()).as("Git repository reference check")
-				.isEqualTo(OpenShiftProvisionerTestBase.EAP7_TEST_APP_REF);
-
-		// verify secret is mounted in /etc/secrets
-		output = rsh.executeWithBash("cat /etc/secrets/" + OpenShiftProvisionerTestBase.TEST_SECRET_FOO);
-		softAssertions.assertThat(output.getOutput()).as("Secret check: test secret was not properly mounted")
-				.contains(OpenShiftProvisionerTestBase.TEST_SECRET_BAR);
-
-		// verify the ping service is created and env variables set correctly
-		Service pingService = openShift.getService(application.getPingServiceName());
-		softAssertions.assertThat(pingService).as("Ping service creation check").isNotNull();
-		Map<String, String> expectedEnvVars = new HashMap<>();
-		expectedEnvVars.put("JGROUPS_PING_PROTOCOL", "dns.DNS_PING");
-		expectedEnvVars.put("OPENSHIFT_DNS_PING_SERVICE_NAME", application.getPingServiceName());
-		expectedEnvVars.put("OPENSHIFT_DNS_PING_SERVICE_PORT", "8888");
-		softAssertions.assertThat(openShift.getDeploymentConfigEnvVars(application.getName()))
-				.as("Ping service variables check")
-				.containsAllEntriesOf(expectedEnvVars);
-
+		Optional<BuildConfig> gitBuildConfig = openShift.buildConfigs().list().getItems().stream()
+				.filter(buildConfig -> buildConfig.getSpec().getSource().getType().equals("Git"))
+				.findFirst();
+		softAssertions.assertThat(gitBuildConfig.isPresent()).as("Cannot find a Git build config").isTrue();
+		if (gitBuildConfig.isPresent()) {
+			softAssertions.assertThat(gitBuildConfig.get().getMetadata().getName()).contains(application.getName());
+			GitBuildSource git = gitBuildConfig.get().getSpec().getSource().getGit();
+			softAssertions.assertThat(git.getUri()).as("Git repository check")
+					.isEqualTo(OpenShiftProvisionerTestBase.EAP7_TEST_APP_REPO);
+			softAssertions.assertThat(git.getRef()).as("Git repository reference check")
+					.isEqualTo(OpenShiftProvisionerTestBase.EAP7_TEST_APP_REF);
+		}
 		softAssertions.assertAll();
 	}
 
-	@Test
-	public void verifyOpenShiftConfiguration() {
-		// environmentVariables
-		Assertions
-				.assertThat(
-						openShift.getBuildConfig(application.getName()).getSpec().getStrategy().getSourceStrategy().getEnv())
-				.as("Environment variable test").contains(OpenShiftProvisionerTestBase.TEST_ENV_VAR);
-	}
-
 	/**
-	 * Secret resource should be created as a preDeploy() operation by a provisioner.
+	 * Any {@code Secret} or {@code ConfigMap} should be created as a preDeploy() operation by a provisioner.
 	 */
 	@Test
 	public void verifyDeployHooks() {

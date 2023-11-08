@@ -13,16 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.intersmash.tools.util.wildfly;
+package org.jboss.intersmash.tools.application.openshift.template;
 
-import java.util.List;
+import org.jboss.intersmash.tools.provision.openshift.template.OpenShiftTemplate;
 
 /**
- * Class provide supports for building CLI commands that are used to configure an EAP 7.z (i.e. Jakarta EE 8 based
- * WildFly) application on OpenShift via custom scripts and config map
+ * OpenShift template for EAP 7.z (i.e. WildFly Jakarta EE 8 <= 26.1.2) applications.
+ * <p>
+ * See e.g.: https://github.com/jboss-container-images/jboss-eap-7-openshift-image
  */
-public class Eap7CliScriptBuilder extends WildflyAbstractCliScriptBuilder {
-	public List<String> build() {
-		return build("standalone-openshift.xml");
+public enum Eap7Template implements OpenShiftTemplate {
+	AMQ_PERSISTENT("amq-persistent"),
+	AMQ("amq"),
+	BASIC("basic"),
+	HTTPS("https"),
+	SSO("sso");
+
+	private String name;
+
+	Eap7Template(String name) {
+		this.name = name;
+	}
+
+	@Override
+	public String getLabel() {
+		return name;
 	}
 }

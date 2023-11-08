@@ -99,6 +99,8 @@ public class IntersmashConfig {
 	// EAP 7.z (i.e. Jakarta EE 8 based WildFly)
 	private static final String EAP7_IMAGE_URL = "intersmash.eap7.image";
 	private static final String EAP7_RUNTIME_IMAGE_URL = "intersmash.eap7.runtime.image";
+	private static final String EAP7_TEMPLATES_BASE_URL = "intersmash.eap7.templates.base.url";
+	private static final String EAP7_TEMPLATES_PATH = "intersmash.eap7.templates.path";
 
 	//	WildFLy Maven Plugin
 	private static final String WILDFLY_MAVEN_PLUGIN_GROUPID = "wildfly-maven-plugin.groupId";
@@ -257,8 +259,23 @@ public class IntersmashConfig {
 		return XTFConfig.get(EAP7_RUNTIME_IMAGE_URL);
 	}
 
-	public static String wildflyJakartaEe8ProductCode() {
-		return getProductCode(eap7ImageURL());
+	public static String eap7ProductCode() {
+		final String image = eap7ImageURL();
+		if (image.matches(".*eap-xp\\d+.*")) {
+			return image.replaceFirst(".*eap-xp(\\d+).*", "eap-xp$1");
+		} else if (image.matches(".*eap\\d\\d.*")) {
+			return image.replaceFirst(".*eap(\\d\\d?).*", "eap$1");
+		} else {
+			return IntersmashConfig.getProductCode(image);
+		}
+	}
+
+	public static String eap7Templates() {
+		return XTFConfig.get(EAP7_TEMPLATES_BASE_URL) + XTFConfig.get(EAP7_TEMPLATES_PATH);
+	}
+
+	public static String eap7ImageStreams() {
+		return XTFConfig.get(EAP7_TEMPLATES_BASE_URL);
 	}
 
 	public static String getProductCode(final String image) {
