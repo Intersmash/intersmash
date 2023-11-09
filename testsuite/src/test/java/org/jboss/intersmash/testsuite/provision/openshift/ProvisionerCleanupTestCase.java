@@ -23,6 +23,7 @@ import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplate
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
@@ -51,7 +52,8 @@ public class ProvisionerCleanupTestCase {
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					new WildflyImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()));
+							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
+					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",

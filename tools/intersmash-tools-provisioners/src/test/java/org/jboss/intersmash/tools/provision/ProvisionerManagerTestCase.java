@@ -16,6 +16,7 @@
 package org.jboss.intersmash.tools.provision;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.jboss.intersmash.tools.application.Application;
 import org.jboss.intersmash.tools.application.openshift.ActiveMQOperatorApplication;
@@ -24,13 +25,16 @@ import org.jboss.intersmash.tools.application.openshift.Eap7LegacyS2iBuildTempla
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.RhSsoTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
@@ -49,6 +53,7 @@ import org.junit.jupiter.api.Test;
 *  | ActiveMQOperatorApplication             | OPERATOR | ActiveMQOperatorProvisioner             		|
  * | KafkaOperatorApplication           	 | OPERATOR | KafkaOperatorProvisioner           	  		|
  * | WildflyBootableJarOpenShiftApplication  | IMAGE    | WildflyBootableJarImageOpenShiftProvisioner	|
+ * | RhSsoTemplateOpenShiftApplication       | TEMPLATE | RhSsoTemplateOpenShiftProvisioner   			|
  */
 public class ProvisionerManagerTestCase {
 	private Application application;
@@ -139,6 +144,19 @@ public class ProvisionerManagerTestCase {
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
 		Assertions.assertEquals(Eap7LegacyS2iBuildTemplateProvisioner.class, actual.getClass());
+	}
+
+
+	/**
+	 * | RhSsoTemplateOpenShiftApplication      | TEMPLATE | RhSsoTemplateOpenShiftProvisioner   |
+	 */
+	@Test
+	public void openShiftRhSsoTemplateProvisioner() {
+		application = mock(RhSsoTemplateOpenShiftApplication.class);
+		when(((RhSsoTemplateOpenShiftApplication) application).getTemplate()).thenReturn(RhSsoTemplate.X509_HTTPS);
+
+		Provisioner actual = ProvisionerManager.getProvisioner(application);
+		Assertions.assertEquals(RhSsoTemplateOpenShiftProvisioner.class, actual.getClass());
 	}
 
 	@Test

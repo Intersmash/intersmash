@@ -15,6 +15,8 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,12 +40,15 @@ import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApp
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.RhSsoTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.tools.application.openshift.template.Eap7Template;
 import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
+import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
+import org.jboss.intersmash.tools.util.ProcessKeystoreGenerator;
 import org.jboss.intersmash.tools.util.wildfly.Eap7CliScriptBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
@@ -82,6 +87,56 @@ public class OpenShiftProvisionerTestBase {
 
 	static final String EAP7_TEST_APP_REPO = "https://github.com/openshift/openshift-jee-sample.git";
 	static final String EAP7_TEST_APP_REF = "master";
+
+	static RhSsoTemplateOpenShiftApplication getHttpsRhSso() {
+		return new RhSsoTemplateOpenShiftApplication() {
+			private final String secureAppHostname = "secure-" + getOpenShiftHostName();
+			private final Path keystore = ProcessKeystoreGenerator.generateKeystore(secureAppHostname);
+			private final String jceksFileName = "jgroups.jceks";
+			private final Path truststore = ProcessKeystoreGenerator.getTruststore();
+
+			@Override
+			public String getName() {
+				return "sso-app";
+			}
+
+			@Override
+			public Map<String, String> getParameters() {
+				Map<String, String> parameters = new HashMap<>();
+
+				parameters.put("APPLICATION_NAME", getName());
+				parameters.put("SSO_REALM", "eap-realm");
+				parameters.put("SSO_SERVICE_USERNAME", "client");
+				parameters.put("SSO_SERVICE_PASSWORD", "creator");
+				parameters.put("SSO_ADMIN_USERNAME", "admin");
+				parameters.put("SSO_ADMIN_PASSWORD", "admin");
+				parameters.put("JGROUPS_CLUSTER_PASSWORD", "xpaasQEpassword");
+				parameters.put("IMAGE_STREAM_NAMESPACE", OpenShiftConfig.namespace());
+
+				return Collections.unmodifiableMap(parameters);
+			}
+
+			@Override
+			public List<Secret> getSecrets() {
+				SecretBuilder sb;
+				try (InputStream is = getClass().getClassLoader().getResourceAsStream("certs/jgroups.jceks")) {
+					sb = new SecretBuilder(getName() + "-secret")
+							.addData(keystore.getFileName().toString(), keystore)
+							.addData(jceksFileName, is)
+							.addData(truststore.getFileName().toString(), truststore);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+
+				return Collections.singletonList(sb.build());
+			}
+
+			@Override
+			public RhSsoTemplate getTemplate() {
+				return RhSsoTemplate.X509_HTTPS;
+			}
+		};
+	}
 
 	static Eap7TemplateOpenShiftApplication getEap7OpenShiftTemplateApplication() {
 		return new Eap7TemplateOpenShiftApplication() {

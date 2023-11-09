@@ -118,6 +118,7 @@ mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/ -Pts.prod \
  -Dintersmash.rhsso.image=registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:latest \
  -Dintersmash.rhsso.operators.catalog_source=redhat-operators \
  -Dintersmash.rhsso.operators.package_manifest=rhsso-operator \
+ -Dintersmash.rhsso.templates=https://raw.githubusercontent.com/jboss-container-images/redhat-sso-7-openshift-image/sso76-dev/templates/ \
  -Dintersmash.infinispan.image=registry.redhat.io/jboss-datagrid-7/datagrid73-openshift:latest \
  -Dintersmash.infinispan.operators.catalog_source=redhat-operators \
  -Dintersmash.infinispan.operators.package_manifest=datagrid \

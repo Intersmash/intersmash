@@ -62,6 +62,7 @@ public class KeycloakAdminClient {
 	 */
 	public void importRealmConfiguration(InputStream is) throws IOException {
 		PartialImportRepresentation piRep = JsonSerialization.readValue(is, PartialImportRepresentation.class);
+		// TODO - fix, the realm name should be passed in as a parameter
 		keycloak.realm("wildfly-realm").partialImport(piRep);
 	}
 }
