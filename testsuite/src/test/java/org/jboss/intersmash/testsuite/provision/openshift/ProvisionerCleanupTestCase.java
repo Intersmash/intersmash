@@ -18,12 +18,15 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import java.util.stream.Stream;
 
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
+import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
+import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -78,6 +81,33 @@ public class ProvisionerCleanupTestCase {
 		}
 		Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
 		openShift.configMaps().withName("no-delete").delete();
+		openShift.waiters().isProjectClean().waitFor();
+	}
+
+	/**
+	 * EapS2iBuild application requires additional image streams to be created. CleanBeforeEach would delete it if the
+	 * provisioner is initialized in {@link #provisionerProvider()}, so we need a separate test method.
+	 */
+	@Test
+	@NotForCommunityExecutionProfile
+	public void eap7LegacyS2iBuild() {
+		Eap7LegacyS2iBuildTemplateProvisioner provisioner = new Eap7LegacyS2iBuildTemplateProvisioner(
+				OpenShiftProvisionerTestBase.getEap7LegacyS2iBuildTemplateApplication());
+		provisioner.preDeploy();
+		provisioner.deploy();
+		openShift.configMaps().create(new ConfigMapBuilder().withNewMetadata().withName("no-delete").endMetadata().build());
+		provisioner.undeploy();
+		provisioner.postUndeploy();
+		Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
+		openShift.configMaps().withName("no-delete").delete();
+		// delete the images streams created by EapS2iBuildTemplateApplication
+		openShift.imageStreams()
+				.withName(((String) provisioner.getApplication().getParameters().get("EAP_IMAGE")).split(":")[0])
+				.delete();
+		openShift.imageStreams()
+				.withName(((String) provisioner.getApplication().getParameters().get("EAP_RUNTIME_IMAGE")).split(":")[0])
+				.delete();
+
 		openShift.waiters().isProjectClean().waitFor();
 	}
 }
