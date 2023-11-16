@@ -38,7 +38,8 @@ import org.keycloak.util.JsonSerialization;
  */
 public class KeycloakAdminClient {
 
-	private Keycloak keycloak;
+	private final String realmName;
+	private final Keycloak keycloak;
 
 	public KeycloakAdminClient(final String url, final String realm, final String username, final String password)
 			throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
@@ -46,7 +47,7 @@ public class KeycloakAdminClient {
 				.create()
 				.loadTrustMaterial(TrustAllStrategy.INSTANCE)
 				.build();
-
+		realmName = realm;
 		keycloak = Keycloak.getInstance(
 				url,
 				realm,
@@ -62,7 +63,6 @@ public class KeycloakAdminClient {
 	 */
 	public void importRealmConfiguration(InputStream is) throws IOException {
 		PartialImportRepresentation piRep = JsonSerialization.readValue(is, PartialImportRepresentation.class);
-		// TODO - fix, the realm name should be passed in as a parameter
-		keycloak.realm("wildfly-realm").partialImport(piRep);
+		keycloak.realm(this.realmName).partialImport(piRep);
 	}
 }
