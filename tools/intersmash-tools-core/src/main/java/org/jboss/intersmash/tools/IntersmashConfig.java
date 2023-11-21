@@ -44,7 +44,6 @@ public class IntersmashConfig {
 	private static final String DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_INFINISPAN_OPERATOR_PACKAGE_MANIFEST;
 	private static final String RHSSO_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.rhsso.operators.catalog_source";
 	private static final String KEYCLOAK_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.keycloak.operators.catalog_source";
-
 	private static final String RHSSO_OPERATOR_INDEX_IMAGE = "intersmash.rhsso.operators.index_image";
 	private static final String KEYCLOAK_OPERATOR_INDEX_IMAGE = "intersmash.keycloak.operators.index_image";
 	private static final String RHSSO_OPERATOR_CHANNEL = "intersmash.rhsso.operators.channel";
