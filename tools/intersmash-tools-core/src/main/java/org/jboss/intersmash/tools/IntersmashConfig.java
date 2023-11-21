@@ -111,8 +111,9 @@ public class IntersmashConfig {
 	private static final String INFINISPAN_IMAGE_URL = "intersmash.infinispan.image";
 
 	// KEYCLOAK/RHSSO
-	private static final String RHSSO_IMAGE_URL = "intersmash.rhsso.image";
 	private static final String KEYCLOAK_IMAGE_URL = "intersmash.keycloak.image";
+	private static final String RHSSO_IMAGE_URL = "intersmash.rhsso.image";
+	private static final String RHSSO_TEMPLATES = "intersmash.rhsso.templates";
 
 	// ACTIVEMQ
 	private static final String ACTIVEMQ_IMAGE_URL = "intersmash.activemq.image";
@@ -317,6 +318,10 @@ public class IntersmashConfig {
 
 	public static String rhSsoProductCode() {
 		return getProductCode(rhSsoImageURL());
+	}
+
+	public static String rhSsoTemplates() {
+		return XTFConfig.get(RHSSO_TEMPLATES);
 	}
 
 	public static String activeMQImageUrl() {
