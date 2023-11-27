@@ -17,6 +17,7 @@
 
     <modules>
         <module>ws-bootable-jar-example</module>
+        <module>wstrust</module>
     </modules>
 
 </project>

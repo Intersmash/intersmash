@@ -1,0 +1,40 @@
+/**
+ * Copyright (C) 2023 Red Hat, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.jboss.test.ws.jaxws.samples.wsse.policy.jaxws;
+
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
+
+@XmlRootElement(name = "sayHelloResponse", namespace = "http://www.jboss.org/jbossws/ws-extensions/wssecuritypolicy")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "sayHelloResponse", namespace = "http://www.jboss.org/jbossws/ws-extensions/wssecuritypolicy")
+public class SayHelloResponse {
+
+	@XmlElement(name = "return", namespace = "")
+	private String _return;
+
+	public String getReturn() {
+		return this._return;
+	}
+
+	public void setReturn(String _return) {
+		this._return = _return;
+	}
+
+}
