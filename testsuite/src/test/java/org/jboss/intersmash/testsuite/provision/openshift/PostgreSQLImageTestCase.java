@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PostgreSQLImageTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final PostgreSQLImageOpenShiftApplication application = OpenShiftProvisionerTestBase
-			.getPostgreSQLOpenShiftApplication();
+			.getPostgreSQLImageOpenShiftApplication();
 	private static final PostgreSQLImageOpenShiftProvisioner provisioner = new PostgreSQLImageOpenShiftProvisioner(application);
 
 	@BeforeAll
