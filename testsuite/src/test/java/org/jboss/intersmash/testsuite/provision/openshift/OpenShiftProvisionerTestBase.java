@@ -623,8 +623,8 @@ public class OpenShiftProvisionerTestBase {
 						kafkaVersion = KafkaOperatorApplication.KAFKA_VERSION;
 						kafkaProtocol = KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION;
 					} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
-						kafkaVersion = "3.4.0";
-						kafkaProtocol = "3.4";
+						kafkaVersion = "3.6.0";
+						kafkaProtocol = "3.6";
 					} else {
 						throw new IllegalStateException(
 								String.format("Unknown Intersmash test suite execution profile: %s",
