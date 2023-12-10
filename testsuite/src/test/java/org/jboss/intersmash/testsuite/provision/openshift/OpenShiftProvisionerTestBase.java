@@ -46,9 +46,9 @@ import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.tools.application.openshift.template.Eap7Template;
-import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.tools.util.ProcessKeystoreGenerator;
+import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.tools.util.wildfly.Eap7CliScriptBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
