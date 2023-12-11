@@ -146,7 +146,6 @@ public class ProvisionerManagerTestCase {
 		Assertions.assertEquals(Eap7LegacyS2iBuildTemplateProvisioner.class, actual.getClass());
 	}
 
-
 	/**
 	 * | RhSsoTemplateOpenShiftApplication      | TEMPLATE | RhSsoTemplateOpenShiftProvisioner   |
 	 */

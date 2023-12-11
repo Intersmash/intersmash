@@ -59,6 +59,8 @@ public class KafkaOperatorProvisionerTest {
 
 	@AfterAll
 	public static void removeOperatorGroup() {
+		// clean any leftovers
+		operatorProvisioner.unsubscribe();
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
 		operatorProvisioner.dismiss();
 	}

@@ -27,7 +27,7 @@
             Using XTF snapshot in order to include fixes in:
             https://github.com/xtf-cz/xtf/pull/532
         -->
-        <xtf.version>0.31-update_kn_client-SNAPSHOT</xtf.version>
+        <xtf.version>0.31</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 
@@ -38,8 +38,7 @@
         <version.logback>1.2.3</version.logback>
         <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.ide-config>1.1</version.ide-config>
-        <!-- Strimzi 0.37 SNAPSHOT to have Fabric8 kubernetes client version aligned with XTF (6.8.1) -->
-        <version.io.strimzi-api>0.37.0-SNAPSHOT</version.io.strimzi-api>
+        <version.io.strimzi-api>0.38.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
         <version.io.fabric8>6.8.1</version.io.fabric8>
         <version.openshift-client>6.8.1</version.openshift-client>
