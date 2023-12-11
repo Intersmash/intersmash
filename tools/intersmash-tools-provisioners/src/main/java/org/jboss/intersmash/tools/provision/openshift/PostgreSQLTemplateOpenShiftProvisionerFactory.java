@@ -6,6 +6,10 @@ import org.jboss.intersmash.tools.provision.ProvisionerFactory;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Provides logic to obtain a {@link PostgreSQLTemplateOpenShiftProvisioner} instance that is initialized with a
+ * given {@link PostgreSQLTemplateOpenShiftApplication} instance.
+ */
 @Slf4j
 public class PostgreSQLTemplateOpenShiftProvisionerFactory
 		implements ProvisionerFactory<PostgreSQLTemplateOpenShiftProvisioner> {

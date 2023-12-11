@@ -17,6 +17,11 @@ import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Template;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Provisions PostgreSql on OpenShift via PostgreSql template available on OpenShift and based on a
+ * {@link PostgreSQLTemplateOpenShiftApplication} concrete implementation.
+ *
+ */
 @Slf4j
 public class PostgreSQLTemplateOpenShiftProvisioner implements OpenShiftProvisioner<PostgreSQLTemplateOpenShiftApplication> {
 	private FailFastCheck ffCheck = () -> false;
