@@ -10,3 +10,4 @@ org.jboss.intersmash.tools.provision.openshift.RhSsoOperatorProvisionerFactory
 org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisionerFactory
 org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisionerFactory
+org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisionerFactory

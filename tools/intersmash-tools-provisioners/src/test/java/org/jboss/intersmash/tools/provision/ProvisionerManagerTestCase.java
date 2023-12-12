@@ -25,15 +25,18 @@ import org.jboss.intersmash.tools.application.openshift.Eap7LegacyS2iBuildTempla
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.PostgreSQLTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.RhSsoTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
+import org.jboss.intersmash.tools.application.openshift.template.PostgreSQLTemplate;
 import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.tools.provision.openshift.ActiveMQOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
@@ -136,7 +139,7 @@ public class ProvisionerManagerTestCase {
 	}
 
 	/**
-	 * Eap7LegacyS2iBuildTemplateApplication/Eap7LegacyS2iBuildTemplateProvisioner
+	 * Eap7LegacyS2iBuildTemplateApplication / Eap7LegacyS2iBuildTemplateProvisioner
 	 */
 	@Test
 	public void eapS2iBuildTemplateProvisioner() {
@@ -156,6 +159,19 @@ public class ProvisionerManagerTestCase {
 
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
 		Assertions.assertEquals(RhSsoTemplateOpenShiftProvisioner.class, actual.getClass());
+	}
+
+	/**
+	 * | PostgreSQLTemplateOpenShiftApplication / PostgreSQLTemplateOpenShiftProvisioner  |
+	 */
+	@Test
+	public void openShiftPostgreSQLTemplateProvisioner() {
+		application = mock(PostgreSQLTemplateOpenShiftApplication.class);
+		when(((PostgreSQLTemplateOpenShiftApplication) application).getTemplate())
+				.thenReturn(PostgreSQLTemplate.POSTGRESQL_PERSISTENT);
+
+		Provisioner actual = ProvisionerManager.getProvisioner(application);
+		Assertions.assertEquals(PostgreSQLTemplateOpenShiftProvisioner.class, actual.getClass());
 	}
 
 	@Test

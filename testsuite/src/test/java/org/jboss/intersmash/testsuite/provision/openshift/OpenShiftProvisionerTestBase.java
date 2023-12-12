@@ -40,12 +40,14 @@ import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApp
 import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.tools.application.openshift.PostgreSQLTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.RhSsoTemplateOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
 import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
 import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.tools.application.openshift.template.Eap7Template;
+import org.jboss.intersmash.tools.application.openshift.template.PostgreSQLTemplate;
 import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.tools.util.ProcessKeystoreGenerator;
 import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
@@ -576,7 +578,7 @@ public class OpenShiftProvisionerTestBase {
 		};
 	}
 
-	public static PostgreSQLImageOpenShiftApplication getPostgreSQLOpenShiftApplication() {
+	public static PostgreSQLImageOpenShiftApplication getPostgreSQLImageOpenShiftApplication() {
 		return new PostgreSQLImageOpenShiftApplication() {
 
 			@Override
@@ -592,6 +594,23 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getDbName() {
 				return "psqldb";
+			}
+		};
+	}
+
+	public static PostgreSQLTemplateOpenShiftApplication getPostgreSQLTemplateOpenShiftApplication() {
+		return new PostgreSQLTemplateOpenShiftApplication() {
+
+			String NAME = "postgresql";
+
+			@Override
+			public PostgreSQLTemplate getTemplate() {
+				return PostgreSQLTemplate.POSTGRESQL_EPHEMERAL;
+			}
+
+			@Override
+			public String getName() {
+				return NAME;
 			}
 		};
 	}

@@ -23,6 +23,7 @@ import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplate
 import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
@@ -48,7 +49,10 @@ public class ProvisionerCleanupTestCase {
 					new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication()),
 					new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
-					new PostgreSQLImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getPostgreSQLOpenShiftApplication()));
+					new PostgreSQLImageOpenShiftProvisioner(
+							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
+					new PostgreSQLTemplateOpenShiftProvisioner(
+							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					new WildflyImageOpenShiftProvisioner(
