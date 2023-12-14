@@ -1,17 +1,18 @@
 # Intersmash - Run your cloud-native tests with Java!
 
-Intersmash is a Java library that will make it easy to provision and execute (complex) test scenarios on OpenShift.
+Welcome to Intersmash, a Java library that will make it easy to provision and execute (complex) test scenarios on 
+OpenShift.
 
 Either you work as an enterprise application developer, runtime components engineer, quality engineer or DevOps, 
-Intersmash helps Java developers to prototype and test complex interoperability scenarios on cloud-native environments 
-and platforms, most notably on OpenShift (and on Kubernetes as well, shortly :) ).
+Intersmash will help you to prototype and test complex interoperability scenarios on cloud-native environments 
+and platforms, most notably on OpenShift (and on Kubernetes as well, soon :) ).
 
 Through a convenient set of annotations and APIs, Intersmash provides the developer with tools to describe and deploy 
 services, and to manage their life-cycle orchestration directly, from the test class.
 
 ## Usage
 
-Add dependencies to your project configuration, e.g.: Maven:
+Add dependencies to your project configuration, e.g.:
 
 ```xml
 <dependencies>
@@ -31,7 +32,7 @@ The following is an example of a test:
 ```java
 @Intersmash({
         // 1
-        @Service(OpenShiftInfinispanApp.class),
+        @Service(PostgresqlApplication.class),
         @Service(OpenShiftWildflyApp.class)
     }
 )
@@ -48,6 +49,30 @@ public class SampleTest {
     }
 }
 ```
+
+Which, as you can see, would make use of `Class` instances through the `@Service` annotation. 
+Such classes are concrete Java descriptors that implement a given Intersmash application service, e.g.: 
+an Infinispan or PostgreSql service, or a WildFly application service. 
+
+The following snippet represents the `PostgresqlApplication` class that is being used by the3 previously 
+detailed test class:
+
+```java
+public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplication {
+	static String NAME = "postgresql";
+
+	@Override
+	public PostgreSQLTemplate getTemplate() {
+		return PostgreSQLTemplate.POSTGRESQL_EPHEMERAL;
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
+}
+```
+
 * **1:** The applications/products used in the test are listed as `@Service` items within the `@Intersmash` annotation.
   Each of the mentioned classes will provide the platform-specific configuration for the given application/product.
   You may deploy application on some server (Wildfly), setup services that don't require a deployment, or just deploy a
