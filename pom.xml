@@ -91,7 +91,7 @@
         <version.io.swagger>1.5.24</version.io.swagger>
         <version.com.google.code.findbugs>3.0.2</version.com.google.code.findbugs>
         <!-- Modular JDK options -->
-        <client.jvm.jpms.args>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED</client.jvm.jpms.args>
+        <client.jvm.jpms.args>--add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED --add-exports=jdk.naming.dns/com.sun.jndi.dns=ALL-UNNAMED</client.jvm.jpms.args>
         <version.jsonschema2pojo-maven-plugin>1.1.2</version.jsonschema2pojo-maven-plugin>
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
