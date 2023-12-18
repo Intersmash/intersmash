@@ -42,7 +42,6 @@
         <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:29.0.1.Final</wildfly.feature-pack.location>
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:29.0.1.Final</wildfly.ee-feature-pack.location>
         <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:4.0.3.Final</wildfly.cloud-feature-pack.location>
-        <wildfly.ee-channel.location></wildfly.ee-channel.location>
         <!-- Default WildFly legacy Javax based BOMs version is set here for pulling the right EAP BOM -->
         <bom.wildfly-eap7-jakartaee.groupId>org.wildfly.bom</bom.wildfly-eap7-jakartaee.groupId>
         <bom.wildfly-eap7-jakartaee.artifactId>wildfly-jakartaee8</bom.wildfly-eap7-jakartaee.artifactId>
@@ -164,7 +163,10 @@
                 <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.Beta-redhat-00003</wildfly.feature-pack.location>
                 <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.Beta-redhat-00003</wildfly.ee-feature-pack.location>
                 <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Beta2-redhat-00001</wildfly.cloud-feature-pack.location>
-                <wildfly.ee-channel.location></wildfly.ee-channel.location> <!-- TODO: add channel configuration to wildfly-maven-plugin -->
+                <!-- EAP 8 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0-beta</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.0.Beta4-redhat-00002</wildfly.ee-channel.version>
             </properties>
             <build>
                 <pluginManagement>
@@ -174,6 +176,104 @@
                             <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
                             <version>${wildfly-maven-plugin.version}</version>
                             <configuration>
+                                <channels>
+                                    <channel>
+                                        <groupId>${wildfly.ee-channel.groupId}</groupId>
+                                        <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
+                                        <version>${wildfly.ee-channel.version}</version>
+                                    </channel>
+                                </channels>
+                                <!-- When testing against EAP (-Peap), wildfly-ee-galeon-pack is needed -->
+                                <feature-packs>
+                                    <feature-pack>
+                                        <location>${wildfly.ee-feature-pack.location}</location>
+                                    </feature-pack>
+                                    <feature-pack>
+                                        <location>${wildfly.cloud-feature-pack.location}</location>
+                                    </feature-pack>
+                                </feature-packs>
+                                <galleon-options>
+                                    <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                         wildfly-jar-maven-plugin would collide  -->
+                                    <jboss-fork-embedded>true</jboss-fork-embedded>
+                                </galleon-options>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <goals>
+                                        <goal>package</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <!-- Disable the Bootable JAR plugin when testing EAP -->
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>bootable-openshift</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>bootable-baremetal</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- Don't copy any Bootable JAR since none is built when EAP is being tested-->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bootable-jar-openshift</id>
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>install-bootable-jar-baremetal</id>
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>wildfly-deployments-build.eap8</id>
+            <properties>
+                <!-- EAP 8 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>NO_VERSION</wildfly.ee-channel.version>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                            <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+                            <version>${wildfly-maven-plugin.version}</version>
+                            <configuration>
+                                <channels>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${wildfly.ee-channel.groupId}</groupId>
+                                            <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
+                                            <version>${wildfly.ee-channel.version}</version>
+                                        </manifest>
+                                    </channel>
+                                </channels>
                                 <!-- When testing against EAP (-Peap), wildfly-ee-galeon-pack is needed -->
                                 <feature-packs>
                                     <feature-pack>
