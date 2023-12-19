@@ -155,4 +155,39 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <!-- Configuration settings for testing EAP XP -->
+            <id>ts.wildfly.target-distribution.eapxp</id>
+            <properties>
+                <!-- EAP XP Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0-plus-eap-xp-5.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.0.Final-redhat-00001</wildfly.ee-channel.version>
+                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-20240221</wildfly.feature-pack.location>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.wildfly.plugins</groupId>
+                            <artifactId>wildfly-jar-maven-plugin</artifactId>
+                            <version>${version.wildfly-jar-maven-plugin}</version>
+                            <configuration>
+                                <channels>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${wildfly.ee-channel.groupId}</groupId>
+                                            <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
+                                            <version>${wildfly.ee-channel.version}</version>
+                                        </manifest>
+                                    </channel>
+                                </channels>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
 </project>
