@@ -46,7 +46,7 @@ import io.fabric8.kubernetes.api.model.Service;
 @CleanBeforeAll
 public class WildflyMavenProjectTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
-	private static final OpenShiftProvisionerTestBase.StaticWildflyImageOpenShiftApplication application = OpenShiftProvisionerTestBase
+	private static final OpenShiftProvisionerTestBase.StaticWildflyImageOpenShiftDeploymentApplication application = OpenShiftProvisionerTestBase
 			.getWildflyOpenShiftLocalBinarySourceApplication();
 	private static final WildflyImageOpenShiftProvisioner provisioner = new WildflyImageOpenShiftProvisioner(application);
 

@@ -86,11 +86,6 @@ public class IntersmashConfig {
 	// WILDFLY
 	private static final String WILDFLY_IMAGE_URL = "intersmash.wildfly.image";
 	private static final String WILDFLY_RUNTIME_IMAGE_URL = "intersmash.wildfly.runtime.image";
-	private static final String WILDFLY_EE_FEATURE_PACK_LOCATION = "wildfly.ee-feature-pack.location";
-	private static final String WILDFLY_FEATURE_PACK_LOCATION = "wildfly.feature-pack.location";
-	private static final String WILDFLY_CLOUD_FEATURE_PACK_LOCATION = "wildfly.cloud-feature-pack.location";
-	private static final String WILDFLY_EE_CHANNEL_LOCATION = "wildfly.ee-channel.location";
-	private static final String WILDFLY_BOMS_EE_SERVER_VERSION = "bom.wildfly-ee.version";
 	private static final String WILDFLY_HELM_CHARTS_REPO = "intersmash.wildfly.helm.charts.repo";
 	private static final String WILDFLY_HELM_CHARTS_BRANCH = "intersmash.wildfly.helm.charts.branch";
 	private static final String WILDFLY_HELM_CHARTS_NAME = "intersmash.wildfly.helm.charts.name";
@@ -100,12 +95,6 @@ public class IntersmashConfig {
 	private static final String EAP7_RUNTIME_IMAGE_URL = "intersmash.eap7.runtime.image";
 	private static final String EAP7_TEMPLATES_BASE_URL = "intersmash.eap7.templates.base.url";
 	private static final String EAP7_TEMPLATES_PATH = "intersmash.eap7.templates.path";
-
-	//	WildFLy Maven Plugin
-	private static final String WILDFLY_MAVEN_PLUGIN_GROUPID = "wildfly-maven-plugin.groupId";
-	private static final String WILDFLY_MAVEN_PLUGIN_ARTIFACTID = "wildfly-maven-plugin.artifactId";
-	private static final String WILDFLY_MAVEN_PLUGIN_VERSION = "wildfly-maven-plugin.version";
-	private static final String MAVEN_MIRROR_URL = "maven-mirror.url";
 
 	// INFINISPAN
 	private static final String INFINISPAN_IMAGE_URL = "intersmash.infinispan.image";
@@ -384,42 +373,6 @@ public class IntersmashConfig {
 	 */
 	public static String deploymentsRepositoryRef() {
 		return XTFConfig.get(DEPLOYMENTS_REPOSITORY_REF, IntersmashDeploymentsGitHelper.repositoryReference());
-	}
-
-	public static String getWildflyMavenPluginGroupId() {
-		return XTFConfig.get(WILDFLY_MAVEN_PLUGIN_GROUPID);
-	}
-
-	public static String getWildflyMavenPluginArtifactId() {
-		return XTFConfig.get(WILDFLY_MAVEN_PLUGIN_ARTIFACTID);
-	}
-
-	public static String getWildflyMavenPluginVersion() {
-		return XTFConfig.get(WILDFLY_MAVEN_PLUGIN_VERSION);
-	}
-
-	public static String getWildflyEeFeaturePackLocation() {
-		return XTFConfig.get(WILDFLY_EE_FEATURE_PACK_LOCATION);
-	}
-
-	public static String getWildflyFeaturePackLocation() {
-		return XTFConfig.get(WILDFLY_FEATURE_PACK_LOCATION);
-	}
-
-	public static String getWildflyCloudFeaturePackLocation() {
-		return XTFConfig.get(WILDFLY_CLOUD_FEATURE_PACK_LOCATION);
-	}
-
-	public static String getWildflyEeChannelLocation() {
-		return XTFConfig.get(WILDFLY_EE_CHANNEL_LOCATION);
-	}
-
-	public static String getWildflyBomsEeServerVersion() {
-		return XTFConfig.get(WILDFLY_BOMS_EE_SERVER_VERSION);
-	}
-
-	public static String getMavenMirrorUrl() {
-		return XTFConfig.get(MAVEN_MIRROR_URL);
 	}
 
 	public static String getWildflyHelmChartsName() {

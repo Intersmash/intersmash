@@ -197,7 +197,9 @@ script](.ci/openshift-ci/build-root/e2e-test-prod.sh) as an example:
 | wildfly.ee-feature-pack.location                 | Used by shared configurable deployments: Wildfly/JBoss EAP 8 EE Galleon feature pack location (G:A:V)    |
 | wildfly.feature-pack.location                    | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Galleon feature pack location (G:A:V)       |
 | wildfly.cloud-feature-pack.location              | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Cloud Galleon feature pack location (G:A:V) |
-| wildfly.ee-channel.location                      | Used by shared configurable deployments: JBoss EAP 8 Channel artifact location (G:A:V)                   |
+| wildfly.ee-channel.groupId                       | Used by shared configurable deployments: JBoss EAP 8 Channel artifact `groupId`                          |
+| wildfly.ee-channel.artifactId                    | Used by shared configurable deployments: JBoss EAP 8 Channel artifact `artifactId`                       |
+| wildfly.ee-channel.version                       | Used by shared configurable deployments: JBoss EAP 8 Channel artifact `version`                          |
 | bom.wildfly-ee.version                           | Used by shared configurable deployments: Wildfly/JBoss BOMs version                                      |
 
 [*] - When `intersmash.skip.deploy` is set, please take into account that the prepared environment should be

@@ -34,7 +34,7 @@ public class WildflyHelmChartExistingValuesProvisionerTest {
 	@Test
 	public void basicProvisioningTest() {
 		// initialize the application service descriptor
-		final WildflyHelmChartExistingValuesOpenShiftExampleApplicaton application = new WildflyHelmChartExistingValuesOpenShiftExampleApplicaton();
+		final WildflyHelmChartExistingValuesOpenShiftExampleApplication application = new WildflyHelmChartExistingValuesOpenShiftExampleApplication();
 		application
 				.addSetOverride("build.uri", IntersmashConfig.deploymentsRepositoryUrl())
 				.addSetOverride("build.ref", IntersmashConfig.deploymentsRepositoryRef())
