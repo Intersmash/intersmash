@@ -1,17 +1,34 @@
 # Intersmash - Run your cloud-native tests with Java!
 
-Intersmash is a Java library that will make it easy to provision and execute (complex) test scenarios on OpenShift.
+Welcome to Intersmash, a Java library that makes it easy to provision and execute (complex) test scenarios on 
+OpenShift.
 
-Either you work as an enterprise application developer, runtime components engineer, quality engineer or DevOps, 
-Intersmash helps Java developers to prototype and test complex interoperability scenarios on cloud-native environments 
-and platforms, most notably on OpenShift (and on Kubernetes as well, shortly :) ).
+If you work as an enterprise application developer, runtime components engineer, quality engineer or in DevOps, 
+Intersmash will help you prototype and test complex interoperability scenarios on cloud-native environments 
+and platforms, most notably on OpenShift (and on Kubernetes as well, soon :) ).
 
 Through a convenient set of annotations and APIs, Intersmash provides the developer with tools to describe and deploy 
-services, and to manage their life-cycle orchestration directly, from the test class.
+services and to manage their life-cycle orchestration directly from the test class.
 
-## Usage
 
-Add dependencies to your project configuration, e.g.: Maven:
+## Building blocks
+
+Intersmash has been designed to provide components that interact in the context of a testing workflow in order to:
+
+1. provision a products' stack environment, i.e. the _scenario_
+2. execute tests in order to validate the behavior of the _scenario_
+
+There are three main components on which this design is based:
+
+* _annotations_: describes the scenario and the services it's made of.  These statements are declared in the test class.
+
+* _applications_: interface implementations that describe the configuration and specific properties of a given service that belongs to a scenario.
+
+* _provisioners_: takes care of and controls the specific workflow that needs to be executed for the given products that a scenario consists of. See [the Intersmash provisioning documentation](./tools/intersmash-tools-provisioners/README.md) to learn about supported  services provisioners.
+
+## Usage Example
+
+Two intersmash archives provide the three components described above.  The dependencies are added to the project configuration, e.g.:
 
 ```xml
 <dependencies>
@@ -31,7 +48,7 @@ The following is an example of a test:
 ```java
 @Intersmash({
         // 1
-        @Service(OpenShiftInfinispanApp.class),
+        @Service(PostgresqlApplication.class),
         @Service(OpenShiftWildflyApp.class)
     }
 )
@@ -48,30 +65,52 @@ public class SampleTest {
     }
 }
 ```
+
+
 * **1:** The applications/products used in the test are listed as `@Service` items within the `@Intersmash` annotation.
-  Each of the mentioned classes will provide the platform-specific configuration for the given application/product.
-  You may deploy application on some server (Wildfly), setup services that don't require a deployment, or just deploy a
+  Each of the mentioned classes provides the platform-specific configuration for the given application/product.
+  You may deploy the application on some server (Wildfly), setup services that don't require a deployment, or just deploy a
   database.
-* **2:** To inject information about the application into the test, the tooling layer provides some annotations.
-  The application class needs to match the one which is configured in the classes in point *#1*.
-  `@ServiceUrl` provides support to inject into String or URL type field.
+* **2:** To inject information about the application into the test, the tooling layer provides several annotations.
+  The application class must match the class declared in the @Service annotation in point *#1*.
+  `@ServiceUrl` provides support to inject into a String or a URL type field, the address of the service.
   Beware, some applications (e.g. DB running on OpenShift) might not provide `@ServiceUrl` as there is no route to them
   created.
 * **3:** Should you need control over platform-specific actions, you can also inject a provisioner via the `@ServiceProvisioner` annotation.
   This will enable you to, for example, scale your deployment up and down.
 
-In the most common use cases, you'll just have to implement the correct `Application` 
-interface and pass the class via `@Service` annotation, it's a task for the framework to choose a suitable 
+In the most common use cases, you just need to implement the correct `Application`
+interface and pass the class via the`@Service` annotation.  It's the task for the framework to choose a suitable
 Provisioner implementation (an exception will be thrown in case no suitable Provisioner was yet implemented).
+
+The following snippet represents the `PostgresqlApplication` class that is being used by the previously 
+detailed test class:
+
+```java
+public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplication {
+	static String NAME = "postgresql";
+
+	@Override
+	public PostgreSQLTemplate getTemplate() {
+		return PostgreSQLTemplate.POSTGRESQL_EPHEMERAL;
+	}
+
+	@Override
+	public String getName() {
+		return NAME;
+	}
+}
+```
+
 
 ## Building Intersmash
 
-* Simple build, will build `deployments` as well, e.g.: the WildFly deployments that are used by the `testsuite` with default - i.e. _community_ artifacts:
+* Simple build, will build the project's components including the `deployments` module.  That module has WildFly deployments that are used by the `testsuite` with default - i.e. _community_ artifacts:
 ```shell
 mvn clean install -DskipTests
 ```
 
-* By activating the `wildfly-deployments-build.eap`, the WildFly deployments will instead be built by using productised bits configuration:
+* By building with the `wildfly-deployments-build.eap` profile, the WildFly deployments will instead be built by using productised bits configuration:
 ```shell
 mvn clean install -DskipTests -Pwildfly-deployments-build.eap
 ```
@@ -89,21 +128,6 @@ This is usually executed to test community images, deliverables and - for applic
 mvn test -pl testsuite/ -Pts.prod
 ```
 This is usually executed to test productised images, deliverables and - for application servers like JBoss EAP - deployments built from community artifacts.
-
-## Building blocks
-
-Intersmash has been designed to provide components that interact in the context of a testing workflow in order to:
-
-1. provision a products' stack environment, i.e. the _scenario_
-2. execute tests in order to validate the behavior of the _scenario_
-
-There are three main components on which such design relies on:
-
-* _annotations_: to describe the scenario - and the services it's made of - directly where it's needed, i.e. on the test class declaration
-  
-* _applications_: to describe a given service that belongs to a scenario, in terms of configuration and specific properties  
-
-* _provisioners_: to take care of and control the specific workflow that needs to be executed for the given products that a scenario consists of. See [the Intersmash provisioning documentation](./tools/intersmash-tools-provisioners/README.md) to learn about supported  services provisioners.  
 
 ## Configuration
 * Intersmash is using [XTF](https://github.com/xtf-cz/xtf) to communicate with OpenShift cluster for the OpenShift cloud
@@ -220,11 +244,11 @@ The `doc` profiles must be activated in order to produce the sources and Javadoc
 mvn clean install -DskipTests -Pdoc
 ```
 
-a new directory, namely `apidocs`, will be generated inside the `target` directory of both `intersmash-tools-core` and 
-`intersmash-tools-provisioners`, and HTML files containing the Javadoc will be added to it.
+a new directory, namely `apidocs`, is generated inside the `target` directory of both `intersmash-tools-core` and 
+`intersmash-tools-provisioners`, and HTML files containing the Javadoc are added to it.
 
-Besides, two additional artifacts will be generated alongside with the usual ones, i.e. the _sources_ and _Javadoc_ 
-artifacts. For instance, for `intersmash-tools-provisioner` we'd have the following artifacts generated:
+In the `target` directory two additional artifacts are generated, the _sources_ and _Javadoc_ 
+artifacts. For instance, for `intersmash-tools-provisioner` the following artifacts are generated:
 
 * intersmash-tools-provisioners-_&lt;version&gt;_.jar - Actual provisioners implementation
 * intersmash-tools-provisioners-_&lt;version&gt;_-sources.jar - Unzip to get the sources or use in your IDE
@@ -232,8 +256,8 @@ artifacts. For instance, for `intersmash-tools-provisioner` we'd have the follow
 
 ## Publishing Intersmash Library artifacts
 
-The Intersmash Library project is configured to publish some artifacts on public Maven repository, so that external 
-projects can depend on them, e.g.: the `intersmash-tools-core.jar` artifact which contains the `@Intersmash` annotation 
+The Intersmash Library project is configured to publish some artifacts to the public Maven repository, so that external 
+projects can access them, e.g.: the `intersmash-tools-core.jar` artifact which contains the `@Intersmash` annotation 
 definition.
 
 Just run:
