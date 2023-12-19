@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.intersmash.tools.provision.helm;
+package org.jboss.intersmash.tools.provision.helm.wildfly;
 
 import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
+import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WaitersUtil;
 import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
 import org.slf4j.event.Level;

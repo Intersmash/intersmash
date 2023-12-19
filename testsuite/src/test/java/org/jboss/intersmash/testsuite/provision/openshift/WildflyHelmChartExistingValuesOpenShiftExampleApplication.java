@@ -15,22 +15,21 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
-import java.net.URL;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.intersmash.deployments.WildflyDeploymentApplicationConfiguration;
+import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
+import org.jboss.intersmash.tools.provision.helm.HelmChartReleaseAdapter;
+import org.jboss.intersmash.tools.provision.helm.wildfly.WildFlyHelmChartReleaseAdapter;
+import org.jboss.intersmash.tools.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
 
 import io.fabric8.kubernetes.api.model.Secret;
 
@@ -42,7 +41,7 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 	private final Map<String, String> setOverrides = new HashMap<>();
 
 	public WildflyHelmChartExistingValuesOpenShiftExampleApplication() {
-		this.release = new HelmChartRelease(loadRelease());
+		this.release = loadRelease();
 	}
 
 	WildflyHelmChartExistingValuesOpenShiftExampleApplication addSetOverride(String name, String value) {
@@ -55,20 +54,21 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 		return setOverrides;
 	}
 
-	private HelmWildflyRelease loadRelease() {
-		URL url = this.getClass().getResource("wildfly-helm-values.yaml");
-		if (url == null) {
-			throw new IllegalStateException("No wildfly-helm-values.yaml found");
-		}
-		try {
-			Path valuePath = Path.of(url.toURI());
-			ObjectMapper mapper = new ObjectMapper(new YAMLFactory().disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER));
-			return mapper.readValue(valuePath.toFile(), HelmWildflyRelease.class);
-		} catch (Error | RuntimeException e) {
-			throw e;
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	private HelmChartRelease loadRelease() {
+		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+			HelmWildflyRelease helmRelease = HelmChartReleaseAdapter.<HelmWildflyRelease> fromValuesFile(
+					this.getClass().getResource("wildfly-helm-values.yaml"), HelmWildflyRelease.class);
+			return new WildFlyHelmChartReleaseAdapter(helmRelease)
+					.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
+					.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL());
+		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+			HelmEap8Release helmRelease = HelmChartReleaseAdapter.<HelmEap8Release> fromValuesFile(
+					this.getClass().getResource("eap8-helm-values.yaml"), HelmEap8Release.class);
+			return new Eap8HelmChartReleaseAdapter(helmRelease)
+					.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
+					.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL());
+		} else
+			throw new IllegalStateException("Not a valid testing profile!");
 	}
 
 	@Override

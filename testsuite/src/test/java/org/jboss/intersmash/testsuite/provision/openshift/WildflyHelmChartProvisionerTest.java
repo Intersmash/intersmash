@@ -17,7 +17,7 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.helm.wildfly.WildflyHelmChartOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

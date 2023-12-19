@@ -17,7 +17,7 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.provision.helm.HelmChartOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.helm.WildflyHelmChartOpenShiftProvisioner;
+import org.jboss.intersmash.tools.provision.helm.wildfly.WildflyHelmChartOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -37,9 +37,7 @@ public class WildflyHelmChartExistingValuesProvisionerTest {
 		final WildflyHelmChartExistingValuesOpenShiftExampleApplication application = new WildflyHelmChartExistingValuesOpenShiftExampleApplication();
 		application
 				.addSetOverride("build.uri", IntersmashConfig.deploymentsRepositoryUrl())
-				.addSetOverride("build.ref", IntersmashConfig.deploymentsRepositoryRef())
-				.addSetOverride("deploy.builderImage", application.getBuilderImage())
-				.addSetOverride("deployRuntimeImage", application.getRuntimeImage());
+				.addSetOverride("build.ref", IntersmashConfig.deploymentsRepositoryRef());
 
 		// and now get an EAP 8/WildFly provisioner for that application
 		final WildflyHelmChartOpenShiftProvisioner provisioner = new WildflyHelmChartOpenShiftProvisioner(application);
