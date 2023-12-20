@@ -15,15 +15,14 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashSharedDeploymentsProperties;
 import org.jboss.intersmash.deployments.WildflyDeploymentApplicationConfiguration;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Build;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Deploy;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Env;
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
@@ -67,11 +66,15 @@ public class WildflyHelmChartOpenShiftExampleApplication
 				.withSourceRepositoryUrl(IntersmashConfig.deploymentsRepositoryUrl())
 				.withSourceRepositoryRef(IntersmashConfig.deploymentsRepositoryRef())
 				.withContextDir("deployments/openshift-jakarta-sample-standalone")
-				// an example, not working with EAP 7.4.x or WildFly and commented in the deployment POM
-				.withS2iChannel(IntersmashConfig.getWildflyEeChannelLocation())
 				.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
 				.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL())
 				.withBuildEnvironmentVariable("MAVEN_ARGS_APPEND", mavenAdditionalArgs);
+		List<String> channelDefinition = Arrays.asList(this.eeChannelGroupId(), this.eeChannelArtifactId(),
+				this.eeChannelVersion());
+		if (!channelDefinition.isEmpty()) {
+			// an example of EAP channel usage, not working with EAP 7.4.x or WildFly
+			release.withS2iChannel(channelDefinition.stream().collect(Collectors.joining(":")));
+		}
 		return release;
 	}
 

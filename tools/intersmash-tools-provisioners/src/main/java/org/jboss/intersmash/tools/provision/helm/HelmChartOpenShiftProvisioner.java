@@ -100,7 +100,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 	@Override
 	public void undeploy() {
 		helmBinary.execute(getHelmChartUninstallArguments(this.getApplication().getName()));
-		OpenShiftWaiters.get(openShift, ffCheck).areExactlyNPodsReady(0, "app.kubernetes.io/instance", application.getName())
+		OpenShiftWaiters.get(openShift, ffCheck).areNoPodsPresent("app.kubernetes.io/instance", application.getName())
 				.level(Level.DEBUG)
 				.waitFor();
 	}
