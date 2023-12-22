@@ -28,9 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.util.Strings;
-import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeployments;
 import org.jboss.intersmash.deployments.IntersmashSharedDeploymentsProperties;
+import org.jboss.intersmash.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
@@ -279,55 +279,12 @@ public class OpenShiftProvisionerTestBase {
 		};
 	}
 
-	interface StaticWildflyImageOpenShiftApplication
-			extends WildflyImageOpenShiftApplication, IntersmashDelpoyableWildflyApplication {
-	};
+	interface StaticWildflyImageOpenShiftDeploymentApplication
+			extends WildflyImageOpenShiftApplication, WildflyDeploymentApplicationConfiguration {
+	}
 
-	static WildflyImageOpenShiftApplication getWildflyOpenShiftImageApplication() {
-		return new StaticWildflyImageOpenShiftApplication() {
-
-			@Override
-			public String eeFeaturePackLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.ee-feature-pack.location="
-				return IntersmashConfig.getWildflyEeFeaturePackLocation();
-			}
-
-			@Override
-			public String featurePackLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.feature-pack.location="
-				return IntersmashConfig.getWildflyFeaturePackLocation();
-			}
-
-			@Override
-			public String cloudFeaturePackLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.cloud-feature-pack.location="
-				return IntersmashConfig.getWildflyCloudFeaturePackLocation();
-			}
-
-			@Override
-			public String eeChannelLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.ee-channel.location="
-				return IntersmashConfig.getWildflyEeChannelLocation();
-			}
-
-			@Override
-			public String wildflyMavenPluginGroupId() {
-				return IntersmashConfig.getWildflyMavenPluginGroupId();
-			}
-
-			@Override
-			public String wildflyMavenPluginArtifactId() {
-				return IntersmashConfig.getWildflyMavenPluginArtifactId();
-			}
-
-			@Override
-			public String wildflyMavenPluginVersion() {
-				return IntersmashConfig.getWildflyMavenPluginVersion();
-			}
+	static StaticWildflyImageOpenShiftDeploymentApplication getWildflyOpenShiftImageApplication() {
+		return new StaticWildflyImageOpenShiftDeploymentApplication() {
 
 			@Override
 			public List<String> getCliScript() {
@@ -349,9 +306,9 @@ public class OpenShiftProvisionerTestBase {
 				// in org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner#deployImage().
 				list.add(new EnvVarBuilder().withName("ADMIN_USERNAME").withValue("admin").build());
 				list.add(new EnvVarBuilder().withName("ADMIN_PASSWORD").withValue("pass.1234").build());
-				if (!Strings.isNullOrEmpty(IntersmashConfig.getMavenMirrorUrl())) {
+				if (!Strings.isNullOrEmpty(this.getMavenMirrorUrl())) {
 					list.add(new EnvVarBuilder().withName("MAVEN_MIRROR_URL")
-							.withValue(IntersmashConfig.getMavenMirrorUrl()).build());
+							.withValue(this.getMavenMirrorUrl()).build());
 				}
 
 				final String deploymentRelativePath = "deployments/openshift-jakarta-sample-standalone/";
@@ -387,60 +344,12 @@ public class OpenShiftProvisionerTestBase {
 			public String getPingServiceName() {
 				return "wildfly-ping-service";
 			}
-
-			@Override
-			public String bomServerVersionPropertyValue() {
-				return IntersmashConfig.getWildflyBomsEeServerVersion();
-			}
 		};
 	}
 
-	public static StaticWildflyImageOpenShiftApplication getWildflyOpenShiftLocalBinarySourceApplication() {
-		return new StaticWildflyImageOpenShiftApplication() {
+	public static StaticWildflyImageOpenShiftDeploymentApplication getWildflyOpenShiftLocalBinarySourceApplication() {
+		return new StaticWildflyImageOpenShiftDeploymentApplication() {
 			Path app = IntersmashSharedDeployments.findStandaloneDeploymentPath("openshift-jakarta-sample-standalone");
-
-			@Override
-			public String eeFeaturePackLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.ee-feature-pack.location="
-				return IntersmashConfig.getWildflyEeFeaturePackLocation();
-			}
-
-			@Override
-			public String featurePackLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.feature-pack.location="
-				return IntersmashConfig.getWildflyFeaturePackLocation();
-			}
-
-			@Override
-			public String cloudFeaturePackLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.cloud-feature-pack.location="
-				return IntersmashConfig.getWildflyCloudFeaturePackLocation();
-			}
-
-			@Override
-			public String eeChannelLocation() {
-				// this value is supposed to be overridden externally by passing e.g.
-				// "mvn ... -Dwildfly.ee-channel.location="
-				return IntersmashConfig.getWildflyEeChannelLocation();
-			}
-
-			@Override
-			public String wildflyMavenPluginGroupId() {
-				return IntersmashConfig.getWildflyMavenPluginGroupId();
-			}
-
-			@Override
-			public String wildflyMavenPluginArtifactId() {
-				return IntersmashConfig.getWildflyMavenPluginArtifactId();
-			}
-
-			@Override
-			public String wildflyMavenPluginVersion() {
-				return IntersmashConfig.getWildflyMavenPluginVersion();
-			}
 
 			@Override
 			public List<String> getCliScript() {
@@ -463,9 +372,9 @@ public class OpenShiftProvisionerTestBase {
 
 				list.add(new EnvVarBuilder().withName("ADMIN_USERNAME").withValue("admin").build());
 				list.add(new EnvVarBuilder().withName("ADMIN_PASSWORD").withValue("pass.1234").build());
-				if (!Strings.isNullOrEmpty(IntersmashConfig.getMavenMirrorUrl())) {
+				if (!Strings.isNullOrEmpty(this.getMavenMirrorUrl())) {
 					list.add(new EnvVarBuilder().withName("MAVEN_MIRROR_URL")
-							.withValue(IntersmashConfig.getMavenMirrorUrl()).build());
+							.withValue(this.getMavenMirrorUrl()).build());
 				}
 
 				// let's add configurable deployment additional args:
@@ -498,11 +407,6 @@ public class OpenShiftProvisionerTestBase {
 			public String getPingServiceName() {
 				return "wildfly-ping-service";
 
-			}
-
-			@Override
-			public String bomServerVersionPropertyValue() {
-				return IntersmashConfig.getWildflyBomsEeServerVersion();
 			}
 		};
 	}

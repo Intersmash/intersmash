@@ -34,7 +34,7 @@ public class WildflyHelmChartProvisionerTest {
 	@Test
 	public void basicProvisioningTest() {
 		// initialize the application service descriptor
-		final WildflyHelmChartOpenShiftApplication application = new WildflyHelmChartOpenShiftExampleApplicaton();
+		final WildflyHelmChartOpenShiftApplication application = new WildflyHelmChartOpenShiftExampleApplication();
 		// and now get an EAP 8/WildFly provisioner for that application
 		final WildflyHelmChartOpenShiftProvisioner provisioner = new WildflyHelmChartOpenShiftProvisioner(application);
 		// deploy

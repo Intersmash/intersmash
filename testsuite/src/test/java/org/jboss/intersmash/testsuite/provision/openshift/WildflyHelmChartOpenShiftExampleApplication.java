@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.assertj.core.util.Strings;
-import org.jboss.intersmash.deployments.IntersmashDelpoyableWildflyApplication;
 import org.jboss.intersmash.deployments.IntersmashSharedDeploymentsProperties;
+import org.jboss.intersmash.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Build;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Deploy;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Env;
@@ -34,13 +34,13 @@ import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpe
 
 import io.fabric8.kubernetes.api.model.Secret;
 
-public class WildflyHelmChartOpenShiftExampleApplicaton
-		implements WildflyHelmChartOpenShiftApplication, IntersmashDelpoyableWildflyApplication {
+public class WildflyHelmChartOpenShiftExampleApplication
+		implements WildflyHelmChartOpenShiftApplication, WildflyDeploymentApplicationConfiguration {
 	private static final String APP_NAME = "wildfly-helm-helloworld-qs";
 
 	private final HelmChartRelease release;
 
-	public WildflyHelmChartOpenShiftExampleApplicaton() {
+	public WildflyHelmChartOpenShiftExampleApplication() {
 		this.release = new HelmChartRelease(loadRelease());
 	}
 
@@ -114,53 +114,5 @@ public class WildflyHelmChartOpenShiftExampleApplicaton
 	@Override
 	public String getRuntimeImage() {
 		return IntersmashConfig.wildflyRuntimeImageURL();
-	}
-
-	@Override
-	public String bomServerVersionPropertyValue() {
-		return IntersmashConfig.getWildflyBomsEeServerVersion();
-	}
-
-	@Override
-	public String eeFeaturePackLocation() {
-		// this value is supposed to be overridden externally by passing e.g.
-		// "mvn ... -Dwildfly.ee-feature-pack.location="
-		return IntersmashConfig.getWildflyEeFeaturePackLocation();
-	}
-
-	@Override
-	public String featurePackLocation() {
-		// this value is supposed to be overridden externally by passing e.g.
-		// "mvn ... -Dwildfly.feature-pack.location="
-		return IntersmashConfig.getWildflyFeaturePackLocation();
-	}
-
-	@Override
-	public String cloudFeaturePackLocation() {
-		// this value is supposed to be overridden externally by passing e.g.
-		// "mvn ... -Dwildfly.cloud-feature-pack.location="
-		return IntersmashConfig.getWildflyCloudFeaturePackLocation();
-	}
-
-	@Override
-	public String eeChannelLocation() {
-		// this value is supposed to be overridden externally by passing e.g.
-		// "mvn ... -Dwildfly.ee-channel.location="
-		return IntersmashConfig.getWildflyEeChannelLocation();
-	}
-
-	@Override
-	public String wildflyMavenPluginGroupId() {
-		return IntersmashConfig.getWildflyMavenPluginGroupId();
-	}
-
-	@Override
-	public String wildflyMavenPluginArtifactId() {
-		return IntersmashConfig.getWildflyMavenPluginArtifactId();
-	}
-
-	@Override
-	public String wildflyMavenPluginVersion() {
-		return IntersmashConfig.getWildflyMavenPluginVersion();
 	}
 }
