@@ -15,7 +15,6 @@
  */
 package org.jboss.intersmash.tools.provision.openshift.operator.resources;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSourceBuilder;
 
 public class CatalogSource extends io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource
@@ -58,20 +57,13 @@ public class CatalogSource extends io.fabric8.openshift.api.model.operatorhub.v1
 
 	/**
 	 * Load CatalogSource by name from OpenShift cluster
-	 * @param catalogSourceName name of the CatalogSource e.g. certified-operators, community-operators,
-	 *                          redhat-marketplace, redhat-operators,...
+	 * @param existing Existing instance of {@link io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource},
+	 *                 as loaded from the cluster
 	 * @return CatalogSource
 	 */
-	public CatalogSource load(String catalogSourceName, String catalogSourceNamespace) {
-		io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource catalogSource = OpenShifts
-				.admin(catalogSourceNamespace).operatorHub()
-				.catalogSources().list().getItems()
-				.stream().filter(cs -> cs.getMetadata().getName().equalsIgnoreCase(catalogSourceName))
-				.findFirst().orElseThrow(
-						() -> new IllegalStateException(
-								"Unable to retrieve CatalogSource " + catalogSourceName));
-		this.setMetadata(catalogSource.getMetadata());
-		this.setSpec(catalogSource.getSpec());
+	public CatalogSource load(io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource existing) {
+		this.setMetadata(existing.getMetadata());
+		this.setSpec(existing.getSpec());
 		return this;
 	}
 }

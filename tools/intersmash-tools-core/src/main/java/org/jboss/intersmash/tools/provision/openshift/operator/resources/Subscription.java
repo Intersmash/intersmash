@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.util.Strings;
 
-import cz.xtf.core.config.OpenShiftConfig;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.SubscriptionBuilder;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.SubscriptionFluent;
@@ -44,13 +43,13 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 	}
 
 	private SubscriptionFluent<SubscriptionBuilder>.SpecNested<SubscriptionBuilder> getConfiguredSubscriptionBuilder(
-			String sourceNamespace,
+			String sourceNamespace, String targetNamespace,
 			String source, String name, String channel,
 			String installPlanApproval) {
 		return new SubscriptionBuilder()
 				.withNewMetadata()
 				.withName(name)
-				.withNamespace(OpenShiftConfig.namespace())
+				.withNamespace(targetNamespace)
 				.endMetadata()
 				.withNewSpec()
 				.withChannel(channel)
@@ -60,11 +59,12 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 				.withInstallPlanApproval(Strings.isNullOrEmpty(installPlanApproval) ? "Automatic" : installPlanApproval);
 	}
 
-	public Subscription(String sourceNamespace, String source, String name, String channel, String installPlanApproval,
+	public Subscription(String sourceNamespace, String targetNamespace, String source, String name, String channel,
+			String installPlanApproval,
 			Map<String, String> envVariables) {
 		this();
 		io.fabric8.openshift.api.model.operatorhub.v1alpha1.Subscription loaded = getConfiguredSubscriptionBuilder(
-				sourceNamespace, source, name, channel, installPlanApproval)
+				sourceNamespace, targetNamespace, source, name, channel, installPlanApproval)
 				.withNewConfig()
 				.addAllToEnv(
 						envVariables.entrySet().stream()
@@ -77,10 +77,11 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 		this.setSpec(loaded.getSpec());
 	}
 
-	public Subscription(String sourceNamespace, String source, String name, String channel, String installPlanApproval) {
+	public Subscription(String sourceNamespace, String targetNamespace, String source, String name, String channel,
+			String installPlanApproval) {
 		this();
 		io.fabric8.openshift.api.model.operatorhub.v1alpha1.Subscription loaded = getConfiguredSubscriptionBuilder(
-				sourceNamespace, source, name, channel, installPlanApproval)
+				sourceNamespace, targetNamespace, source, name, channel, installPlanApproval)
 				.endSpec()
 				.build();
 		this.setMetadata(loaded.getMetadata());

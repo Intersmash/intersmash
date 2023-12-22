@@ -17,27 +17,55 @@ package org.jboss.intersmash.tools.provision.openshift.operator.resources;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.stream.Stream;
 
+import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Verify the functionality provided by {@link OpenShiftResource} interface.
  */
 public class OpenShiftResourceTestCase {
 
+	private static Stream<OpenShiftResource> resourceProvider() {
+		return Stream.of(
+				new OperatorGroup("my-namepace"),
+				new Subscription(
+						"openshift-marketplace",
+						"my-namespace",
+						"redhat-operators",
+						"dummy-operator",
+						"alpha",
+						OperatorProvisioner.INSTALLPLAN_APPROVAL_MANUAL),
+				new CatalogSource(
+						"my-custom-cs",
+						"my-namespace",
+						"grpc",
+						"quay.io/operatorhubio/catalog:latest",
+						"My Custom Operators",
+						"Intersmash"));
+	}
+
 	/**
 	 * Verify that object equals after serialization to file and deserialization back to object.
 	 */
-	@Test
-	public void writeReadEqualsTest() throws IOException {
+
+	@ParameterizedTest(name = "{displayName}#class({0})")
+	@MethodSource("resourceProvider")
+	public void writeReadEqualsTest(OpenShiftResource resource) throws IOException, NoSuchMethodException,
+			InvocationTargetException, InstantiationException, IllegalAccessException {
 		// write test
-		File yaml = OperatorGroup.SINGLE_NAMESPACE.save();
+		File yaml = resource.save();
 		// read test
-		OpenShiftResource testGroup = new OperatorGroup();
-		testGroup.load(yaml);
+
+		OpenShiftResource loaded = resource.getClass().getDeclaredConstructor().newInstance();
+		loaded.load(yaml);
 		//
-		Assertions.assertEquals(OperatorGroup.SINGLE_NAMESPACE, testGroup,
-				"OpenShift resource (OperatorGroup) does not equal after serialization into yaml file and deserialization back to an object.");
+		Assertions.assertEquals(resource, loaded,
+				"OpenShift resource (" + resource.getClass().getSimpleName()
+						+ ") does not equal after serialization into yaml file and deserialization back to an object.");
 	}
 }
