@@ -27,7 +27,7 @@
             Using XTF snapshot in order to include fixes in:
             https://github.com/xtf-cz/xtf/pull/532
         -->
-        <xtf.version>0.31</xtf.version>
+        <xtf.version>0.32</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 
