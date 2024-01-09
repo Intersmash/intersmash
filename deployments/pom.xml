@@ -84,34 +84,18 @@
         </dependencies>
     </dependencyManagement>
 
-    <build>
-        <plugins>
-            <!--
-                The intersmash-deployments POM must be published because there are projects which depend on it and, e.g.
-                get executed on OCP
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
-            <id>openshift</id>
+            <id>publish</id>
             <build>
                 <plugins>
                     <plugin>
-                        <!-- Do not execute the maven-source-plugin when the openshift profile is active -->
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <phase>none</phase>
-                            </execution>
-                        </executions>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
                     </plugin>
                 </plugins>
             </build>
