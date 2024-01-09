@@ -26,9 +26,9 @@ public class IntersmashSharedDeploymentsTest {
 	@Test
 	public void testOpenShiftBootableJarIsAvailable() {
 		// jakarta
-		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarDemoOpenShift());
+		assertBootableJarIsAvailable(IntersmashSharedDeployments.wildflyBootableJarOpenShiftDeployment());
 		// javax
-		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarJavaxDemoOpenShift());
+		assertBootableJarIsAvailable(IntersmashSharedDeployments.eap7BootableJarOpenShiftDeployment());
 	}
 
 	private static void assertBootableJarIsAvailable(final Path openShiftApp) {

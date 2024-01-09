@@ -47,7 +47,7 @@ public class ProvisionerCleanupTestCase {
 					new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
 					new WildflyBootableJarImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyBootableJarJavaxOpenShiftApplication()),
+							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication()),
 					new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
 					new PostgreSQLImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),

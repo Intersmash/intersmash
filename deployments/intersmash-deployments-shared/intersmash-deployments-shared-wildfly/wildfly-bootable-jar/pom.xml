@@ -11,7 +11,7 @@
     <artifactId>wildfly-bootable-jar</artifactId>
     <packaging>war</packaging>
 
-    <name>Intersmash Shared Deployments (Wildfly): WildFly Bootable JAR</name>
+    <name>Intersmash Shared Deployments (Wildfly): Bootable JAR Example</name>
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>

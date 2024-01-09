@@ -16,7 +16,7 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
-import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
+import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.tools.provision.openshift.BootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
@@ -30,11 +30,11 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
-@NotForProductizedExecutionProfile
-public class WildflyJavaxBootableJarTestCase {
+@NotForCommunityExecutionProfile
+public class Eap7BootableJarTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final BootableJarOpenShiftApplication application = OpenShiftProvisionerTestBase
-			.getWildflyBootableJarJavaxOpenShiftApplication();
+			.getEap7BootableJarOpenShiftApplication();
 	private static final BootableJarImageOpenShiftProvisioner provisioner = new WildflyBootableJarImageOpenShiftProvisioner(
 			application);
 

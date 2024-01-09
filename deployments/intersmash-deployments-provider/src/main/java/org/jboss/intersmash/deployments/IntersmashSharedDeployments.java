@@ -28,16 +28,16 @@ import org.jboss.intersmash.deployments.util.maven.ArtifactProvider;
  * applications. They need to be installed in local repository.
  */
 public class IntersmashSharedDeployments {
-	static final String BOOTABLE_JAR_ARTIFACT = "wildfly-bootable-jar";
-	static final String BOOTABLE_JAR_ARTIFACT_JAVAX = "wildfly-bootable-jar-javax";
+	static final String WILDFLY_BOOTABLE_JAR = "wildfly-bootable-jar";
+	static final String EAP_7_BOOTABLE_JAR = "eap7-bootable-jar";
 	static final String BOOTABLE_JAR_ARTIFACT_PACKAGING = "jar";
 
-	public static Path bootableJarDemoOpenShift() {
+	public static Path wildflyBootableJarOpenShiftDeployment() {
 		Path file = null;
 		try {
 			file = ArtifactProvider.resolveArtifact(
 					IntersmashSharedDeploymentsProperties.groupID(),
-					BOOTABLE_JAR_ARTIFACT,
+					WILDFLY_BOOTABLE_JAR,
 					IntersmashSharedDeploymentsProperties.version(),
 					BOOTABLE_JAR_ARTIFACT_PACKAGING,
 					"bootable-openshift").toPath();
@@ -47,12 +47,12 @@ public class IntersmashSharedDeployments {
 		return file;
 	}
 
-	public static Path bootableJarDemoBareMetal() {
+	public static Path wildflyBootableJarBareMetalDeployment() {
 		Path file = null;
 		try {
 			file = ArtifactProvider.resolveArtifact(
 					IntersmashSharedDeploymentsProperties.groupID(),
-					BOOTABLE_JAR_ARTIFACT,
+					WILDFLY_BOOTABLE_JAR,
 					IntersmashSharedDeploymentsProperties.version(),
 					BOOTABLE_JAR_ARTIFACT_PACKAGING,
 					"bootable-baremetal").toPath();
@@ -62,12 +62,12 @@ public class IntersmashSharedDeployments {
 		return file;
 	}
 
-	public static Path bootableJarJavaxDemoOpenShift() {
+	public static Path eap7BootableJarOpenShiftDeployment() {
 		Path file = null;
 		try {
 			file = ArtifactProvider.resolveArtifact(
 					IntersmashSharedDeploymentsProperties.groupID(),
-					BOOTABLE_JAR_ARTIFACT_JAVAX,
+					EAP_7_BOOTABLE_JAR,
 					IntersmashSharedDeploymentsProperties.version(),
 					BOOTABLE_JAR_ARTIFACT_PACKAGING,
 					"bootable-openshift").toPath();
@@ -77,12 +77,12 @@ public class IntersmashSharedDeployments {
 		return file;
 	}
 
-	public static Path bootableJarJavaxDemoBareMetal() {
+	public static Path eap7BootableJarBareMetalDeployment() {
 		Path file = null;
 		try {
 			file = ArtifactProvider.resolveArtifact(
 					IntersmashSharedDeploymentsProperties.groupID(),
-					BOOTABLE_JAR_ARTIFACT_JAVAX,
+					EAP_7_BOOTABLE_JAR,
 					IntersmashSharedDeploymentsProperties.version(),
 					BOOTABLE_JAR_ARTIFACT_PACKAGING,
 					"bootable-baremetal").toPath();

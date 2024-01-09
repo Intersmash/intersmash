@@ -13,7 +13,7 @@
     <artifactId>eap7-helloworld</artifactId>
     <packaging>war</packaging>
 
-    <name>Intersmash Shared Deployments (EAP 7): Hello World Quickstart</name>
+    <name>Intersmash Shared Deployments (EAP 7): Hello World example</name>
 
     <properties>
         <formatting-style-base-directory>${project.parent.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
@@ -33,16 +33,4 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration>
-                    <warName>ROOT</warName>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 </project>

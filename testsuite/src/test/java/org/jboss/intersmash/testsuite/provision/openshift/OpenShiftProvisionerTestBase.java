@@ -227,7 +227,7 @@ public class OpenShiftProvisionerTestBase {
 		return new BootableJarOpenShiftApplication() {
 			@Override
 			public BinarySource getBuildInput() {
-				return IntersmashSharedDeployments::bootableJarDemoOpenShift;
+				return IntersmashSharedDeployments::wildflyBootableJarOpenShiftDeployment;
 			}
 
 			@Override
@@ -251,11 +251,11 @@ public class OpenShiftProvisionerTestBase {
 		};
 	}
 
-	static BootableJarOpenShiftApplication getWildflyBootableJarJavaxOpenShiftApplication() {
+	static BootableJarOpenShiftApplication getEap7BootableJarOpenShiftApplication() {
 		return new BootableJarOpenShiftApplication() {
 			@Override
 			public BinarySource getBuildInput() {
-				return IntersmashSharedDeployments::bootableJarJavaxDemoOpenShift;
+				return IntersmashSharedDeployments::eap7BootableJarOpenShiftDeployment;
 			}
 
 			@Override
