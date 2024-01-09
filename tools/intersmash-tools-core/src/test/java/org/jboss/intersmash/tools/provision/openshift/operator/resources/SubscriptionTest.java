@@ -35,6 +35,7 @@ public class SubscriptionTest {
 		final String propertyValue = "dummy-prop-value";
 		Subscription subscription = new Subscription(
 				"openshift-marketplace",
+				"my-namespace",
 				"redhat-operators",
 				"dummy-operator",
 				"alpha",

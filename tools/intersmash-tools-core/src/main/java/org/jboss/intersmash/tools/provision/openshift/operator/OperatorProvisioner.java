@@ -220,9 +220,15 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 			}
 		} else {
 			// load CatalogSource by name from OpenShift cluster
+			io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource existing = OpenShifts
+					.admin(IntersmashConfig.defaultOperatorCatalogSourceNamespace()).operatorHub()
+					.catalogSources().list().getItems()
+					.stream().filter(cs -> cs.getMetadata().getName().equalsIgnoreCase(operatorCatalogSource))
+					.findFirst().orElseThrow(
+							() -> new IllegalStateException(
+									"Unable to retrieve CatalogSource " + operatorCatalogSource));
 			catalogSource = new CatalogSource();
-			catalogSource.load(operatorCatalogSource,
-					IntersmashConfig.defaultOperatorCatalogSourceNamespace());
+			catalogSource.load(existing);
 		}
 		return catalogSource;
 	}
@@ -305,9 +311,11 @@ public abstract class OperatorProvisioner<T extends OperatorApplication> impleme
 		log.info("Subscribing the {} operator", packageManifestName);
 		// oc get packagemanifest wildfly -o template --template {{.status.defaultChannel}}
 		Subscription operatorSubscription = (envVariables == null || envVariables.isEmpty())
-				? new Subscription(getCatalogSourceNamespace(), getOperatorCatalogSource(), packageManifestName,
+				? new Subscription(getCatalogSourceNamespace(), OpenShiftConfig.namespace(), getOperatorCatalogSource(),
+						packageManifestName,
 						operatorChannel, installPlanApproval)
-				: new Subscription(getCatalogSourceNamespace(), getOperatorCatalogSource(), packageManifestName,
+				: new Subscription(getCatalogSourceNamespace(), OpenShiftConfig.namespace(), getOperatorCatalogSource(),
+						packageManifestName,
 						operatorChannel, installPlanApproval, envVariables);
 		try {
 			adminBinary.execute("apply", "-f", operatorSubscription.save().getAbsolutePath());

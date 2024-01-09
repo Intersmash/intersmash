@@ -24,30 +24,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.wildfly.v1alpha1.WildFlyServer;
 
-import io.fabric8.kubernetes.client.CustomResource;
-
 /**
  * Basic verification of wildflyservers.wildfly.org resource.
  */
 public class WildFlyServersTestCase {
-
-	class WildFlyServerSerializableResource
-			extends CustomResource<org.wildfly.v1alpha1.WildFlyServerSpec, org.wildfly.v1alpha1.WildFlyServerStatus>
-			implements OpenShiftResource<WildFlyServerSerializableResource> {
-
-		private final WildFlyServer wildFlyServer;
-
-		WildFlyServerSerializableResource(WildFlyServer wildFlyServer) {
-			this.wildFlyServer = wildFlyServer;
-		}
-
-		@Override
-		public WildFlyServerSerializableResource load(WildFlyServerSerializableResource loaded) {
-			this.wildFlyServer.setMetadata(loaded.getMetadata());
-			this.wildFlyServer.setSpec(loaded.getSpec());
-			return this;
-		}
-	}
 
 	/**
 	 * Verify that object equals after serialization to file and deserialization back to object.
@@ -60,11 +40,10 @@ public class WildFlyServersTestCase {
 				.build();
 
 		// write test
-		final WildFlyServerSerializableResource serde = new WildFlyServerSerializableResource(wildFlyServer);
-		File yaml = serde.save();
+		File yaml = OpenShiftResource.save(wildFlyServer);
 		// read test
 		WildFlyServer testServer = new WildFlyServer();
-		serde.load(yaml);
+		OpenShiftResource.load(yaml, WildFlyServer.class, testServer);
 		//
 		Assertions.assertEquals(wildFlyServer, testServer,
 				"OpenShift resource (WildflyServer) does not equal after serialization into yaml file and deserialization back to an object.");

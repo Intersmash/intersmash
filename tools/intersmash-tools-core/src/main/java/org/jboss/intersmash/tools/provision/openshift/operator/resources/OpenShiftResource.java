@@ -23,6 +23,8 @@ import java.net.URL;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
+import io.fabric8.kubernetes.client.CustomResource;
+
 /**
  * Interface of common methods for OpenShift resources.
  */
@@ -41,6 +43,10 @@ public interface OpenShiftResource<T extends OpenShiftResource<T>> {
 		return save(file);
 	}
 
+	static <T> File save(T data) throws IOException {
+		return save(File.createTempFile(data.getClass().getSimpleName() + "-", ".yaml"), data);
+	}
+
 	/**
 	 * Write the yaml representation of object into a file.
 	 *
@@ -50,6 +56,11 @@ public interface OpenShiftResource<T extends OpenShiftResource<T>> {
 	 */
 	default File save(File file) throws IOException {
 		mapper.writeValue(file, this);
+		return file;
+	}
+
+	static <O> File save(File file, O data) throws IOException {
+		mapper.writeValue(file, data);
 		return file;
 	}
 
@@ -64,6 +75,13 @@ public interface OpenShiftResource<T extends OpenShiftResource<T>> {
 	default T load(File file) throws IOException {
 		return load((T) mapper.readValue(file, this.getClass()));
 
+	}
+
+	static <CR extends CustomResource> CR load(File file, Class<CR> clazz, CR target) throws IOException {
+		CR loaded = mapper.readValue(file, clazz);
+		target.setMetadata(loaded.getMetadata());
+		target.setSpec(loaded.getSpec());
+		return target;
 	}
 
 	/**

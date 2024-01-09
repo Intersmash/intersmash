@@ -251,8 +251,9 @@ public final class WildFlyServerBuilder {
 		WildFlyServer wildFlyServer = new WildFlyServer();
 		wildFlyServer.setMetadata(new ObjectMeta());
 		wildFlyServer.getMetadata().setName(name);
-		wildFlyServer.getMetadata().setLabels(labels);
-
+		if (labels != null) {
+			wildFlyServer.getMetadata().setLabels(labels);
+		}
 		WildFlyServerSpec wildFlyServerSpec = new WildFlyServerSpec();
 		wildFlyServerSpec.setApplicationImage(applicationImage);
 		wildFlyServerSpec.setReplicas(replicas);
