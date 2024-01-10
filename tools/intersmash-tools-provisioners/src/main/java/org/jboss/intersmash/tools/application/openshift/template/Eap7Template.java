@@ -18,7 +18,7 @@ package org.jboss.intersmash.tools.application.openshift.template;
 import org.jboss.intersmash.tools.provision.openshift.template.OpenShiftTemplate;
 
 /**
- * OpenShift template for EAP 7.z (i.e. WildFly Jakarta EE 8 <= 26.1.2) applications.
+ * OpenShift template for EAP 7.z (i.e. WildFly Jakarta EE 8 &lt;= 26.1.2) applications.
  * <p>
  * See e.g.: https://github.com/jboss-container-images/jboss-eap-7-openshift-image
  */

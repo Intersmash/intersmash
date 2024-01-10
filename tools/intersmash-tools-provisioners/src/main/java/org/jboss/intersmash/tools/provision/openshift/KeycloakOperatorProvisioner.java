@@ -250,7 +250,7 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	/**
 	 * Get a reference to keycloak object. Use get() to get the actual object, or null in case it does not
 	 * exist on tested cluster.
-	 * @return A concrete {@link Resource} instance representing the {@link org.jboss.intersmash.tools.provision.openshift.operator.keycloak.keycloak.Keycloak} resource definition
+	 * @return A concrete {@link Resource} instance representing the {@link Keycloak} resource definition
 	 */
 	public Resource<Keycloak> keycloak() {
 		return keycloakClient()
