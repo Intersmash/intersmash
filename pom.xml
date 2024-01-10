@@ -2,11 +2,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>intersmash-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <name>Intersmash Parent: Aggregator</name>
+    <description>Intersmash - Run your cloud-native tests with Java!</description>
+    <url>http://github.com/Intersmash/intersmash</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Fabio Burzigotti</name>
+            <email>fburzigo@redhat.com</email>
+            <organization>Red Hat</organization>
+            <organizationUrl>http://www.redhat.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/Intersmash/intersmash.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Intersmash/intersmash.git</developerConnection>
+        <url>http://github.com/Intersmash/intersmash/tree/main</url>
+    </scm>
 
     <modules>
         <module>tools</module>
