@@ -15,22 +15,23 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.deployments.IntersmashSharedDeploymentsProperties;
 import org.jboss.intersmash.deployments.WildflyDeploymentApplicationConfiguration;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Build;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Deploy;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Env;
+import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.S2i;
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.tools.IntersmashConfig;
 import org.jboss.intersmash.tools.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.tools.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
+import org.jboss.intersmash.tools.provision.helm.wildfly.WildFlyHelmChartReleaseAdapter;
+import org.jboss.intersmash.tools.provision.helm.wildfly.WildflyHelmChartRelease;
+import org.jboss.intersmash.tools.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
 
 import io.fabric8.kubernetes.api.model.Secret;
 
@@ -41,11 +42,15 @@ public class WildflyHelmChartOpenShiftExampleApplication
 	private final HelmChartRelease release;
 
 	public WildflyHelmChartOpenShiftExampleApplication() {
-		this.release = new HelmChartRelease(loadRelease());
+		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+			release = loadRelease(new WildFlyHelmChartReleaseAdapter(new HelmWildflyRelease()));
+		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+			release = loadRelease(new Eap8HelmChartReleaseAdapter(new HelmEap8Release()));
+		} else
+			throw new IllegalStateException("Not a valid testing profile!");
 	}
 
-	private HelmWildflyRelease loadRelease() {
-		HelmWildflyRelease release = new HelmWildflyRelease();
+	private HelmChartRelease loadRelease(final WildflyHelmChartRelease release) {
 		// let's compute some additional maven args for our s2i build to happen on a Pod
 		String mavenAdditionalArgs = "-Denforcer.skip=true";
 		// let's add configurable deployment additional args:
@@ -55,24 +60,21 @@ public class WildflyHelmChartOpenShiftExampleApplication
 				(Strings.isNullOrEmpty(IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()) ? ""
 						: " -Pwildfly-deployments-build."
 								+ IntersmashSharedDeploymentsProperties.getWildflyDeploymentsBuildProfile()));
-		// ok, let's configure the release via the fluent(-ish) API
-		List<Env> environmentVariables = new ArrayList();
+		// ok, let's configure the release via the WildflyHelmChartRelease fluent(-ish) API,
+		// which offers a common reference for both WildFly and EAP (latest)
 		release
-				.withBuild(
-						new Build()
-								.withUri(IntersmashConfig.deploymentsRepositoryUrl())
-								.withRef(IntersmashConfig.deploymentsRepositoryRef())
-								.withContextDir("deployments/openshift-jakarta-sample-standalone")
-								.withEnv(
-										Arrays.asList(
-												new Env()
-														.withName("MAVEN_ARGS_APPEND")
-														.withValue(mavenAdditionalArgs)))
-								.withS2i(
-										new S2i()
-												.withBuilderImage(IntersmashConfig.wildflyImageURL())
-												.withRuntimeImage(IntersmashConfig.wildflyRuntimeImageURL())))
-				.withDeploy(new Deploy().withReplicas(1));
+				.withSourceRepositoryUrl(IntersmashConfig.deploymentsRepositoryUrl())
+				.withSourceRepositoryRef(IntersmashConfig.deploymentsRepositoryRef())
+				.withContextDir("deployments/openshift-jakarta-sample-standalone")
+				.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
+				.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL())
+				.withBuildEnvironmentVariable("MAVEN_ARGS_APPEND", mavenAdditionalArgs);
+		List<String> channelDefinition = Arrays.asList(this.eeChannelGroupId(), this.eeChannelArtifactId(),
+				this.eeChannelVersion());
+		if (!channelDefinition.isEmpty()) {
+			// an example of EAP channel usage, not working with EAP 7.4.x or WildFly
+			release.withS2iChannel(channelDefinition.stream().collect(Collectors.joining(":")));
+		}
 		return release;
 	}
 
