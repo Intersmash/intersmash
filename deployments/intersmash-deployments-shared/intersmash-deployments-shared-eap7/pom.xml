@@ -20,17 +20,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Default EAP 7 version -->
         <jboss-eap7.version>7.4.13.GA</jboss-eap7.version>
+        <jboss-eap7-xp.version>4.0.1.GA-7.4.13.GA</jboss-eap7-xp.version>
         <!-- Default EAP `ee` BOMs version is set here for pulling the right EAP BOM -->
         <bom.jboss-eap7-jakartaee.groupId>org.jboss.bom</bom.jboss-eap7-jakartaee.groupId>
         <bom.jboss-eap7-jakartaee.artifactId>jboss-eap-jakartaee8</bom.jboss-eap7-jakartaee.artifactId>
         <bom.jboss-eap7-jakartaee.version>${jboss-eap7.version}</bom.jboss-eap7-jakartaee.version>
 
-        <eap7.ee-feature-pack.location>org.jboss.eap:wildfly-galleon-pack:7.3.10.GA-redhat-00003</eap7.ee-feature-pack.location>
-        <!--
-            Default version for the Bootable JAR Plugin is set here and can be overridden
-        -->
-        <version.wildfly-jar-maven-plugin>9.0.0.Final</version.wildfly-jar-maven-plugin>
-        <version.microprofile-config-api>1.3</version.microprofile-config-api>
+        <eap7.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:7.4.13.GA-redhat-00001</eap7.ee-feature-pack.location>
     </properties>
 
     <modules>
@@ -47,13 +43,6 @@
                 <version>${bom.jboss-eap7-jakartaee.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <!-- Used by EAP 7 bootable-jar app-->
-            <dependency>
-                <groupId>org.eclipse.microprofile.config</groupId>
-                <artifactId>microprofile-config-api</artifactId>
-                <version>${version.microprofile-config-api}</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -191,6 +180,7 @@
             </build>
         </profile>
         <profile>
+            <!-- We could leverage this activation to generate a parallel Bootable JAR for bare metal-->
             <id>bootable-jar-baremetal</id>
             <activation>
                 <file>

@@ -17,11 +17,7 @@
     <properties>
         <version.microprofile-config-api>1.3</version.microprofile-config-api>
 
-        <!--
-            Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
-            the productized version
-        -->
-        <version.wildfly-jar-maven-plugin>10.0.0.Final</version.wildfly-jar-maven-plugin>
+        <version.wildfly-server>29.0.1.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
@@ -29,7 +25,7 @@
         <!-- Default WildFly `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
         <bom.wildfly-ee.groupId>org.wildfly.bom</bom.wildfly-ee.groupId>
         <bom.wildfly-ee.artifactId>wildfly-ee</bom.wildfly-ee.artifactId>
-        <bom.wildfly-ee.version>29.0.1.Final</bom.wildfly-ee.version>
+        <bom.wildfly-ee.version>${version.wildfly-server}</bom.wildfly-ee.version>
         <!--
             Feature packs and channel:
 
@@ -39,8 +35,8 @@
 
             Note: WF builds have both `wildfly-galleon-pack` and  `wildfly-ee-galleon-pack`
         -->
-        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:29.0.1.Final</wildfly.feature-pack.location>
-        <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:29.0.1.Final</wildfly.ee-feature-pack.location>
+        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
+        <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
         <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:4.0.3.Final</wildfly.cloud-feature-pack.location>
     </properties>
 
@@ -58,13 +54,6 @@
                 <version>${bom.wildfly-ee.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
-            </dependency>
-            <!-- Used by WildFly bootable-jar app-->
-            <dependency>
-                <groupId>org.eclipse.microprofile.config</groupId>
-                <artifactId>microprofile-config-api</artifactId>
-                <version>${version.microprofile-config-api}</version>
-                <scope>provided</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
