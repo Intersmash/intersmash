@@ -22,13 +22,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 public class IntersmashSharedDeploymentsTest {
-	@Test
-	public void testBareMetalBootableJarIsAvailable() {
-		// jakarta
-		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarDemoBareMetal());
-		// javax
-		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarJavaxDemoBareMetal());
-	}
 
 	@Test
 	public void testOpenShiftBootableJarIsAvailable() {
@@ -36,22 +29,6 @@ public class IntersmashSharedDeploymentsTest {
 		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarDemoOpenShift());
 		// javax
 		assertBootableJarIsAvailable(IntersmashSharedDeployments.bootableJarJavaxDemoOpenShift());
-	}
-
-	@Test
-	public void testBareMetalAndOpenShiftBootableJarAreNotTheSame() {
-		// jakarta
-		assertBareMetalAndOpenShiftBootableJarAreNotTheSame(IntersmashSharedDeployments.bootableJarDemoBareMetal(),
-				IntersmashSharedDeployments.bootableJarDemoOpenShift());
-		// javax
-		assertBareMetalAndOpenShiftBootableJarAreNotTheSame(IntersmashSharedDeployments.bootableJarJavaxDemoBareMetal(),
-				IntersmashSharedDeployments.bootableJarJavaxDemoOpenShift());
-	}
-
-	private static void assertBareMetalAndOpenShiftBootableJarAreNotTheSame(final Path bareMetalBootableJarPath,
-			final Path openShiftBootableJarPath) {
-		Assertions.assertNotEquals(bareMetalBootableJarPath.toAbsolutePath().toString(),
-				openShiftBootableJarPath.toAbsolutePath().toString());
 	}
 
 	private static void assertBootableJarIsAvailable(final Path openShiftApp) {

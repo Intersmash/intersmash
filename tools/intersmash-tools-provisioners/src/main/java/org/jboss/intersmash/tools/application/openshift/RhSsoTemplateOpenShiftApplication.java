@@ -16,7 +16,7 @@ import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
  * </pre>
  * The application will be deployed by:
  * <ul>
- *     <li>{@link RhSsoTemplateOpenShiftProvisioner}</li>
+ *     <li>{@link org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner}</li>
  * </ul>
  * <p>
  * See {@link RhSsoTemplate} for available templates the

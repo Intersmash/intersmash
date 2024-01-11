@@ -2,11 +2,37 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>intersmash-parent</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+
     <name>Intersmash Parent: Aggregator</name>
+    <description>Intersmash - Run your cloud-native tests with Java!</description>
+    <url>http://github.com/Intersmash/intersmash</url>
+
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Fabio Burzigotti</name>
+            <email>fburzigo@redhat.com</email>
+            <organization>Red Hat</organization>
+            <organizationUrl>http://www.redhat.com</organizationUrl>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/Intersmash/intersmash.git</connection>
+        <developerConnection>scm:git:ssh://github.com:Intersmash/intersmash.git</developerConnection>
+        <url>http://github.com/Intersmash/intersmash/tree/main</url>
+    </scm>
 
     <modules>
         <module>tools</module>
@@ -75,7 +101,7 @@
         <version.maven-dependency-plugin>3.2.0</version.maven-dependency-plugin>
         <version.maven-deploy-plugin>3.0.0-M1</version.maven-deploy-plugin>
         <version.maven-source-plugin>3.2.1</version.maven-source-plugin>
-        <version.maven-javadoc-plugin>3.3.0</version.maven-javadoc-plugin>
+        <version.maven-javadoc-plugin>3.5.0</version.maven-javadoc-plugin>
         <!--
             This is needed now since XTF is using 3.11 and instead maven-aether-provider pulls 3.4 which is missing
             SystemUtils#IS_Z_OS
@@ -97,6 +123,7 @@
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
         <version.sundrio.builder-annotations>0.101.0</version.sundrio.builder-annotations>
+        <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
 
         <!--
             By default, the follwing prop is empty, stating that the build profile (community vs. productized bits)
@@ -420,11 +447,27 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${version.maven-source-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>${version.maven-javadoc-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -489,6 +532,20 @@
                     <artifactId>java-generator-maven-plugin</artifactId>
                     <version>${version.io.fabric8}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${version.maven-gpg-plugin}</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
@@ -542,11 +599,6 @@
                     </filesets>
                 </configuration>
             </plugin>
-            <!--
-                The intersmash-parent POM must be published because there are projects which could use it, even as a
-                transitive dependency, e.g.: external projects using intersmash-deployments as the parent POM would
-                need intersmash-parent as well.
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -594,6 +646,26 @@
             <modules>
                 <module>demos</module>
             </modules>
+        </profile>
+        <profile>
+            <id>publish</id>
+            <build>
+                <plugins>
+                    <!--
+                        The intersmash-parent POM must be published because there are projects which could use it, even as a
+                        transitive dependency, e.g.: external projects using intersmash-deployments as the parent POM would
+                        need intersmash-parent as well.
+                    -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
