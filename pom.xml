@@ -61,7 +61,7 @@
         <version.lombok>1.18.20</version.lombok>
         <version.org.hamcrest>1.3</version.org.hamcrest>
         <version.mockito.core>4.9.0</version.mockito.core>
-        <version.logback>1.2.3</version.logback>
+        <version.logback>1.2.13</version.logback>
         <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.ide-config>1.1</version.ide-config>
         <version.io.strimzi-api>0.38.0</version.io.strimzi-api>
