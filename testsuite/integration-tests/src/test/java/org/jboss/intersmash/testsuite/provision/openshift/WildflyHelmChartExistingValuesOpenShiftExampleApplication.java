@@ -20,12 +20,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jboss.intersmash.deployments.WildflyDeploymentApplicationConfiguration;
+import org.jboss.intersmash.IntersmashConfig;
+import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
+import org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
-import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
+import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.WildFlyHelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 
 import io.fabric8.kubernetes.api.model.Secret;
 

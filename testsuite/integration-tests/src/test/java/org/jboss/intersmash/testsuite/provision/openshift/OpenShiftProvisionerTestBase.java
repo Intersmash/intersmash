@@ -28,30 +28,30 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.util.Strings;
+import org.jboss.intersmash.IntersmashConfig;
+import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
+import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.WildflyImageOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.input.BinarySource;
+import org.jboss.intersmash.application.openshift.input.BuildInput;
+import org.jboss.intersmash.application.openshift.input.BuildInputBuilder;
+import org.jboss.intersmash.application.openshift.template.Eap7Template;
+import org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate;
+import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
-import org.jboss.intersmash.tools.IntersmashConfig;
-import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.Eap7ImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
-import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.PostgreSQLImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.PostgreSQLTemplateOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.RhSsoTemplateOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
-import org.jboss.intersmash.tools.application.openshift.input.BuildInput;
-import org.jboss.intersmash.tools.application.openshift.input.BuildInputBuilder;
-import org.jboss.intersmash.tools.application.openshift.template.Eap7Template;
-import org.jboss.intersmash.tools.application.openshift.template.PostgreSQLTemplate;
-import org.jboss.intersmash.tools.application.openshift.template.RhSsoTemplate;
-import org.jboss.intersmash.tools.util.ProcessKeystoreGenerator;
-import org.jboss.intersmash.tools.util.openshift.WildflyOpenShiftUtils;
-import org.jboss.intersmash.tools.util.wildfly.Eap7CliScriptBuilder;
+import org.jboss.intersmash.util.ProcessKeystoreGenerator;
+import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
+import org.jboss.intersmash.util.wildfly.Eap7CliScriptBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
@@ -303,7 +303,7 @@ public class OpenShiftProvisionerTestBase {
 				List<EnvVar> list = new ArrayList<>();
 				list.add(new EnvVarBuilder().withName(TEST_ENV_VAR.getName()).withValue(TEST_ENV_VAR.getValue()).build());
 				// Let's skip addition of the CLI_LAUNCH_SCRIPT environment variable here to test that it's added automatically
-				// in org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner#deployImage().
+				// in org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner#deployImage().
 				list.add(new EnvVarBuilder().withName("ADMIN_USERNAME").withValue("admin").build());
 				list.add(new EnvVarBuilder().withName("ADMIN_PASSWORD").withValue("pass.1234").build());
 				if (!Strings.isNullOrEmpty(this.getMavenMirrorUrl())) {

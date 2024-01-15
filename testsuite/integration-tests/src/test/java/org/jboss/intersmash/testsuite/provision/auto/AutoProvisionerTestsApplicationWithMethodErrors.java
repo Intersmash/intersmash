@@ -17,9 +17,9 @@ package org.jboss.intersmash.testsuite.provision.auto;
 
 import java.net.URL;
 
-import org.jboss.intersmash.tools.application.auto.AutoProvisioningExecutionException;
-import org.jboss.intersmash.tools.application.openshift.AutoProvisioningOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.Provisioner;
+import org.jboss.intersmash.application.auto.AutoProvisioningExecutionException;
+import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
+import org.jboss.intersmash.provision.Provisioner;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -23,9 +23,9 @@ import java.net.URL;
 import javax.xml.namespace.QName;
 
 import org.assertj.core.api.Assertions;
-import org.jboss.intersmash.tools.annotations.Intersmash;
-import org.jboss.intersmash.tools.annotations.Service;
-import org.jboss.intersmash.tools.annotations.ServiceUrl;
+import org.jboss.intersmash.annotations.Intersmash;
+import org.jboss.intersmash.annotations.Service;
+import org.jboss.intersmash.annotations.ServiceUrl;
 import org.junit.jupiter.api.Test;
 
 import lombok.extern.slf4j.Slf4j;

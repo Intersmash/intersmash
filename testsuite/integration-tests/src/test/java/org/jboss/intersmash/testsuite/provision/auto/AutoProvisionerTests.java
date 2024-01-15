@@ -15,10 +15,10 @@
  */
 package org.jboss.intersmash.testsuite.provision.auto;
 
-import org.jboss.intersmash.tools.application.openshift.AutoProvisioningOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
-import org.jboss.intersmash.tools.provision.auto.AutoProvisioningManagedException;
-import org.jboss.intersmash.tools.provision.openshift.auto.OpenShiftAutoProvisioner;
+import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.OpenShiftApplication;
+import org.jboss.intersmash.provision.auto.AutoProvisioningManagedException;
+import org.jboss.intersmash.provision.openshift.auto.OpenShiftAutoProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

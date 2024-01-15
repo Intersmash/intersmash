@@ -23,9 +23,9 @@ import java.util.List;
 
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.input.BinarySource;
 import org.jboss.intersmash.test.deployments.util.maven.ArtifactProvider;
-import org.jboss.intersmash.tools.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.input.BinarySource;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;

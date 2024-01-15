@@ -135,13 +135,13 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash</groupId>
-            <artifactId>intersmash-tools-core</artifactId>
+            <artifactId>intersmash-core</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash</groupId>
-            <artifactId>intersmash-tools-provisioners</artifactId>
+            <artifactId>intersmash-provisioners</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>

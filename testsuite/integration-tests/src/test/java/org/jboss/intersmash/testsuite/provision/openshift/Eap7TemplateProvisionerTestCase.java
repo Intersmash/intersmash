@@ -19,9 +19,9 @@ import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
+import org.jboss.intersmash.provision.openshift.Eap7TemplateOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
-import org.jboss.intersmash.tools.application.openshift.Eap7TemplateOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.Eap7TemplateOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

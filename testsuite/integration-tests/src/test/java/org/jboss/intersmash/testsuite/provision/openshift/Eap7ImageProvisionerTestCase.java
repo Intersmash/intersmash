@@ -20,9 +20,9 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
+import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
+import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
-import org.jboss.intersmash.tools.application.openshift.Eap7ImageOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

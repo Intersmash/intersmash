@@ -17,16 +17,16 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
+import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
-import org.jboss.intersmash.tools.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

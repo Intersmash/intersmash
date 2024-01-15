@@ -17,10 +17,10 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
 
-import org.jboss.intersmash.tools.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.tools.junit5.IntersmashExtension;
-import org.jboss.intersmash.tools.provision.openshift.KafkaOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
+import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.provision.openshift.KafkaOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

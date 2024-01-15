@@ -15,12 +15,12 @@
  */
 package org.jboss.intersmash.testsuite.provision.auto;
 
-import org.jboss.intersmash.tools.annotations.Intersmash;
-import org.jboss.intersmash.tools.annotations.Service;
-import org.jboss.intersmash.tools.annotations.ServiceProvisioner;
-import org.jboss.intersmash.tools.annotations.ServiceUrl;
-import org.jboss.intersmash.tools.application.openshift.AutoProvisioningOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.annotations.Intersmash;
+import org.jboss.intersmash.annotations.Service;
+import org.jboss.intersmash.annotations.ServiceProvisioner;
+import org.jboss.intersmash.annotations.ServiceUrl;
+import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
+import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShiftWaiters;

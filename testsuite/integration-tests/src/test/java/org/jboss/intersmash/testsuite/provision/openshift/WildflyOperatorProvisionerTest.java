@@ -17,13 +17,13 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
 
+import org.jboss.intersmash.application.openshift.WildflyOperatorApplication;
+import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.provision.openshift.WildflyOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.operator.OperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
+import org.jboss.intersmash.provision.openshift.operator.wildfly.WildFlyServerBuilder;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
-import org.jboss.intersmash.tools.application.openshift.WildflyOperatorApplication;
-import org.jboss.intersmash.tools.junit5.IntersmashExtension;
-import org.jboss.intersmash.tools.provision.openshift.WildflyOperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.tools.provision.openshift.operator.resources.OperatorGroup;
-import org.jboss.intersmash.tools.provision.openshift.operator.wildfly.WildFlyServerBuilder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

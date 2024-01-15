@@ -23,8 +23,8 @@ import java.util.Map;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
-import org.jboss.intersmash.tools.application.openshift.WildflyImageOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.WildflyImageOpenShiftProvisioner;
+import org.jboss.intersmash.application.openshift.WildflyImageOpenShiftApplication;
+import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

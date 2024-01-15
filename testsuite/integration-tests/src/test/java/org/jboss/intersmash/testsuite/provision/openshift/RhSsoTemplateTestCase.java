@@ -1,9 +1,9 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
+import org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication;
+import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
-import org.jboss.intersmash.tools.application.openshift.RhSsoTemplateOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

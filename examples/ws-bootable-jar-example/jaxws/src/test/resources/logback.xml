@@ -48,7 +48,7 @@
         <appender-ref ref="asyncConsoleAppender"/>
     </logger>
 
-    <logger name="org.jboss.intersmash.tools" level="DEBUG">
+    <logger name="org.jboss.intersmash" level="DEBUG">
         <appender-ref ref="asyncTestAppender"/>
         <appender-ref ref="asyncConsoleAppender"/>
     </logger>

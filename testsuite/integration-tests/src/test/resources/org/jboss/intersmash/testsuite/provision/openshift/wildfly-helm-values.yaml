@@ -2,7 +2,7 @@ build:
   enabled: true
   mode: "s2i"
   # uri and ref will be specified via Helm --set arguments
-  contextDir: "deployments/openshift-jakarta-sample-standalone"
+  contextDir: "testsuite/deployments/openshift-jakarta-sample-standalone"
   env:
     - name: "MAVEN_ARGS_APPEND"
       value: "-Denforcer.skip=true"

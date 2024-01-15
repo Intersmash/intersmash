@@ -85,8 +85,6 @@
         </dependencies>
     </dependencyManagement>
 
-<<<<<<< HEAD:deployments/pom.xml
-=======
     <build>
         <pluginManagement>
             <plugins>
@@ -128,7 +126,6 @@
         </plugins>
     </build>
 
->>>>>>> 4162055 ([issue 113] - Moving the deployments modules into the testsuite, renaming packages and demos):testsuite/deployments/pom.xml
     <profiles>
         <profile>
             <id>publish</id>

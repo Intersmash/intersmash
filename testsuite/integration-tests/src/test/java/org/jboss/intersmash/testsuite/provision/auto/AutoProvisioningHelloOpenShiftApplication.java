@@ -24,9 +24,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
-import org.jboss.intersmash.tools.application.auto.AutoProvisioningExecutionException;
-import org.jboss.intersmash.tools.application.openshift.AutoProvisioningOpenShiftApplication;
-import org.jboss.intersmash.tools.application.openshift.OpenShiftApplication;
+import org.jboss.intersmash.application.auto.AutoProvisioningExecutionException;
+import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.OpenShiftApplication;
 
 import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
@@ -44,9 +44,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AutoProvisioningHelloOpenShiftApplication implements AutoProvisioningOpenShiftApplication {
 
-	private static final String HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION = "target/test-classes/org/jboss/intersmash/tools/provision/openshift/auto/hello-openshift-deployment.yaml";
-	private static final String HELLO_OPENSHIFT_SERVICE_DEFINITION = "target/test-classes/org/jboss/intersmash/tools/provision/openshift/auto/hello-openshift-service.yaml";
-	private static final String HELLO_OPENSHIFT_ROUTE_DEFINITION = "target/test-classes/org/jboss/intersmash/tools/provision/openshift/auto/hello-openshift-route.yaml";
+	// TODO - intentionally using target files here, to be changed
+	private static final String HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION = "target/test-classes/org/jboss/intersmash/testsuite/provision/openshift/auto/hello-openshift-deployment.yaml";
+	private static final String HELLO_OPENSHIFT_SERVICE_DEFINITION = "target/test-classes/org/jboss/intersmash/testsuite/provision/openshift/auto/hello-openshift-service.yaml";
+	private static final String HELLO_OPENSHIFT_ROUTE_DEFINITION = "target/test-classes/org/jboss/intersmash/testsuite/provision/openshift/auto/hello-openshift-route.yaml";
 	private static final String HELLO_OPENSHIFT_APP_NAME = "hello-openshift";
 	private static final String HELLO_OPENSHIFT_APP_REPLICAS_PLACEHOLDER = "autoprovisioning-hello-openshift-app-replicas-changeme";
 

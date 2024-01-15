@@ -34,11 +34,11 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash</groupId>
-            <artifactId>intersmash-tools-core</artifactId>
+            <artifactId>intersmash-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash</groupId>
-            <artifactId>intersmash-tools-provisioners</artifactId>
+            <artifactId>intersmash-provisioners</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash.test</groupId>

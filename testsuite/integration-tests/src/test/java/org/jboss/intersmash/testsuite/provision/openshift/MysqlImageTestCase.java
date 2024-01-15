@@ -16,9 +16,9 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
+import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
+import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
-import org.jboss.intersmash.tools.application.openshift.MysqlImageOpenShiftApplication;
-import org.jboss.intersmash.tools.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
