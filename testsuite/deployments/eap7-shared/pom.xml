@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash.test</groupId>
+        <artifactId>test-deployments</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <packaging>pom</packaging>
+    <artifactId>eap7-shared</artifactId>
+
+    <name>Intersmash Test Deployments: EAP 7</name>
+
+    <properties>
+        <!-- EAP 7 deployments must run on JDK 8 too -->
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- Default EAP 7 version -->
+        <jboss-eap7.version>7.4.13.GA</jboss-eap7.version>
+        <jboss-eap7-xp.version>4.0.1.GA-7.4.13.GA</jboss-eap7-xp.version>
+        <!-- Default EAP `ee` BOMs version is set here for pulling the right EAP BOM -->
+        <bom.jboss-eap7-jakartaee.groupId>org.jboss.bom</bom.jboss-eap7-jakartaee.groupId>
+        <bom.jboss-eap7-jakartaee.artifactId>jboss-eap-jakartaee8</bom.jboss-eap7-jakartaee.artifactId>
+        <bom.jboss-eap7-jakartaee.version>${jboss-eap7.version}</bom.jboss-eap7-jakartaee.version>
+
+        <eap7.xp-feature-pack.location>org.jboss.eap:wildfly-galleon-pack:4.0.1.GA-redhat-00007</eap7.xp-feature-pack.location>
+    </properties>
+
+    <modules>
+        <module>eap7-helloworld</module>
+        <module>eap7-bootable-jar</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Lock all the provided dependencies to match the EAP 7 version -->
+            <dependency>
+                <groupId>${bom.jboss-eap7-jakartaee.groupId}</groupId>
+                <artifactId>${bom.jboss-eap7-jakartaee.artifactId}</artifactId>
+                <version>${bom.jboss-eap7-jakartaee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--
+                    All EAP 7 deployments are setting the WAR file name to ROOT, according to the parent POM
+                    maven-war-plugin configuration
+                -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${version.maven-war-plugin}</version>
+                    <configuration>
+                        <warName>ROOT</warName>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>wildfly-deployments-build.eap</id>
+            <build>
+                <plugins>
+                    <!-- Disable the Bootable JAR plugin when testing EAP -->
+                    <plugin>
+                        <groupId>org.wildfly.plugins</groupId>
+                        <artifactId>wildfly-jar-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>bootable-openshift</id>
+                                <phase>none</phase>
+                            </execution>
+                            <execution>
+                                <id>bootable-baremetal</id>
+                                <phase>none</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <!-- Don't copy any Bootable JAR since none is built when EAP is being tested-->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-bootable-jar-openshift</id>
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>install-bootable-jar-baremetal</id>
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>bootable-jar-openshift</id>
+            <activation>
+                <file>
+                    <exists>maven/bootable-jar-openshift</exists>
+                </file>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.wildfly.plugins</groupId>
+                            <artifactId>wildfly-jar-maven-plugin</artifactId>
+                            <!-- Two package goals - OpenShift and bare metal but we still need to ensure that artifacts are installed correctly into maven repo -->
+                            <executions>
+                                <execution>
+                                    <!-- Create bootable jar for cloud environment - use already defined configuration and add filename & cloud support -->
+                                    <id>bootable-openshift</id>
+                                    <configuration>
+                                        <output-file-name>${project.build.finalName}-bootable-openshift.jar</output-file-name>
+                                        <!-- Enable cloud support for OCP -->
+                                        <cloud/>
+                                    </configuration>
+                                    <goals>
+                                        <goal>package</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <!-- Install artifacts created by wildfly-jar-maven-plugin plugin manually since the plugin installs it under same name -->
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-install-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>install-bootable-jar-openshift</id>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>install-file</goal>
+                                    </goals>
+                                    <configuration>
+                                        <groupId>${project.groupId}</groupId>
+                                        <artifactId>${project.artifactId}</artifactId>
+                                        <version>${project.version}</version>
+                                        <packaging>jar</packaging>
+                                        <classifier>bootable-openshift</classifier>
+                                        <file>${project.build.directory}/${project.build.finalName}-bootable-openshift.jar
+                                        </file>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+        <profile>
+            <!-- We could leverage this activation to generate a parallel Bootable JAR for bare metal-->
+            <id>bootable-jar-baremetal</id>
+            <activation>
+                <file>
+                    <exists>maven/bootable-jar-baremetal</exists>
+                </file>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.wildfly.plugins</groupId>
+                            <artifactId>wildfly-jar-maven-plugin</artifactId>
+                            <!-- Bare metal but we still need to ensure that artifacts are installed correctly into maven repo -->
+                            <executions>
+                                <execution>
+                                    <!-- Create bootable jar for bare metal environment - use already defined configuration and add filename & cloud support -->
+                                    <id>bootable-baremetal</id>
+                                    <configuration>
+                                        <output-file-name>${project.build.finalName}-bootable-baremetal.jar</output-file-name>
+                                    </configuration>
+                                    <goals>
+                                        <goal>package</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+                        <plugin>
+                            <!-- Install artifacts created by wildfly-jar-maven-plugin plugin manually since the plugin installs it under same name -->
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-install-plugin</artifactId>
+                            <executions>
+                                <execution>
+                                    <id>install-bootable-jar-baremetal</id>
+                                    <phase>install</phase>
+                                    <goals>
+                                        <goal>install-file</goal>
+                                    </goals>
+                                    <configuration>
+                                        <groupId>${project.groupId}</groupId>
+                                        <artifactId>${project.artifactId}</artifactId>
+                                        <version>${project.version}</version>
+                                        <packaging>jar</packaging>
+                                        <classifier>bootable-baremetal</classifier>
+                                        <file>${project.build.directory}/${project.build.finalName}-bootable-baremetal.jar
+                                        </file>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+    </profiles>
+</project>

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.jboss.intersmash</groupId>
+    <artifactId>openshift-jakarta-sample-standalone</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <name>Intersmash Test Deployments: OpenShift Jakarta Sample standalone deployment</name>
+
+    <properties>
+        <formatting-style-base-directory>${project.basedir}/ide-config</formatting-style-base-directory>
+        <formatting-style-file>eclipse-format.xml</formatting-style-file>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
+        <version.impsort-maven-plugin>1.8.0</version.impsort-maven-plugin>
+        <version.ide-config>1.1</version.ide-config>
+        <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
+
+        <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+        <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
+        <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
+        <wildfly-maven-plugin.version>4.2.0.Final</wildfly-maven-plugin.version>
+        <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+        <bom.wildfly-ee.groupId>org.wildfly.bom</bom.wildfly-ee.groupId>
+        <bom.wildfly-ee.artifactId>wildfly-ee</bom.wildfly-ee.artifactId>
+        <bom.wildfly-ee.version>29.0.1.Final</bom.wildfly-ee.version>
+        <!--
+            EAP8 feature packs and channel:
+
+                - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+            Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
+            Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+        -->
+        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:29.0.1.Final</wildfly.feature-pack.location>
+        <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:29.0.1.Final</wildfly.ee-feature-pack.location>
+        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:4.0.3.Final</wildfly.cloud-feature-pack.location>
+
+        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
+        <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Lock all the provided dependencies to match the WildFly/EAP version -->
+            <dependency>
+                <groupId>${bom.wildfly-ee.groupId}</groupId>
+                <artifactId>${bom.wildfly-ee.artifactId}</artifactId>
+                <version>${bom.wildfly-ee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>ROOT</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                    <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+                    <version>${wildfly-maven-plugin.version}</version>
+                    <configuration>
+                        <runtime-name>ROOT.war</runtime-name>
+                        <galleon-options>
+                            <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                 wildfly-jar-maven-plugin would collide  -->
+                            <jboss-fork-embedded>true</jboss-fork-embedded>
+                        </galleon-options>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>package</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>net.revelc.code.formatter</groupId>
+                    <artifactId>formatter-maven-plugin</artifactId>
+                    <version>${version.formatter-maven-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>net.revelc.code</groupId>
+                    <artifactId>impsort-maven-plugin</artifactId>
+                    <version>${version.impsort-maven-plugin}</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${version.spotless-maven-plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>net.revelc.code.formatter</groupId>
+                <artifactId>formatter-maven-plugin</artifactId>
+                <configuration>
+                    <configFile>${formatting-style-base-directory}/${formatting-style-file}</configFile>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>format</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>net.revelc.code</groupId>
+                <artifactId>impsort-maven-plugin</artifactId>
+                <configuration>
+                    <groups>jakarta.,java.,javax.,org.,com.</groups>
+                    <staticGroups>*</staticGroups>
+                    <removeUnused>true</removeUnused>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>sort-imports</id>
+                        <goals>
+                            <goal>sort</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${maven-war-plugin.version}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+<!--                    <outputDirectory>target</outputDirectory>-->
+                    <warName>ROOT</warName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+                <configuration>
+                    <!-- some tests check for the provisioned galleon layers -->
+                    <record-provisioning-state>true</record-provisioning-state>
+                    <feature-packs>
+                        <feature-pack>
+                            <location>${wildfly.feature-pack.location}</location>
+                        </feature-pack>
+                        <feature-pack>
+                            <location>${wildfly.cloud-feature-pack.location}</location>
+                        </feature-pack>
+                    </feature-packs>
+                    <layers>
+                        <layer>cloud-default-config</layer>
+                    </layers>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <configuration>
+                    <!-- define a language-specific format -->
+                    <java>
+                        <!-- make sure every file has the following copyright header.
+                          optionally, Spotless can set copyright years by digging
+                          through git history (see "license" section below) -->
+                        <licenseHeader>
+                            <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
+                        </licenseHeader>
+                    </java>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>wildfly-deployments-build.eap</id>
+            <properties>
+                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>1.0.0.Beta6-redhat-00001</wildfly-maven-plugin.version>
+                <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+                <bom.wildfly-ee.groupId>org.jboss.bom</bom.wildfly-ee.groupId>
+                <bom.wildfly-ee.artifactId>jboss-eap-ee</bom.wildfly-ee.artifactId>
+                <bom.wildfly-ee.version>8.0.0.Beta-redhat-00004</bom.wildfly-ee.version>
+                <!--
+                    EAP8 feature packs and channel:
+
+                        - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                        - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                        - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+                    Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
+                    Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+                -->
+                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.Beta-redhat-00003</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.Beta-redhat-00003</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Beta2-redhat-00001</wildfly.cloud-feature-pack.location>
+                <!-- EAP 8 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0-beta</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.0.Beta4-redhat-00002</wildfly.ee-channel.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                        <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+                        <configuration>
+                            <!-- some tests check for the provisioned galleon layers -->
+                            <record-provisioning-state>true</record-provisioning-state>
+                            <channels>
+                                <channel>
+                                    <groupId>${wildfly.ee-channel.groupId}</groupId>
+                                    <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
+                                    <version>${wildfly.ee-channel.version}</version>
+                                </channel>
+                            </channels>
+                            <feature-packs>
+                                <feature-pack>
+                                    <location>${wildfly.ee-feature-pack.location}</location>
+                                </feature-pack>
+                                <feature-pack>
+                                    <location>${wildfly.cloud-feature-pack.location}</location>
+                                </feature-pack>
+                            </feature-packs>
+                            <layers>
+                                <layer>cloud-default-config</layer>
+                            </layers>
+                            <galleon-options>
+                                <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                     wildfly-jar-maven-plugin would collide  -->
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </galleon-options>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>wildfly-deployments-build.eap8</id>
+            <properties>
+                <!-- EAP 8 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>NO_VERSION</wildfly.ee-channel.version>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                        <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+                        <configuration>
+                            <!-- some tests check for the provisioned galleon layers -->
+                            <record-provisioning-state>true</record-provisioning-state>
+                            <channels>
+                                <channel>
+                                    <manifest>
+                                        <groupId>${wildfly.ee-channel.groupId}</groupId>
+                                        <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
+                                        <version>${wildfly.ee-channel.version}</version>
+                                    </manifest>
+                                </channel>
+                            </channels>
+                            <feature-packs>
+                                <feature-pack>
+                                    <location>${wildfly.ee-feature-pack.location}</location>
+                                </feature-pack>
+                                <feature-pack>
+                                    <location>${wildfly.cloud-feature-pack.location}</location>
+                                </feature-pack>
+                            </feature-packs>
+                            <layers>
+                                <layer>cloud-default-config</layer>
+                            </layers>
+                            <galleon-options>
+                                <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                     wildfly-jar-maven-plugin would collide  -->
+                                <jboss-fork-embedded>true</jboss-fork-embedded>
+                            </galleon-options>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>package</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>redhat-ga-repository</id>
+            <name>RedHat GA Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>jboss-releases-repository</id>
+            <name>JBoss Releases Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>jboss-snapshots-repository</id>
+            <name>JBoss Snapshots Repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/snapshots</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>redhat-ea-maven-repository</id>
+            <name>Red Hat Early Access Maven Repository</name>
+            <url>https://maven.repository.redhat.com/earlyaccess/all/</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+            <layout>default</layout>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>redhat-ga-repository</id>
+            <name>RedHat GA Repository</name>
+            <url>https://maven.repository.redhat.com/ga/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>redhat-ea-maven-repository</id>
+            <name>Red Hat Early Access Maven Repository</name>
+            <url>https://maven.repository.redhat.com/earlyaccess/all/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+</project>

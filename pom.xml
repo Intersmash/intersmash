@@ -36,7 +36,6 @@
 
     <modules>
         <module>tools</module>
-        <module>deployments</module>
         <module>testsuite</module>
     </modules>
 
@@ -89,7 +88,7 @@
              https://issues.apache.org/jira/browse/SUREFIRE-1827
              we cannot use M4 where failures in BeforeAllCallback are ignored
              https://issues.apache.org/jira/browse/SUREFIRE-1688
-             we cannot use <=M3 where tests in intersmash-demos-deployments are ignored for some reason
+             we cannot use <=M3 where tests in deployments are ignored for some reason
              -->
         <version.maven-surefire-plugin>3.0.0-M5</version.maven-surefire-plugin>
 
@@ -175,7 +174,6 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${version.org.apache.commons.commons-lang3}</version>
             </dependency>
-            <!-- The Intersmash library generated artifacts' versions (e.g.: used by intersmash-demos) -->
             <dependency>
                 <groupId>org.jboss.intersmash</groupId>
                 <artifactId>intersmash-tools-core</artifactId>
@@ -184,16 +182,6 @@
             <dependency>
                 <groupId>org.jboss.intersmash</groupId>
                 <artifactId>intersmash-tools-provisioners</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.intersmash</groupId>
-                <artifactId>intersmash-deployments-provider</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.intersmash</groupId>
-                <artifactId>intersmash-deployments-shared</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- XTF dependencies -->
@@ -599,6 +587,9 @@
                     </filesets>
                 </configuration>
             </plugin>
+            <!--
+                The intersmash-parent POM must be published because it would be pulled transitively during the build
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -644,7 +635,7 @@
         <profile>
             <id>demo</id>
             <modules>
-                <module>demos</module>
+                <module>examples</module>
             </modules>
         </profile>
         <profile>

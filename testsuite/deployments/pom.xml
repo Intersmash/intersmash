@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash.test</groupId>
+        <artifactId>intersmash-testsuite</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>test-deployments</artifactId>
+    <packaging>pom</packaging>
+
+    <name>Intersmash Test Deployments</name>
+
+    <modules>
+        <module>deployments-provider</module>
+        <module>wildfly-shared</module>
+        <module>openshift-jakarta-sample-standalone</module>
+        <module>eap7-shared</module>
+    </modules>
+
+    <properties>
+        <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
+
+        <version.aether>1.1.0</version.aether>
+        <version.maven>3.3.9</version.maven>
+
+        <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
+        <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
+
+        <!-- By default, the following prop is empty, stating that the build profile is none -->
+        <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- The following ones are used by deployments-provider -->
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-api</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-connector-basic</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-impl</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-spi</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-transport-file</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.aether</groupId>
+                <artifactId>aether-transport-http</artifactId>
+                <version>${version.aether}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-aether-provider</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-settings-builder</artifactId>
+                <version>${version.maven}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+<<<<<<< HEAD:deployments/pom.xml
+=======
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${version.maven-install-plugin}</version>
+                </plugin>
+                <plugin>
+                    <!--
+                        At this level, the WAR plugin should only have basic configuration, e.g. don't fail in case
+                        the web.xml is missing. It is common config and useful for all deployments
+                     -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${version.maven-war-plugin}</version>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+        <plugins>
+            <!--
+                We want for tests to be executed by Surefire (in case there will be any), but the inherited
+                configuration is enough for Intersmash test deployments
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <!--
+                    The test-deployments POM and submodules must be published because are pulled in transitively
+                -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+>>>>>>> 4162055 ([issue 113] - Moving the deployments modules into the testsuite, renaming packages and demos):testsuite/deployments/pom.xml
+    <profiles>
+        <profile>
+            <id>publish</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
