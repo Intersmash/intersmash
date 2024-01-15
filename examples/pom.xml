@@ -9,11 +9,11 @@
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-
-    <name>Intersmash Examples</name>
-
+    <groupId>org.jboss.intersmash.examples</groupId>
     <artifactId>intersmash-examples</artifactId>
     <packaging>pom</packaging>
+
+    <name>Intersmash Examples</name>
 
     <modules>
         <module>ws-bootable-jar-example</module>

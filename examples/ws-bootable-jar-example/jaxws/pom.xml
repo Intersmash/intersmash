@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jboss.intersmash</groupId>
+        <groupId>org.jboss.intersmash.examples</groupId>
         <artifactId>ws-bootable-jar-example</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>

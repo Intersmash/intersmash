@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.jboss.intersmash</groupId>
-        <artifactId>intersmash-demos</artifactId>
+        <groupId>org.jboss.intersmash.examples</groupId>
+        <artifactId>intersmash-examples</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -33,6 +33,11 @@
          <version.org.glassfish.jaxb>4.0.4</version.org.glassfish.jaxb>
          <version.jaxb-api>2.4.0-b180830.0359</version.jaxb-api>
 
+         <!--
+            Default version for the Bootable JAR Plugin is set here and can be overridden,
+            e.g. also for pulling the productized version
+         -->
+         <version.wildfly-jar-maven-plugin>10.0.0.Final</version.wildfly-jar-maven-plugin>
      </properties>
 
      <dependencyManagement>
@@ -83,7 +88,7 @@
                  </exclusions>
              </dependency>
              <dependency>
-                 <groupId>org.jboss.intersmash</groupId>
+                 <groupId>org.jboss.intersmash.examples</groupId>
                  <artifactId>wstrust-shared</artifactId>
                  <version>${project.version}</version>
              </dependency>
@@ -143,6 +148,13 @@
                  <artifactId>jaxb-core</artifactId>
                  <version>${version.org.glassfish.jaxb}</version>
              </dependency>
+
+             <dependency>
+                 <groupId>org.jboss.intersmash.test</groupId>
+                 <artifactId>deployments-provider</artifactId>
+                 <version>${project.version}</version>
+                 <scope>test</scope>
+             </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -154,8 +166,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jboss.intersmash</groupId>
-            <artifactId>intersmash-deployments-provider</artifactId>
+            <groupId>org.jboss.intersmash.test</groupId>
+            <artifactId>deployments-provider</artifactId>
         </dependency>
     </dependencies>
 </project>

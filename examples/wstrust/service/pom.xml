@@ -28,7 +28,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jboss.intersmash</groupId>
+        <groupId>org.jboss.intersmash.examples</groupId>
         <artifactId>wstrust-parent</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
@@ -43,11 +43,6 @@
         <formatting-style-base-directory>${project.parent.parent.parent.basedir}/ide-config
         </formatting-style-base-directory>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
-        <!--
-            Default version for the Bootable JAR Plugin is set here and can be overridden,
-            e.g. also for pulling the productized version
-        -->
-        <version.wildfly-jar-maven-plugin>10.0.0.Final</version.wildfly-jar-maven-plugin>
 
         <version.wildfly.feature-pack>29.0.1.Final</version.wildfly.feature-pack>
     </properties>
@@ -58,7 +53,7 @@
             <artifactId>jbossws-cxf-client</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jboss.intersmash</groupId>
+            <groupId>org.jboss.intersmash.examples</groupId>
             <artifactId>wstrust-shared</artifactId>
         </dependency>
     </dependencies>

@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.jboss.intersmash</groupId>
-        <artifactId>intersmash-demos</artifactId>
+        <groupId>org.jboss.intersmash.examples</groupId>
+        <artifactId>intersmash-examples</artifactId>
         <version>0.0.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
@@ -95,6 +95,13 @@
                 <artifactId>openshift-client</artifactId>
                 <version>${version.openshift-client}</version>
             </dependency>
+
+             <dependency>
+                 <groupId>org.jboss.intersmash.test</groupId>
+                 <artifactId>deployments-provider</artifactId>
+                 <version>${project.version}</version>
+                 <scope>test</scope>
+             </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -156,10 +163,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jboss.intersmash</groupId>
-            <artifactId>intersmash-deployments-provider</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
+            <groupId>org.jboss.intersmash.test</groupId>
+            <artifactId>deployments-provider</artifactId>
         </dependency>
         <dependency>
             <groupId>io.fabric8</groupId>
