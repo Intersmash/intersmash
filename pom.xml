@@ -124,12 +124,6 @@
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
         <version.sundrio.builder-annotations>0.101.0</version.sundrio.builder-annotations>
         <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
-
-        <!--
-            By default, the follwing prop is empty, stating that the build profile (community vs. productized bits)
-            for WildFly deployment is none
-        -->
-        <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
     </properties>
 
     <dependencyManagement>

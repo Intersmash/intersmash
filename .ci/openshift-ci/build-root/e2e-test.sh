@@ -90,4 +90,4 @@ cat test.properties
 
 mkdir local-repo-community
 mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests
-mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/ -Pts.community
+mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/integration-tests -Pts.community

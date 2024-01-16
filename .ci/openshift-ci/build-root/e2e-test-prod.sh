@@ -95,7 +95,7 @@ cat test.properties
 
 mkdir local-repo-prod
 mvn clean install -Dmaven.repo.local=./local-repo-prod -DskipTests -Pwildfly-deployments-build.eap
-mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/ -Pts.prod \
+mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/integration-tests -Pts.prod \
  -Dintersmash.wildfly.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-builder-openshift-rhel8:1.0.0.Beta \
  -Dintersmash.wildfly.runtime.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-runtime-openshift-rhel8:1.0.0.Beta \
  -Dintersmash.wildfly.operators.catalog_source=redhat-operators \
