@@ -16,11 +16,6 @@
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
         <formatting-style-base-directory>${project.parent.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
-        <!--
-            Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
-            the productized version
-        -->
-        <version.wildfly-jar-maven-plugin>10.0.0.Final</version.wildfly-jar-maven-plugin>
     </properties>
 
     <dependencyManagement>

@@ -38,6 +38,11 @@
         <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
         <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:4.0.3.Final</wildfly.cloud-feature-pack.location>
+        <!--
+            Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
+            the productized version
+        -->
+        <version.wildfly-jar-maven-plugin>10.0.0.Final</version.wildfly-jar-maven-plugin>
     </properties>
 
     <modules>
