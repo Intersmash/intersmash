@@ -20,6 +20,7 @@ import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplicatio
 import org.jboss.intersmash.provision.openshift.BootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
+import org.jboss.intersmash.testsuite.junit5.categories.wildfly.RequiresBootableJarDistribution;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
 @NotForCommunityExecutionProfile
+@RequiresBootableJarDistribution
 public class Eap7BootableJarTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final BootableJarOpenShiftApplication application = OpenShiftProvisionerTestBase

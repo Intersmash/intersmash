@@ -73,7 +73,7 @@
 
     <profiles>
         <profile>
-            <id>wildfly-deployments-build.eap</id>
+            <id>ts.wildfly.target-distribution.eap</id>
             <build>
                 <plugins>
                     <!-- Disable the Bootable JAR plugin when testing EAP -->

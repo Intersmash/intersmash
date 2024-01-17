@@ -75,7 +75,7 @@
 
     <profiles>
         <profile>
-            <id>wildfly-deployments-build.eap</id>
+            <id>ts.wildfly.target-distribution.eap</id>
             <properties>
                 <!--
                     When this profile is active, the following property is set to have it available at runtime,

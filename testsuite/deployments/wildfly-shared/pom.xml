@@ -129,7 +129,7 @@
 
     <profiles>
         <profile>
-            <id>wildfly-deployments-build.eap</id>
+            <id>ts.wildfly.target-distribution.eap</id>
             <properties>
                 <!-- WildFly/EAP 8 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
@@ -239,7 +239,7 @@
         </profile>
 
         <profile>
-            <id>wildfly-deployments-build.eap8</id>
+            <id>ts.wildfly.target-distribution.eap8</id>
             <properties>
                 <!-- EAP 8 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
@@ -331,8 +331,10 @@
 
         <profile>
             <!-- Configuration settings for testing EAP XP -->
-            <id>wildfly-deployments-build.eapxp</id>
-            <!-- TODO Currently tested EAP XP is not available yet, and configuration, e.g. the Bootable JAR plugin one - will be needed once it's ready -->
+            <id>ts.wildfly.target-distribution.eapxp</id>
+            <!-- TODO Currently tested EAP XP (i.e. EAP XP 5) is not available yet, and configuration, e.g. the
+                    Bootable JAR plugin one - will be needed once it's ready
+            -->
         </profile>
 
         <profile>

@@ -5,7 +5,7 @@ build:
   contextDir: "testsuite/deployments/openshift-jakarta-sample-standalone"
   env:
     - name: "MAVEN_ARGS_APPEND"
-      value: "-Denforcer.skip=true -Pwildfly-deployments-build.eap"
+      value: "-Denforcer.skip=true -Pts.wildfly.target-distribution.eap"
   s2i:
     kind: "DockerImage"
     buildApplicationImage: true

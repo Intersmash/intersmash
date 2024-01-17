@@ -110,22 +110,22 @@ public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplica
 mvn clean install -DskipTests
 ```
 
-* By building with the `wildfly-deployments-build.eap` profile, the WildFly deployments will instead be built by using productised bits configuration:
+* By building with the `ts.wildfly.target-distribution.eap` profile, the WildFly deployments will instead be built by using productised bits configuration:
 ```shell
-mvn clean install -DskipTests -Pwildfly-deployments-build.eap
+mvn clean install -DskipTests -Pts.wildfly.target-distribution.eap
 ```
 
 ## Running the Intersmash test suite
 
 * Run the testsuite against community deliverables, e.g.: Keycloak operator or WildFly images:
 ```shell
-mvn test -pl testsuite/ -Pts.community
+mvn test -pl testsuite/ -Pts.execution-profile.community
 ```
 This is usually executed to test community images, deliverables and - for application servers like WildFly - deployments built from community artifacts.
 
 * Run the testsuite against productised deliverables, e.g.: Red Hat Single Sign On operator or JBoss EAP images:
 ```shell
-mvn test -pl testsuite/ -Pts.prod
+mvn test -pl testsuite/ -Pts.execution-profile.prod
 ```
 This is usually executed to test productised images, deliverables and - for application servers like JBoss EAP - deployments built from community artifacts.
 

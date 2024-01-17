@@ -320,7 +320,7 @@ public class OpenShiftProvisionerTestBase {
 				// let's pass the profile for building the deployment too...
 				mavenAdditionalArgs = mavenAdditionalArgs.concat(
 						(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
-								: " -Pwildfly-deployments-build."
+								: " -Pts.wildfly.target-distribution."
 										+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
 				list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				list.add(new EnvVarBuilder().withName("ARTIFACT_DIR").withValue(deploymentRelativePath + "target").build());
@@ -382,7 +382,7 @@ public class OpenShiftProvisionerTestBase {
 				// let's pass the profile for building the deployment too...
 				mavenAdditionalArgs = mavenAdditionalArgs.concat(
 						(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
-								: " -Pwildfly-deployments-build."
+								: " -Pts.wildfly.target-distribution."
 										+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
 				if (!Strings.isNullOrEmpty(mavenAdditionalArgs)) {
 					list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());

@@ -199,7 +199,7 @@
 
     <profiles>
         <profile>
-            <id>wildfly-deployments-build.eap</id>
+            <id>ts.wildfly.target-distribution.eap</id>
             <properties>
                 <!-- WildFly/EAP 8 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
@@ -271,7 +271,7 @@
             </build>
         </profile>
         <profile>
-            <id>wildfly-deployments-build.eap8</id>
+            <id>ts.wildfly.target-distribution.eap8</id>
             <properties>
                 <!-- EAP 8 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>

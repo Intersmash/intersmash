@@ -20,6 +20,10 @@
             community images and deliverables
         -->
         <intersmash.test.execution.profile>community</intersmash.test.execution.profile>
+        <!-- And being community oriented, then exclude product specific tests by default -->
+        <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community</intersmash.test.excludedGroups.by.execution-profile>
+        <!-- And being community oriented, no tests are excluded based on WildFly target distribution (e.g.: WildFly can run Bootable JAR tests) -->
+        <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.no-test-excluded.default</intersmash.test.excludedGroups.by.wildfly-target-distribution>
     </properties>
 
     <dependencies>
@@ -61,48 +65,34 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration combine.children="append">
+                    <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution}</excludedGroups>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <profiles>
         <profile>
-            <id>ts.prod</id>
+            <id>ts.execution-profile.prod</id>
             <properties>
                 <!-- Set the intersmash.test.execution.profile property to `prod`, it is read by test classes -->
                 <intersmash.test.execution.profile>prod</intersmash.test.execution.profile>
                 <!-- Exclude tests that shouldn't be executed when dealing with products -->
-                <intersmash.test.execution.excludedGroups>ts.not-for-prod</intersmash.test.execution.excludedGroups>
+                <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-prod</intersmash.test.excludedGroups.by.execution-profile>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.children="append">
-                            <excludedGroups>${intersmash.test.execution.excludedGroups}</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
         <profile>
-            <id>ts.community</id>
+            <id>ts.wildfly.target-distribution.eap</id>
             <properties>
-                <!-- Set the intersmash.test.execution.profile property to `community`, it is read by test classes -->
-                <intersmash.test.execution.profile>community</intersmash.test.execution.profile>
-                <!-- Exclude tests that shouldn't be executed when dealing with community projects -->
-                <intersmash.test.execution.excludedGroups>ts.not-for-community</intersmash.test.execution.excludedGroups>
+                <!-- Exclude tests that shouldn't be executed when dealing base EAP, i.e. Bootable Jar tests
+                (Bootable JAR is only available with WildFLy or EAP XP, ot base EAP) -->
+                <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.wildfly.requires-bootable-jar</intersmash.test.excludedGroups.by.wildfly-target-distribution>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration combine.children="append">
-                            <excludedGroups>${intersmash.test.execution.excludedGroups}</excludedGroups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 
