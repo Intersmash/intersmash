@@ -35,8 +35,8 @@
     </scm>
 
     <modules>
-        <module>tools</module>
-        <module>deployments</module>
+        <module>core</module>
+        <module>provisioners</module>
         <module>testsuite</module>
     </modules>
 
@@ -89,7 +89,7 @@
              https://issues.apache.org/jira/browse/SUREFIRE-1827
              we cannot use M4 where failures in BeforeAllCallback are ignored
              https://issues.apache.org/jira/browse/SUREFIRE-1688
-             we cannot use <=M3 where tests in intersmash-demos-deployments are ignored for some reason
+             we cannot use <=M3 where tests in deployments are ignored for some reason
              -->
         <version.maven-surefire-plugin>3.0.0-M5</version.maven-surefire-plugin>
 
@@ -124,12 +124,6 @@
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
         <version.sundrio.builder-annotations>0.101.0</version.sundrio.builder-annotations>
         <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
-
-        <!--
-            By default, the follwing prop is empty, stating that the build profile (community vs. productized bits)
-            for WildFly deployment is none
-        -->
-        <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
     </properties>
 
     <dependencyManagement>
@@ -175,25 +169,14 @@
                 <artifactId>commons-lang3</artifactId>
                 <version>${version.org.apache.commons.commons-lang3}</version>
             </dependency>
-            <!-- The Intersmash library generated artifacts' versions (e.g.: used by intersmash-demos) -->
             <dependency>
                 <groupId>org.jboss.intersmash</groupId>
-                <artifactId>intersmash-tools-core</artifactId>
+                <artifactId>intersmash-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.intersmash</groupId>
-                <artifactId>intersmash-tools-provisioners</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.intersmash</groupId>
-                <artifactId>intersmash-deployments-provider</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.intersmash</groupId>
-                <artifactId>intersmash-deployments-shared</artifactId>
+                <artifactId>intersmash-provisioners</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!-- XTF dependencies -->
@@ -504,17 +487,6 @@
                             Surefire plugin (still true?)
                         -->
                         <argLine>${client.jvm.jpms.args}</argLine>
-                        <!-- Also, let's set some additional configuration that is common to all dependent modules -->
-                        <trimStackTrace>false</trimStackTrace>
-                        <failIfNoTests>false</failIfNoTests>
-                        <systemPropertyVariables>
-                            <wildfly.ee-feature-pack.location>${wildfly.ee-feature-pack.location}</wildfly.ee-feature-pack.location>
-                            <wildfly.cloud-feature-pack.location>${wildfly.cloud-feature-pack.location}</wildfly.cloud-feature-pack.location>
-                            <wildfly.ee-channel.location>${wildfly.ee-channel.location}</wildfly.ee-channel.location>
-                            <wildfly-maven-plugin.groupId>${wildfly-maven-plugin.groupId}</wildfly-maven-plugin.groupId>
-                            <wildfly-maven-plugin.artifactId>${wildfly-maven-plugin.artifactId}</wildfly-maven-plugin.artifactId>
-                            <wildfly-maven-plugin.version>${wildfly-maven-plugin.version}</wildfly-maven-plugin.version>
-                        </systemPropertyVariables>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -601,10 +573,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
                 <executions>
                     <execution>
@@ -644,7 +612,7 @@
         <profile>
             <id>demo</id>
             <modules>
-                <module>demos</module>
+                <module>examples</module>
             </modules>
         </profile>
         <profile>
@@ -653,8 +621,7 @@
                 <plugins>
                     <!--
                         The intersmash-parent POM must be published because there are projects which could use it, even as a
-                        transitive dependency, e.g.: external projects using intersmash-deployments as the parent POM would
-                        need intersmash-parent as well.
+                        transitive dependency
                     -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash.test</groupId>
+        <artifactId>intersmash-testsuite</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+    <artifactId>integration-tests</artifactId>
+
+    <name>Intersmash Testsuite: Integration tests</name>
+
+    <properties>
+        <formatting-style-base-directory>${project.parent.parent.basedir}/ide-config</formatting-style-base-directory>
+        <!--
+            By default, the following prop is set to community, stating that the test execution profile is using
+            community images and deliverables
+        -->
+        <intersmash.test.execution.profile>community</intersmash.test.execution.profile>
+        <!-- And being community oriented, then exclude product specific tests by default -->
+        <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community</intersmash.test.excludedGroups.by.execution-profile>
+        <!-- And being community oriented, no tests are excluded based on WildFly target distribution (e.g.: WildFly can run Bootable JAR tests) -->
+        <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.no-test-excluded.default</intersmash.test.excludedGroups.by.wildfly-target-distribution>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>cz.xtf</groupId>
+            <artifactId>junit5</artifactId>
+            <version>${xtf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-provisioners</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash.test</groupId>
+            <artifactId>deployments-provider</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>openshift-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-model-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration combine.children="append">
+                    <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution}</excludedGroups>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>ts.execution-profile.prod</id>
+            <properties>
+                <!-- Set the intersmash.test.execution.profile property to `prod`, it is read by test classes -->
+                <intersmash.test.execution.profile>prod</intersmash.test.execution.profile>
+                <!-- Exclude tests that shouldn't be executed when dealing with products -->
+                <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-prod</intersmash.test.excludedGroups.by.execution-profile>
+            </properties>
+        </profile>
+        <profile>
+            <id>ts.wildfly.target-distribution.eap</id>
+            <properties>
+                <!-- Exclude tests that shouldn't be executed when dealing base EAP, i.e. Bootable Jar tests
+                (Bootable JAR is only available with WildFLy or EAP XP, ot base EAP) -->
+                <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.wildfly.requires-bootable-jar</intersmash.test.excludedGroups.by.wildfly-target-distribution>
+            </properties>
+        </profile>
+    </profiles>
+
+</project>

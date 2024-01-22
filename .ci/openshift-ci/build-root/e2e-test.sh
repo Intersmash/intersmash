@@ -16,6 +16,15 @@ printenv KUBEADMIN_PASSWORD_FILE
 oc get node
 oc config view
 
+if [[ $JOB_SPEC =~ author\"\:\"(.*)\"\,\"sha ]]
+then
+  export INTERSMASH_PR_AUTHOR="${BASH_REMATCH[1]}"
+  echo "[DEBUG] PR author: $INTERSMASH_PR_AUTHOR"
+else
+  echo "[ERROR] Error getting the PR author from: $JOB_SPEC"
+  exit 1
+fi
+
 export TEST_CLUSTER_URL=$(oc whoami --show-server)
 
 export SYSADMIN_USERNAME=kubeadmin
@@ -44,7 +53,7 @@ while [ "$(oc get clusteroperator authentication -o custom-columns=STATUS:.statu
   echo Waiting for authentication operator to finish processing
   ((counter=counter+1))
   if [ "$counter" == "200" ]; then
-    echo "Timeout waiting for authentication operator."
+    echo "[ERROR] Timeout waiting for authentication operator."
     exit 1
   fi
 done
@@ -90,4 +99,14 @@ cat test.properties
 
 mkdir local-repo-community
 mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests
-mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/ -Pts.community
+if [[ $JOB_SPEC =~ author\"\:\"(.*)\"\,\"sha ]]
+then
+  export INTERSMASH_PR_AUTHOR="${BASH_REMATCH[1]}"
+  echo "[DEBUG] PR author: $INTERSMASH_PR_AUTHOR"
+else
+  echo "[ERROR] Error getting the PR author from: $JSON_SPEC"
+  exit 1
+fi
+mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/integration-tests \
+ -Dintersmash.deployments.repository.url="https://github.com/${INTERSMASH_PR_AUTHOR}/${REPO_NAME}.git" \
+ -Dintersmash.deployments.repository.ref="${PULL_HEAD_REF}"

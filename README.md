@@ -24,7 +24,7 @@ There are three main components on which this design is based:
 
 * _applications_: interface implementations that describe the configuration and specific properties of a given service that belongs to a scenario.
 
-* _provisioners_: takes care of and controls the specific workflow that needs to be executed for the given products that a scenario consists of. See [the Intersmash provisioning documentation](./tools/intersmash-tools-provisioners/README.md) to learn about supported  services provisioners.
+* _provisioners_: takes care of and controls the specific workflow that needs to be executed for the given products that a scenario consists of. See [the Intersmash provisioning documentation](./provisioners/README.md) to learn about supported  services provisioners.
 
 ## Usage Example
 
@@ -34,11 +34,11 @@ Two intersmash archives provide the three components described above.  The depen
 <dependencies>
   <dependency>
     <groupId>org.jboss.intersmash</groupId>
-    <artifactId>intersmash-tools-core</artifactId>
+    <artifactId>intersmash-core</artifactId>
   </dependency>
   <dependency>
       <groupId>org.jboss.intersmash</groupId>
-      <artifactId>intersmash-tools-provisioners</artifactId>
+      <artifactId>intersmash-provisioners</artifactId>
   </dependency>
 </dependencies>
 ```
@@ -110,22 +110,22 @@ public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplica
 mvn clean install -DskipTests
 ```
 
-* By building with the `wildfly-deployments-build.eap` profile, the WildFly deployments will instead be built by using productised bits configuration:
+* By building with the `ts.wildfly.target-distribution.eap` profile, the WildFly deployments will instead be built by using productised bits configuration:
 ```shell
-mvn clean install -DskipTests -Pwildfly-deployments-build.eap
+mvn clean install -DskipTests -Pts.wildfly.target-distribution.eap
 ```
 
 ## Running the Intersmash test suite
 
 * Run the testsuite against community deliverables, e.g.: Keycloak operator or WildFly images:
 ```shell
-mvn test -pl testsuite/ -Pts.community
+mvn test -pl testsuite/ -Pts.execution-profile.community
 ```
 This is usually executed to test community images, deliverables and - for application servers like WildFly - deployments built from community artifacts.
 
 * Run the testsuite against productised deliverables, e.g.: Red Hat Single Sign On operator or JBoss EAP images:
 ```shell
-mvn test -pl testsuite/ -Pts.prod
+mvn test -pl testsuite/ -Pts.execution-profile.prod
 ```
 This is usually executed to test productised images, deliverables and - for application servers like JBoss EAP - deployments built from community artifacts.
 
@@ -219,21 +219,18 @@ enable the property to just execute tests in the following runs.
 
 ## Architecture
 
-The Intersmash repository hosts several modules which are meant to provide core APIs (`tools/intersmash-tools-core`),
-tooling implementation (`tools/intersmash-tools-provisioners`), shared deployments
-(`deployments`), a testsuite (`testsuite`) and examples (`demos`).
+The Intersmash repository hosts several modules which are meant to provide core APIs (`core`),
+tooling implementation (`provisioners`), a testsuite (`testsuite`) and examples (`examples`).
 
 ### Modules
 
-* **Tools (tools)** - set of core components for platform configuration and application deployment.
-  * **intersmash-tools-core** - core interfaces, annotations and extensions.
-  * **intersmash-tools-provisioners** - implementations of interfaces from `core` for selected 
-    services.
-* **Testsuite** - tests that verify the integration with OpenShift, hence a cluster is needed.  
-* **Deployments (deployments)** - sources for shared deployments which are used by the testsuite.
-  Moreover, the `intersmash-deployments-provider` submodule provides support to get path to compiled deployments. Or
-  you can get any deployment by GAV.
-* **Demos** - examples that illustrate how to integrate Intersmash.
+* **core** - core interfaces, annotations and extensions.
+* **provisioners** - implementations of interfaces from `core` for selected services.
+* **testsuite** - tests that verify the integration with OpenShift, hence a cluster is needed.  
+  * **test-eployments** - sources for shared deployments which are used by the testsuite.
+    Moreover, the `intersmash-deployments-provider` submodule provides support to get path to compiled deployments. Or
+    you can get any deployment by GAV.
+* **examples** - examples that illustrate how to integrate Intersmash.
 
 ## Sources and Javadoc artifacts
 
@@ -246,20 +243,20 @@ The `doc` profiles must be activated in order to produce the sources and Javadoc
 mvn clean install -DskipTests -Pdoc
 ```
 
-a new directory, namely `apidocs`, is generated inside the `target` directory of both `intersmash-tools-core` and 
-`intersmash-tools-provisioners`, and HTML files containing the Javadoc are added to it.
+a new directory, namely `apidocs`, is generated inside the `target` directory of both `core` and 
+`provisioners`, and HTML files containing the Javadoc are added to it.
 
 In the `target` directory two additional artifacts are generated, the _sources_ and _Javadoc_ 
-artifacts. For instance, for `intersmash-tools-provisioner` the following artifacts are generated:
+artifacts. For instance, for `intersmash-provisioner` the following artifacts are generated:
 
-* intersmash-tools-provisioners-_&lt;version&gt;_.jar - Actual provisioners implementation
-* intersmash-tools-provisioners-_&lt;version&gt;_-sources.jar - Unzip to get the sources or use in your IDE
-* intersmash-tools-provisioners-_&lt;version&gt;_-javadoc.jar - unzip to get Javadoc
+* intersmash-provisioners-_&lt;version&gt;_.jar - Actual provisioners implementation
+* intersmash-provisioners-_&lt;version&gt;_-sources.jar - Unzip to get the sources or use in your IDE
+* intersmash-provisioners-_&lt;version&gt;_-javadoc.jar - unzip to get Javadoc
 
 ## Publishing Intersmash Library artifacts
 
 The Intersmash Library project is configured to publish some artifacts to the public Maven repository, so that external 
-projects can access them, e.g.: the `intersmash-tools-core.jar` artifact which contains the `@Intersmash` annotation 
+projects can access them, e.g.: the `intersmash-core.jar` artifact which contains the `@Intersmash` annotation 
 definition.
 
 Just run:
