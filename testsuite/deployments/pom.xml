@@ -15,10 +15,10 @@
     <name>Intersmash Test Deployments</name>
 
     <modules>
-        <module>deployments-provider</module>
         <module>wildfly-shared</module>
         <module>openshift-jakarta-sample-standalone</module>
         <module>eap7-shared</module>
+        <module>deployments-provider</module>
     </modules>
 
     <properties>
@@ -117,9 +117,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
             <plugin>
-                <!--
-                    The test-deployments POM and submodules must be published because are pulled in transitively
-                -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
             </plugin>
@@ -131,10 +128,6 @@
             <id>publish</id>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>

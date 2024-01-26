@@ -605,6 +605,14 @@
                     </java>
                 </configuration>
             </plugin>
+            <!--
+                The intersmash-parent POM must be published because there are projects which could use it, even as a
+                transitive dependency
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
@@ -619,14 +627,6 @@
             <id>publish</id>
             <build>
                 <plugins>
-                    <!--
-                        The intersmash-parent POM must be published because there are projects which could use it, even as a
-                        transitive dependency
-                    -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>

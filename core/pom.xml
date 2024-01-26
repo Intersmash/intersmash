@@ -73,6 +73,9 @@
 
     <build>
         <plugins>
+            <!--
+                The intersmash-core POM must be published because is transitively pulled in by the build
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -117,13 +120,6 @@
             <id>publish</id>
             <build>
                 <plugins>
-                    <!--
-                        The intersmash-core POM must be published because is transitively pulled in by the build
-                    -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>

@@ -35,18 +35,23 @@
         </dependencies>
     </dependencyManagement>
 
+    <build>
+        <plugins>
+            <!--
+                The intersmash-testsuite POM must be published because is transitively pulled in by the build
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>publish</id>
             <build>
                 <plugins>
-                    <!--
-                        The intersmash-testsuite POM must be published because is transitively pulled in by the build
-                    -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
