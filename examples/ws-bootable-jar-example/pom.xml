@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.jboss.intersmash.examples</groupId>
         <artifactId>intersmash-examples</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>ws-bootable-jar-example</artifactId>
