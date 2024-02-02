@@ -16,15 +16,6 @@ printenv KUBEADMIN_PASSWORD_FILE
 oc get node
 oc config view
 
-if [[ $JOB_SPEC =~ author\"\:\"(.*)\"\,\"sha ]]
-then
-  export INTERSMASH_PR_AUTHOR="${BASH_REMATCH[1]}"
-  echo "[DEBUG] PR author: $INTERSMASH_PR_AUTHOR"
-else
-  echo "[ERROR] Error getting the PR author from: $JOB_SPEC"
-  exit 1
-fi
-
 export TEST_CLUSTER_URL=$(oc whoami --show-server)
 
 export SYSADMIN_USERNAME=kubeadmin
@@ -105,8 +96,6 @@ cat test.properties
 mkdir local-repo-prod
 mvn clean install -Dmaven.repo.local=./local-repo-prod -DskipTests -Pts.wildfly.target-distribution.eap
 mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/integration-tests -Pts.execution-profile.prod,ts.wildfly.target-distribution.eap \
- -Dintersmash.deployments.repository.url="https://github.com/${INTERSMASH_PR_AUTHOR}/${REPO_NAME}.git" \
- -Dintersmash.deployments.repository.ref="${PULL_HEAD_REF}" \
  -Dintersmash.wildfly.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-builder-openshift-rhel8:1.0.0.Beta \
  -Dintersmash.wildfly.runtime.image=registry.redhat.io/jboss-eap-8-tech-preview/eap8-openjdk17-runtime-openshift-rhel8:1.0.0.Beta \
  -Dintersmash.wildfly.operators.catalog_source=redhat-operators \
