@@ -203,6 +203,10 @@ public interface WildflyDeploymentApplicationConfiguration {
 				+ ((Strings.isNullOrEmpty(this.bomsEeServerVersion()) ? ""
 						: (" -D" + this.bomsEeServerVersionPropertyName() + "="
 								+ this.bomsEeServerVersion()))));
+		// a maven mirror for internal testable artifacts, i.e. which are not released yet, can be provided
+		result += result.concat(
+				(Strings.isNullOrEmpty(this.getMavenMirrorUrl()) ? ""
+						: " -Dmaven-mirror.url=" + this.getMavenMirrorUrl()));
 		return result;
 	}
 }
