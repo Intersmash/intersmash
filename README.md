@@ -269,10 +269,10 @@ mvn clean deploy -DskipTests
 
 See [Intersmash contributing guidelines](CONTRIBUTING.md).
 
-## Future plans
+## Future goals
 
-- Kubernetes support
-- Quarkus provisioning
+Just to mention a few: K8s support and Quarkus provisioning, plus documentation and examples enhancements, see the 
+[current milestone](https://github.com/Intersmash/intersmash/milestone/2) for a complete list of issues.
 
 ## Issue tracking
 
