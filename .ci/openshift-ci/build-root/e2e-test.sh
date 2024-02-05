@@ -99,14 +99,6 @@ cat test.properties
 
 mkdir local-repo-community
 mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests
-if [[ $JOB_SPEC =~ author\"\:\"(.*)\"\,\"sha ]]
-then
-  export INTERSMASH_PR_AUTHOR="${BASH_REMATCH[1]}"
-  echo "[DEBUG] PR author: $INTERSMASH_PR_AUTHOR"
-else
-  echo "[ERROR] Error getting the PR author from: $JSON_SPEC"
-  exit 1
-fi
 mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/integration-tests \
  -Dintersmash.deployments.repository.url="https://github.com/${INTERSMASH_PR_AUTHOR}/${REPO_NAME}.git" \
  -Dintersmash.deployments.repository.ref="${PULL_HEAD_REF}"
