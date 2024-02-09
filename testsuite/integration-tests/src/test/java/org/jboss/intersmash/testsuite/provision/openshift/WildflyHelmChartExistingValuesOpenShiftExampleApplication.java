@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.assertj.core.util.Strings;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
@@ -27,7 +28,9 @@ import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.WildFlyHelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 import org.jboss.intersmash.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
+import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 
@@ -55,20 +58,32 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 	}
 
 	private HelmChartRelease loadRelease() {
+		WildflyHelmChartRelease wildflyHelmChartRelease;
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			HelmWildflyRelease helmRelease = HelmChartReleaseAdapter.<HelmWildflyRelease> fromValuesFile(
 					this.getClass().getResource("wildfly-helm-values.yaml"), HelmWildflyRelease.class);
-			return new WildFlyHelmChartReleaseAdapter(helmRelease)
+			wildflyHelmChartRelease = new WildFlyHelmChartReleaseAdapter(helmRelease)
 					.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
 					.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL());
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			HelmEap8Release helmRelease = HelmChartReleaseAdapter.<HelmEap8Release> fromValuesFile(
 					this.getClass().getResource("eap8-helm-values.yaml"), HelmEap8Release.class);
-			return new Eap8HelmChartReleaseAdapter(helmRelease)
+			wildflyHelmChartRelease = new Eap8HelmChartReleaseAdapter(helmRelease)
 					.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
 					.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL());
 		} else
 			throw new IllegalStateException("Not a valid testing profile!");
+		// let's compute some additional maven args for our s2i build to happen on a Pod
+		String mavenAdditionalArgs = "-Denforcer.skip=true";
+		// let's add configurable deployment additional args:
+		mavenAdditionalArgs = mavenAdditionalArgs.concat(generateAdditionalMavenArgs());
+		// let's pass the profile for building the deployment too...
+		mavenAdditionalArgs = mavenAdditionalArgs.concat(
+				(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
+						: " -Pts.wildfly.target-distribution."
+								+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
+		wildflyHelmChartRelease.setBuildEnvironmentVariables(Map.of("MAVEN_ARGS_APPEND", mavenAdditionalArgs));
+		return wildflyHelmChartRelease;
 	}
 
 	@Override
