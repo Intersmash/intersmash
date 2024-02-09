@@ -40,6 +40,7 @@ import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.Secret;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -173,10 +174,19 @@ public abstract class BootableJarImageOpenShiftProvisioner
 
 			ManagedBuildReference reference = BuildManagers.get().deploy(bootableJarBuild);
 			BuildManagers.get().hasBuildCompleted(bootableJarBuild).waitFor();
-			return ApplicationBuilder.fromManagedBuild(
+
+			ApplicationBuilder appBuilder = ApplicationBuilder.fromManagedBuild(
 					bootableApplication.getName(),
 					reference,
 					Collections.singletonMap(APP_LABEL_KEY, bootableApplication.getName()));
+			// Add any configured secrets
+			for (Secret secret : bootableApplication.getSecrets()) {
+				appBuilder.deploymentConfig().podTemplate()
+						.addSecretVolume(secret.getMetadata().getName(), secret.getMetadata().getName())
+						.container()
+						.addVolumeMount(secret.getMetadata().getName(), "/etc/secrets", false);
+			}
+			return appBuilder;
 		} else {
 			throw new RuntimeException("Application artifact path or git reference has to be specified");
 		}
