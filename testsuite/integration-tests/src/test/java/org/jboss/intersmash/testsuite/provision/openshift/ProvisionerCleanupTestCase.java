@@ -17,6 +17,7 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
 import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
@@ -55,8 +56,12 @@ public class ProvisionerCleanupTestCase {
 							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
+					// EAP latest GA
 					new WildflyImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
+					// EAP 7
+					new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication()),
+					// RHSSO
 					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()));
 		} else {
 			throw new IllegalStateException(
