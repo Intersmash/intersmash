@@ -17,6 +17,8 @@ package org.jboss.intersmash.application.openshift;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.jboss.intersmash.application.openshift.input.BinarySourceBuilder;
 import org.jboss.intersmash.application.openshift.input.BuildInput;
@@ -24,6 +26,8 @@ import org.jboss.intersmash.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.application.openshift.input.GitSourceBuilder;
 import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 
+import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
+import cz.xtf.builder.builders.pod.VolumeMount;
 import io.fabric8.kubernetes.api.model.EnvVar;
 
 /**
@@ -35,7 +39,7 @@ import io.fabric8.kubernetes.api.model.EnvVar;
  *     <li>{@link Eap7ImageOpenShiftProvisioner}</li>
  * </ul>
  */
-public interface Eap7ImageOpenShiftApplication extends WildflyImageOpenShiftApplication, HasEnvVars {
+public interface Eap7ImageOpenShiftApplication extends WildflyOpenShiftApplication, HasEnvVars {
 
 	/**
 	 * Use the {@link BuildInputBuilder} to get instances
@@ -46,6 +50,14 @@ public interface Eap7ImageOpenShiftApplication extends WildflyImageOpenShiftAppl
 	 * @return {@link BuildInput} instance for application
 	 */
 	BuildInput getBuildInput();
+
+	/**
+	 * Setup mount points to EAP 7 pod and persistent volume claims to be created.
+	 * @return A {@link Map} instance storing PVCs needed by the EAP 7 application service
+	 */
+	default Map<PersistentVolumeClaim, Set<VolumeMount>> getPersistentVolumeClaimMounts() {
+		return Collections.emptyMap();
+	}
 
 	@Override
 	default List<EnvVar> getEnvVars() {
