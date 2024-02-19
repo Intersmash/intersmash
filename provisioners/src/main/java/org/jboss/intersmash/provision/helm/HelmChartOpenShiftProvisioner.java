@@ -59,7 +59,7 @@ import lombok.NonNull;
  */
 public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShiftApplication>
 		implements OpenShiftProvisioner<A> {
-	protected static final HelmBinary helmBinary = HelmClients.adminBinary();
+	private static HelmBinary helmBinary;
 	protected final A application;
 	protected FailFastCheck ffCheck = () -> false;
 
@@ -67,6 +67,18 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 
 	public HelmChartOpenShiftProvisioner(@NonNull A application) {
 		this.application = application;
+	}
+
+	/**
+	 * Lazily initialize the XTF Helm binary client, we prefer this instead of static initialization
+	 * since the latter no cluster interaction should implicitly occur, theoretically.
+	 * @return A static instance of {@link HelmBinary} to execute operations via the Helm CLI.
+	 */
+	protected HelmBinary helmBinary() {
+		if (helmBinary == null) {
+			helmBinary = HelmClients.adminBinary();
+		}
+		return helmBinary;
 	}
 
 	@Override
@@ -91,7 +103,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 							this.getApplication().getHelmChartsRepositoryName(),
 							this.getApplication().getName()));
 		}
-		helmBinary.execute(getHelmChartInstallArguments(this.getApplication(), helmChartsPath));
+		helmBinary().execute(getHelmChartInstallArguments(this.getApplication(), helmChartsPath));
 		if (this.getApplication().getRelease().getReplicas() > 0) {
 			waitForReplicas(this.getApplication().getRelease().getReplicas());
 		}
@@ -99,7 +111,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 
 	@Override
 	public void undeploy() {
-		helmBinary.execute(getHelmChartUninstallArguments(this.getApplication().getName()));
+		helmBinary().execute(getHelmChartUninstallArguments(this.getApplication().getName()));
 		OpenShiftWaiters.get(openShift, ffCheck).areNoPodsPresent("app.kubernetes.io/instance", application.getName())
 				.level(Level.DEBUG)
 				.waitFor();
@@ -114,7 +126,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 	public void scale(int replicas, boolean wait) {
 		this.getApplication().getRelease().setReplicas(replicas);
 		final Path helmChartsPath = this.getHelmCharts().get(this.getApplication().getHelmChartsRepositoryName());
-		helmBinary.execute(getHelmChartUpgradeArguments(this.getApplication(), helmChartsPath));
+		helmBinary().execute(getHelmChartUpgradeArguments(this.getApplication(), helmChartsPath));
 		if (wait) {
 			waitForReplicas(replicas);
 		}
