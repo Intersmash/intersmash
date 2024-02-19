@@ -35,6 +35,7 @@ public interface WildflyDeploymentApplicationConfiguration {
 	String WILDFLY_MAVEN_PLUGIN_GROUPID = "wildfly-maven-plugin.groupId";
 	String WILDFLY_MAVEN_PLUGIN_ARTIFACTID = "wildfly-maven-plugin.artifactId";
 	String WILDFLY_MAVEN_PLUGIN_VERSION = "wildfly-maven-plugin.version";
+	String WILDFLY_KEYCLOAK_SAML_ADAPTER_FEATURE_PACK_VERSION = "wildfly.keycloak-saml-adapter-feature-pack.version";
 	String MAVEN_MIRROR_URL = "maven-mirror.url";
 
 	default String wildflyMavenPluginGroupId() {
@@ -81,6 +82,10 @@ public interface WildflyDeploymentApplicationConfiguration {
 		return XTFConfig.get(MAVEN_MIRROR_URL);
 	}
 
+	default String keycloakSamlAdapterFeaturePackVersion() {
+		return XTFConfig.get(WILDFLY_KEYCLOAK_SAML_ADAPTER_FEATURE_PACK_VERSION);
+	}
+
 	/**
 	 * Server version property name for BOMs
 	 *
@@ -107,6 +112,16 @@ public interface WildflyDeploymentApplicationConfiguration {
 	 */
 	default String cloudFeaturePackLocationPropertyName() {
 		return WILDFLY_CLOUD_FEATURE_PACK_LOCATION;
+	}
+
+	/**
+	 * This must match the property name in the pom.xml file used to set the
+	 * "wildfly.keycloak-saml-adapter-feature-pack.version" feature pack version
+	 *
+	 * @return property name in the pom.xml file used to set the Keycloack SAML Adapter feature pack version
+	 */
+	default String keycloakSamlAdapterFeaturePackVersionPropertyName() {
+		return WILDFLY_KEYCLOAK_SAML_ADAPTER_FEATURE_PACK_VERSION;
 	}
 
 	/**
@@ -182,6 +197,9 @@ public interface WildflyDeploymentApplicationConfiguration {
 				+ ((Strings.isNullOrEmpty(this.cloudFeaturePackLocation()) ? ""
 						: (" -D" + this.cloudFeaturePackLocationPropertyName() + "="
 								+ this.cloudFeaturePackLocation())))
+				+ ((Strings.isNullOrEmpty(this.keycloakSamlAdapterFeaturePackVersion()) ? ""
+						: (" -D" + this.keycloakSamlAdapterFeaturePackVersionPropertyName() + "="
+								+ this.keycloakSamlAdapterFeaturePackVersion())))
 				+ ((Strings.isNullOrEmpty(this.eeChannelGroupId()) ? ""
 						: (" -D" + this.eeChannelGroupIdPropertyName() + "="
 								+ this.eeChannelGroupId())))
