@@ -18,160 +18,124 @@ package org.jboss.intersmash.provision;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.util.function.Function;
+
 import org.jboss.intersmash.application.Application;
-import org.jboss.intersmash.application.openshift.ActiveMQOperatorApplication;
-import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
-import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.WildflyImageOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.WildflyOperatorApplication;
-import org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate;
-import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
+import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.ActiveMQOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
+import org.jboss.intersmash.provision.openshift.Eap7TemplateOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.HyperfoilOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.KafkaOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.RhSsoOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyOperatorProvisioner;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.stubbing.OngoingStubbing;
 
-/**
- * | Service                                 | Source   | Provisioner                             		|
- * |-----------------------------------------|----------|-----------------------------------------------|
-*  | WildflyImageOpenShiftApplication        | IMAGE    | WildflymageOpenShiftProvisioner         		|
- * | InfinispanImageOpenShiftApplication     | IMAGE    | InfinispanImageOpenShiftProvisioner     		|
- * | MysqlImageOpenShiftApplication          | IMAGE    | MysqlImageOpenShiftProvisioner          		|
- * | PostgreSQLImageOpenShiftApplication     | IMAGE    | PostgreSQLImageOpenShiftProvisioner     		|
- * | Eap7LegacyS2iBuildTemplateApplication   | TEMPLATE | Eap7LegacyS2iBuildTemplateProvisioner    		|
- * | WildflyOperatorApplication              | OPERATOR | WildflyOperatorProvisioner              		|
-*  | ActiveMQOperatorApplication             | OPERATOR | ActiveMQOperatorProvisioner             		|
- * | KafkaOperatorApplication           	 | OPERATOR | KafkaOperatorProvisioner           	  		|
- * | WildflyBootableJarOpenShiftApplication  | IMAGE    | WildflyBootableJarImageOpenShiftProvisioner	|
- * | RhSsoTemplateOpenShiftApplication       | TEMPLATE | RhSsoTemplateOpenShiftProvisioner   			|
- */
 public class ProvisionerManagerTestCase {
-	private Application application;
+	enum SupportedApplication {
+		ActiveMqOperatorApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.ActiveMQOperatorApplication.class),
+				ActiveMQOperatorProvisioner.class),
+		BootableJarOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication.class),
+				WildflyBootableJarImageOpenShiftProvisioner.class),
+		Eap7ImageOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication.class),
+				Eap7ImageOpenShiftProvisioner.class),
+		Eap7LegacyS2iBuildTemplateApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication.class),
+				Eap7LegacyS2iBuildTemplateProvisioner.class),
+		Eap7TemplateOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication.class),
+				Eap7TemplateOpenShiftProvisioner.class),
+		InfinispanOperatorApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.InfinispanOperatorApplication.class),
+				InfinispanOperatorProvisioner.class),
+		HyperfoilOperatorApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.HyperfoilOperatorApplication.class),
+				HyperfoilOperatorProvisioner.class),
+		KafkaOperatorApplication(getApplicationMock(org.jboss.intersmash.application.openshift.KafkaOperatorApplication.class),
+				KafkaOperatorProvisioner.class),
+		KeycloakOperatorApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.KeycloakOperatorApplication.class),
+				KeycloakOperatorProvisioner.class),
+		MysqlImageOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication.class),
+				MysqlImageOpenShiftProvisioner.class),
+		PostgreSQLImageOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication.class),
+				PostgreSQLImageOpenShiftProvisioner.class),
+		PostgreSQLTemplateOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication.class,
+						(application) -> when(((org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication) application).getTemplate())
+								.thenReturn(org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate.POSTGRESQL_PERSISTENT)),
+				PostgreSQLTemplateOpenShiftProvisioner.class),
+		RhSsoOperatorApplication(getApplicationMock(org.jboss.intersmash.application.openshift.RhSsoOperatorApplication.class),
+				RhSsoOperatorProvisioner.class),
+		RhSsoTemplateOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication.class,
+						(application) -> when(((org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication) application).getTemplate())
+								.thenReturn(org.jboss.intersmash.application.openshift.template.RhSsoTemplate.X509_HTTPS)),
+				RhSsoTemplateOpenShiftProvisioner.class),
+		WildflyImageOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.WildflyImageOpenShiftApplication.class),
+				WildflyImageOpenShiftProvisioner.class),
+		WildflyOperatorApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.WildflyOperatorApplication.class),
+				WildflyOperatorProvisioner.class),
+		WildflyHelmChartOpenShiftApplication(
+				getApplicationMock(org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication.class),
+				WildflyHelmChartOpenShiftProvisioner.class);
 
-	/**
-	 * | WildflyImageOpenShiftApplication        | IMAGE    | WildflyImageOpenShiftProvisioner        |
-	 */
-	@Test
-	public void openShiftWildflyImageProvisioner() {
-		application = mock(WildflyImageOpenShiftApplication.class);
+		private final Application application;
+		private final Class<? extends Provisioner> provisionerClass;
 
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(WildflyImageOpenShiftProvisioner.class, actual.getClass());
+		SupportedApplication(Application application, Class<? extends Provisioner> provisionerClass) {
+			this.application = application;
+			this.provisionerClass = provisionerClass;
+		}
+
+		public Application getApplication() {
+			return application;
+		}
+
+		public Class<? extends Provisioner> getProvisionerClass() {
+			return provisionerClass;
+		}
+
+		private static Application getApplicationMock(Class<? extends Application> applicationClazz) {
+			return getApplicationMock(applicationClazz, null);
+		}
+
+		private static Application getApplicationMock(Class<? extends Application> applicationClazz,
+				Function<Application, OngoingStubbing> setExpectations) {
+			Application application = mock(applicationClazz);
+			if (setExpectations != null) {
+				setExpectations.apply(application);
+			}
+			return application;
+		}
 	}
 
-	/**
-	 * | WildflyBootableJarOpenShiftApplication | IMAGE    | WildflyBootableJarImageOpenShiftProvisioner |
-	 */
-	@Test
-	public void openShiftWildflyBootableJarImageProvisioner() {
-		application = mock(BootableJarOpenShiftApplication.class);
-
+	@ParameterizedTest(name = "{displayName}#class({0})")
+	@EnumSource(SupportedApplication.class)
+	public void testSupportedProvisioner(SupportedApplication supportedApplication) {
+		Application application = supportedApplication.getApplication();
 		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(WildflyBootableJarImageOpenShiftProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | MysqlImageOpenShiftApplication      | IMAGE    | MysqlImageOpenShiftProvisioner      |
-	 */
-	@Test
-	public void openShiftMysqlImageProvisioner() {
-		application = mock(MysqlImageOpenShiftApplication.class);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(MysqlImageOpenShiftProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | PostgreSQLImageOpenShiftApplication | IMAGE    | PostgreSQLImageOpenShiftProvisioner |
-	 */
-	@Test
-	public void openShiftPostgreSQLImageProvisioner() {
-		application = mock(PostgreSQLImageOpenShiftApplication.class);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(PostgreSQLImageOpenShiftProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | WildflyOperatorApplication          |          | WildflyOperatorProvisioner              |
-	 */
-	@Test
-	public void wildflyOperatorProvisioner() {
-		application = mock(WildflyOperatorApplication.class);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(WildflyOperatorProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | ActiveMQOperatorApplication    |          | ActiveMQOperatorProvisioner        |
-	 */
-	@Test
-	public void activeMQOperatorProvisioner() {
-		application = mock(ActiveMQOperatorApplication.class);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(ActiveMQOperatorProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | KafkaOperatorApplication    |          | KafkaOperatorProvisioner        |
-	 */
-	@Test
-	public void kafkaOperatorProvisioner() {
-		application = mock(KafkaOperatorApplication.class);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(KafkaOperatorProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * Eap7LegacyS2iBuildTemplateApplication / Eap7LegacyS2iBuildTemplateProvisioner
-	 */
-	@Test
-	public void eapS2iBuildTemplateProvisioner() {
-		application = mock(Eap7LegacyS2iBuildTemplateApplication.class);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(Eap7LegacyS2iBuildTemplateProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | RhSsoTemplateOpenShiftApplication      | TEMPLATE | RhSsoTemplateOpenShiftProvisioner   |
-	 */
-	@Test
-	public void openShiftRhSsoTemplateProvisioner() {
-		application = mock(RhSsoTemplateOpenShiftApplication.class);
-		when(((RhSsoTemplateOpenShiftApplication) application).getTemplate()).thenReturn(RhSsoTemplate.X509_HTTPS);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(RhSsoTemplateOpenShiftProvisioner.class, actual.getClass());
-	}
-
-	/**
-	 * | PostgreSQLTemplateOpenShiftApplication / PostgreSQLTemplateOpenShiftProvisioner  |
-	 */
-	@Test
-	public void openShiftPostgreSQLTemplateProvisioner() {
-		application = mock(PostgreSQLTemplateOpenShiftApplication.class);
-		when(((PostgreSQLTemplateOpenShiftApplication) application).getTemplate())
-				.thenReturn(PostgreSQLTemplate.POSTGRESQL_PERSISTENT);
-
-		Provisioner actual = ProvisionerManager.getProvisioner(application);
-		Assertions.assertEquals(PostgreSQLTemplateOpenShiftProvisioner.class, actual.getClass());
+		Assertions.assertEquals(supportedApplication.getProvisionerClass(), actual.getClass());
 	}
 
 	@Test
