@@ -18,6 +18,7 @@
     <modules>
         <module>ws-bootable-jar-example</module>
         <module>wstrust</module>
+        <module>wildfly-keycloak-saml-adapter</module>
     </modules>
 
     <build>
