@@ -22,7 +22,7 @@ public class WildflyDeploymentApplicationConfigurationTest {
 		properties.set("wildfly.ee-feature-pack.location", "org.wildfly:wildfly-ee-galleon-pack:30.0.0.Final");
 		properties.set("wildfly.feature-pack.location", "org.wildfly:wildfly-galleon-pack:30.0.0.Final");
 		properties.set("wildfly.cloud-feature-pack.location", "org.wildfly.cloud:wildfly-cloud-galleon-pack:5.0.1.Final");
-		properties.set("wildfly.datasources-feature-pack.location", "6.0.0.Final");
+		properties.set("wildfly.datasources-feature-pack.location", "org.wildfly:wildfly-datasources-galleon-pack:6.0.0.Final");
 		properties.set("wildfly.keycloak-saml-adapter-feature-pack.version", "22.0.3");
 		properties.set("wildfly.ee-channel.groupId", "wildfly.ee-channel.groupId.NONE_FOR_WILDFLY");
 		properties.set("wildfly.ee-channel.artifactId", "wildfly.ee-channel.artifactId.NONE_FOR_WILDFLY");

@@ -80,14 +80,19 @@ public class ProvisionerManagerTestCase {
 				PostgreSQLImageOpenShiftProvisioner.class),
 		PostgreSQLTemplateOpenShiftApplication(
 				getApplicationMock(org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication.class,
-						(application) -> when(((org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication) application).getTemplate())
-								.thenReturn(org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate.POSTGRESQL_PERSISTENT)),
+						(application) -> when(
+								((org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication) application)
+										.getTemplate())
+								.thenReturn(
+										org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate.POSTGRESQL_PERSISTENT)),
 				PostgreSQLTemplateOpenShiftProvisioner.class),
 		RhSsoOperatorApplication(getApplicationMock(org.jboss.intersmash.application.openshift.RhSsoOperatorApplication.class),
 				RhSsoOperatorProvisioner.class),
 		RhSsoTemplateOpenShiftApplication(
 				getApplicationMock(org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication.class,
-						(application) -> when(((org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication) application).getTemplate())
+						(application) -> when(
+								((org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication) application)
+										.getTemplate())
 								.thenReturn(org.jboss.intersmash.application.openshift.template.RhSsoTemplate.X509_HTTPS)),
 				RhSsoTemplateOpenShiftProvisioner.class),
 		WildflyImageOpenShiftApplication(
