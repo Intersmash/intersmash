@@ -31,7 +31,6 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
-@NotForProductizedExecutionProfile
 @RequiresBootableJarDistribution
 public class WildflyBootableJarTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
