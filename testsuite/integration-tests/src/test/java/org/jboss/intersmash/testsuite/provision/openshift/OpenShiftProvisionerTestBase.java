@@ -34,6 +34,7 @@ import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
 import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
@@ -706,6 +707,30 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getPingServiceName() {
 				return "wildfly-ping-service";
+			}
+		};
+	}
+
+	static KeycloakOperatorApplication getKeycloakOperatorApplication() {
+
+		final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
+		return new KeycloakOperatorApplication() {
+			@Override
+			public org.keycloak.k8s.v2alpha1.Keycloak getKeycloak() {
+				return new org.keycloak.k8s.v2alpha1.KeycloakBuilder()
+						.withNewMetadata()
+						.withName(DEFAULT_KEYCLOAK_APP_NAME)
+						.withLabels(Map.of("app", getName()))
+						.endMetadata()
+						.withNewSpec()
+						.withInstances(1L)
+						.endSpec()
+						.build();
+			}
+
+			@Override
+			public String getName() {
+				return DEFAULT_KEYCLOAK_APP_NAME;
 			}
 		};
 	}

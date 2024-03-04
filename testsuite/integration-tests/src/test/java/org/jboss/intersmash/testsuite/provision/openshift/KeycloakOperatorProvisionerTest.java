@@ -72,7 +72,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-@NotForProductizedExecutionProfile
 public class KeycloakOperatorProvisionerTest {
 	private static KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
