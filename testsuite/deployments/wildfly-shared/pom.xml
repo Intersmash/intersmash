@@ -22,10 +22,14 @@
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
         <wildfly-maven-plugin.version>4.2.2.Final</wildfly-maven-plugin.version>
-        <!-- Default WildFly `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+        <!-- Default WildFly `ee` BOM version is set here and can be overridden for pulling the right BOM -->
         <bom.wildfly-ee.groupId>org.wildfly.bom</bom.wildfly-ee.groupId>
         <bom.wildfly-ee.artifactId>wildfly-ee</bom.wildfly-ee.artifactId>
         <bom.wildfly-ee.version>${version.wildfly-server}</bom.wildfly-ee.version>
+        <!-- Default WildFly `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
+        <bom.wildfly-microprofile.groupId>org.wildfly.bom</bom.wildfly-microprofile.groupId>
+        <bom.wildfly-microprofile.artifactId>wildfly-microprofile</bom.wildfly-microprofile.artifactId>
+        <bom.wildfly-microprofile.version>${version.wildfly-server}</bom.wildfly-microprofile.version>
         <!--
             Feature packs and channel:
 
@@ -260,6 +264,10 @@
             <!-- Configuration settings for testing EAP XP -->
             <id>ts.wildfly.target-distribution.eapxp</id>
             <properties>
+                <!-- Default EAP XP `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
+                <bom.wildfly-microprofile.groupId>org.jboss.eap.xp</bom.wildfly-microprofile.groupId>
+                <bom.wildfly-microprofile.artifactId>wildfly-microprofile</bom.wildfly-microprofile.artifactId>
+                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-20240221</bom.wildfly-microprofile.version>
                 <!-- EAP XP Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
                 <wildfly.ee-channel.artifactId>eap-8.0-plus-eap-xp-5.0</wildfly.ee-channel.artifactId>

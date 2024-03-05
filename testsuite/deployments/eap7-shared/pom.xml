@@ -22,7 +22,7 @@
         <!-- Default EAP 7 version -->
         <jboss-eap7.version>7.4.13.GA</jboss-eap7.version>
         <jboss-eap7-xp.version>4.0.1.GA-7.4.13.GA</jboss-eap7-xp.version>
-        <!-- Default EAP `ee` BOMs version is set here for pulling the right EAP BOM -->
+        <!-- Default EAP `ee` BOM version is set here for pulling the right EAP BOM -->
         <bom.jboss-eap7-jakartaee.groupId>org.jboss.bom</bom.jboss-eap7-jakartaee.groupId>
         <bom.jboss-eap7-jakartaee.artifactId>jboss-eap-jakartaee8</bom.jboss-eap7-jakartaee.artifactId>
         <bom.jboss-eap7-jakartaee.version>${jboss-eap7.version}</bom.jboss-eap7-jakartaee.version>
