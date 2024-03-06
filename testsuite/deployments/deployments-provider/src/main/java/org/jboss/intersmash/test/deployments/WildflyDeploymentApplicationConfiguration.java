@@ -28,6 +28,7 @@ public interface WildflyDeploymentApplicationConfiguration {
 	String WILDFLY_EE_FEATURE_PACK_LOCATION = "wildfly.ee-feature-pack.location";
 	String WILDFLY_FEATURE_PACK_LOCATION = "wildfly.feature-pack.location";
 	String WILDFLY_CLOUD_FEATURE_PACK_LOCATION = "wildfly.cloud-feature-pack.location";
+	String WILDFLY_DATASOURCES_FEATURE_PACK_LOCATION = "wildfly.datasources-feature-pack.location";
 	String WILDFLY_EE_CHANNEL_GROUPID = "wildfly.ee-channel.groupId";
 	String WILDFLY_EE_CHANNEL_ARTIFACTID = "wildfly.ee-channel.artifactId";
 	String WILDFLY_EE_CHANNEL_VERSION = "wildfly.ee-channel.version";
@@ -60,6 +61,10 @@ public interface WildflyDeploymentApplicationConfiguration {
 
 	default String cloudFeaturePackLocation() {
 		return XTFConfig.get(WILDFLY_CLOUD_FEATURE_PACK_LOCATION);
+	}
+
+	default String datasourcesFeaturePackLocation() {
+		return XTFConfig.get(WILDFLY_DATASOURCES_FEATURE_PACK_LOCATION);
 	}
 
 	default String eeChannelGroupId() {
@@ -112,6 +117,15 @@ public interface WildflyDeploymentApplicationConfiguration {
 	 */
 	default String cloudFeaturePackLocationPropertyName() {
 		return WILDFLY_CLOUD_FEATURE_PACK_LOCATION;
+	}
+
+	/**
+	 * This must match the property name in the pom.xml file used to set the "wildfly-datasources-galleon-pack" feature pack GAV
+	 *
+	 * @return property name in the pom.xml file used to set the datasources feature pack GAV
+	 */
+	default String datasourcesFeaturePackLocationPropertyName() {
+		return WILDFLY_DATASOURCES_FEATURE_PACK_LOCATION;
 	}
 
 	/**
@@ -197,6 +211,9 @@ public interface WildflyDeploymentApplicationConfiguration {
 				+ ((Strings.isNullOrEmpty(this.cloudFeaturePackLocation()) ? ""
 						: (" -D" + this.cloudFeaturePackLocationPropertyName() + "="
 								+ this.cloudFeaturePackLocation())))
+				+ ((Strings.isNullOrEmpty(this.datasourcesFeaturePackLocation()) ? ""
+						: (" -D" + this.datasourcesFeaturePackLocationPropertyName() + "="
+								+ this.datasourcesFeaturePackLocation())))
 				+ ((Strings.isNullOrEmpty(this.keycloakSamlAdapterFeaturePackVersion()) ? ""
 						: (" -D" + this.keycloakSamlAdapterFeaturePackVersionPropertyName() + "="
 								+ this.keycloakSamlAdapterFeaturePackVersion())))
