@@ -21,9 +21,9 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>org.wildfly.bom</groupId>
-                <artifactId>wildfly-microprofile</artifactId>
-                <version>${version.wildfly-server}</version>
+                <groupId>${bom.wildfly-microprofile.groupId}</groupId>
+                <artifactId>${bom.wildfly-microprofile.artifactId}</artifactId>
+                <version>${bom.wildfly-microprofile.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
