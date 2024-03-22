@@ -14,6 +14,7 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
 @NotForCommunityExecutionProfile
+@Deprecated(since = "0.0.2")
 public class RhSsoTemplateTestCase {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final RhSsoTemplateOpenShiftApplication application = OpenShiftProvisionerTestBase.getHttpsRhSso();

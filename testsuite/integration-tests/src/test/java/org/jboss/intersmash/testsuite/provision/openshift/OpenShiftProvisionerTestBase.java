@@ -97,6 +97,7 @@ public class OpenShiftProvisionerTestBase {
 	static final String EAP7_TEST_APP_REPO = "https://github.com/openshift/openshift-jee-sample.git";
 	static final String EAP7_TEST_APP_REF = "master";
 
+	@Deprecated(since = "0.0.2")
 	static RhSsoTemplateOpenShiftApplication getHttpsRhSso() {
 		return new RhSsoTemplateOpenShiftApplication() {
 			private final String secureAppHostname = "secure-" + getOpenShiftHostName();

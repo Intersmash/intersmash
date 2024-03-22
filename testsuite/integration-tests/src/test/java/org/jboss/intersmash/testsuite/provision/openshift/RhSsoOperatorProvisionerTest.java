@@ -78,6 +78,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @CleanBeforeAll
 @NotForCommunityExecutionProfile
+@Deprecated(since = "0.0.2")
 public class RhSsoOperatorProvisionerTest {
 	// Be aware that since we're using the static mock application, not all provisioner methods will work as expected!
 	private static final RhSsoOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
