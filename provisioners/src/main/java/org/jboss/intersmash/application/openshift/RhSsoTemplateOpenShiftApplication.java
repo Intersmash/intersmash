@@ -22,6 +22,7 @@ import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
  * See {@link RhSsoTemplate} for available templates the
  * application can represent.
  */
+@Deprecated(since = "0.0.2")
 public interface RhSsoTemplateOpenShiftApplication extends TemplateApplication<RhSsoTemplate>, HasSecrets {
 
 	default String getName() {
