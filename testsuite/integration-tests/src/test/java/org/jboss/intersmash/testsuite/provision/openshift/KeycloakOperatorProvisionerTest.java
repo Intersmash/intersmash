@@ -28,7 +28,6 @@ import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
-import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
