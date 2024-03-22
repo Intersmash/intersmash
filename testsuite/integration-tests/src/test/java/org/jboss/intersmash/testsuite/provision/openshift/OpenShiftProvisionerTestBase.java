@@ -52,11 +52,17 @@ import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfigu
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.util.ProcessKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
+import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.jboss.intersmash.util.wildfly.Eap7CliScriptBuilder;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.keycloakspec.HostnameBuilder;
+import org.keycloak.k8s.v2alpha1.keycloakspec.HttpBuilder;
+import org.keycloak.k8s.v2alpha1.keycloakspec.IngressBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
 import cz.xtf.core.config.OpenShiftConfig;
+import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -717,6 +723,12 @@ public class OpenShiftProvisionerTestBase {
 		return new KeycloakOperatorApplication() {
 			@Override
 			public org.keycloak.k8s.v2alpha1.Keycloak getKeycloak() {
+				// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
+				final String hostName = OpenShifts.master().generateHostname(DEFAULT_KEYCLOAK_APP_NAME);
+				final String tlsSecretName = DEFAULT_KEYCLOAK_APP_NAME + "-tls-secret";
+				CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
+						.generateSelfSignedCertificateAndKey(hostName.replaceFirst("[.].*$", ""), tlsSecretName);
+				// build the basic Keycloak resource
 				return new org.keycloak.k8s.v2alpha1.KeycloakBuilder()
 						.withNewMetadata()
 						.withName(DEFAULT_KEYCLOAK_APP_NAME)
@@ -724,6 +736,18 @@ public class OpenShiftProvisionerTestBase {
 						.endMetadata()
 						.withNewSpec()
 						.withInstances(1L)
+						.withIngress(
+								new IngressBuilder()
+										.withEnabled(true)
+										.build())
+						.withHostname(
+								new HostnameBuilder()
+										.withHostname(hostName)
+										.build())
+						.withHttp(
+								new HttpBuilder()
+										.withTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName())
+										.build())
 						.endSpec()
 						.build();
 			}

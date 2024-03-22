@@ -56,8 +56,7 @@ public class ProvisionerCleanupTestCase {
 					new PostgreSQLTemplateOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()),
 					new KeycloakOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()
-					));
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// EAP latest GA
@@ -69,8 +68,7 @@ public class ProvisionerCleanupTestCase {
 					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()),
 					// RHBK
 					new KeycloakOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()
-					));
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
