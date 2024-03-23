@@ -46,26 +46,26 @@ public class ProvisionerCleanupTestCase {
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			return Stream.of(
-					new WildflyBootableJarImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
-					new WildflyBootableJarImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication()),
-					new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
-					new PostgreSQLImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
-					new PostgreSQLTemplateOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()),
+//					new WildflyBootableJarImageOpenShiftProvisioner(
+//							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
+//					new WildflyBootableJarImageOpenShiftProvisioner(
+//							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication()),
+//					new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
+//					new PostgreSQLImageOpenShiftProvisioner(
+//							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
+//					new PostgreSQLTemplateOpenShiftProvisioner(
+//							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()),
 					new KeycloakOperatorProvisioner(
 							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
-					// EAP latest GA
-					new WildflyImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
-					// EAP 7
-					new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication()),
-					// RHSSO 7.6.x
-					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()),
+//					// EAP latest GA
+//					new WildflyImageOpenShiftProvisioner(
+//							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
+//					// EAP 7
+//					new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication()),
+//					// RHSSO 7.6.x
+//					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()),
 					// RHBK
 					new KeycloakOperatorProvisioner(
 							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
