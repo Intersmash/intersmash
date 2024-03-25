@@ -104,7 +104,7 @@ cat test.properties
 
 mkdir local-repo-prod
 mvn clean install -Dmaven.repo.local=./local-repo-prod -DskipTests -Pts.wildfly.target-distribution.eap \
- -pl core/
+ -pl core/ -am
 mvn clean install -Dmaven.repo.local=./local-repo-prod -DskipTests -Pts.wildfly.target-distribution.eap \
  -pl provisioners/,testsuite/deployments/,testsuite/deployments/deployments-provider
 mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/integration-tests -Pts.execution-profile.prod,ts.wildfly.target-distribution.eap \
