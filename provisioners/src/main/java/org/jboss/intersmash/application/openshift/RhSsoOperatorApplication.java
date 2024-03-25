@@ -33,6 +33,7 @@ import org.keycloak.v1alpha1.KeycloakUser;
  *     <li>{@link RhSsoOperatorProvisioner}</li>
  * </ul>
  */
+@Deprecated(since = "0.0.2")
 public interface RhSsoOperatorApplication extends OperatorApplication {
 
 	Keycloak getKeycloak();

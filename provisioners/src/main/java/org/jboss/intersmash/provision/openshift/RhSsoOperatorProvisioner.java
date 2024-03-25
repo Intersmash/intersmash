@@ -58,6 +58,7 @@ import lombok.NonNull;
 /**
  * Keycloak operator provisioner
  */
+@Deprecated(since = "0.0.2")
 public class RhSsoOperatorProvisioner extends OperatorProvisioner<RhSsoOperatorApplication> {
 	private static final String KEYCLOAK_RESOURCE = "keycloaks.keycloak.org";
 	private static NonNamespaceOperation<Keycloak, KeycloakList, Resource<Keycloak>> KEYCLOAKS_CLIENT;

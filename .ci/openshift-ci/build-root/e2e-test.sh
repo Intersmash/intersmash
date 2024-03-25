@@ -98,7 +98,11 @@ EOL
 cat test.properties
 
 mkdir local-repo-community
-mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests
+mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests \
+ -pl core/ -am
+mvn clean install -Dmaven.repo.local=./local-repo-community -DskipTests \
+ -pl provisioners/,testsuite/deployments/,testsuite/deployments/deployments-provider
 mvn test -Dmaven.repo.local=./local-repo-community -pl testsuite/integration-tests \
  -Dintersmash.deployments.repository.url="https://github.com/${INTERSMASH_PR_AUTHOR}/${REPO_NAME}.git" \
- -Dintersmash.deployments.repository.ref="${PULL_HEAD_REF}"
+ -Dintersmash.deployments.repository.ref="${PULL_HEAD_REF}" \
+ -Dtest=ProvisionerCleanupTestCase#testProvisioningWorkflowCleanup

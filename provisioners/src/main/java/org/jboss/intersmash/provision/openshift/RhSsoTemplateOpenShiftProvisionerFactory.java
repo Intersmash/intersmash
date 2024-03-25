@@ -7,6 +7,7 @@ import org.jboss.intersmash.provision.ProvisionerFactory;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Deprecated(since = "0.0.2")
 public class RhSsoTemplateOpenShiftProvisionerFactory implements ProvisionerFactory<RhSsoTemplateOpenShiftProvisioner> {
 
 	@Override

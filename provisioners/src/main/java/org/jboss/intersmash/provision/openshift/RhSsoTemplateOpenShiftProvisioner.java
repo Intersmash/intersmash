@@ -33,6 +33,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Deprecated(since = "0.0.2")
 public class RhSsoTemplateOpenShiftProvisioner implements OpenShiftProvisioner<RhSsoTemplateOpenShiftApplication> {
 
 	// TODO: what if only OpenShiftApplication is implemented
