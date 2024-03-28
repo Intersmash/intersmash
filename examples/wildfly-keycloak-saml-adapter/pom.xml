@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.jboss.intersmash.examples</groupId>
+        <artifactId>intersmash-examples</artifactId>
+        <version>0.0.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>wildfly-keycloak-saml-adapter</artifactId>
+    <packaging>war</packaging>
+
+    <name>Intersmash Demos : (Wildfly): Wildfly with Keycloak SAML Adapter</name>
+
+    <properties>
+        <formatting-style-base-directory>${project.parent.parent.basedir}/ide-config</formatting-style-base-directory>
+        <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
+        <!-- Wildfly default version -->
+        <version.wildfly-server>30.0.0.Final</version.wildfly-server>
+        <!-- WildFly Maven Plugin version -->
+        <wildfly-maven-plugin.version>4.2.2.Final</wildfly-maven-plugin.version>
+        <!-- Default WildFly `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+        <bom.wildfly-ee.version>${version.wildfly-server}</bom.wildfly-ee.version>
+        <!--
+            Feature packs and channel:
+
+                - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+            Note: WF builds have both `wildfly-galleon-pack` and  `wildfly-ee-galleon-pack`
+        -->
+        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
+        <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
+        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:5.0.1.Final</wildfly.cloud-feature-pack.location>
+
+        <!-- Keycloak SAML -->
+        <keycloak-saml-adapter-galleon-pack.groupId>org.keycloak</keycloak-saml-adapter-galleon-pack.groupId>
+        <keycloak-saml-adapter-galleon-pack.artifactId>keycloak-saml-adapter-galleon-pack</keycloak-saml-adapter-galleon-pack.artifactId>
+        <keycloak-saml-adapter-galleon-pack.version>22.0.3</keycloak-saml-adapter-galleon-pack.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Lock all the provided Jakarta dependencies to match the WildFly/EAP 8 version -->
+            <dependency>
+                <groupId>org.wildfly.bom</groupId>
+                <artifactId>wildfly-ee</artifactId>
+                <version>${bom.wildfly-ee.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.enterprise</groupId>
+            <artifactId>jakarta.enterprise.cdi-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wildfly.core</groupId>
+            <artifactId>wildfly-controller-client</artifactId>
+            <version>23.0.0.Beta4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-core</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-provisioners</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash.test</groupId>
+            <artifactId>deployments-provider</artifactId>
+            <version>0.0.2-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>templating-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>filter-src</id>
+                        <goals>
+                            <goal>filter-test-sources</goal>
+                        </goals>
+                        <configuration>
+                            <!--
+                                Note the two following parameters are the default one.
+                                These are specified here just as a reminder.
+                                But as the Maven philosophy is strongly about conventions,
+                                it's better to just not specify them.
+                          -->
+                            <testSourceDirectory>${basedir}/src/test/resources/java-templates/org/jboss/intersmash/examples/wildfly/keycloak/saml/config/</testSourceDirectory>
+                            <testOutputDirectory>${project.build.directory}/generated-sources</testOutputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!--
+               Deployment are setting the WAR file name to ROOT, according to the wildfly-maven-plugin configuration
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>${version.maven-war-plugin}</version>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <warName>ROOT</warName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.wildfly.plugins</groupId>
+                <artifactId>wildfly-maven-plugin</artifactId>
+                <version>${wildfly-maven-plugin.version}</version>
+                <configuration>
+                    <filename>ROOT.war</filename>
+                    <!-- some tests check for the provisioned galleon layers -->
+                    <record-provisioning-state>true</record-provisioning-state>
+                    <feature-packs>
+                        <feature-pack>
+                            <location>${wildfly.feature-pack.location}</location>
+                        </feature-pack>
+                        <feature-pack>
+                            <location>${wildfly.cloud-feature-pack.location}</location>
+                        </feature-pack>
+                        <feature-pack>
+                            <groupId>${keycloak-saml-adapter-galleon-pack.groupId}</groupId>
+                            <artifactId>${keycloak-saml-adapter-galleon-pack.artifactId}</artifactId>
+                            <version>${keycloak-saml-adapter-galleon-pack.version}</version>
+                        </feature-pack>
+                    </feature-packs>
+                    <layers>
+                        <layer>cloud-default-config</layer>
+                        <layer>keycloak-saml</layer>
+                    </layers>
+                    <galleon-options>
+                        <jboss-fork-embedded>true</jboss-fork-embedded>
+                    </galleon-options>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>package</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
