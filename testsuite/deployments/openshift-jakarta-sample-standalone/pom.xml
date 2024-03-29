@@ -20,27 +20,31 @@
         <version.ide-config>1.1</version.ide-config>
         <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
 
-        <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+        <version.wildfly-server>30.0.0.Final</version.wildfly-server>
+        <!-- WildFly Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
-        <wildfly-maven-plugin.version>4.2.0.Final</wildfly-maven-plugin.version>
-        <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+        <wildfly-maven-plugin.version>4.2.2.Final</wildfly-maven-plugin.version>
+        <!-- Default WildFly `ee` BOM version is set here and can be overridden for pulling the right BOM -->
         <bom.wildfly-ee.groupId>org.wildfly.bom</bom.wildfly-ee.groupId>
         <bom.wildfly-ee.artifactId>wildfly-ee</bom.wildfly-ee.artifactId>
-        <bom.wildfly-ee.version>29.0.1.Final</bom.wildfly-ee.version>
+        <bom.wildfly-ee.version>${version.wildfly-server}</bom.wildfly-ee.version>
+        <!-- Default WildFly `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
+        <bom.wildfly-microprofile.groupId>org.wildfly.bom</bom.wildfly-microprofile.groupId>
+        <bom.wildfly-microprofile.artifactId>wildfly-microprofile</bom.wildfly-microprofile.artifactId>
+        <bom.wildfly-microprofile.version>${version.wildfly-server}</bom.wildfly-microprofile.version>
         <!--
-            EAP8 feature packs and channel:
+            Feature packs and channel:
 
                 - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
                 - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
                 - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
 
-            Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
-            Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+            Note: WF builds have both `wildfly-galleon-pack` and  `wildfly-ee-galleon-pack`
         -->
-        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:29.0.1.Final</wildfly.feature-pack.location>
-        <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:29.0.1.Final</wildfly.ee-feature-pack.location>
-        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:4.0.3.Final</wildfly.cloud-feature-pack.location>
+        <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
+        <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
+        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:5.0.1.Final</wildfly.cloud-feature-pack.location>
 
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
