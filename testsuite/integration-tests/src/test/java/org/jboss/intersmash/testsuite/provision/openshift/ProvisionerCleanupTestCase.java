@@ -15,10 +15,12 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
+import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
+import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
@@ -26,6 +28,8 @@ import org.jboss.intersmash.provision.openshift.PostgreSQLTemplateOpenShiftProvi
 import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.operator.OperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.junit.jupiter.api.Assertions;
@@ -37,8 +41,10 @@ import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeEach;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
+import lombok.extern.slf4j.Slf4j;
 
 @CleanBeforeEach
+@Slf4j
 public class ProvisionerCleanupTestCase {
 	protected static final OpenShift openShift = OpenShifts.master();
 
@@ -53,7 +59,9 @@ public class ProvisionerCleanupTestCase {
 					new PostgreSQLImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
 					new PostgreSQLTemplateOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
+							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()),
+					new KeycloakOperatorProvisioner(
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// EAP latest GA
@@ -61,8 +69,11 @@ public class ProvisionerCleanupTestCase {
 							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
 					// EAP 7
 					new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication()),
-					// RHSSO
-					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()));
+					// RHSSO 7.6.x
+					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()),
+					// RHBK
+					new KeycloakOperatorProvisioner(
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
@@ -72,27 +83,48 @@ public class ProvisionerCleanupTestCase {
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
 	@MethodSource("provisionerProvider")
-	public void testProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) {
-		provisioner.configure();
+	public void testProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) throws IOException {
+		evalOperatorSetup(provisioner);
 		try {
-			provisioner.preDeploy();
+			provisioner.configure();
 			try {
-				provisioner.deploy();
+				provisioner.preDeploy();
 				try {
-					openShift.configMaps()
-							.create(new ConfigMapBuilder().withNewMetadata().withName("no-delete").endMetadata().build());
+					provisioner.deploy();
+					try {
+						openShift.configMaps()
+								.create(new ConfigMapBuilder().withNewMetadata().withName("no-delete").endMetadata().build());
+					} finally {
+						provisioner.undeploy();
+					}
 				} finally {
-					provisioner.undeploy();
+					provisioner.postUndeploy();
 				}
 			} finally {
-				provisioner.postUndeploy();
+				provisioner.dismiss();
 			}
+			Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
+			openShift.configMaps().withName("no-delete").delete();
+			openShift.waiters().isProjectClean().waitFor();
 		} finally {
-			provisioner.dismiss();
+			evalOperatorTeardown(provisioner);
 		}
-		Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
-		openShift.configMaps().withName("no-delete").delete();
-		openShift.waiters().isProjectClean().waitFor();
+	}
+
+	private static void evalOperatorTeardown(OpenShiftProvisioner provisioner) {
+		if (OperatorProvisioner.class.isAssignableFrom(provisioner.getClass())) {
+			operatorCleanup();
+		}
+	}
+
+	private static void evalOperatorSetup(OpenShiftProvisioner provisioner) throws IOException {
+		if (OperatorProvisioner.class.isAssignableFrom(provisioner.getClass())) {
+			operatorCleanup();
+			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
+					OperatorGroup.SINGLE_NAMESPACE.getMetadata().getName());
+			OpenShifts.adminBinary().execute("apply", "-f",
+					OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
+		}
 	}
 
 	/**
@@ -120,5 +152,15 @@ public class ProvisionerCleanupTestCase {
 				.delete();
 
 		openShift.waiters().isProjectClean().waitFor();
+	}
+
+	/**
+	 * Clean all OLM related objects.
+	 * <p>
+	 */
+	public static void operatorCleanup() {
+		OpenShifts.adminBinary().execute("delete", "subscription", "--all");
+		OpenShifts.adminBinary().execute("delete", "csvs", "--all");
+		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
 	}
 }

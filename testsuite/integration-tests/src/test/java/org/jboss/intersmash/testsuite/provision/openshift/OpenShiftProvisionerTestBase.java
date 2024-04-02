@@ -34,6 +34,7 @@ import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
 import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
+import org.jboss.intersmash.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
@@ -51,11 +52,17 @@ import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfigu
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.util.ProcessKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
+import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.jboss.intersmash.util.wildfly.Eap7CliScriptBuilder;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.keycloakspec.HostnameBuilder;
+import org.keycloak.k8s.v2alpha1.keycloakspec.HttpBuilder;
+import org.keycloak.k8s.v2alpha1.keycloakspec.IngressBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
 import cz.xtf.core.config.OpenShiftConfig;
+import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -90,6 +97,7 @@ public class OpenShiftProvisionerTestBase {
 	static final String EAP7_TEST_APP_REPO = "https://github.com/openshift/openshift-jee-sample.git";
 	static final String EAP7_TEST_APP_REF = "master";
 
+	@Deprecated(since = "0.0.2")
 	static RhSsoTemplateOpenShiftApplication getHttpsRhSso() {
 		return new RhSsoTemplateOpenShiftApplication() {
 			private final String secureAppHostname = "secure-" + getOpenShiftHostName();
@@ -706,6 +714,48 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getPingServiceName() {
 				return "wildfly-ping-service";
+			}
+		};
+	}
+
+	static KeycloakOperatorApplication getKeycloakOperatorApplication() {
+
+		final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
+		return new KeycloakOperatorApplication() {
+			@Override
+			public org.keycloak.k8s.v2alpha1.Keycloak getKeycloak() {
+				// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
+				final String hostName = OpenShifts.master().generateHostname(DEFAULT_KEYCLOAK_APP_NAME);
+				final String tlsSecretName = DEFAULT_KEYCLOAK_APP_NAME + "-tls-secret";
+				CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
+						.generateSelfSignedCertificateAndKey(hostName.replaceFirst("[.].*$", ""), tlsSecretName);
+				// build the basic Keycloak resource
+				return new org.keycloak.k8s.v2alpha1.KeycloakBuilder()
+						.withNewMetadata()
+						.withName(DEFAULT_KEYCLOAK_APP_NAME)
+						.withLabels(Map.of("app", getName()))
+						.endMetadata()
+						.withNewSpec()
+						.withInstances(1L)
+						.withIngress(
+								new IngressBuilder()
+										.withEnabled(true)
+										.build())
+						.withHostname(
+								new HostnameBuilder()
+										.withHostname(hostName)
+										.build())
+						.withHttp(
+								new HttpBuilder()
+										.withTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName())
+										.build())
+						.endSpec()
+						.build();
+			}
+
+			@Override
+			public String getName() {
+				return DEFAULT_KEYCLOAK_APP_NAME;
 			}
 		};
 	}

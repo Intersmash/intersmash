@@ -19,7 +19,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -121,21 +120,6 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 	}
 
 	@Override
-	public void subscribe() {
-		if (Strings.isNullOrEmpty(IntersmashConfig.keycloakImageURL())) {
-			super.subscribe();
-		} else {
-			subscribe(
-					INSTALLPLAN_APPROVAL_MANUAL,
-					Map.of(
-							// Custom Keycloak image to be used: overrides the Keycloak image at the operator level: all
-							// Keycloak instances will be spun out of this image
-							// e.g. OPERATOR_KEYCLOAK_IMAGE=quay.io/keycloak/keycloak:21.1.1 --> operator.keycloak.image
-							"OPERATOR_KEYCLOAK_IMAGE", IntersmashConfig.keycloakImageURL()));
-		}
-	}
-
-	@Override
 	public void deploy() {
 		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
 				getApplication().getName());
@@ -153,6 +137,12 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 		// TODO: https://www.keycloak.org/operator/basic-deployment or ~/projects/keycloak/docs/guides/operator/basic-deployment.adoc
 		if (getApplication().getKeycloak().getSpec().getHttp() == null
 				|| getApplication().getKeycloak().getSpec().getHttp().getTlsSecret() == null) {
+			if (getApplication().getKeycloak().getSpec().getHostname() == null ||
+					com.google.common.base.Strings
+							.isNullOrEmpty(getApplication().getKeycloak().getSpec().getHostname().getHostname())) {
+				throw new IllegalStateException(
+						"A .spec.hostname.hostname must be set when configuring a Keycloak resource .spec.http");
+			}
 			// create key, certificate and tls secret
 			String tlsSecretName = getApplication().getKeycloak().getMetadata().getName() + "-tls-secret";
 			CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
@@ -349,10 +339,11 @@ public class KeycloakOperatorProvisioner extends OperatorProvisioner<KeycloakOpe
 								&&
 								route.getMetadata().getLabels().entrySet()
 										.stream().filter(
-												label -> label.getKey().equalsIgnoreCase("app")
+												label -> label.getKey().equalsIgnoreCase("app.kubernetes.io/instance")
 														&&
 														label.getValue().equalsIgnoreCase(
-																keycloak().get().getMetadata().getLabels().get("app")))
+																keycloak().get().getMetadata().getLabels()
+																		.get("app")))
 										.count() == 1
 
 				).findFirst()
