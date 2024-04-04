@@ -30,6 +30,10 @@ import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
 import cz.xtf.builder.builders.pod.VolumeMount;
 import io.fabric8.kubernetes.api.model.EnvVar;
 
+/**
+ * End user Application interface which presents a Wildfly image application on
+ * OpenShift Container Platform.
+ */
 public interface WildflyImageOpenShiftApplication extends WildflyOpenShiftApplication, HasEnvVars {
 
 	/**

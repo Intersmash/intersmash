@@ -1,204 +1,252 @@
 # Intersmash - Provisioning 
 
-Every application defined by `@Service` could be served by a different Provisioner depending on which Application 
-interface it implements (see the table of mapping located below). Provisioner implementation provides the requested 
-functionality while taking into account the selected platform, product, type of source, etc.
+### Contents
+- [Overview](#Overview)
+- [Provisioner Categories](#Provisioner-Categories)
+- [Adding a new Service](#Adding-a-new-Service)
+  - [Provisioning Example](#Provisioning-Example)
+    - [Step 1 - Creating a new Application Interface](#Step-1-Creating-a-new-Application-Interface)
+    - [Step 2 - Creating a new Provisioner class](#Step-2-Creating-a-new-Provisioner-class)
+    - [Step 3 - Creating a new ProvisionerFactory class](#Step-3-Creating-a-new-ProvisionerFactory-class)
+    - [Step 4 - Register the ProvisionerFactory as a service](#Step-4-Register-the-ProvisionerFactory-as-a-service)
+    - [Step 5 - Provide a demonstration application](#Step-5-Provide-a-demonstration-application)
+- [Provisioning by Category](#Provisioning-by-Category)
+  - [Application server image Provisioning](#Application-server-image-Provisioning)
+  - [Database image Provisioning ](#Database-image-Provisioning)
+  - [Operator-based Provisioning](#Operator-based-Provisioning)
+  - [Template Provisioning](#Template-Provisioning)
+  - [Helm Chart Provisioning](#Helm-Chart-Provisioning)
+  - [Automatic Provisioning](#Automatic-Provisioning)
 
-Additional set of Applications supported with relevant Provisioner classes will be implemented on demand once requested.
+## Overview
+Provisioners are the engine of this framework. They are the components
+that do the work of configuring the cloud containers, deploying, undeploying, and
+managing a service's life-cycle orchestration.
+There are two other components that have a one-to-one relationship with a provisioner,
+the _Application_ and the _ProvisionerFactory_.  The Application is an externally facing
+(service) interface class the user must implement and register with Intersmash via the
+@Service annotation.  The ProvisionerFactory
+is an internal service specific concrete class that evaluates the _Application_ instance and
+returns the corresponding _Provisioner_ class for the service or throws an exception if none is found.
 
-Example implementation of Application:
+Intersmash uses a class naming convention that shows a clear
+relationship between these three class types.
 
+- ${ProductComponentName}**Application**
+- ${ProductComponentName}**Provisioner**
+- ${ProductComponentName}**ProvisionerFactory**
+
+## Provisioner Categories
+There are several categories of service provisioners in Intersmash.
+Each category has some unique provision requirements.
+(The full list of provided services can be found [here](../docs/Provisioner-by-Product.md).)
+- **Application server images**: Application server images require the identification
+  of the image file to deploy and any server specific configuration data.
+
+
+- **Database images**: Database provisioning requires the image and items like
+  user credentials, database name and mount path.
+
+
+- **Operator services**: Operator services automates the behavior needed to deploy
+  a given service on cloud environments via APIs that leverage the
+  [Operator Framework](https://github.com/operator-framework).
+
+
+- **Templated services**:  Some _product components_ have named templates that are executed to generate 
+  a specific service version or configuration.  The user must declare the template name in 
+  their _Application_ implementation. 
+ 
+ 
+- **Helm Chart**: Helm Chart based provisioning relies on Helm Chart value files.
+
+
+- **Automatic**: Automatic (or application dictated) provisioning is a way to delegate the whole provisioning process to the Application class, rather than depending on a provisioner.
+
+
+
+## Adding a new Service
+Here are the steps in adding a new service to Intersmash.
+
+1. Create a new Application interface class which extends from an existing Application interface.
+2. Create a new Provisioner class which implements or extends an existing Provisioner interface or class respectively.
+3. Create a new ProvisionerFactory class which implements the _ProvisionerFactory_ interface.
+4. Add your new ProvisionerFactory class to the service file, _./provisioners/src/main/resources/META-INF/services/org.jboss.intersmash.provision.ProvisionerFactory_ 
+5. Provide a demonstration application in the examples directory.
+
+## Provisioning Example
+Here is a simple example that adds a "spy" service to the framework.
+
+### Step 1 - Creating a new Application Interface
 ```java
-public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplication {
-	static String NAME = "postgresql";
+package org.secret.agents;
+
+import java.util.Collections;
+import java.util.List;
+
+import org.jboss.intersmash.application.openshift.HasEnvVars;
+
+import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.EnvVar;
+
+public interface SpyApplication extends OpenShiftApplication, HasSecrets,
+    HasEnvVars {
+
+	// OpenShift configuration
+	@Override
+	default List<Secret> getSecrets() {
+		return Collections.emptyList();
+	}
+
+        @Override
+	default List<EnvVar> getEnvVars() {
+		return Collections.emptyList();
+	}
+}
+```
+
+### Step 2 - Creating a new Provisioner class
+```java
+package org.secret.agents;
+
+// a long list of imports here
+
+public class SpyProvisioner implements OpenShiftProvisioner<SpyApplication> {
+
+	private final SpyApplication spyApp;
+	private FailFastCheck ffCheck = () -> false;
+
+	public SpyProvisioner(@NonNull SpyApplication spyApp) {
+		this.spyApp = spyApp;
+	}
 
 	@Override
-	public PostgreSQLTemplate getTemplate() {
-		return PostgreSQLTemplate.POSTGRESQL_EPHEMERAL;
+	public SpyApplication getApplication() {
+		return spyApp;
+	}
+
+
+	@Override
+	public void deploy() {
+		deployImage();
 	}
 
 	@Override
-	public String getName() {
-		return NAME;
+	public void undeploy() {
+		// implement the logic for provisioning a "Spy" service instance on OpenShift
+	}
+    
+	@Override
+	public void scale(int replicas, boolean wait) {
+		openShift.scale(spyApp.getName(), replicas);
+		if (wait) {
+			waitForReplicas(replicas);
+		}
+	}
+
+	public void waitForReplicas(int replicas) {
+		OpenShiftWaiters.get(openShift, ffCheck).areExactlyNPodsReady(replicas, spyApp.getName()).level(Level.DEBUG)
+				.waitFor();
+		WaitersUtil.serviceEndpointsAreReady(openShift, getApplication().getName(), replicas, 8080)
+				.level(Level.DEBUG)
+				.waitFor();
+		if (replicas > 0) {
+			WaitersUtil.routeIsUp(getUrl(spyApp.getName(), false))
+					.level(Level.DEBUG)
+					.waitFor();
+		}
+	}
+
+	@Override
+	public List<Pod> getPods() {
+		return openShift.getPods(getApplication().getName());
+	}
+
+	private void deployImage() {
+            // This is an long task of many steps and thus will not be
+            // listed here.  Look at existing provisioners for examples.
+        }
+}
+```
+
+### Step 3 - Creating a new ProvisionerFactory class
+```java
+package org.secret.agents;
+
+import org.jboss.intersmash.application.Application;
+import org.jboss.intersmash.provision.ProvisionerFactory;
+
+public class SpyProvisionerFactory implements ProvisionerFactory<SpyProvisioner> {
+
+	@Override
+	public SpyProvisioner getProvisioner(Application application) {
+		if (SpyApplication.class.isAssignableFrom(application.getClass()))
+			return new SpyProvisioner((SpyApplication) application);
+		return null;
 	}
 }
 ```
 
-Example test scenario which deploys the `PostgresqlApplication` (more applications would be part of `@Intersmash` in real 
-integration use case)
-
-```java
-@Intersmash(@Service(PostgresqlApplication.class))
-@Slf4j
-public class PostgresqlProvisionTest {
-	@ApplicationController(PostgresqlApplication.class)
-	OpenShiftProvisioner provisioner;
-
-	@Test
-	public void printPostgresqlPods() {
-		provisioner.getPods().forEach(pod -> {
-			log.info(pod.getMetadata().getName());
-			log.info("READY: " + pod.getStatus().getContainerStatuses().get(0).getReady());
-		});
-	}
-}
-```
-
-## Mapping of implemented provisioners:
-
-| Service                               | Supports community project | Supports product   | Application                           | Provisioner                                 | Notes                                                                                                                                                                                                                                                                                                                                                 |
-|:--------------------------------------|:---------------------------|:-------------------|:--------------------------------------|:--------------------------------------------|:------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ActiveMQ Artemis & Red Hat AMQ Broker | :heavy_check_mark:         | :heavy_check_mark: | ActiveMQOperatorApplication           | ActiveMQOperatorProvisioner                 | Operator based provisioner, see details [below](#operator-based-provisioning)                                                                                                                                                                                                                                                                         |
-| HyperFoil                             | :heavy_check_mark:         | :x:                | HyperfoilOperatorApplication          | HyperfoilOperatorProvisioner                | Operator based provisioner, see details [below](#operator-based-provisioning)                                                                                                                                                                                                                                                                         |
-| Infinispan & Red Hat DataGrid         | :heavy_check_mark:         | :heavy_check_mark: | InfinispanOperatorApplication         | InfinispanOperatorProvisioner               | Operator based provisioner, see details [below](#operator-based-provisioning)                                                                                                                                                                                                                                                                         |
-| Kafka & Red Hat AMQ Streams           | :heavy_check_mark:         | :heavy_check_mark: | KafkaOperatorApplication              | KafkaOperatorProvisioner                    | Operator based provisioner, see details [below](#operator-based-provisioning)                                                                                                                                                                                                                                                                         |
-| Keycloak & Red Hat Build of Keycloak  | :heavy_check_mark:         | :heavy_check_mark: | KeycloakOperatorApplication           | KeycloakOperatorProvisioner                 | The latest Quarkus based Keycloak Operator, doesn't provide stable CRDs yet (see https://www.keycloak.org/2022/09/operator-crs); this operator offers a solution which supports the `Keycloak` and `KeycloakRealmImport` Custom Resources: these are the only supported CRs at the time of writing. See details [below](#operator-based-provisioning) |
-| MySQL                                 | :heavy_check_mark:         | :x:                | MysqlImageOpenShiftApplication        | MysqlImageOpenShiftProvisioner              | Deploys a MySQL image and sets environment variables to configure the service (ports, credentials etc.)                                                                                                                                                                                                                                               |
-| PostgreSQL                            | :heavy_check_mark:         | :x:                | PostgreSQLImageOpenShiftApplication   | PostgreSQLImageOpenShiftProvisioner         | Deploys a PostgreSQL image and sets environment variables to configure the service (ports, credentials etc.)                                                                                                                                                                                                                                          |
-| Wildfly & Red Hat JBoss EAP XP        | :heavy_check_mark:         | :heavy_check_mark: | BootableJarOpenShiftApplication       | WildflyBootableJarImageOpenShiftProvisioner | Deploys a WildFly Bootable JAR, i.e. a runnable WildFly application                                                                                                                                                                                                                                                                                   |
-| Wildfly & Red Hat JBoss EAP 8         | :heavy_check_mark:         | :heavy_check_mark: | WildflyImageOpenShiftApplication      | WildflyImageOpenShiftProvisioner            | Available both for Git sources and binary based s2i v2 build (either a pre-built deployment or a filesystem resource like a Maven project folder)                                                                                                                                                                                                     |
-| Wildfly & Red Hat JBoss EAP 8         | :heavy_check_mark:         | :heavy_check_mark: | WildflyHelmChartOpenShiftApplication  | WildflyHelmChartOpenShiftProvisioner        | The `wildfly-2.3.2` tag of https://github.com/wildfly/wildfly-charts is used and the model is generated based on the https://raw.githubusercontent.com/wildfly/wildfly-charts/main/charts/wildfly/values.schema.json  value schema file                                                                                                               |
-| Wildfly & Red Hat JBoss EAP 7/8       | :heavy_check_mark:         | :heavy_check_mark: | WildflyOperatorApplication            | WildflyOperatorProvisioner                  | Operator based provisioner, see details [below](#operator-based-provisioning)                                                                                                                                                                                                                                                                         |
-| Red Hat JBoss EAP 7                   | :x:                        | :heavy_check_mark: | Eap7ImageOpenShiftApplication         | Eap7ImageOpenShiftProvisioner               | Available both for Git sources and binary based EAP 7 s2i (legacy) build, i.e. based on a pre-built deployment (i.e. a _WAR archive_)                                                                                                                                                                                                                 |
-| Red Hat JBoss EAP 7                   | :x:                        | :heavy_check_mark: | Eap7TemplateOpenShiftApplication      | Eap7TemplateOpenShiftProvisioner            | Available Git sources and template based EAP 7 s2i (legacy) build                                                                                                                                                                                                                                                                                     |
-| Red Hat JBoss EAP 7                   | :x:                        | :heavy_check_mark: | Eap7LegacyS2iBuildTemplateApplication | Eap7LegacyS2iBuildTemplateProvisioner       | Git based EAP 7 s2i (legacy) build, used to generate image streams that can be deployed by WildflyOperatorProvisioner                                                                                                                                                                                                                                 |
-| Red Hat SSO 7                         | :x:                        | :heavy_check_mark: | RhSsoOperatorApplication              | RhSsoOperatorProvisioner                    | **Support for this provisioner now deprecated in Intersmash**. Based on the archived Keycloak operator project, which contains the latest Red Hat SSO 7.z CRDs definitions, see details [below](#operator-based-provisioning)                                                                                                                         |
-| Red Hat SSO 7                         | :x:                        | :heavy_check_mark: | RhSsoTemplateOpenShiftApplication     | RhSsoTemplateOpenShiftProvisioner           | **Support for this provisioner now deprecated in Intersmash**. Allows provisioning Red Hat SSO 7.6.z based on latest templates, see https://raw.githubusercontent.com/jboss-container-images/redhat-sso-7-openshift-image/sso76-dev/templates/                                                                                                        | 
+### Step 4 - Register the ProvisionerFactory as a service
+Edit service file, _./provisioners/src/main/resources/META-INF/services/org.jboss.intersmash.provision.ProvisionerFactory_ and add _org.secret.agents.SpyProvisionerFactory_ and rebuild Intersmash.
 
 
-The only thing users have to take care of is to implement the correct `Application` (see the table above) interface and 
-pass the class via `@Service` annotation, it's a task for the framework to choose a suitable Provisioner implementation 
-(an exception will be thrown in case no suitable Provisioner was yet implemented). 
-See [ProvisionerManager](../core/src/main/java/org/jboss/intersmash/provision/ProvisionerManager.java) and [ProvisionerFactory](../core/src/main/java/org/jboss/intersmash/provision/ProvisionerFactory.java) for implementation details regarding the Provisioner selection.
+### Step 5 - Provide a demonstration application
+The last task is to write and add a simple application that demonstrates the service working in the examples directory.
+Provide a README file that describes the service, how to configure and run it.
 
-### Operator-based provisioning
 
-The Intersmash Library provides support for operator-based provisioning, i.e. it automates the behavior needed to deploy 
-a given service on cloud environments via APIs that leverage the 
-[Operator Framework](https://github.com/operator-framework). 
+## Provisioning by Category
 
-Intersmash makes this feature available for currently supported products (see the table below), but that can be 
-extended easily, since Intersmash _provisioners_ are pluggable components.
+### Application server image Provisioning
+Application server images require the identification
+of the image file to deploy and any server specific configuration data.  A
+provisioner should implement the _OpenShiftProvisioner_ interface.
+[WildflyImageOpenShiftProvisionerFactory](src/main/java/org/jboss/intersmash/provision/openshift/WildflyImageOpenShiftProvisionerFactory.java)
+provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
-| Service                          | Supported Operator version | Channel name | Supported product version | Repository                                                | Notes                                                                                                                                                                              |
-|:---------------------------------|:---------------------------|:-------------|:--------------------------|:----------------------------------------------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ActiveMQ Artemis                 | 1.0.11                     | upstream     | 1.0.15                    | https://github.com/artemiscloud/activemq-artemis-operator | We are using a custom index image, i.e. quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11, built as described in https://github.com/Intersmash/intersmash/issues/32 |
-| Red Hat AMQ Broker               | 7.11.2-opr-1               | 7.11.x       | 7.11.z                    | https://github.com/rh-messaging/activemq-artemis-operator | As available on the OpenShift OperatorHub                                                                                                                                          |  
-| Hyperfoil                        | 0.24.2                     | alpha        | 0.24.2                    | https://github.com/Hyperfoil/hyperfoil-operator           | We force the CRs version for the used Hyperfoil runtime to be 0.24.2, see https://github.com/Hyperfoil/hyperfoil-operator/issues/18                                                |
-| Infinispan                       | 2.3.8                      | 2.3.x        | 14.0.24.Final             | https://github.com/infinispan/infinispan-operator         | As available on the OpenShift OperatorHub (community-operators)                                                                                                                    |
-| Red Hat DataGrid                 | 8.4.14                     | 8.4.x        | 8.4.7.GA                  | https://github.com/infinispan/infinispan-operator         | As available on the OpenShift OperatorHub                                                                                                                                          | 
-| Kafka provided by Strimzi        | 0.38.0                     | stable       | 3.6.0                     | https://github.com/strimzi/strimzi-kafka-operator         |                                                                                                                                                                                    |
-| Red Hat AMQ Streams              | 2.6.0-0                    | stable       | 3.6.0                     | https://github.com/strimzi/strimzi-kafka-operator         | As available on the OpenShift OperatorHub                                                                                                                                          |
-| Keycloak                         | 24.0.1                     | upstream     | 24.0.1                    | https://github.com/keycloak/keycloak/tree/main/operator   | Latest Keycloak, based on Quarkus. Supports a limited number of CR (Keycloak and KeycloakRealmImport): more to come in upcoming versions                                           |
-| Red Hat Build of keycloak (RHBK) | 22.0.9-opr.1               | stable-v22   | 22.0.9.redhat-00002       | https://github.com/keycloak/keycloak/tree/main/operator   | Latest Keycloak, based on Quarkus. Supports a limited number of CR (Keycloak and KeycloakRealmImport): more to come in upcoming versions                                           |
-| Red Hat SSO - **Deprecated**     | 7.6.6-opr-003              | stable       | 7.6                       | https://github.com/keycloak/keycloak-operator             | Latest Red Hat SSO Operator, based on legacy Keycloak                                                                                                                              |
-| WildFly                          | 0.5.6                      | alpha        | 30.0.0.Final              | https://github.com/wildfly/wildfly-operator               | As available on https://operatorhub.io/operator/wildfly                                                                                                                            |
-| Red Hat JBoss EAP                | 2.4.2                      | stable       | EAP 8.0, EAP 7.4.z        | https://github.com/wildfly/wildfly-operator               | As available on the OpenShift OperatorHub                                                                                                                                          |
+### Database image Provisioning
+Database provisioning requires the image and items like
+user credentials, database name and mount path.
+Abstract class, _DBImageOpenShiftProvisioner_ provides basic configuration.
+A provisioner's concrete class provides the extension to these types of services.
+[MysqlImageOpenShiftProvisionerFactory](src/main/java/org/jboss/intersmash/provision/openshift/MysqlImageOpenShiftProvisionerFactory.java)
+provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
-Intersmash operator-based provisioners implement a common contract and high level behavior which is defined by the 
-[OperatorProvisioner](../core/src/main/java/org/jboss/intersmash/provision/openshift/operator/OperatorProvisioner.java)
-class.
+### Operator-based Provisioning
+Operator services automates the behavior needed to deploy
+a given service on cloud environments via APIs that leverage the
+[Operator Framework](https://github.com/operator-framework).  Operator-based provisioners implement a common contract and high level behavior which is defined by Intersmash's, abstract class, _OperatorProvisioner_.
+[Operator provisioning How-to](docs/operator-howto.md),
+describes the steps needed to create a new operator-based provisioner.
+[KeycloakOperatorProvisionerFactory](src/main/java/org/jboss/intersmash/provision/openshift/KeycloakOperatorProvisionerFactory.java) provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
-You can also learn more by going through the Intersmash 
-[Operator provisioning How-to](docs/operator-howto.md), 
-which describes the steps needed to create a new operator-based provisioner.
+A list of operator based provisioners [here](../docs/Operator-Based-Provisioning.md)
 
-### Helm Charts based provisioning
+### Template Provisioning
+Some _product components_ have named templates that are executed to generate
+a specific service version or configuration.  The user must declare the template name in
+their _Application_ implementation. The parent interface class for these provisioners is _OpenShiftProvisioner_. [RhSsoTemplateOpenShiftProvisionerFactory](src/main/java/org/jboss/intersmash/provision/openshift/RhSsoTemplateOpenShiftProvisionerFactory.java)
+provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
-Helm Charts based provisioning relies on Helm Charts values files, by defining the `HelmChartRelease` interface.
-This means that the selected provisioner expects for the application descriptor to be able of serializing the
-release data onto a file, which eventually is used to install or upgrade a given application service release.
 
-The `HelmChartProvisioner` class holds the behavioral logic described above, while concrete implementations
-provide extension logic to fit various service types' requirements, e.g. `WildflyHelmChartProvisioner` provides
-logic to create Wildfly image streams during the pre-deploy phase, or to handle cleanup during the post-deployment one.
+### Helm Chart Provisioning
+Helm Chart based provisioning relies on Helm Chart value files.
+It requires the implementation of interface, _HelmChartRelease_, which
+defines the contract for implementing classes to represent a Helm Chart release.
+The provisioner expects the application descriptor to be able to serialize the
+release data onto a file, which eventually is used to install or upgrade a
+given application service release.
+Abstract class, _HelmChartOpenShiftProvisioner_, holds the behavioral logic described.
+A concrete implementation of this class provides extension logic to fit various service types.
+[WildflyHelmChartOpenShiftProvisionerFactory](src/main/java/org/jboss/intersmash/provision/helm/wildfly/WildflyHelmChartOpenShiftProvisionerFactory.java) provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
-Application descriptors for test scenarios that involve Helm Based provisioning must expose a concrete
-implementation of the `HelmChartRelease` interface, for the provisioner to use it during the application service
-life cycle.
+### Automatic Provisioning
+Automatic (or application dictated) provisioning is a way to delegate the whole provisioning process to the Application descriptor, rather than depending on a provisioner.
+Having a concrete instance of an Application class that implements interface
+_AutoProvisioningOpenShiftApplication_ will let the user add methods that map to the
+provisioning process workflow, e.g.: `deploy`, `scale`, `undeploy`.
+[OpenShiftAutoProvisionerFactory](../core/src/main/java/org/jboss/intersmash/provision/openshift/auto/OpenShiftAutoProvisionerFactory.java)
+provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
-What above is all that is needed - together with the related Intersmash concepts - to implement the components that compose
-an Helm Charts provisioned test scenario, similarly to what happens with other provisioners, see the classes and APIs in
-the `org.jboss.intersmash.application.openshift.helm` and `org.jboss.intersmash.provision.helm` packages.
-
-The process of implementing a concrete `HelmChartRelease` that serializes to a valid Helm Charts values file can be
-simplified by leveraging POJOs that can be generated by external tools and wrap them into an adapter that implements
-the `HelmChartRelease` interface. The adapter is responsible for exposing and manipulating the internal release
-POJOs.
-
-This avoids the need for coding a dedicated `HelmChartRelease` implementation and the related serialization logic, but it
-also allows for loading data (through deserializaton) easily from static files.
-Of course the release data can be manipulated through the generated Java model APIs.
-
-### Automatic provisioning
-Automatic (or application dictated) provisioning is a way to delegate the whole provisioning process to the application
-descriptor, rather than depending on a provisioner.
-Having a concrete instance of an application class that implements `AutoProvisioningOpenShiftApplication` will let 
-you add methods that map to the provisioning process workflow, e.g.: `deploy`, `scale`, `undeploy`:
-
-```java
-public class AutoProvisioningHelloOpenShiftApplication implements AutoProvisioningOpenShiftApplication {
-
-  private static final String HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION = "target/test-classes/org/jboss/intersmash/provision/openshift/auto/hello-openshift-deployment.yaml";
-  private static final String HELLO_OPENSHIFT_SERVICE_DEFINITION = "target/test-classes/org/jboss/intersmash/provision/openshift/auto/hello-openshift-service.yaml";
-  private static final String HELLO_OPENSHIFT_ROUTE_DEFINITION = "target/test-classes/org/jboss/intersmash/provision/openshift/auto/hello-openshift-route.yaml";
-  private static final String HELLO_OPENSHIFT_APP_NAME = "hello-openshift";
-  private static final String HELLO_OPENSHIFT_APP_REPLICAS_PLACEHOLDER = "autoprovisioning-hello-openshift-app-replicas-changeme";
-
-  @Override
-  public void preDeploy() {
-    // on preDeploy, we've got nothing to do... (yet, maybe we could create the secret for securing the route)
-    /// TODO
-  }
-
-  @Override
-  public void deploy() throws AutoProvisioningException {
-    final int replicas = 1;
-    // set initial replicas
-    try {
-      adjustConfiguration(HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION,
-              String.format("replicas: %s", HELLO_OPENSHIFT_APP_REPLICAS_PLACEHOLDER),
-              String.format("replicas: %d", replicas));
-    } catch (IOException e) {
-      throw new AutoProvisioningException(e);
-    }
-    try {
-      // on deploy, we'll provision the app pod as per the JSON definition in HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION
-      OpenShifts.masterBinary().execute(
-              "apply", "-f", HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION);
-    } finally {
-      try {
-        adjustConfiguration(HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION,
-                String.format("replicas: %d", replicas),
-                String.format("replicas: %s", HELLO_OPENSHIFT_APP_REPLICAS_PLACEHOLDER));
-      } catch (IOException e) {
-        throw new AutoProvisioningException(e);
-      }
-    }
-    // let's wait for the exact number of pods
-    OpenShiftWaiters.get(OpenShifts.master(), () -> false).areExactlyNPodsReady(
-            1, "app", getName()).waitFor();
-    // then create a service for the hello-openshift app
-    OpenShifts.masterBinary().execute(
-            "apply", "-f", HELLO_OPENSHIFT_SERVICE_DEFINITION);
-    // and let's expose the service through a route so that it is available externally
-    OpenShifts.masterBinary().execute(
-            "apply", "-f", HELLO_OPENSHIFT_ROUTE_DEFINITION);
-  }
-  // ...
-}
-```
-
-These classes can implement their own provisioning process by using the above-mentioned annotations in order to 
-accomplish a declarative configuration, instead that requiring a specific provisioner that would instead leverage 
-a client API.
-
-Application instances implementing the `AutoProvisioningOpenShiftApplication` interface can be used the same ways as the 
-other `Application` types, i.e. in a testing scenario defined by a test class and its `@Intersmash` annotations.
-
-For an example of automatic provisioning process, just run the following commands: 
-```text
-$ mvn clean package -DskipTests
-...
-$ mvn test -pl core -Dtest=AutoProvisioningTests
-```
+A list of provisioners by product can be found [here](../docs/Provisioner-by-Product.md).
