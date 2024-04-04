@@ -1,63 +1,42 @@
-# Intersmash - Run your cloud-native tests with Java!
+# Intersmash - Cloud-native testing with Java
 
-Welcome to Intersmash, a Java library that makes it easy to provision and execute (complex) test scenarios on 
-OpenShift.
+Intersmash is a Java library that makes it easy to automate the
+provisioning and execution of tests in cloud-native environments.
+It helps the user prototype and test complex interoperability scenarios on
+kubernetes compliant cloud-native environments and platforms, most notably OpenShift.  (*Other Kubernetes implementations will be supported in the future.*)
 
-If you work as an enterprise application developer, runtime components engineer, quality engineer or in DevOps, 
-Intersmash will help you prototype and test complex interoperability scenarios on cloud-native environments 
-and platforms, most notably on OpenShift (and on Kubernetes as well, soon :) ).
+Intersmash is designed with these principles.  
+* It is integrated with JUnit.
+* It handles all the plumbing (i.e. provisioning) of the cloud container. It deploys the test
+scenario *product components*, manages their life-cycle orchestration, and
+undeploys and cleans up the environment on test completion.  *(The term services and product components will be used interchangeably.)*
+* Intersmash is designed to be extensible.  If there is a cloud service not yet implemented,
+the user can easily create an implementation and integrate it into the framework.
+* The framework is cloud implementation agnostic.  It will be possible *(in the future)*
+to test on different Kubernetes compliant cloud implementations.  This will
+ensure application portability.
 
-Through a convenient set of annotations and APIs, Intersmash provides the developer with tools to describe and deploy 
-services and to manage their life-cycle orchestration directly from the test class.
-
-
-## Building blocks
-
-Intersmash has been designed to provide components that interact in the context of a testing workflow in order to:
-
-1. provision a products' stack environment, i.e. the _scenario_
-2. execute tests in order to validate the behavior of the _scenario_
-
-There are three main components on which this design is based:
-
-* _annotations_: describes the scenario and the services it's made of.  These statements are declared in the test class.
-
-* _applications_: interface implementations that describe the configuration and specific properties of a given service that belongs to a scenario.
-
-* _provisioners_: takes care of and controls the specific workflow that needs to be executed for the given products that a scenario consists of. See [the Intersmash provisioning documentation](./provisioners/README.md) to learn about supported  services provisioners.
 
 ## Usage Example
 
-Two intersmash archives provide the three components described above.  The dependencies are added to the project configuration, e.g.:
+The following outlines a simple test scenario in which PostgresSql and Wildfly are used.
 
-```xml
-<dependencies>
-  <dependency>
-    <groupId>org.jboss.intersmash</groupId>
-    <artifactId>intersmash-core</artifactId>
-  </dependency>
-  <dependency>
-      <groupId>org.jboss.intersmash</groupId>
-      <artifactId>intersmash-provisioners</artifactId>
-  </dependency>
-</dependencies>
-```
-
-The following is an example of a test:
 
 ```java
-@Intersmash({
-        // 1
-        @Service(PostgresqlApplication.class),
-        @Service(OpenShiftWildflyApp.class)
+@Intersmash({ // 1
+        @Service(PostgresqlApp.class),
+        @Service(WildflyOpenShiftApp.class)
     }
 )
 public class SampleTest {
-    @ServiceUrl(OpenShiftWildflyApp.class) // 2
+    @ServiceUrl(WildflyOpenShiftApp.class) // 2
     private String wildflyRouteUrl;
-
-    @ServiceProvisioner(OpenShiftWildflyApp.class) // 3
+  
+    @ServiceProvisioner(WildflyOpenShiftApp.class) // 3
     private OpenShiftProvisioner wildflyOpenShiftProvisioner;
+    
+    @ServiceProvisioner(PostgresqlApp.class) 
+    private OpenShiftProvisioner postgresqlProvisioner;
 
     @Test
     public void test() {
@@ -65,29 +44,22 @@ public class SampleTest {
     }
 }
 ```
+1. By decorating the class with the Intersmash annotation, the user registers their interface implementation
+   classes of the services to be used in this test.
+2. Injects into the field a string containing the URL to communicate with Wildfly.
+3. Injects into the field the provisioner for Wildfly and PostgreSQL.  These classes
+   enable the test code to, scale the deployment up and down, for example.
 
 
-* **1:** The applications/products used in the test are listed as `@Service` items within the `@Intersmash` annotation.
-  Each of the mentioned classes provides the platform-specific configuration for the given application/product.
-  You may deploy the application on some server (Wildfly), setup services that don't require a deployment, or just deploy a
-  database.
-* **2:** To inject information about the application into the test, the tooling layer provides several annotations.
-  The application class must match the class declared in the @Service annotation in point *#1*.
-  `@ServiceUrl` provides support to inject into a String or a URL type field, the address of the service.
-  Beware, some applications (e.g. DB running on OpenShift) might not provide `@ServiceUrl` as there is no route to them
-  created.
-* **3:** Should you need control over platform-specific actions, you can also inject a provisioner via the `@ServiceProvisioner` annotation.
-  This will enable you to, for example, scale your deployment up and down.
-
-In the most common use cases, you just need to implement the correct `Application`
-interface and pass the class via the`@Service` annotation.  It's the task for the framework to choose a suitable
-Provisioner implementation (an exception will be thrown in case no suitable Provisioner was yet implemented).
-
-The following snippet represents the `PostgresqlApplication` class that is being used by the previously 
-detailed test class:
+An example implementation of PostgreSQLTemplateOpenShiftApplication, which leverages templates to describe a PostgreSql service, would look like this. For this service the user
+needs to identify the template to use; POSTGRESQL_EPHEMERAL in this case and
+provides the name of the service.
 
 ```java
-public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplication {
+import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate;
+
+public class PostgresqlApp implements PostgreSQLTemplateOpenShiftApplication {
 	static String NAME = "postgresql";
 
 	@Override
@@ -103,25 +75,119 @@ public class PostgresqlApplication implements PostgreSQLTemplateOpenShiftApplica
 ```
 
 
+An example implementation of WildflyImageOpenShiftApplication, which leverages s2i build to deploy a WildFly application service, would look like this.  The application's name is declared
+and the build of the Wildfly image to deploy is retrieved and provided to the framework.
+
+```java
+import org.jboss.intersmash.application.openshift.WildflyImageOpenShiftApplication;
+
+public class WildflyOpenShiftApp implements WildflyImageOpenShiftApplication {
+  @Override
+  public String getName() {
+    return "wildfly-app";
+  }
+
+  @Override
+  public BuildInput getBuildInput() {
+    return new BuildInputBuilder().archive(app).build();
+  }
+}
+```
+
+
+## Framework Design
+
+Intersmash provides a set of annotations, APIs and application service contracts the developer uses to describe the test scenario, within the test class.
+This information is used by the framework to deploy the services and to manage their
+life-cycle orchestration directly from the test class.
+A curated list of service "provisioners" is provided to cover the most common use cases, for example provisioning the Kafka Operator, or a PostgreSql service via templates, or a s2i build and deploy a WildFly application.
+The full list of provided services can be found [here](./docs/Provisioner-by-Product.md).
+
+### Components
+
+There are three main components that make up the framework:
+
+* **annotations**: Intersmash annotations are used to declare the
+  *product components* that make up the test scenario.
+  These statements can be applied to the test class and its fields. 
+
+  There are four annotations
+  - **@Intersmash**: applied to the test class level definition, contains a list of identified services that make up the test scenario.
+  - **@Service**:  the class reference to an individual service
+  - **@ServiceUrl**: applied to a given test class field, injects into the test class as a String or URL the address of a service
+  - **@ServiceProvisioner**: applied to a given test class field, injects into the test class a provisioner that enables control over platform-specific actions or example, scaling the deployment up and down.
+
+
+* **applications**: An Intersmash provided interface that describes
+  the configuration and specific properties of a given service.  For every supported *product component*
+  there is a corresponding "application" interface class.  The Framework's naming convention for these classes is *ProductComponentName*Application.java. (e.g. BootableJarOpenShiftApplication.java, ActiveMQOperatorApplication.java HelmChartOpenShiftApplication.java, ... etc)
+  The interface provides default values for most of the service's configuration information.
+  The user is required to create an implementation class of the interface and
+  provide some select information.  It is this user created implemented class that is declared in the annotations, @Service, @ServiceUrl, and @ServiceProvisioner.
+
+
+* **provisioners**: Classes that take care of deploying, undeploying, managing the
+  life-cycle orchestration of services, and control the specific workflow that
+  needs to be executed for the test scenario.  The user has no direct interaction
+  with these classes.
+  See [the Intersmash provisioning documentation](./provisioners/README.md)
+  to learn about supported services provisioners.
+
+### Properties
+[XTF](https://github.com/xtf-cz/xtf) is used by Intersmash to communicate
+with OpenShift.  This tool provides a means to pass configuration properties
+from Intersmash to OpenShift.
+Intersmash also uses class, [XTFConfig](https://github.com/xtf-cz/xtf/blob/master/core/src/main/java/cz/xtf/core/config/XTFConfig.java),
+internally.
+XTF supports four ways to provide properties. In priority order they are,
+
+- **System properties**
+- **Environment variables**
+- **test.properties file**: residing by default in the root of the project with the goal to contain
+  user specific setup.
+- **global-test.properties file**: residing by default in the root of the project with the goal to contain
+  a shared setup.
+
+A table of properties Intersmash uses to configure and execute tests can be
+found [here](./docs/XTF-Configuration-Properties.md).
+
+
+## Maven Dependencies
+Two maven archives are needed to build and run with Intersmash.
+```xml
+<dependencies>
+  <!-- contains the Intersmash core annotations, contracts and APIs -->
+  <dependency>
+    <groupId>org.jboss.intersmash</groupId>
+    <artifactId>intersmash-core</artifactId>
+  </dependency>
+  <!-- provisioning implementations and components-->
+  <dependency>
+      <groupId>org.jboss.intersmash</groupId>
+      <artifactId>intersmash-provisioners</artifactId>
+  </dependency>
+</dependencies>
+```
+
 ## Building Intersmash
 
-* Simple build, will build the project's components including the `deployments` module.  That module has WildFly deployments that are used by the `testsuite` with default - i.e. _community_ artifacts:
+### JDK version
+JDK-11 is the current version this project supports.
+
+Build the project without running the tests
 ```shell
 mvn clean install -DskipTests
 ```
 
-* By building with the `ts.wildfly.target-distribution.eap` profile, the WildFly deployments will instead be built by using productised bits configuration:
-```shell
-mvn clean install -DskipTests -Pts.wildfly.target-distribution.eap
-```
+### Running the Intersmash testsuite
 
-## Running the Intersmash test suite
+**Note:** to run the Intersmash testsuite Openshift and XTF properties files with corresponding configuration information are needed. See the Framework Design section above.
 
 * Run the testsuite against community deliverables, e.g.: Keycloak operator or WildFly images:
 ```shell
 mvn test -pl testsuite/ -Pts.execution-profile.community
 ```
-This is usually executed to test community images, deliverables and - for application servers like WildFly - deployments built from community artifacts.
+This is usually executed to test community images, deliverables and for application servers like WildFly - deployments built from community artifacts.
 
 * Run the testsuite against productised deliverables, e.g.: Red Hat Single Sign On operator or JBoss EAP images:
 ```shell
@@ -129,153 +195,32 @@ mvn test -pl testsuite/ -Pts.execution-profile.prod
 ```
 This is usually executed to test productised images, deliverables and - for application servers like JBoss EAP - deployments built from community artifacts.
 
-## Configuration
-* Intersmash is using [XTF](https://github.com/xtf-cz/xtf) to communicate with OpenShift cluster for the OpenShift cloud
-  environment.
-  The [XTFConfig](https://github.com/xtf-cz/xtf/blob/master/core/src/main/java/cz/xtf/core/config/XTFConfig.java) class
-  is also used internally, properties are resolved as following: System Properties > Environment Properties >
-  test.properties file > global-test.properties, see https://github.com/xtf-cz/xtf#configuration for more details on this.
 
-* The following properties can be used to configure Intersmash build and test execution, see the [CI checks e2e tests 
-script](.ci/openshift-ci/build-root/e2e-test-prod.sh) as an example:
+### Project Modules
+* **core** - core interfaces, annotations and extensions.
+* **provisioners** - implementations of interfaces from `core` for selected services.
+* **testsuite** - tests that verify the integration with OpenShift. (**Note:**  OpenShift is needed in order to run them.)
+  * **test-deployments** - sources for shared deployments which are used by the testsuite.
+    * **deployments-provider** - provides support to get path to compiled deployments
+* **examples** - Test samples that illustrate the use of Intersmash.
 
-| Property                                           | Description                                                                                                    |
-|----------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
-| intersmash.skip.deploy                             | Skip the deployment phase, tests will be run against a prepared environment *                                  |
-| intersmash.skip.undeploy                           | Do not cleanup environment after test (development use)                                                        |
-| intersmash.deployments.repository.ref              | Manually set git repository branch of deployments                                                              |
-| intersmash.deployments.repository.url              | Manually set git repository url of deployments                                                                 |
-| intersmash.openshift.script.debug                  | Add parameter SCRIPT_DEBUG=true to DeploymentConfig/Pod                                                        |
-| intersmash.wildfly.image                           | Wildfly/JBoss EAP 8 Builder image URL                                                                          |
-| intersmash.wildfly.runtime.image                   | Wildfly/JBoss EAP 8 Runtime image URL                                                                          |
-| intersmash.wildfly.helm.charts.repo                | Wildfly/JBoss EAP 8 Helm Charts repository URL                                                                 |
-| intersmash.wildfly.helm.charts.branch              | Wildfly/JBoss EAP 8 Helm Charts repository branch                                                              |	
-| intersmash.wildfly.helm.charts.name                | Wildfly/JBoss EAP 8 Helm Charts repository namespaces                                                          |
-| intersmash.wildfly.operators.catalog_source        | Wildfly/JBoss EAP custom catalog for Operator                                                                  |
-| intersmash.wildfly.operators.index_image           | Wildfly/JBoss EAP custom index image for Operator                                                              |
-| intersmash.wildfly.operators.package_manifest      | Wildfly/JBoss EAP custom package manifest for Operator                                                         |
-| intersmash.wildfly.operators.channel               | Wildfly/JBoss EAP desired channel for Operator                                                                 |
- | intersmash.bootable.jar.image                      | Open JDK image URL that can be used as the base for an OpenShift Wildfly/JBoss EAP Bootable JAR                |
-| intersmash.eap7.image                              | JBoss EAP 7 Builder image URL                                                                                  |
-| intersmash.eap7.runtime.image                      | JBoss EAP 7 Runtime image URL                                                                                  |
-| intersmash.eap7.templates.base.url                 | JBoss EAP 7 OpenShift Templates base URL                                                                       |
-| intersmash.eap7.templates.path                     | JBoss EAP 7 openShift Templates base path                                                                      |
-| intersmash.infinispan.image                        | Infinispan/Red Hat DataGrid image URL                                                                          |
-| intersmash.infinispan.operators.catalog_source     | Infinispan/Red Hat DataGrid custom catalog for Operator                                                        |
-| intersmash.infinispan.operators.index_image        | Infinispan/Red Hat DataGrid custom index image for Operator                                                    |
-| intersmash.infinispan.operators.package_manifest   | Infinispan/Red Hat DataGrid custom package manifest for Operator                                               |
-| intersmash.infinispan.operators.channel            | Infinispan/Red Hat DataGrid desired channel for Operator                                                       |
-| intersmash.keycloak.image                          | Keycloak image URL                                                                                             |
-| intersmash.keycloak.operators.catalog_source       | Keycloak custom catalog for Operator                                                                           |
-| intersmash.keycloak.operators.index_image          | Keycloak custom index image for Operator                                                                       |
-| intersmash.keycloak.operators.package_manifest     | Keycloak custom package manifest for Operator                                                                  |
-| intersmash.keycloak.operators.channel              | Keycloak desired channel for Operator                                                                          |
-| intersmash.rhsso.image                             | Red Hat Single Sign On 7 image URL                                                                             |
-| intersmash.rhsso.operators.catalog_source          | Red Hat Single Sign On 7 custom catalog for Operator                                                           |
-| intersmash.rhsso.operators.index_image             | Red Hat Single Sign On 7 custom index image for Operator                                                       |
-| intersmash.rhsso.operators.package_manifest        | Red Hat Single Sign On 7 custom package manifest for Operator                                                  |
-| intersmash.rhsso.operators.channel                 | Red Hat Single Sign On 7 desired channel for Operator                                                          |
-| intersmash.kafka.operators.catalog_source          | Kafka/Red Hat AMQ Streams custom catalog for Operator                                                          |
-| intersmash.kafka.operators.index_image             | Kafka/Red Hat AMQ Streams custom index image for Operator                                                      |
-| intersmash.kafka.operators.package_manifest        | Kafka/Red Hat AMQ Streams custom package manifest for Operator                                                 |
-| intersmash.kafka.operators.channel                 | Kafka/Red Hat AMQ Streams desired channel for Operator                                                         |
-| intersmash.activemq.image                          | Apache ActiveMQ Broker/Red Hat AMQ Broker image URL                                                            |
-| intersmash.activemq.init.image                     | ActiveMQ Broker/Red Hat AMQ Broker init image URL                                                              |
-| intersmash.activemq.operators.catalog_source       | ActiveMQ Broker/Red Hat AMQ Broker custom catalog for Operator                                                 |
-| intersmash.activemq.operators.index_image          | ActiveMQ Broker/Red Hat AMQ Broker custom index image for Operators                                            |
-| intersmash.activemq.operators.package_manifest     | ActiveMQ Broker/Red Hat AMQ Broker custom package manifest for Operators                                       |
-| intersmash.activemq.operators.channel              | ActiveMQ Broker/Red Hat AMQ Broker desired channel for Operator                                                |
-| intersmash.hyperfoil.operators.catalog_source      | HyperFoil custom catalog for Operator                                                                          |
-| intersmash.hyperfoil.operators.index_image         | HyperFoil custom index image for Operators                                                                     |
-| intersmash.hyperfoil.operators.package_manifest    | HyperFoil custom package manifest for Operators                                                                |
-| intersmash.hyperfoil.operators.channel             | HyperFoil desired channel for Operator                                                                         |
-| intersmash.mysql.image                             | MySql image URL                                                                                                |
-| intersmash.postgresql.image                        | PostgreSql image URL                                                                                           |
-| wildfly-maven-plugin.groupId                       | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Maven plugin `groupId`                            |
-| wildfly-maven-plugin.artifactId                    | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Maven plugin `artifactId`                         |
-| wildfly-maven-plugin.version                       | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Maven plugin `version`                            |
-| wildfly.ee-feature-pack.location                   | Used by shared configurable deployments: Wildfly/JBoss EAP 8 EE Galleon feature pack location (G:A:V)          |
-| wildfly.feature-pack.location                      | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Galleon feature pack location (G:A:V)             |
-| wildfly.cloud-feature-pack.location                | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Cloud Galleon feature pack location (G:A:V)       |
-| wildfly.datasources-feature-pack.location          | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Datasources Galleon feature pack location (G:A:V) |
-| wildfly.keycloak-saml-adapter-feature-pack.version | Used by shared configurable deployments: Keycloak SAML Adapter feature pack `version`                          |
-| wildfly.ee-channel.groupId                         | Used by shared configurable deployments: JBoss EAP 8 Channel artifact `groupId`                                |
-| wildfly.ee-channel.artifactId                      | Used by shared configurable deployments: JBoss EAP 8 Channel artifact `artifactId`                             |
-| wildfly.ee-channel.version                         | Used by shared configurable deployments: JBoss EAP 8 Channel artifact `version`                                |
-| bom.wildfly-ee.version                             | Used by shared configurable deployments: Wildfly/JBoss BOMs version                                            |
-
-[*] - When `intersmash.skip.deploy` is set, please take into account that the prepared environment should be
-configured accordingly to the `Application` descriptors which are defined by the test class `@Service` annotations.
-E.g.: if a test class defines an `WildflyOperatorApplication` as one of its services, and such application sets the `name`
-to be "wildfly-operator-app", then a Wildfly operator application with such a name should exist in the prepared environment.
-This feature is useful to save debugging time during development, where you can deploy a complex scenario and then
-enable the property to just execute tests in the following runs.
 
 ## Platforms
 
-* Although Intersmash is designed to allow executions on different platforms, at the moment we fully focus on OpenShift
-  support.
+Intersmash is designed to allow executions on different Kubernetes compliant platforms, at the moment we are fully focused on OpenShift running on Linux support.  We welcome community contributions to other Kubernetes implementations.
 
-* Intersmash Framework tooling modules support Java 11 language features, and the compiled code is set to be compliant with
-  such version as well.
-
-## Architecture
-
-The Intersmash repository hosts several modules which are meant to provide core APIs (`core`),
-tooling implementation (`provisioners`), a testsuite (`testsuite`) and examples (`examples`).
-
-### Modules
-
-* **core** - core interfaces, annotations and extensions.
-* **provisioners** - implementations of interfaces from `core` for selected services.
-* **testsuite** - tests that verify the integration with OpenShift, hence a cluster is needed.  
-  * **test-eployments** - sources for shared deployments which are used by the testsuite.
-    Moreover, the `intersmash-deployments-provider` submodule provides support to get path to compiled deployments. Or
-    you can get any deployment by GAV.
-* **examples** - examples that illustrate how to integrate Intersmash.
-
-## Sources and Javadoc artifacts
-
-The Intersmash tooling modules are configured to generate both sources and Javadoc JAR artifacts each time they're 
-built.
-
-The `doc` profiles must be activated in order to produce the sources and Javadoc artifacts, e.g.:
-
-```shell
-mvn clean install -DskipTests -Pdoc
-```
-
-a new directory, namely `apidocs`, is generated inside the `target` directory of both `core` and 
-`provisioners`, and HTML files containing the Javadoc are added to it.
-
-In the `target` directory two additional artifacts are generated, the _sources_ and _Javadoc_ 
-artifacts. For instance, for `intersmash-provisioner` the following artifacts are generated:
-
-* intersmash-provisioners-_&lt;version&gt;_.jar - Actual provisioners implementation
-* intersmash-provisioners-_&lt;version&gt;_-sources.jar - Unzip to get the sources or use in your IDE
-* intersmash-provisioners-_&lt;version&gt;_-javadoc.jar - unzip to get Javadoc
-
-## Publishing Intersmash Library artifacts
-
-The Intersmash Library project is configured to publish some artifacts to the public Maven repository, so that external 
-projects can access them, e.g.: the `intersmash-core.jar` artifact which contains the `@Intersmash` annotation 
-definition.
-
-Just run:
-
-```shell
-mvn clean deploy -DskipTests 
-```
-
-## Contributing
-
-See [Intersmash contributing guidelines](CONTRIBUTING.md).
 
 ## Future goals
+* K8s support and Quarkus provisioning
+* documentation and examples enhancements
 
-Just to mention a few: K8s support and Quarkus provisioning, plus documentation and examples enhancements, see the 
-[current milestone](https://github.com/Intersmash/intersmash/milestone/2) for a complete list of issues.
+see the [current milestone](https://github.com/Intersmash/intersmash/milestone/2) for a complete list of issues.
 
 ## Issue tracking
+To tack or report an issue see [GitHub issue](https://github.com/Intersmash/intersmash/issues).
 
+When reporting an issue please choose the proper template and fill it with the required information.
+
+## Contributing
+Intersmash is an open source community project.  We welcome participation and contributions.
 See [Intersmash contributing guidelines](CONTRIBUTING.md).
