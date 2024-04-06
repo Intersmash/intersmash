@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
-import org.jboss.intersmash.test.deployments.util.maven.ArtifactProvider;
+import org.jboss.intersmash.util.maven.ArtifactProvider;
 
 /**
  * A class which is expected to provide access deployment applications. Archive based deployments (e.g.: WAR, JAR) must

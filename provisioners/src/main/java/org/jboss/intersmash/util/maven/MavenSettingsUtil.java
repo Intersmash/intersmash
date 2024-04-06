@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.intersmash.test.deployments.util.maven;
+package org.jboss.intersmash.util.maven;
 
 import java.io.File;
 import java.util.List;

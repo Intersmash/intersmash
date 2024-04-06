@@ -24,66 +24,12 @@
     <properties>
         <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
 
-        <version.aether>1.1.0</version.aether>
-        <version.maven>3.3.9</version.maven>
-
         <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
 
         <!-- By default, the following prop is empty, stating that the build profile is none -->
         <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- The following ones are used by deployments-provider -->
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-api</artifactId>
-                <version>${version.aether}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-connector-basic</artifactId>
-                <version>${version.aether}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-impl</artifactId>
-                <version>${version.aether}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-spi</artifactId>
-                <version>${version.aether}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-transport-file</artifactId>
-                <version>${version.aether}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.aether</groupId>
-                <artifactId>aether-transport-http</artifactId>
-                <version>${version.aether}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-aether-provider</artifactId>
-                <version>${version.maven}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-settings</artifactId>
-                <version>${version.maven}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.maven</groupId>
-                <artifactId>maven-settings-builder</artifactId>
-                <version>${version.maven}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <build>
         <pluginManagement>
