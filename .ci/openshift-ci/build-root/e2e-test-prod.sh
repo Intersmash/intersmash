@@ -138,6 +138,7 @@ mvn test -Dmaven.repo.local=./local-repo-prod -pl testsuite/integration-tests -P
  -Dintersmash.infinispan.image=registry.redhat.io/jboss-datagrid-7/datagrid73-openshift:latest \
  -Dintersmash.infinispan.operators.catalog_source=redhat-operators \
  -Dintersmash.infinispan.operators.package_manifest=datagrid \
+ -Dintersmash.infinispan.operators.channel=8.4.x \
  -Dintersmash.kafka.operators.catalog_source=redhat-operators \
  -Dintersmash.kafka.operators.package_manifest=amq-streams \
  -Dintersmash.kafka.operators.channel=stable \
