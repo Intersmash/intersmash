@@ -125,7 +125,6 @@ public class SpyProvisioner implements OpenShiftProvisioner<SpyApplication> {
 		return spyApp;
 	}
 
-
 	@Override
 	public void deploy() {
 		deployImage();
