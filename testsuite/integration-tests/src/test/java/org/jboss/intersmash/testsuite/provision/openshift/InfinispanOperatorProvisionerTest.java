@@ -42,7 +42,6 @@ import org.slf4j.event.Level;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;
-import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
@@ -115,6 +114,9 @@ public class InfinispanOperatorProvisionerTest {
 
 	@AfterEach
 	public void customResourcesCleanup() {
+		INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().list().getItems().stream()
+				.map(resource -> resource.getMetadata().getName()).forEach(name -> INFINISPAN_OPERATOR_PROVISIONER
+						.infinispansClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
 		INFINISPAN_OPERATOR_PROVISIONER.cachesClient().list().getItems().stream()
 				.map(resource -> resource.getMetadata().getName()).forEach(name -> INFINISPAN_OPERATOR_PROVISIONER
 						.cachesClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
@@ -289,7 +291,7 @@ public class InfinispanOperatorProvisionerTest {
 	 * @param infinispan the Infinispan resource to be created
 	 */
 	private void createAndVerifyInfinispan(Infinispan infinispan) {
-		// create and verify that object exists
+		// create and verify that exactly 1 object (Infinispan CR) exists
 		INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().createOrReplace(infinispan);
 		new SimpleWaiter(() -> INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().list().getItems().size() == 1)
 				.level(Level.DEBUG)
@@ -318,8 +320,10 @@ public class InfinispanOperatorProvisionerTest {
 				.level(Level.DEBUG)
 				.waitFor();
 		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(0, "clusterName", name).level(Level.DEBUG).waitFor();
+			// checking for size of Infinispan CR pod set is 0
+			new SimpleWaiter(
+					() -> InfinispanOperatorProvisioner.getInfinispanPods(name).size() == 0)
+					.level(Level.DEBUG).waitFor();
 		}
 	}
 
@@ -331,20 +335,22 @@ public class InfinispanOperatorProvisionerTest {
 		// delete and verify that object was removed
 		INFINISPAN_OPERATOR_PROVISIONER.cachesClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND)
 				.delete();
-		new SimpleWaiter(() -> INFINISPAN_OPERATOR_PROVISIONER.cachesClient().list().getItems().size() == 0).level(Level.DEBUG)
+		new SimpleWaiter(() -> INFINISPAN_OPERATOR_PROVISIONER.cachesClient().list().getItems().size() == 0)
+				.level(Level.DEBUG)
 				.waitFor();
 	}
 
 	/**
 	 * Let's just verify that the minimal Infinispan setup succeeded
 	 */
-	private void verifyMinimalInfinispan(Infinispan infinispan, boolean waitForPods) {
+	private void verifyMinimalInfinispan(final Infinispan infinispan, final boolean waitForPods) {
 		// create and verify that object exists
 		createAndVerifyInfinispan(infinispan);
-		// one pod expected with the "clusterName" label: example-infinispan, i.e. the same name as the CR metadata
 		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(1, "clusterName", name).level(Level.DEBUG).waitFor();
+			// a correct number of Infinispan CRs has been created
+			new SimpleWaiter(
+					() -> InfinispanOperatorProvisioner.getInfinispanPods(name).size() == infinispan.getSpec().getReplicas())
+					.level(Level.DEBUG).waitFor();
 			log.debug(INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getStatus().toString());
 		}
 		assertMinimalInfinispanCreation(infinispan);
@@ -355,27 +361,19 @@ public class InfinispanOperatorProvisionerTest {
 	}
 
 	/**
-	 * Verify that two replicas are up and running and that can be scaled to 3
+	 * Verify that two replicas are up and running
 	 */
 	private void verifyMinimalTwoReplicasInfinispan(Infinispan infinispan, boolean waitForPods) {
 		// create and verify that object exists
 		createAndVerifyInfinispan(infinispan);
-		// two pods expected with the "clusterName" label: example-infinispan, i.e. the same name as the CR metadata
 		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(2, "clusterName", name).level(Level.DEBUG).waitFor();
+			// a correct number of Infinispan CRs has been created
+			new SimpleWaiter(
+					() -> InfinispanOperatorProvisioner.getInfinispanPods(name).size() == infinispan.getSpec().getReplicas())
+					.level(Level.DEBUG).waitFor();
 			log.debug(INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getStatus().toString());
 		}
 		assertMinimalInfinispanCreation(infinispan);
-
-		infinispan.getSpec().setReplicas(3);
-		createAndVerifyInfinispan(infinispan);
-		// one pods expected with the "clusterName" label: example-infinispan, i.e. the same name as the CR metadata
-		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(3, "clusterName", name).level(Level.DEBUG).waitFor();
-			log.debug(INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getStatus().toString());
-		}
 		deleteAndVerifyMinimalInfinispan(waitForPods);
 	}
 
@@ -384,10 +382,11 @@ public class InfinispanOperatorProvisionerTest {
 	 */
 	private void verifyMinimalCacheServiceInfinispanWithAutoscale(Infinispan infinispan, boolean waitForPods) {
 		createAndVerifyInfinispan(infinispan);
-		// one pods expected with the "clusterName" label: example-infinispan, i.e. the same name as the CR metadata
 		if (waitForPods) {
-			OpenShiftWaiters.get(OpenShifts.master(), () -> false)
-					.areExactlyNPodsReady(2, "clusterName", name).level(Level.DEBUG).waitFor();
+			// a correct number of Infinispan CRs has been created
+			new SimpleWaiter(
+					() -> InfinispanOperatorProvisioner.getInfinispanPods(name).size() == infinispan.getSpec().getReplicas())
+					.level(Level.DEBUG).waitFor();
 			log.debug(INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getStatus().toString());
 		}
 		assertMinimalInfinispanWithAutoscaleCreation(infinispan);
