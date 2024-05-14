@@ -73,19 +73,15 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
 				getApplication().getName());
 		subscribe();
-
-		// create custom resources
-		int replicas = getApplication().getInfinispan().getSpec().getReplicas();
+		// create Infinispan CR
+		final int replicas = getApplication().getInfinispan().getSpec().getReplicas();
 		infinispansClient().createOrReplace(getApplication().getInfinispan());
+		if (replicas > 0) {
+			new SimpleWaiter(() -> getInfinispanPods().size() == replicas).level(Level.DEBUG).waitFor();
+		}
+		// create Cache CR(s)
 		if (getApplication().getCaches().size() > 0) {
 			getApplication().getCaches().stream().forEach((i) -> cachesClient().resource(i).create());
-		}
-
-		// This might be a litle bit naive, but we need more use cases to see how will this behave and what other
-		// use-cases we have to cover wait for infinispan pods - look for "clusterName" in infinispan pod
-		if (replicas > 0) {
-			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck).areExactlyNPodsReady(
-					replicas, "clusterName", getApplication().getInfinispan().getMetadata().getName()).waitFor();
 		}
 		// wait for all resources to be ready
 		waitForResourceReadiness();
@@ -93,11 +89,12 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 
 	@Override
 	public void undeploy() {
-		// delete custom resources
+		// delete Cache CR(s)
 		caches().forEach(keycloakUser -> keycloakUser.withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
+		// delete Infinispan CR
 		infinispan().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
-
-		// wait for 0 pods
+		// wait for 0 pods, and here it waits for no pods to exist with the `clusterName=<INFINISPAN_APP_NAME>` label,
+		// since all CRs have been deleted
 		OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
 				.areExactlyNPodsReady(0, "clusterName", getApplication().getInfinispan().getMetadata().getName())
 				.level(Level.DEBUG)
@@ -107,32 +104,15 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 
 	@Override
 	public void scale(int replicas, boolean wait) {
-		StatefulSet statefulSet = OpenShiftProvisioner.openShift.getStatefulSet(getApplication().getName());
-		if (Objects.isNull(statefulSet)) {
-			throw new IllegalStateException(String.format(
-					"Impossible to scale non existent StatefulSet with name=\"%s\" to replicas=%d",
-					getApplication().getName(),
-					replicas));
-		}
-		String controllerRevisionHash = statefulSet.getStatus().getUpdateRevision();
 		Infinispan tmpInfinispan = infinispan().get();
 		tmpInfinispan.getSpec().setReplicas(replicas);
 		infinispan().replace(tmpInfinispan);
 		if (wait) {
-			OpenShiftWaiters.get(OpenShiftProvisioner.openShift, ffCheck)
-					.areExactlyNPodsReady(replicas, "controller-revision-hash", controllerRevisionHash)
-					.level(Level.DEBUG)
-					.waitFor();
+			// waits for the correct number of Pods representing the Infinispan CR replicas to be ready
+			new SimpleWaiter(() -> getInfinispanPods().size() == replicas).level(Level.DEBUG).waitFor();
 		}
-		if (replicas > 0) {
-			//	see https://github.com/kubernetes/apimachinery/blob/v0.20.4/pkg/apis/meta/v1/types.go#L1289
-			new SimpleWaiter(
-					() -> infinispan().get().getStatus().getConditions().stream()
-							.anyMatch(c -> c.getType()
-									.equals(InfinispanConditionBuilder.ConditionType.ConditionWellFormed.getValue())
-									&& c.getStatus().equals("True")))
-					.reason("Wait for infinispan resource to be ready").level(Level.DEBUG).waitFor();
-		}
+		// wait for all resources to be ready
+		waitForResourceReadiness();
 	}
 
 	@Override
@@ -142,6 +122,19 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 				? OpenShiftProvisioner.openShift.getLabeledPods("controller-revision-hash",
 						statefulSet.getStatus().getUpdateRevision())
 				: Lists.emptyList();
+	}
+
+	public List<Pod> getInfinispanPods() {
+		return getInfinispanPods(getApplication().getName());
+	}
+
+	public static List<Pod> getInfinispanPods(final String clusterName) {
+		return OpenShiftProvisioner.openShift.inNamespace(OpenShiftConfig.namespace()).pods().list().getItems().stream().filter(
+				p -> p.getMetadata().getLabels().entrySet().stream()
+						.anyMatch(tl -> "app".equals(tl.getKey()) && "infinispan-pod".equals(tl.getValue())
+								&& p.getMetadata().getLabels().entrySet().stream().anyMatch(
+										cnl -> "clusterName".equals(cnl.getKey()) && clusterName.equals(cnl.getValue()))))
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -174,7 +167,6 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 			final Expose.Type exposedType = getApplication().getInfinispan().getSpec().getExpose().getType();
 			switch (exposedType) {
 				case NodePort:
-					//	TODO - check
 					// see see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L107
 					externalUrl = "http://"
 							+ OpenShiftProvisioner.openShift.getService(getApplication().getName() + "-external").getSpec()
@@ -182,7 +174,6 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 							+ getApplication().getInfinispan().getSpec().getExpose().getNodePort();
 					break;
 				case LoadBalancer:
-					//	TODO - check
 					//	see https://github.com/infinispan/infinispan-operator/blob/2.0.x/pkg/apis/infinispan/v1/infinispan_types.go#L111
 					externalUrl = "http://"
 							+ OpenShiftProvisioner.openShift.getService(getApplication().getName() + "-external").getSpec()
@@ -204,8 +195,6 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 			throw new RuntimeException(String.format("Infinispan operator Internal URL \"%s\" is malformed.", internalUrl), e);
 		}
 	}
-
-	// infinispans.infinispan.org
 
 	/**
 	 * Get a client capable of working with {@link #INFINISPAN_RESOURCE} custom resource.
@@ -289,7 +278,8 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 	}
 
 	private void waitForResourceReadiness() {
-		//	see https://github.com/kubernetes/apimachinery/blob/v0.20.4/pkg/apis/meta/v1/types.go#L1289
+		// it must be well-formed
+		// see https://github.com/kubernetes/apimachinery/blob/v0.20.4/pkg/apis/meta/v1/types.go#L1289
 		new SimpleWaiter(
 				() -> infinispan().get().getStatus().getConditions().stream()
 						.anyMatch(
@@ -297,6 +287,7 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 										&& c.getStatus().equals("True")))
 				.reason("Wait for infinispan resource to be ready").level(Level.DEBUG)
 				.waitFor();
+		// and with the expected number of Cache CR(s)
 		if (getApplication().getCaches().size() > 0)
 			new SimpleWaiter(() -> cachesClient().list().getItems().size() == caches().size())
 					.reason("Wait for caches to be ready.").level(Level.DEBUG).waitFor(); // no isReady() for cache
