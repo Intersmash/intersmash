@@ -114,12 +114,14 @@ public class InfinispanOperatorProvisionerTest {
 
 	@AfterEach
 	public void customResourcesCleanup() {
-		INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().list().getItems().stream()
-				.map(resource -> resource.getMetadata().getName()).forEach(name -> INFINISPAN_OPERATOR_PROVISIONER
-						.infinispansClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
+		// when cleaning up, let's remove
 		INFINISPAN_OPERATOR_PROVISIONER.cachesClient().list().getItems().stream()
 				.map(resource -> resource.getMetadata().getName()).forEach(name -> INFINISPAN_OPERATOR_PROVISIONER
 						.cachesClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
+		// ... and the Infinispan CRs
+		INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().list().getItems().stream()
+				.map(resource -> resource.getMetadata().getName()).forEach(name -> INFINISPAN_OPERATOR_PROVISIONER
+						.infinispansClient().withName(name).withPropagationPolicy(DeletionPropagation.FOREGROUND).delete());
 	}
 
 	/**
