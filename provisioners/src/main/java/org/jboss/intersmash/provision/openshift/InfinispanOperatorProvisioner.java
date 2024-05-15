@@ -130,6 +130,9 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 
 	public static List<Pod> getInfinispanPods(final String clusterName) {
 		return OpenShiftProvisioner.openShift.inNamespace(OpenShiftConfig.namespace()).pods().list().getItems().stream().filter(
+				// the following criteria is implemented based on similar requirements taken from the
+				// infinispan-operator project, see
+				// https://github.com/infinispan/infinispan-operator/blob/main/test/e2e/utils/kubernetes.go#L599-L604
 				p -> p.getMetadata().getLabels().entrySet().stream()
 						.anyMatch(tl -> "app".equals(tl.getKey()) && "infinispan-pod".equals(tl.getValue())
 								&& p.getMetadata().getLabels().entrySet().stream().anyMatch(
