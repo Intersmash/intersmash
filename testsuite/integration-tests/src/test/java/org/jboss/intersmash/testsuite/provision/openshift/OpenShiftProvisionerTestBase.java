@@ -28,11 +28,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.util.Strings;
+import org.infinispan.v1.Infinispan;
+import org.infinispan.v2alpha1.Cache;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
 import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
+import org.jboss.intersmash.application.openshift.InfinispanOperatorApplication;
 import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
 import org.jboss.intersmash.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
@@ -46,6 +49,7 @@ import org.jboss.intersmash.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.application.openshift.template.Eap7Template;
 import org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate;
 import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
+import org.jboss.intersmash.provision.openshift.operator.infinispan.infinispan.InfinispanBuilder;
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
@@ -756,6 +760,29 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getName() {
 				return DEFAULT_KEYCLOAK_APP_NAME;
+			}
+		};
+	}
+
+	static InfinispanOperatorApplication getInfinispanOperatorApplication() {
+		return new InfinispanOperatorApplication() {
+			private static final String DEFAULT_INFINISPAN_APP_NAME = "example-infinispan";
+
+			@Override
+			public Infinispan getInfinispan() {
+				return new InfinispanBuilder(DEFAULT_INFINISPAN_APP_NAME, Map.of("app", DEFAULT_INFINISPAN_APP_NAME))
+						.replicas(1)
+						.build();
+			}
+
+			@Override
+			public List<Cache> getCaches() {
+				return Collections.emptyList();
+			}
+
+			@Override
+			public String getName() {
+				return DEFAULT_INFINISPAN_APP_NAME;
 			}
 		};
 	}
