@@ -219,7 +219,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | ActiveMQ Artemis                 | 1.0.15                       | The one provided by the custom index image, i.e. quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11 |
 | Red Hat AMQ Broker               | 7.11.z                       | Or _latest_ in the `:7.11` tag image stream, see registry.redhat.io/amq7/amq-broker-init-rhel8                    |
  ||||
-| Infinispan                       | 14.0.27.Final                | Or _default_ provided by the default Infinispan Operator `2.4.x` channel                                          |
+| Infinispan                       | 15.0.3.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                         |
 | Red Hat DataGrid                 | 8.4.8.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `8.4.x` channel                                           |                                                         |
 ||||
 | Kafka provided by Strimzi        | 3.6.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
