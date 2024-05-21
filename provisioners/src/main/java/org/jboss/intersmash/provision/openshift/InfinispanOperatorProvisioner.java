@@ -110,9 +110,10 @@ public class InfinispanOperatorProvisioner extends OperatorProvisioner<Infinispa
 		if (wait) {
 			// waits for the correct number of Pods representing the Infinispan CR replicas to be ready
 			new SimpleWaiter(() -> getInfinispanPods().size() == replicas).level(Level.DEBUG).waitFor();
+			if (replicas > 0) {
+				waitForResourceReadiness();
+			}
 		}
-		// wait for all resources to be ready
-		waitForResourceReadiness();
 	}
 
 	@Override

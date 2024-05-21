@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
+import org.jboss.intersmash.provision.openshift.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
@@ -51,29 +52,37 @@ public class ProvisionerCleanupTestCase {
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			return Stream.of(
+					// WildFly
 					new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
 					new WildflyBootableJarImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication()),
-					new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication()),
-					new PostgreSQLImageOpenShiftProvisioner(
+							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication())
+					// Keycloak
+					, new KeycloakOperatorProvisioner(
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
+					// Infinispan
+					, new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
+					// MySQL
+					, new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication())
+					// PostgreSql
+					, new PostgreSQLImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
 					new PostgreSQLTemplateOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()),
-					new KeycloakOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
+							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// EAP latest GA
 					new WildflyImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication()),
+							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication())
 					// EAP 7
-					new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication()),
+					, new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication())
 					// RHSSO 7.6.x
-					new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso()),
+					, new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso())
 					// RHBK
-					new KeycloakOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
+					, new KeycloakOperatorProvisioner(
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
+					// RHDG
+					, new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
