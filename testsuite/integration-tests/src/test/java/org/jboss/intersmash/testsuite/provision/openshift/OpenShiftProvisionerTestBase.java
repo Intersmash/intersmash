@@ -216,6 +216,10 @@ public class OpenShiftProvisionerTestBase {
 				envVars = new ArrayList<>();
 				// Set to allow cloning from Gitlab - any value here do the job
 				envVars.add(new EnvVarBuilder().withName("GIT_SSL_NO_VERIFY").withValue("").build());
+				// Let's build just the required deployment
+				envVars.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND")
+						.withValue("-pl testsuite/deployments/eap7-shared/eap7-helloworld -am")
+						.build());
 			}
 
 			@Override
