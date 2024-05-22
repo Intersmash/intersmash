@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.jboss.intersmash.examples</groupId>
         <artifactId>intersmash-examples</artifactId>
-        <version>0.0.2-SNAPSHOT</version>
+        <version>0.0.2.DR1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>wstrust-parent</artifactId>

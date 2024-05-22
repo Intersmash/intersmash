@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>openshift-jakarta-sample-standalone</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.2.DR1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <name>Intersmash Test Deployments: OpenShift Jakarta Sample standalone deployment</name>
