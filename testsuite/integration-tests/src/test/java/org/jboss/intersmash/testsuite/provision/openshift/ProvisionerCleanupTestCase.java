@@ -52,16 +52,16 @@ public class ProvisionerCleanupTestCase {
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			return Stream.of(
+					// Infinispan
+					new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
 					// WildFly
-					new WildflyBootableJarImageOpenShiftProvisioner(
+					, new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
 					new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication())
 					// Keycloak
 					, new KeycloakOperatorProvisioner(
 							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
-					// Infinispan
-					, new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
 					// MySQL
 					, new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication())
 					// PostgreSql
@@ -71,8 +71,10 @@ public class ProvisionerCleanupTestCase {
 							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
+					// RHDG
+					new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
 					// EAP latest GA
-					new WildflyImageOpenShiftProvisioner(
+					, new WildflyImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication())
 					// EAP 7
 					, new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication())
@@ -81,8 +83,7 @@ public class ProvisionerCleanupTestCase {
 					// RHBK
 					, new KeycloakOperatorProvisioner(
 							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
-					// RHDG
-					, new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication()));
+			);
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
