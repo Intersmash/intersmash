@@ -5,7 +5,7 @@
 
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>intersmash-parent</artifactId>
-    <version>0.0.2.DR1-SNAPSHOT</version>
+    <version>0.0.2</version>
     <packaging>pom</packaging>
 
     <name>Intersmash Parent: Aggregator</name>

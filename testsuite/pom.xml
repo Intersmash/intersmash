@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.jboss.intersmash</groupId>
         <artifactId>intersmash-parent</artifactId>
-        <version>0.0.2.DR1-SNAPSHOT</version>
+        <version>0.0.2</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
