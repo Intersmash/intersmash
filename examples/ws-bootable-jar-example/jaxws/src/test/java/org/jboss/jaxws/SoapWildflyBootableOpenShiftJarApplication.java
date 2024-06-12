@@ -36,7 +36,7 @@ import io.fabric8.kubernetes.api.model.Secret;
 public class SoapWildflyBootableOpenShiftJarApplication implements BootableJarOpenShiftApplication {
 	private String GROUPID = "org.jboss.intersmash";
 	private String ARTIFACTID = "jaxws";
-	private String VERSION = "0.0.2";
+	private String VERSION = "0.0.3-SNAPSHOT";
 	static final String BOOTABLE_JAR_ARTIFACT_PACKAGING = "jar";
 	static final String ARTIFACT_CLASSIFIER = "bootable-openshift";
 
