@@ -23,6 +23,10 @@ import java.lang.annotation.Target;
 import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+/**
+ * Annotation that is applied to a test class, so that the JUnit engine would use the {@link IntersmashExtension} to
+ * run the Intersmash provisioning workflow, and execute the related tests.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @ExtendWith(IntersmashExtension.class)
