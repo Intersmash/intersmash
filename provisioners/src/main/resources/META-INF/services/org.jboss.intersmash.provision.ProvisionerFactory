@@ -15,4 +15,5 @@ org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisionerFactory
 org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisionerFactory
 org.jboss.intersmash.provision.openshift.Eap7TemplateOpenShiftProvisionerFactory
 org.jboss.intersmash.provision.openshift.HyperfoilOperatorProvisionerFactory
+org.jboss.intersmash.provision.openshift.auto.OpenShiftAutoProvisionerFactory
 
