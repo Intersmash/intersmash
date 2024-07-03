@@ -29,6 +29,10 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 import cz.xtf.core.openshift.OpenShifts;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Implements a JUnit {@link ExecutionCondition} that is used to control whether a test class workflow can be managed by
+ * {@link IntersmashExtension}
+ */
 @Slf4j
 public class IntersmashExecutionCondition implements ExecutionCondition {
 

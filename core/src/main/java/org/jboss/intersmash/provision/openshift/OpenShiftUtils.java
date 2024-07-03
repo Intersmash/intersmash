@@ -19,6 +19,10 @@ import java.util.Map;
 
 import cz.xtf.core.openshift.OpenShift;
 
+/**
+ * Helper class that leverages the XTF library {@link OpenShift} APIs in methods that can be used to control the
+ * Intersmash provisioning workflow.
+ */
 public class OpenShiftUtils {
 	public static void deleteResourcesWithLabel(OpenShift openShift, String labelKey, String labelValue) {
 		openShift.deploymentConfigs().withLabel(labelKey, labelValue).delete();

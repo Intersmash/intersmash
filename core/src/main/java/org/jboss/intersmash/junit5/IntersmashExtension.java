@@ -47,6 +47,10 @@ import org.opentest4j.TestAbortedException;
 import cz.xtf.core.openshift.OpenShifts;
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Intersmash JUnit extension that handles the process of provisioning a cross-product scenario before starting the
+ * test execution.
+ */
 @Slf4j
 public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback, TestInstancePostProcessor {
 

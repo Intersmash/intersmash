@@ -22,7 +22,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import org.jboss.intersmash.application.Application;
-import org.jboss.intersmash.junit5.IntersmashExtension;
 
 /**
  * Annotation to define an Intersmash service, i.e. the abstraction of a given runtime workload.
