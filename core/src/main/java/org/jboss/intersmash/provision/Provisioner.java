@@ -20,7 +20,7 @@ import java.net.URL;
 import org.jboss.intersmash.application.Application;
 
 /**
- * Application provisioner for deploying and undeploying the application.
+ * Application provisioner for deploying and undeploying a service, represented by a given {@link Application} instance.
  */
 public interface Provisioner<T extends Application> {
 

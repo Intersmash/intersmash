@@ -19,8 +19,10 @@ import java.util.ServiceLoader;
 
 import org.jboss.intersmash.application.Application;
 
+/**
+ * Manager class to load the suitable {@link Provisioner} for a given {@link Application} instance, based on SPI.
+ */
 public class ProvisionerManager {
-
 	/**
 	 * Get application provisioner based on interfaces the application does implement.
 	 *

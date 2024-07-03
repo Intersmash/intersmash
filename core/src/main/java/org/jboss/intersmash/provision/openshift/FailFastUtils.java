@@ -17,11 +17,16 @@ package org.jboss.intersmash.provision.openshift;
 
 import java.time.ZonedDateTime;
 
+import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.failfast.FailFastBuilder;
 import cz.xtf.core.waiting.failfast.FailFastCheck;
 
+/**
+ * Helper class that leverages the XTF library fail-fast APIs in methods that can be used to control the
+ * Intersmash provisioning workflow.
+ */
 public class FailFastUtils {
 	private static String[] failFastEventMessages = new String[] {
 			"Failed to pull image.*",
