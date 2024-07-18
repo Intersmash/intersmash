@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * This adapter is compliant with the contract which is required by the
  * {@link org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner} logic, i.e. to
  * implement {@link HelmChartRelease}, and allows for us to leverage a generated
- * {@link Eap8HelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
+ * {@link org.jboss.intersmash.provision.helm.wildfly.eap8.EapXp5HelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
  */
 @Slf4j
 public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap8Release>
@@ -524,6 +524,27 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	public BuildMode getBuildMode() {
 		// EAP 8 value files has no bootable JAR definition, since Bootable JAR is only supported on EAP XP
 		return BuildMode.S2I;
+	}
+
+	@Override
+	public void setBuildMode(BuildMode buildMode) {
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		switch (buildMode) {
+			case S2I:
+				adaptee.getBuild().setMode(Build.Mode.S_2_I);
+			case BOOTABLE_JAR:
+				log.warn("EAP 8 does not support bootable JAR build mode!");
+			default:
+				adaptee.getBuild().setMode(null);
+		}
+	}
+
+	@Override
+	public WildflyHelmChartRelease withBuildMode(BuildMode buildMode) {
+		this.setBuildMode(buildMode);
+		return this;
 	}
 
 	@Override

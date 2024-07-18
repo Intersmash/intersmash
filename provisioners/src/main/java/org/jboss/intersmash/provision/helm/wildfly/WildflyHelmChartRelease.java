@@ -105,6 +105,10 @@ public interface WildflyHelmChartRelease extends HelmChartRelease {
 
 	BuildMode getBuildMode();
 
+	void setBuildMode(BuildMode buildMode);
+
+	WildflyHelmChartRelease withBuildMode(BuildMode buildMode);
+
 	String getBootableJarBuilderImage();
 
 	void setBootableJarBuilderImage(String bootableJarBuilderImage);

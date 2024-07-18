@@ -1,4 +1,4 @@
-package org.jboss.intersmash.provision.helm.wildfly;
+package org.jboss.intersmash.provision.helm.wildfly.xp5;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -9,18 +9,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.BootableJar;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Build;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Deploy;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Env;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Env__1;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Route;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.S2i;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls__1;
+import org.jboss.intersmash.model.helm.charts.values.xp5.BootableJar;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Build;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Deploy;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Env;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Env__1;
+import org.jboss.intersmash.model.helm.charts.values.xp5.HelmXp5Release;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Jdk17;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Route;
+import org.jboss.intersmash.model.helm.charts.values.xp5.S2i;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Tls;
+import org.jboss.intersmash.model.helm.charts.values.xp5.Tls__1;
 import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.Image;
+import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 
 import com.google.common.base.Strings;
 
@@ -30,27 +32,25 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * An adapter that implements a valid WildFly {@link HelmChartRelease} by exposing an internal instance of
- * {@link HelmWildflyRelease} to store a WildFly Helm Charts release data and to represent a values file which can be serialized
+ * An adapter that implements a valid EAP 8 {@link HelmChartRelease} by exposing an internal instance of
+ * {@link HelmXp5Release} to store an EAP 8 Helm Charts release data and to represent a values file which can be serialized
  * as an output for {@link HelmChartRelease#toValuesFile()}
  *
  * This adapter is compliant with the contract which is required by the
  * {@link org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner} logic, i.e. to
  * implement {@link HelmChartRelease}, and allows for us to leverage a generated
- * {@link WildFlyHelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
- *
- * Of course the generated APIs can also be used programmatically.
+ * {@link EapXp5HelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
  */
 @Slf4j
-public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmWildflyRelease>
+public class EapXp5HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmXp5Release>
 		implements HelmChartRelease, WildflyHelmChartRelease {
 
-	public WildFlyHelmChartReleaseAdapter(@NonNull HelmWildflyRelease release) {
+	public EapXp5HelmChartReleaseAdapter(@NonNull HelmXp5Release release) {
 		super(release, new ArrayList<>());
 		initDefaultReplicas(release);
 	}
 
-	public WildFlyHelmChartReleaseAdapter(@NonNull HelmWildflyRelease release, List<Path> additionalValuesFiles) {
+	public EapXp5HelmChartReleaseAdapter(@NonNull HelmXp5Release release, List<Path> additionalValuesFiles) {
 		super(release, additionalValuesFiles);
 		initDefaultReplicas(release);
 	}
@@ -76,7 +76,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((deploymentEnvironmentVariables != null) && !deploymentEnvironmentVariables.isEmpty()) {
 			deploymentEnvironmentVariables.entrySet().stream()
-					.map(e -> adaptee.getDeploy().getEnv().add(new Env__1().withName(e.getKey()).withValue(e.getValue())));
+					.forEach(e -> adaptee.getDeploy().getEnv().add(new Env__1().withName(e.getKey()).withValue(e.getValue())));
 		}
 	}
 
@@ -119,7 +119,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((buildEnvironmentVariables != null) && !buildEnvironmentVariables.isEmpty()) {
 			buildEnvironmentVariables.entrySet().stream()
-					.map(e -> adaptee.getBuild().getEnv().add(new Env().withName(e.getKey()).withValue(e.getValue())));
+					.forEach(e -> adaptee.getBuild().getEnv().add(new Env().withName(e.getKey()).withValue(e.getValue())));
 		}
 	}
 
@@ -130,7 +130,6 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public WildflyHelmChartRelease withBuildEnvironmentVariable(String key, String value) {
-
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -203,9 +202,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		}
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((volumes != null) && !volumes.isEmpty()) {
-			volumes.stream()
-					.map(v -> adaptee.getDeploy().getVolumes().add(v))
-					.collect(Collectors.toList());
+			volumes.stream().forEach(v -> adaptee.getDeploy().getVolumes().add(v));
 		}
 	}
 
@@ -253,17 +250,17 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((volumeMounts != null) && !volumeMounts.isEmpty()) {
 			volumeMounts.stream()
-					.map(v -> adaptee.getDeploy().getVolumeMounts().add(
-							new org.jboss.intersmash.model.helm.charts.values.wildfly.VolumeMount()
+					.forEach(v -> adaptee.getDeploy().getVolumeMounts().add(
+							new org.jboss.intersmash.model.helm.charts.values.xp5.VolumeMount()
 									.withName(v.getName())
 									.withMountPath(v.getMountPath())
 									.withMountPropagation(v.getMountPropagation())
 									.withReadOnly(v.getReadOnly())
-									.withSubPath(v.getSubPath())))
-					.collect(Collectors.toList());
+									.withSubPath(v.getSubPath())));
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withVolumeMounts(List<VolumeMount> volumeMounts) {
 		this.setVolumeMounts(volumeMounts);
 		return this;
@@ -278,7 +275,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 			adaptee.getDeploy().setVolumeMounts(new ArrayList<>());
 		}
 		adaptee.getDeploy().getVolumeMounts().add(
-				new org.jboss.intersmash.model.helm.charts.values.wildfly.VolumeMount()
+				new org.jboss.intersmash.model.helm.charts.values.xp5.VolumeMount()
 						.withName(volumeMount.getName())
 						.withMountPath(volumeMount.getMountPath())
 						.withMountPropagation(volumeMount.getMountPropagation())
@@ -363,7 +360,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public LinkedHashSet<String> getS2iFeaturePacks() {
-		LinkedHashSet result = new LinkedHashSet();
+		LinkedHashSet<String> result = new LinkedHashSet<>();
 		if (adaptee.getBuild() != null && adaptee.getBuild().getS2i() != null
 				&& !Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getFeaturePacks())) {
 			Arrays.stream(adaptee.getBuild().getS2i().getFeaturePacks().split(","))
@@ -424,7 +421,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		if (adaptee.getBuild() != null && adaptee.getBuild().getS2i() != null
 				&& !Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getGalleonLayers())) {
 			Arrays.stream(adaptee.getBuild().getS2i().getGalleonLayers().split(","))
-					.forEach(fp -> result.add(fp));
+					.forEach(gl -> result.add(gl));
 		}
 		return result;
 	}
@@ -477,14 +474,27 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public LinkedHashSet<String> getS2iChannels() {
-		// no channels definition for WIldFly Helm Charts
-		return new LinkedHashSet<>();
+		LinkedHashSet result = new LinkedHashSet();
+		if (adaptee.getBuild() != null && adaptee.getBuild().getS2i() != null
+				&& !Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getChannels())) {
+			Arrays.stream(adaptee.getBuild().getS2i().getChannels().split(","))
+					.forEach(ch -> result.add(ch));
+		}
+		return result;
 	}
 
 	@Override
 	public void setS2iChannels(LinkedHashSet<String> s2iChannels) {
-		log.warn(
-				"Setting s2i build channels on a WildFly release has no effect since WildFly Helm Charts don't support channels");
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		if (adaptee.getBuild().getS2i() == null) {
+			adaptee.getBuild().setS2i(new S2i());
+		}
+		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
+		if ((s2iChannels != null) && !s2iChannels.isEmpty()) {
+			adaptee.getBuild().getS2i().setChannels(s2iChannels.stream().collect(Collectors.joining(",")));
+		}
 	}
 
 	@Override
@@ -495,8 +505,19 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public WildflyHelmChartRelease withS2iChannel(String s2iChannel) {
-		log.warn(
-				"Setting s2i build channels on a WildFly release has no effect since WildFly Helm Charts don't support channels");
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		if (adaptee.getBuild().getS2i() == null) {
+			adaptee.getBuild().setS2i(new S2i());
+		}
+		final List<String> channels = new ArrayList<>();
+		if (!Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getChannels())) {
+			channels.addAll(Arrays.stream(adaptee.getBuild().getS2i().getChannels().split(","))
+					.collect(Collectors.toList()));
+		}
+		channels.add(s2iChannel);
+		adaptee.getBuild().getS2i().setChannels(channels.stream().collect(Collectors.joining(",")));
 		return this;
 	}
 
@@ -510,7 +531,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	@Override
 	public void setBuildMode(BuildMode buildMode) {
 		if (adaptee.getBuild() == null) {
-			adaptee.setBuild(new Build());
+			adaptee.setBuild(new org.jboss.intersmash.model.helm.charts.values.xp5.Build());
 		}
 		switch (buildMode) {
 			case S2I:
@@ -537,7 +558,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	@Override
 	public void setBootableJarBuilderImage(String bootableJarBuilderImage) {
 		if (adaptee.getBuild() == null) {
-			adaptee.setBuild(new Build());
+			adaptee.setBuild(new org.jboss.intersmash.model.helm.charts.values.xp5.Build());
 		}
 		if (adaptee.getBuild().getBootableJar() == null) {
 			adaptee.getBuild().setBootableJar(new BootableJar());
@@ -667,8 +688,9 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public String getJdk17BuilderImage() {
-		// WilFly Helm Charts do not differentiate between JDKs
-		return adaptee.getBuild() == null ? "" : adaptee.getBuild().getS2i().getBuilderImage();
+		return adaptee.getBuild() == null ? ""
+				: adaptee.getBuild().getS2i().getJdk17() == null ? ""
+						: adaptee.getBuild().getS2i().getJdk17().getBuilderImage();
 	}
 
 	@Override
@@ -679,8 +701,11 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		if (adaptee.getBuild().getS2i() == null) {
 			adaptee.getBuild().setS2i(new S2i());
 		}
-		// WilFly Helm Charts do not differentiate between JDKs
-		adaptee.getBuild().getS2i().setBuilderImage(jdk17BuilderImage);
+		if (adaptee.getBuild().getS2i().getJdk17() == null) {
+			adaptee.getBuild().getS2i().setJdk17(new Jdk17());
+		}
+		adaptee.getBuild().getS2i().getJdk17().setBuilderImage(jdk17BuilderImage);
+		adaptee.getBuild().getS2i().setJdk(S2i.Jdk._17);
 	}
 
 	@Override
@@ -691,8 +716,9 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public String getJdk17RuntimeImage() {
-		// WilFly Helm Charts do not differentiate between JDKs
-		return adaptee.getBuild() == null ? "" : adaptee.getBuild().getS2i().getRuntimeImage();
+		return adaptee.getBuild() == null ? ""
+				: adaptee.getBuild().getS2i().getJdk17() == null ? ""
+						: adaptee.getBuild().getS2i().getJdk17().getRuntimeImage();
 	}
 
 	@Override
@@ -703,8 +729,10 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		if (adaptee.getBuild().getS2i() == null) {
 			adaptee.getBuild().setS2i(new S2i());
 		}
-		// WilFly Helm Charts do not differentiate between JDKs
-		adaptee.getBuild().getS2i().setRuntimeImage(jdk17RuntimeImage);
+		if (adaptee.getBuild().getS2i().getJdk17() == null) {
+			adaptee.getBuild().getS2i().setJdk17(new Jdk17());
+		}
+		adaptee.getBuild().getS2i().getJdk17().setRuntimeImage(jdk17RuntimeImage);
 	}
 
 	@Override
@@ -713,12 +741,13 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		return this;
 	}
 
-	private void initDefaultReplicas(HelmWildflyRelease release) {
+	private HelmXp5Release initDefaultReplicas(HelmXp5Release release) {
 		if (release.getDeploy() == null) {
 			release = release.withDeploy(new Deploy());
 		}
 		if (release.getDeploy().getReplicas() == null) {
 			release.getDeploy().setReplicas(1);
 		}
+		return release;
 	}
 }
