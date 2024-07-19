@@ -80,6 +80,12 @@ public class IntersmashConfig {
 	private static final String HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = "intersmash.hyperfoil.operators.package_manifest";
 	private static final String COMMUNITY_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = "hyperfoil-bundle";
 	private static final String DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST;
+	private static final String AUTHORINO_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.authorino.operators.catalog_source";
+	private static final String AUTHORINO_OPERATOR_INDEX_IMAGE = "intersmash.authorino.operators.index_image";
+	private static final String AUTHORINO_OPERATOR_CHANNEL = "intersmash.authorino.operators.channel";
+	private static final String AUTHORINO_OPERATOR_PACKAGE_MANIFEST = "intersmash.authorino.operators.package_manifest";
+	private static final String COMMUNITY_AUTHORINO_OPERATOR_PACKAGE_MANIFEST = "authorino-operator";
+	private static final String DEFAULT_AUTHORINO_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_AUTHORINO_OPERATOR_PACKAGE_MANIFEST;
 	// Bootable Jar
 	private static final String BOOTABLE_JAR_IMAGE_URL = "intersmash.bootable.jar.image";
 
@@ -226,6 +232,22 @@ public class IntersmashConfig {
 
 	public static String hyperfoilOperatorPackageManifest() {
 		return XTFConfig.get(HYPERFOIL_OPERATOR_PACKAGE_MANIFEST, DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String authorinoOperatorCatalogSource() {
+		return XTFConfig.get(AUTHORINO_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
+	}
+
+	public static String authorinoOperatorIndexImage() {
+		return XTFConfig.get(AUTHORINO_OPERATOR_INDEX_IMAGE);
+	}
+
+	public static String authorinoOperatorChannel() {
+		return XTFConfig.get(AUTHORINO_OPERATOR_CHANNEL);
+	}
+
+	public static String authorinoOperatorPackageManifest() {
+		return XTFConfig.get(AUTHORINO_OPERATOR_PACKAGE_MANIFEST, DEFAULT_AUTHORINO_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String bootableJarImageURL() {
