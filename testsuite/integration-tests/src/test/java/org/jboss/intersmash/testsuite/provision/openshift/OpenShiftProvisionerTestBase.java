@@ -54,11 +54,10 @@ import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
-import org.jboss.intersmash.util.ProcessKeystoreGenerator;
+import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.jboss.intersmash.util.wildfly.Eap7CliScriptBuilder;
-import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.keycloakspec.HostnameBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.HttpBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.IngressBuilder;
@@ -105,9 +104,9 @@ public class OpenShiftProvisionerTestBase {
 	static RhSsoTemplateOpenShiftApplication getHttpsRhSso() {
 		return new RhSsoTemplateOpenShiftApplication() {
 			private final String secureAppHostname = "secure-" + getOpenShiftHostName();
-			private final Path keystore = ProcessKeystoreGenerator.generateKeystore(secureAppHostname);
+			private final Path keystore = CommandLineBasedKeystoreGenerator.generateKeystore(secureAppHostname);
 			private final String jceksFileName = "jgroups.jceks";
-			private final Path truststore = ProcessKeystoreGenerator.getTruststore();
+			private final Path truststore = CommandLineBasedKeystoreGenerator.getTruststore();
 
 			@Override
 			public String getName() {
