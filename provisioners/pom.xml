@@ -270,6 +270,19 @@
                             <targetPackage>org.jboss.intersmash.model.helm.charts.values.eap8</targetPackage>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>charts.values.generate-schema-model.xp5</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- JBoss EAP XP 5 Helm Chart model is generated from JSON schema at https://github.com/jbossas/eap-charts/eap-xp5-dev/charts/eap-xp5/values.schema.json -->
+                            <sourceDirectory>${basedir}/src/main/resources/org/jboss/intersmash/provision/helm/values/schema/xp5</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/</outputDirectory>
+                            <targetPackage>org.jboss.intersmash.model.helm.charts.values.xp5</targetPackage>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
             <!--

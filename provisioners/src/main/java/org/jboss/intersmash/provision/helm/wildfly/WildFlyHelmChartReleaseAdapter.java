@@ -502,9 +502,40 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public BuildMode getBuildMode() {
-		return adaptee.getBuild() == null ? null
-				: adaptee.getBuild().getS2i() != null ? BuildMode.S2I
-						: adaptee.getBuild().getBootableJar() != null ? BuildMode.BOOTABLE_JAR : null;
+		if (adaptee.getBuild() == null || adaptee.getBuild().getMode() == null) {
+			return null;
+		}
+		switch (adaptee.getBuild().getMode()) {
+			case S_2_I:
+				return BuildMode.S2I;
+			case BOOTABLE_JAR:
+				return BuildMode.BOOTABLE_JAR;
+			default:
+				return null;
+		}
+	}
+
+	@Override
+	public void setBuildMode(BuildMode buildMode) {
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		switch (buildMode) {
+			case S2I:
+				adaptee.getBuild().setMode(Build.Mode.S_2_I);
+				break;
+			case BOOTABLE_JAR:
+				adaptee.getBuild().setMode(Build.Mode.BOOTABLE_JAR);
+				break;
+			default:
+				log.warn("Unrecognized build mode option, not doing anything.");
+		}
+	}
+
+	@Override
+	public WildflyHelmChartRelease withBuildMode(BuildMode buildMode) {
+		this.setBuildMode(buildMode);
+		return this;
 	}
 
 	@Override
