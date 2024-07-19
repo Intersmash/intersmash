@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
  * This adapter is compliant with the contract which is required by the
  * {@link org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner} logic, i.e. to
  * implement {@link HelmChartRelease}, and allows for us to leverage a generated
- * {@link org.jboss.intersmash.provision.helm.wildfly.eap8.EapXp5HelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
+ * {@link org.jboss.intersmash.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
  */
 @Slf4j
 public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap8Release>

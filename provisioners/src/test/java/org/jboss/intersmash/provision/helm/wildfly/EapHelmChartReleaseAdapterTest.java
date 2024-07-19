@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
+import org.jboss.intersmash.model.helm.charts.values.wildfly.Build;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.model.helm.charts.values.xp5.HelmXp5Release;
 import org.jboss.intersmash.provision.helm.Image;
@@ -133,6 +134,7 @@ class EapHelmChartReleaseAdapterTest {
 				.withS2iChannel("ch1")
 				.withContextDir("context-dir")
 				.withBuildEnabled(Boolean.TRUE)
+				.withBuildMode(WildflyHelmChartRelease.BuildMode.BOOTABLE_JAR)
 				.withJdk17BuilderImage("jdk17-B")
 				.withJdk17RuntimeImage("jdk17-R")
 				.withBootableJarBuilderImage("BJ-I")
@@ -166,6 +168,7 @@ class EapHelmChartReleaseAdapterTest {
 		Assertions.assertEquals("fp1,fp2", actualAdaptee.getBuild().getS2i().getFeaturePacks());
 		Assertions.assertEquals("gl1,gl2", actualAdaptee.getBuild().getS2i().getGalleonLayers());
 		Assertions.assertEquals(Boolean.TRUE, actualAdaptee.getBuild().getEnabled());
+		Assertions.assertEquals(Build.Mode.BOOTABLE_JAR, actualAdaptee.getBuild().getMode());
 		Assertions.assertEquals("jdk17-B", actualAdaptee.getBuild().getS2i().getBuilderImage());
 		Assertions.assertEquals("jdk17-R", actualAdaptee.getBuild().getS2i().getRuntimeImage());
 		Assertions.assertEquals("BJ-I", actualAdaptee.getBuild().getBootableJar().getBuilderImage());
@@ -190,6 +193,7 @@ class EapHelmChartReleaseAdapterTest {
 		Assertions.assertEquals("gl1,gl2",
 				eap8HelmChartRelease.getS2iGalleonLayers().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals(Boolean.TRUE, eap8HelmChartRelease.isBuildEnabled());
+		Assertions.assertEquals(WildflyHelmChartRelease.BuildMode.BOOTABLE_JAR, eap8HelmChartRelease.getBuildMode());
 		Assertions.assertEquals("jdk17-B", eap8HelmChartRelease.getJdk17BuilderImage());
 		Assertions.assertEquals("jdk17-R", eap8HelmChartRelease.getJdk17RuntimeImage());
 		Assertions.assertEquals("BJ-I", eap8HelmChartRelease.getBootableJarBuilderImage());
@@ -224,7 +228,7 @@ class EapHelmChartReleaseAdapterTest {
 				.withS2iChannel("ch1")
 				.withContextDir("context-dir")
 				.withBuildEnabled(Boolean.TRUE)
-				.withBuildMode(WildflyHelmChartRelease.BuildMode.S2I)
+				.withBuildMode(WildflyHelmChartRelease.BuildMode.BOOTABLE_JAR)
 				.withJdk17BuilderImage("jdk17-B")
 				.withJdk17RuntimeImage("jdk17-R")
 				.withDeployEnabled(Boolean.FALSE)
@@ -261,7 +265,8 @@ class EapHelmChartReleaseAdapterTest {
 		Assertions.assertEquals(Boolean.TRUE, actualAdaptee.getBuild().getEnabled());
 		Assertions.assertEquals("jdk17-B", actualAdaptee.getBuild().getS2i().getJdk17().getBuilderImage());
 		Assertions.assertEquals("jdk17-R", actualAdaptee.getBuild().getS2i().getJdk17().getRuntimeImage());
-		Assertions.assertEquals(WildflyHelmChartRelease.BuildMode.S2I, eapXp5HelmChartRelease.getBuildMode());
+		Assertions.assertEquals(org.jboss.intersmash.model.helm.charts.values.xp5.Build.Mode.BOOTABLE_JAR,
+				actualAdaptee.getBuild().getMode());
 		Assertions.assertEquals(Boolean.FALSE, actualAdaptee.getDeploy().getEnabled());
 		Assertions.assertEquals(42, actualAdaptee.getDeploy().getReplicas());
 		Assertions.assertEquals("route-host", actualAdaptee.getDeploy().getRoute().getHost());
@@ -285,6 +290,7 @@ class EapHelmChartReleaseAdapterTest {
 				eapXp5HelmChartRelease.getS2iGalleonLayers().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals("ch1", eapXp5HelmChartRelease.getS2iChannels().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals(Boolean.TRUE, eapXp5HelmChartRelease.isBuildEnabled());
+		Assertions.assertEquals(WildflyHelmChartRelease.BuildMode.BOOTABLE_JAR, eapXp5HelmChartRelease.getBuildMode());
 		Assertions.assertEquals("jdk17-B", eapXp5HelmChartRelease.getJdk17BuilderImage());
 		Assertions.assertEquals("jdk17-R", eapXp5HelmChartRelease.getJdk17RuntimeImage());
 		Assertions.assertEquals(Boolean.FALSE, eapXp5HelmChartRelease.isDeployEnabled());
@@ -299,4 +305,24 @@ class EapHelmChartReleaseAdapterTest {
 		Assertions.assertTrue(List.class.isAssignableFrom(actualAdaptee.getBuild().getImages().getClass()));
 		Assertions.assertEquals(2, eapXp5HelmChartRelease.getInjectedImages().size());
 	}
+
+	/**
+	 * Verify that the EAP XP 5 adapter properly sets even the S2I build mdoe value
+	 */
+	@Test
+	public void verifyEapXp5DynamicallyFilledAdapterS2iBuildModeTest() {
+		// arrange
+		HelmXp5Release adaptee = new HelmXp5Release();
+		EapXp5HelmChartReleaseAdapter concreteAdapter = new EapXp5HelmChartReleaseAdapter(adaptee);
+
+		concreteAdapter
+				.withBuildMode(WildflyHelmChartRelease.BuildMode.S2I);
+
+		final HelmXp5Release actualAdaptee = concreteAdapter.getAdaptee();
+
+		Assertions.assertEquals(org.jboss.intersmash.model.helm.charts.values.xp5.Build.Mode.S_2_I,
+				actualAdaptee.getBuild().getMode());
+		Assertions.assertEquals(WildflyHelmChartRelease.BuildMode.S2I, concreteAdapter.getBuildMode());
+	}
+
 }
