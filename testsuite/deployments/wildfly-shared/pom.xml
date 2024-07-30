@@ -264,6 +264,10 @@
             <!-- Configuration settings for testing EAP XP -->
             <id>ts.wildfly.target-distribution.eapxp</id>
             <properties>
+                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
                 <!-- Default EAP XP `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-microprofile.groupId>org.jboss.eap.xp</bom.wildfly-microprofile.groupId>
                 <bom.wildfly-microprofile.artifactId>wildfly-microprofile</bom.wildfly-microprofile.artifactId>
@@ -304,15 +308,15 @@
                                         <location>${wildfly.feature-pack.location}</location>
                                     </feature-pack>
                                 </feature-packs>
-                                <channels>
-                                    <channel>
-                                        <manifest>
-                                            <groupId>${wildfly.ee-channel.groupId}</groupId>
-                                            <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
-                                            <version>${wildfly.ee-channel.version}</version>
-                                        </manifest>
-                                    </channel>
-                                </channels>
+<!--                                <channels>-->
+<!--                                    <channel>-->
+<!--                                        <manifest>-->
+<!--                                            <groupId>${wildfly.ee-channel.groupId}</groupId>-->
+<!--                                            <artifactId>${wildfly.ee-channel.artifactId}</artifactId>-->
+<!--                                            <version>${wildfly.ee-channel.version}</version>-->
+<!--                                        </manifest>-->
+<!--                                    </channel>-->
+<!--                                </channels>-->
                             </configuration>
                         </plugin>
                     </plugins>
