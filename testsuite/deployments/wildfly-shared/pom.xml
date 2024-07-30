@@ -283,6 +283,8 @@
                     Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
                 -->
                 <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>${wildfly.feature-pack.location}</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.xp.cloud:eap-xp-cloud-galleon-pack:1.0.0.Final-redhat-00006</wildfly.cloud-feature-pack.location>
             </properties>
             <build>
                 <pluginManagement>
