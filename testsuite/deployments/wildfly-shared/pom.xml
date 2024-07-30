@@ -267,12 +267,22 @@
                 <!-- Default EAP XP `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-microprofile.groupId>org.jboss.eap.xp</bom.wildfly-microprofile.groupId>
                 <bom.wildfly-microprofile.artifactId>wildfly-microprofile</bom.wildfly-microprofile.artifactId>
-                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-20240221</bom.wildfly-microprofile.version>
-                <!-- EAP XP Channel coordinates -->
+                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-00005</bom.wildfly-microprofile.version>
+                <!-- EAP XP 5 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
-                <wildfly.ee-channel.artifactId>eap-8.0-plus-eap-xp-5.0</wildfly.ee-channel.artifactId>
-                <wildfly.ee-channel.version>1.0.0.Final-redhat-00001</wildfly.ee-channel.version>
-                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-20240221</wildfly.feature-pack.location>
+                <wildfly.ee-channel.artifactId>eap-xp-5.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.0.GA-redhat-00006</wildfly.ee-channel.version>
+                <!--
+                    EAP XP 5 feature packs:
+
+                        - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                        - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                        - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+                    Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
+                    Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+                -->
+                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
             </properties>
             <build>
                 <pluginManagement>
