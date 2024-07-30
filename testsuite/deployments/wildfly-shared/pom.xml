@@ -289,7 +289,7 @@
                     Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
                     the productized version
                 -->
-                <version.wildfly-jar-maven-plugin>9.0.1.Final-redhat-00009</version.wildfly-jar-maven-plugin>
+                <version.wildfly-jar-maven-plugin>9.0.1.Final-redhat-00010</version.wildfly-jar-maven-plugin>
             </properties>
             <build>
                 <pluginManagement>
