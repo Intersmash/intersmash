@@ -283,8 +283,13 @@
                     Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
                 -->
                 <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
-                <wildfly.ee-feature-pack.location>${wildfly.feature-pack.location}</wildfly.ee-feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.ee-feature-pack.location>
                 <wildfly.cloud-feature-pack.location>org.jboss.eap.xp.cloud:eap-xp-cloud-galleon-pack:1.0.0.Final-redhat-00006</wildfly.cloud-feature-pack.location>
+                <!--
+                    Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
+                    the productized version
+                -->
+                <version.wildfly-jar-maven-plugin>9.0.1.Final-redhat-00009</version.wildfly-jar-maven-plugin>
             </properties>
             <build>
                 <pluginManagement>
