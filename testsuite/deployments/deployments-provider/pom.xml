@@ -84,6 +84,15 @@
             </properties>
         </profile>
         <profile>
+            <id>ts.wildfly.target-distribution.eapxp</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties#getWildflyDeploymentsBuildProfile -->
+                <intersmash.deployments.wildfly.build.profile>eapxp</intersmash.deployments.wildfly.build.profile>
+            </properties>
+        </profile>
+        <profile>
             <id>doc</id>
             <build>
                 <plugins>
