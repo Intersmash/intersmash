@@ -15,7 +15,6 @@
  */
 package org.jboss.intersmash.provision.openshift.operator.resources;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +43,16 @@ public class OperatorGroup extends CustomResource implements OpenShiftResource<O
 	}
 
 	public OperatorGroup(String namespace) {
+		this(namespace, List.of(namespace));
+	}
+
+	public OperatorGroup(String namespace, List<String> targetNamespaces) {
 		this();
 		this.getMetadata().setName(namespace + "-operators");
 		this.getMetadata().setNamespace(namespace);
-		List<String> targetNamespaces = new ArrayList<>();
-		targetNamespaces.add(namespace);
-		this.getSpec().put("targetNamespaces", targetNamespaces);
+		if (targetNamespaces != null && !targetNamespaces.isEmpty()) {
+			this.getSpec().put("targetNamespaces", targetNamespaces);
+		}
 	}
 
 	public Map<String, List<String>> getSpec() {
