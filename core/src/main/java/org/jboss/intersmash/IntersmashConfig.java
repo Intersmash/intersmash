@@ -112,6 +112,14 @@ public class IntersmashConfig {
 	private static final String MYSQL_IMAGE_URL = "intersmash.mysql.image";
 	private static final String PGSQL_IMAGE_URL = "intersmash.postgresql.image";
 
+	// OpenShift AI (Experimental)
+	private static final String OPEN_DATA_HUB_INSTALL_MODE = "intersmash.ai.odh.install.mode";
+	public static final String OPEN_DATA_HUB_INSTALL_MODE_MANAGED = "managed";
+	public static final String OPEN_DATA_HUB_INSTALL_MODE_UNMANAGED = "unmanaged";
+	private static final String OPEN_DATA_HUB_INSTALL_MODE_DEFAULT = OPEN_DATA_HUB_INSTALL_MODE_MANAGED;
+	private static final String OPEN_DATA_HUB_INSTALL_MODE_UNMANAGED_CLASS_FQDN = "intersmash.ai.odh.install.unmanaged.class";
+	private static final String OPEN_DATA_HUB_INSTALL_MODE_UNMANAGED_CLASS_FQDN_DEFAULT = "org.jboss.intersmash.provision.ai.OpenDataHubDefaultPrerequisitesProvisioner";
+
 	public static boolean skipDeploy() {
 		return XTFConfig.get(SKIP_DEPLOY, "false").equals("true");
 	}
@@ -401,5 +409,14 @@ public class IntersmashConfig {
 
 	public static String keycloakOperatorPackageManifest() {
 		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String openDataHubInstallMode() {
+		return XTFConfig.get(OPEN_DATA_HUB_INSTALL_MODE, OPEN_DATA_HUB_INSTALL_MODE_DEFAULT);
+	}
+
+	public static String openDataHubUnmanagedInstallClass() {
+		return XTFConfig.get(OPEN_DATA_HUB_INSTALL_MODE_UNMANAGED_CLASS_FQDN,
+				OPEN_DATA_HUB_INSTALL_MODE_UNMANAGED_CLASS_FQDN_DEFAULT);
 	}
 }
