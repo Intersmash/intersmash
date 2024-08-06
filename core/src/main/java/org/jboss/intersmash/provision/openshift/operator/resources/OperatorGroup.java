@@ -15,7 +15,6 @@
  */
 package org.jboss.intersmash.provision.openshift.operator.resources;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +35,9 @@ import io.fabric8.kubernetes.model.annotation.Version;
 @Version("v1")
 public class OperatorGroup extends CustomResource implements OpenShiftResource<OperatorGroup> {
 	public static final OperatorGroup SINGLE_NAMESPACE = new OperatorGroup(OpenShiftConfig.namespace());
+
+	public static final OperatorGroup ALL_NAMESPACES = new OperatorGroup(OpenShiftConfig.namespace(), null);
+
 	private Map<String, List<String>> spec = new HashMap<>();
 
 	public OperatorGroup() {
@@ -44,12 +46,16 @@ public class OperatorGroup extends CustomResource implements OpenShiftResource<O
 	}
 
 	public OperatorGroup(String namespace) {
+		this(namespace, List.of(namespace));
+	}
+
+	public OperatorGroup(String namespace, List<String> targetNamespaces) {
 		this();
 		this.getMetadata().setName(namespace + "-operators");
 		this.getMetadata().setNamespace(namespace);
-		List<String> targetNamespaces = new ArrayList<>();
-		targetNamespaces.add(namespace);
-		this.getSpec().put("targetNamespaces", targetNamespaces);
+		if (targetNamespaces != null && !targetNamespaces.isEmpty()) {
+			this.getSpec().put("targetNamespaces", targetNamespaces);
+		}
 	}
 
 	public Map<String, List<String>> getSpec() {
