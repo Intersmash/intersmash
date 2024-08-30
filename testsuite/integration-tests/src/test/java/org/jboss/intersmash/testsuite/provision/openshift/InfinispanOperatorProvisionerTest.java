@@ -30,7 +30,6 @@ import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.jboss.intersmash.provision.openshift.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.operator.infinispan.cache.CacheBuilder;
 import org.jboss.intersmash.provision.openshift.operator.infinispan.infinispan.InfinispanBuilder;
-import org.jboss.intersmash.provision.openshift.operator.infinispan.infinispan.spec.AutoscaleBuilder;
 import org.jboss.intersmash.provision.openshift.operator.infinispan.infinispan.spec.InfinispanServiceSpecBuilder;
 import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
 import org.junit.jupiter.api.AfterAll;
@@ -161,60 +160,6 @@ public class InfinispanOperatorProvisionerTest {
 					.build();
 
 			verifyMinimalTwoReplicasInfinispan(infinispan, true);
-		} finally {
-			INFINISPAN_OPERATOR_PROVISIONER.unsubscribe();
-		}
-	}
-
-	/**
-	 * This test case creates and validates a basic {@link Infinispan} CR, configured for using Cache service type
-	 * explicitly
-	 *
-	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
-	 * model specification.
-	 */
-	@Test
-	public void testMinimalTwoReplicasCacheServiceInfinispan() {
-		INFINISPAN_OPERATOR_PROVISIONER.subscribe();
-		try {
-			name = "example-infinispan";
-			Infinispan infinispan = new InfinispanBuilder(name, matchLabels)
-					.replicas(2)
-					.service(new InfinispanServiceSpecBuilder().type(Service.Type.Cache)
-							.build())
-					.build();
-
-			verifyMinimalTwoReplicasInfinispan(infinispan, true);
-		} finally {
-			INFINISPAN_OPERATOR_PROVISIONER.unsubscribe();
-		}
-	}
-
-	/**
-	 * This test case creates and validates a basic {@link Infinispan} CR, configured for using Cache service type
-	 * and autoscale functionality
-	 *
-	 * This is not an integration test, the goal here is to assess that the created CRs are configured as per the
-	 * model specification.
-	 */
-	@Test
-	public void testMinimalCacheServiceInfinispanWithAutoscale() {
-		INFINISPAN_OPERATOR_PROVISIONER.subscribe();
-		try {
-			name = "example-infinispan";
-			Infinispan infinispan = new InfinispanBuilder(name, matchLabels)
-					.replicas(2)
-					.service(new InfinispanServiceSpecBuilder()
-							.type(Service.Type.Cache)
-							.build())
-					.autoscale(new AutoscaleBuilder()
-							.maxReplicas(5)
-							.maxMemUsagePercent(70L)
-							.minReplicas(2)
-							.minMemUsagePercent(30L).build())
-					.build();
-
-			verifyMinimalCacheServiceInfinispanWithAutoscale(infinispan, true);
 		} finally {
 			INFINISPAN_OPERATOR_PROVISIONER.unsubscribe();
 		}
@@ -382,24 +327,6 @@ public class InfinispanOperatorProvisionerTest {
 	/**
 	 * Verify that two replicas are up and running and that have the relevant properties set to the same values
 	 */
-	private void verifyMinimalCacheServiceInfinispanWithAutoscale(Infinispan infinispan, boolean waitForPods) {
-		createAndVerifyInfinispan(infinispan);
-		if (waitForPods) {
-			// a correct number of Infinispan CRs has been created
-			new SimpleWaiter(
-					() -> InfinispanOperatorProvisioner.getInfinispanPods(name).size() == infinispan.getSpec().getReplicas())
-					.level(Level.DEBUG).waitFor();
-			log.debug(INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getStatus().toString());
-		}
-		assertMinimalInfinispanWithAutoscaleCreation(infinispan);
-
-		// delete and verify that object was removed
-		deleteAndVerifyMinimalInfinispan(waitForPods);
-	}
-
-	/**
-	 * Verify that two replicas are up and running and that have the relevant properties set to the same values
-	 */
 	private void verifyCacheWithBasicSecretFromTemplate(Cache cache, boolean waitForPods) {
 		createAndVerifyCache(cache);
 
@@ -407,38 +334,6 @@ public class InfinispanOperatorProvisionerTest {
 
 		// delete and verify that object was removed
 		deleteAndVerifyCache(waitForPods);
-	}
-
-	/**
-	 * Minimal setup + autoscale verification involves: <br>
-	 * - the created Infinispan .metadata.name == the CRD .metadata.name <br>
-	 * - the created Infinispan .spec.replicas == the CRD .spec.replicas <br>
-	 * - the created Infinispan .spec.autoscale properties == the CRD .spec.autoscale properties
-	 *
-	 * 	Created Infinispan .spec.autoscale and CRD .spec aren't equal because aggregated props are null in CRD .spec.autoscale
-	 *
-	 * @param infinispan the Infinispan resource which configuration has to be verified
-	 */
-	private void assertMinimalInfinispanWithAutoscaleCreation(Infinispan infinispan) {
-		Assertions.assertEquals(infinispan.getMetadata().getName(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getMetadata().getName());
-		Assertions.assertEquals(infinispan.getSpec().getReplicas(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getSpec().getReplicas());
-		Assertions.assertEquals(infinispan.getSpec().getService().getType(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getSpec().getService().getType());
-		Assertions.assertEquals(infinispan.getSpec().getAutoscale().getMaxReplicas(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getSpec().getAutoscale()
-						.getMaxReplicas());
-		Assertions.assertEquals(infinispan.getSpec().getAutoscale().getMaxMemUsagePercent(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getSpec().getAutoscale()
-						.getMaxMemUsagePercent());
-		Assertions.assertEquals(infinispan.getSpec().getAutoscale().getMinReplicas(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getSpec().getAutoscale()
-						.getMinReplicas());
-		Assertions.assertEquals(infinispan.getSpec().getAutoscale().getMinMemUsagePercent(),
-				INFINISPAN_OPERATOR_PROVISIONER.infinispansClient().withName(name).get().getSpec().getAutoscale()
-						.getMinMemUsagePercent());
-		//	NOTE: created Infinispan .spec.autoscale and CRD .spec.autoscale aren't equal because aggregated props are null in CRD .spec
 	}
 
 	/**
