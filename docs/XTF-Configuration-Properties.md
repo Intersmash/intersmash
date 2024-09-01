@@ -12,63 +12,63 @@
 | intersmash.deployments.repository.ref              | Manually set git repository branch of deployments                                                              |
 | intersmash.deployments.repository.url              | Manually set git repository url of deployments                                                                 |
 | intersmash.openshift.script.debug                  | Add parameter SCRIPT_DEBUG=true to DeploymentConfig/Pod                                                        |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.wildfly.image                           | Wildfly/JBoss EAP 8 Builder image URL                                                                          |
 | intersmash.wildfly.runtime.image                   | Wildfly/JBoss EAP 8 Runtime image URL                                                                          |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.wildfly.helm.charts.repo                | Wildfly/JBoss EAP 8 Helm Charts repository URL                                                                 |
 | intersmash.wildfly.helm.charts.branch              | Wildfly/JBoss EAP 8 Helm Charts repository branch                                                              |	
 | intersmash.wildfly.helm.charts.name                | Wildfly/JBoss EAP 8 Helm Charts repository namespaces                                                          |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.wildfly.operators.catalog_source        | Wildfly/JBoss EAP custom catalog for Operator                                                                  |
 | intersmash.wildfly.operators.index_image           | Wildfly/JBoss EAP custom index image for Operator                                                              |
 | intersmash.wildfly.operators.package_manifest      | Wildfly/JBoss EAP custom package manifest for Operator                                                         |
 | intersmash.wildfly.operators.channel               | Wildfly/JBoss EAP desired channel for Operator                                                                 |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.bootable.jar.image                      | Open JDK image URL that can be used as the base for an OpenShift Wildfly/JBoss EAP Bootable JAR                |
 | intersmash.eap7.image                              | JBoss EAP 7 Builder image URL                                                                                  |
 | intersmash.eap7.runtime.image                      | JBoss EAP 7 Runtime image URL                                                                                  |
 | intersmash.eap7.templates.base.url                 | JBoss EAP 7 OpenShift Templates base URL                                                                       |
 | intersmash.eap7.templates.path                     | JBoss EAP 7 openShift Templates base path                                                                      |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.infinispan.image                        | Infinispan/Red Hat DataGrid image URL                                                                          |
 | intersmash.infinispan.operators.catalog_source     | Infinispan/Red Hat DataGrid custom catalog for Operator                                                        |
 | intersmash.infinispan.operators.index_image        | Infinispan/Red Hat DataGrid custom index image for Operator                                                    |
 | intersmash.infinispan.operators.package_manifest   | Infinispan/Red Hat DataGrid custom package manifest for Operator                                               |
 | intersmash.infinispan.operators.channel            | Infinispan/Red Hat DataGrid desired channel for Operator                                                       |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.keycloak.image                          | Keycloak image URL                                                                                             |
 | intersmash.keycloak.operators.catalog_source       | Keycloak custom catalog for Operator                                                                           |
 | intersmash.keycloak.operators.index_image          | Keycloak custom index image for Operator                                                                       |
 | intersmash.keycloak.operators.package_manifest     | Keycloak custom package manifest for Operator                                                                  |
 | intersmash.keycloak.operators.channel              | Keycloak desired channel for Operator                                                                          |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.rhsso.image                             | Red Hat Single Sign On 7 image URL                                                                             |
 | intersmash.rhsso.operators.catalog_source          | Red Hat Single Sign On 7 custom catalog for Operator                                                           |
 | intersmash.rhsso.operators.index_image             | Red Hat Single Sign On 7 custom index image for Operator                                                       |
 | intersmash.rhsso.operators.package_manifest        | Red Hat Single Sign On 7 custom package manifest for Operator                                                  |
 | intersmash.rhsso.operators.channel                 | Red Hat Single Sign On 7 desired channel for Operator                                                          |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.kafka.operators.catalog_source          | Kafka/Red Hat AMQ Streams custom catalog for Operator                                                          |
 | intersmash.kafka.operators.index_image             | Kafka/Red Hat AMQ Streams custom index image for Operator                                                      |
 | intersmash.kafka.operators.package_manifest        | Kafka/Red Hat AMQ Streams custom package manifest for Operator                                                 |
 | intersmash.kafka.operators.channel                 | Kafka/Red Hat AMQ Streams desired channel for Operator                                                         |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.activemq.image                          | Apache ActiveMQ Broker/Red Hat AMQ Broker image URL                                                            |
 | intersmash.activemq.init.image                     | ActiveMQ Broker/Red Hat AMQ Broker init image URL                                                              |
 | intersmash.activemq.operators.catalog_source       | ActiveMQ Broker/Red Hat AMQ Broker custom catalog for Operator                                                 |
 | intersmash.activemq.operators.index_image          | ActiveMQ Broker/Red Hat AMQ Broker custom index image for Operators                                            |
 | intersmash.activemq.operators.package_manifest     | ActiveMQ Broker/Red Hat AMQ Broker custom package manifest for Operators                                       |
 | intersmash.activemq.operators.channel              | ActiveMQ Broker/Red Hat AMQ Broker desired channel for Operator                                                |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.hyperfoil.operators.catalog_source      | HyperFoil custom catalog for Operator                                                                          |
 | intersmash.hyperfoil.operators.index_image         | HyperFoil custom index image for Operators                                                                     |
 | intersmash.hyperfoil.operators.package_manifest    | HyperFoil custom package manifest for Operators                                                                |
 | intersmash.hyperfoil.operators.channel             | HyperFoil desired channel for Operator                                                                         |
-| | |
+|                                                    |                                                                                                                |
 | intersmash.mysql.image                             | MySql image URL                                                                                                |
 | intersmash.postgresql.image                        | PostgreSql image URL                                                                                           |
-| | |
+|                                                    |                                                                                                                |
 | wildfly-maven-plugin.groupId                       | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Maven plugin `groupId`                            |
 | wildfly-maven-plugin.artifactId                    | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Maven plugin `artifactId`                         |
 | wildfly-maven-plugin.version                       | Used by shared configurable deployments: Wildfly/JBoss EAP 8 Maven plugin `version`                            |

@@ -33,8 +33,8 @@ import io.strimzi.api.kafka.model.KafkaUser;
  */
 public interface KafkaOperatorApplication extends OperatorApplication {
 
-	String KAFKA_VERSION = "3.6.0";
-	String INTER_BROKER_PROTOCOL_VERSION = "3.6";
+	String KAFKA_VERSION = "3.8.0";
+	String INTER_BROKER_PROTOCOL_VERSION = "3.8";
 	int KAFKA_INSTANCE_NUM = 3;
 	int TOPIC_RECONCILIATION_INTERVAL_SECONDS = 90;
 	long USER_RECONCILIATION_INTERVAL_SECONDS = 120L;
