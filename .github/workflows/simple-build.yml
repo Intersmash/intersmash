@@ -22,5 +22,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+          cache: 'maven'
       - name: Build with Maven
         run:  mvn -version ; mvn clean install -U -B -DskipTests ; mvn test -pl testsuite/deployments/deployments-provider,core,provisioners -am
