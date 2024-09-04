@@ -245,7 +245,7 @@ Automatic (or application dictated) provisioning is a way to delegate the whole 
 Having a concrete instance of an Application class that implements interface
 _AutoProvisioningOpenShiftApplication_ will let the user add methods that map to the
 provisioning process workflow, e.g.: `deploy`, `scale`, `undeploy`.
-[OpenShiftAutoProvisionerFactory](../core/src/main/java/org/jboss/intersmash/provision/openshift/auto/OpenShiftAutoProvisionerFactory.java)
+[OpenShiftAutoProvisionerFactory](src/main/java/org/jboss/intersmash/provision/openshift/auto/OpenShiftAutoProvisionerFactory.java)
 provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
 A list of provisioners by product can be found [here](../docs/Provisioner-by-Product.md).

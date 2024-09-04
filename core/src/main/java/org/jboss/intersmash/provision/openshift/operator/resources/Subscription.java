@@ -25,10 +25,9 @@ import io.fabric8.openshift.api.model.operatorhub.v1alpha1.SubscriptionBuilder;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.SubscriptionFluent;
 
 /**
- * <p>
  * The Subscription configures when and how to update a ClusterService, binds a ClusterService to a channel in a
  * CatalogSource and configures the update strategy for a ClusterService (automatic, manual approval, etc).
- * </p>
+ *
  * <p>This class is a wrapper for {@link io.fabric8.openshift.api.model.operatorhub.v1alpha1.Subscription} which
  * adds some capabilities</p>
  * <p>

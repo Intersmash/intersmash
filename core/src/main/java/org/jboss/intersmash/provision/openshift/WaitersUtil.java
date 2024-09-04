@@ -28,6 +28,10 @@ import io.fabric8.kubernetes.api.model.EndpointPort;
 import io.fabric8.kubernetes.api.model.EndpointSubset;
 import io.fabric8.kubernetes.api.model.Endpoints;
 
+/**
+ * Helper class that leverages the XTF library {@link Waiter} APIs in methods that can be used to control the
+ * Intersmash provisioning workflow.
+ */
 public class WaitersUtil {
 	public static Waiter serviceEndpointsAreReady(OpenShift openShift, String serviceName, int numOfPods, Integer... ports) {
 		return new SimpleWaiter(() -> {

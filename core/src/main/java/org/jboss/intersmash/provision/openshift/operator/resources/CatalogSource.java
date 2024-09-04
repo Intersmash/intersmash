@@ -17,6 +17,9 @@ package org.jboss.intersmash.provision.openshift.operator.resources;
 
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSourceBuilder;
 
+/**
+ * Wrapper for creating and using {@link io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource}
+ */
 public class CatalogSource extends io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource
 		implements OpenShiftResource<CatalogSource> {
 

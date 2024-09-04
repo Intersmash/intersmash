@@ -23,6 +23,10 @@ import java.lang.annotation.Target;
 
 import org.jboss.intersmash.application.Application;
 
+/**
+ * Annotation to define an Intersmash service, i.e. the abstraction of a given runtime workload.
+ * Examples are: a WildFly application service, a Keycloak service etc. on OpenShift.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Repeatable(Services.class)
