@@ -1,2 +1,3 @@
 cz.xtf.junit5.listeners.TestExecutionLogger
 cz.xtf.junit5.listeners.ProjectCreator
+org.jboss.intersmash.junit5.OpenDataHubExtension
