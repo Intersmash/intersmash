@@ -15,8 +15,8 @@ in order to configure Intersmash for connecting to such instance.
 
 ## Set up Intersmash configuration
 
-While interacting with an OpenShft cluster, Intersmash uses two different logical users, namely `admin` and `master`.
-Such logical users are meant to represent two OpenSHift user accounts, with the former holding administrative permissins,
+While interacting with an OpenShift cluster, Intersmash uses two different logical users, namely `admin` and `master`.
+Such logical users are meant to represent two OpenShift user accounts, with the former holding administrative permissins,
 e.g.: Intersmash would use the administrative account when creating a namespace for the tests to be run, while it would use
 the regular account when installing an Operator in the current namespace.
 
