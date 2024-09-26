@@ -88,8 +88,7 @@ public class CommandLineBasedKeystoreGenerator {
 							+ " -showcerts 2>/dev/null > serversOpenSslResponse");
 			processCall(caDir, "/bin/sh",
 					"-c",
-					getSplitCommandNameBasedOnOeratingSystem()
-							+ " -f serverCert -s serversOpenSslResponse '/^-----BEGIN CERTIFICATE-----$/' '{*}'");
+					"csplit -f serverCert -s serversOpenSslResponse '/^-----BEGIN CERTIFICATE-----$/' '{*}'");
 			processCall(caDir, "/bin/sh",
 					"-c",
 					"find . -type f -not -name \"serverCert00\" -name \"serverCert[0-9][0-9]\" -exec openssl x509 -in {} -out {}.pem \\;");
@@ -291,10 +290,6 @@ public class CommandLineBasedKeystoreGenerator {
 		server = server.endsWith("/") ? server.substring(0, server.length() - 1) : server;
 		server = server.contains(":") ? server : server + ":443";
 		return server;
-	}
-
-	private static String getSplitCommandNameBasedOnOeratingSystem() {
-		return System.getProperty("os.name").toLowerCase().startsWith("mac") ? "gcsplit" : "csplit";
 	}
 
 	private static void processCall(Path cwd, String... args) {
