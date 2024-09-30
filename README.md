@@ -3,7 +3,11 @@
 Intersmash is a Java library that makes it easy to automate the
 provisioning and execution of tests in cloud-native environments.
 It helps the user prototype and test complex interoperability scenarios on
-kubernetes compliant cloud-native environments and platforms, most notably OpenShift.  (*Other Kubernetes implementations will be supported in the future.*)
+kubernetes compliant cloud-native environments and platforms, most notably OpenShift.
+Kubernetes support is being introduced. Support for other platforms (Bare-metal etc.) could be added
+later on demand.
+
+
 
 Intersmash is designed with these principles.  
 * It is integrated with JUnit.
@@ -16,7 +20,9 @@ the user can easily create an implementation and integrate it into the framework
 to test on different Kubernetes compliant cloud implementations.  This will
 ensure application portability.
 
-For usage examples, see [Getting Started](./docs/GETTING_STARTED.md).
+## Next steps
+- See how to [configure Intersmash for running tests on OpenShift and Kubernetes, or both](./docs/CLOUD_TARGET.md).
+- For usage examples, see [Getting Started](./docs/GETTING_STARTED.md).
 
 ## Framework Design
 

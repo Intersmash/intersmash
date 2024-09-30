@@ -18,8 +18,9 @@ package org.jboss.intersmash.junit5;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -30,7 +31,6 @@ import org.jboss.intersmash.annotations.Service;
 import org.jboss.intersmash.annotations.ServiceProvisioner;
 import org.jboss.intersmash.annotations.ServiceUrl;
 import org.jboss.intersmash.application.Application;
-import org.jboss.intersmash.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.ProvisionerManager;
 import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
@@ -54,52 +54,50 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback, TestInstancePostProcessor {
 
-	private static final Namespace NAMESPACE = Namespace.create("org", "jboss", "intersmash", "IntersmashExtension");
-	private static final String INTERSMASH_SERVICES = "INTERSMASH_SERVICES";
-
 	@Override
 	public void beforeAll(ExtensionContext extensionContext) throws Exception {
 		Optional<Throwable> tt = Optional.empty();
 		try {
 			log.debug("beforeAll");
-			//			openShiftRecorderService().initFilters(extensionContext);
-			Intersmash[] intersmashes = extensionContext.getRequiredTestClass().getAnnotationsByType(Intersmash.class);
-			Intersmash intersmash;
-			if (intersmashes.length > 0) {
-				intersmash = intersmashes[0];
-			} else {
+			// let's store the Intersmash definition in the extension context store
+			Intersmash intersmash = IntersmashExtensionHelper.getIntersmash(extensionContext);
+			if (intersmash == null) {
+				log.warn("No @Intersmah defined");
 				return;
 			}
-
-			// we don't want to touch anything if the deployment phase is skipped
-			if (!IntersmashConfig.skipDeploy()) {
-				if (Arrays.stream(intersmash.value())
-						.anyMatch(app -> OpenShiftApplication.class.isAssignableFrom(app.value()))) {
-					if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
-						operatorCleanup();
-						log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
-								OperatorGroup.SINGLE_NAMESPACE.getMetadata().getName());
-						OpenShifts.adminBinary().execute("apply", "-f",
-								OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
-					}
-					OpenShifts.master().clean().waitFor();
-				}
-			}
-
+			// cache application provisioners
 			Service[] services = intersmash.value();
+			List<Application> applications = new LinkedList<>();
 			log.debug("# of services: {}", services.length);
 			for (Service service : services) {
-				Application application = getApplicationFromService(service);
-				String name = application.getClass().getName();
+				final Application application = getApplicationFromService(service);
+				final String name = application.getClass().getName();
 				log.info("Caching provisioner for {}", name);
 				// store provisioners right now, those might be needed in each phase independently
 				Provisioner provisioner = ProvisionerManager.getProvisioner(application);
 				// keep the provisioner in the JUpiter Extension Store
-				getProvisioners(extensionContext).put(application.getClass().getName(), provisioner);
-				if (!IntersmashConfig.skipDeploy()) {
-					deployApplication(provisioner);
+				IntersmashExtensionHelper.getProvisioners(extensionContext).put(application.getClass().getName(), provisioner);
+				applications.add(application);
+			}
+			// Cleanup - BTW we don't want to touch anything if the deployment phase is skipped
+			if (!IntersmashConfig.skipDeploy()) {
+				if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
+					operatorCleanup(IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext), IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext) && !IntersmashConfig.isOcp3x(OpenShifts.admin()));
+					deployOperatorGroup(extensionContext);
+				}
+				if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
+					OpenShifts.master().clean().waitFor();
+				}
+				if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
+					Kuberneteses.master().clean().waitFor();
 				}
 			}
+			// deploy
+			applications.stream().forEach((application) -> {
+				if (!IntersmashConfig.skipDeploy()) {
+					deployApplication(IntersmashExtensionHelper.getProvisioners(extensionContext).get(application.getClass().getName()));
+				}
+			});
 		} catch (Throwable t) {
 			tt = Optional.of(t);
 		} finally {
@@ -145,13 +143,14 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		if (IntersmashConfig.skipUndeploy()) {
 			log.info("Skipping the after test cleanup operations.");
 		} else {
-			for (Provisioner provisioner : getProvisioners(extensionContext).values()) {
+			for (Provisioner provisioner : IntersmashExtensionHelper.getProvisioners(extensionContext).values()) {
 				undeployApplication(provisioner);
 			}
 			// operator group is not bound to a specific product
 			// no Operator support on OCP3 clusters, OLM doesn't run there
-			if (!IntersmashConfig.isOcp3x(OpenShifts.admin())) {
-				operatorCleanup();
+			if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
+				operatorCleanup(IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext),
+						IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext) && !IntersmashConfig.isOcp3x(OpenShifts.admin()));
 			}
 			// let's cleanup once we're done
 			safetyCleanup();
@@ -179,23 +178,13 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		injectServiceProvisioner(o, extensionContext);
 	}
 
-	private Map<String, Provisioner> getProvisioners(ExtensionContext extensionContext) {
-		Store store = extensionContext.getStore(NAMESPACE);
-		Map<String, Provisioner> provisioners = (Map<String, Provisioner>) store.get(INTERSMASH_SERVICES);
-		if (provisioners != null) {
-			return provisioners;
-		} else {
-			store.put(INTERSMASH_SERVICES, new HashMap<String, Provisioner>());
-			return (Map<String, Provisioner>) store.get(INTERSMASH_SERVICES);
-		}
-	}
-
 	private void injectServiceUrl(Object o, ExtensionContext extensionContext) throws Exception {
 		log.debug("injectServiceUrl");
 		List<Field> annotatedFields = AnnotationSupport.findAnnotatedFields(o.getClass(), ServiceUrl.class);
 		for (Field field : annotatedFields) {
 			ServiceUrl serviceUrl = field.getAnnotation(ServiceUrl.class);
-			Provisioner provisioner = getProvisioners(extensionContext).get(serviceUrl.value().getName());
+			Provisioner provisioner = IntersmashExtensionHelper.getProvisioners(extensionContext)
+					.get(serviceUrl.value().getName());
 			URL url = provisioner.getURL();
 			if (String.class.isAssignableFrom(field.getType())) {
 				field.setAccessible(true);
@@ -215,7 +204,8 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		List<Field> annotatedFields = AnnotationSupport.findAnnotatedFields(o.getClass(), ServiceProvisioner.class);
 		for (Field field : annotatedFields) {
 			ServiceProvisioner serviceProvisioner = field.getAnnotation(ServiceProvisioner.class);
-			Provisioner provisioner = getProvisioners(extensionContext).get(serviceProvisioner.value().getName());
+			Provisioner provisioner = IntersmashExtensionHelper.getProvisioners(extensionContext)
+					.get(serviceProvisioner.value().getName());
 			if (Provisioner.class.isAssignableFrom(field.getType())) {
 				field.setAccessible(true);
 				field.set(o, provisioner);
@@ -223,6 +213,39 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 				throw new RuntimeException(
 						"Cannot inject service provisioner into field of type: " + field.getType().getSimpleName());
 			}
+		}
+	}
+
+	private static void deployOperatorGroup(ExtensionContext extensionContext) throws IOException {
+		if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
+			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
+					new OperatorGroup(KubernetesConfig.namespace()).getMetadata().getName());
+			OpenShifts.adminBinary().execute("apply", "-f",
+					new OperatorGroup(KubernetesConfig.namespace()).save().getAbsolutePath());
+		}
+		if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+				&& !IntersmashConfig.isOcp3x(OpenShifts.admin())) {
+			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
+					new OperatorGroup(OpenShiftConfig.namespace()).getMetadata().getName());
+			OpenShifts.adminBinary().execute("apply", "-f",
+					new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
+		}
+	}
+
+	/**
+	 * Clean all OLM related objects.
+	 * <p>
+	 */
+	public static void operatorCleanup(final boolean cleanupKubernetes, final boolean cleanupOpenShift) {
+		if (cleanupKubernetes) {
+			Kuberneteses.adminBinary().execute("delete", "subscription", "--all");
+			Kuberneteses.adminBinary().execute("delete", "csvs", "--all");
+			Kuberneteses.adminBinary().execute("delete", "operatorgroup", "--all");
+		}
+		if (cleanupOpenShift) {
+			OpenShifts.adminBinary().execute("delete", "subscription", "--all");
+			OpenShifts.adminBinary().execute("delete", "csvs", "--all");
+			OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
 		}
 	}
 }
