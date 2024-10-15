@@ -21,6 +21,7 @@ import org.jboss.intersmash.annotations.ServiceProvisioner;
 import org.jboss.intersmash.annotations.ServiceUrl;
 import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
 import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.junit.jupiter.api.Test;
 
 import cz.xtf.core.openshift.OpenShiftWaiters;
@@ -37,6 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Intersmash({
 		@Service(AutoProvisioningHelloOpenShiftApplication.class)
 })
+@OpenShiftTest
 public class AutoProvisioningTests {
 
 	@ServiceUrl(AutoProvisioningHelloOpenShiftApplication.class)

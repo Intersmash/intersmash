@@ -35,6 +35,7 @@
     </scm>
 
     <modules>
+        <module>kubernetes-client</module>
         <module>core</module>
         <module>provisioners</module>
         <module>testsuite</module>
@@ -126,6 +127,8 @@
         <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
         <version.aether>1.1.0</version.aether>
         <version.maven>3.3.9</version.maven>
+        <version.junit5.platform>1.7.0</version.junit5.platform>
+        <version.assertj-core>3.24.2</version.assertj-core>
     </properties>
 
     <dependencyManagement>
@@ -170,6 +173,11 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${version.org.apache.commons.commons-lang3}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.intersmash</groupId>
+                <artifactId>intersmash-kubernetes-client</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.jboss.intersmash</groupId>
@@ -227,6 +235,11 @@
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-params</artifactId>
                 <version>${version.junit.jupiter}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>${version.junit5.platform}</version>
             </dependency>
             <!-- Test dependency versions -->
             <dependency>
@@ -381,6 +394,21 @@
                 <artifactId>openshift-client</artifactId>
                 <version>${version.openshift-client}</version>
             </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-model</artifactId>
+                <version>${version.io.fabric8}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client</artifactId>
+                <version>${version.io.fabric8}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>kubernetes-client-api</artifactId>
+                <version>${version.io.fabric8}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.sundr</groupId>
@@ -432,6 +460,11 @@
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-settings-builder</artifactId>
                 <version>${version.maven}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${version.assertj-core}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

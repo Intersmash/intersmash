@@ -20,30 +20,28 @@ import static org.mockito.Mockito.mock;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import org.jboss.intersmash.application.openshift.ActiveMQOperatorApplication;
-import org.jboss.intersmash.application.openshift.HyperfoilOperatorApplication;
-import org.jboss.intersmash.application.openshift.InfinispanOperatorApplication;
-import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.application.openshift.KeycloakOperatorApplication;
-import org.jboss.intersmash.application.openshift.RhSsoOperatorApplication;
-import org.jboss.intersmash.application.openshift.WildflyOperatorApplication;
+import org.jboss.intersmash.application.Application;
+import org.jboss.intersmash.application.operator.ActiveMQOperatorApplication;
+import org.jboss.intersmash.application.operator.HyperfoilOperatorApplication;
+import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
+import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
+import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
+import org.jboss.intersmash.application.operator.RhSsoOperatorApplication;
+import org.jboss.intersmash.application.operator.WildflyOperatorApplication;
 import org.jboss.intersmash.junit5.IntersmashExtension;
-import org.jboss.intersmash.provision.openshift.ActiveMQOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.HyperfoilOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.InfinispanOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.KafkaOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.RhSsoOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.WildflyOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
+import org.jboss.intersmash.provision.olm.OperatorGroup;
+import org.jboss.intersmash.provision.openshift.*;
+import org.jboss.intersmash.provision.operator.OperatorProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.Pod;
@@ -54,19 +52,20 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
+@OpenShiftTest
 public class OperatorSubscriptionTestCase {
 	private static final Stream<OperatorProvisioner> COMMON_PROVISIONERS = Stream.of(
-			new ActiveMQOperatorProvisioner(mock(ActiveMQOperatorApplication.class)),
-			new InfinispanOperatorProvisioner(mock(InfinispanOperatorApplication.class)),
-			new KafkaOperatorProvisioner(mock(KafkaOperatorApplication.class)),
-			new WildflyOperatorProvisioner(mock(WildflyOperatorApplication.class)));
+			new ActiveMQOpenShiftOperatorProvisioner(mock(ActiveMQOperatorApplication.class)),
+			new InfinispanOpenShiftOperatorProvisioner(mock(InfinispanOperatorApplication.class)),
+			new KafkaOpenShiftOperatorProvisioner(mock(KafkaOperatorApplication.class)),
+			new WildflyOpenShiftOperatorProvisioner(mock(WildflyOperatorApplication.class)));
 
 	private static final Stream<OperatorProvisioner> COMMUNITY_ONLY_PROVISIONERS = Stream.of(
-			new HyperfoilOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
-			new KeycloakOperatorProvisioner(mock(KeycloakOperatorApplication.class)));
+			new HyperfoilOpenShiftOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
+			new KeycloakOpenShiftOperatorProvisioner(mock(KeycloakOperatorApplication.class)));
 
 	private static final Stream<OperatorProvisioner> PRODUCT_ONLY_PROVISIONERS = Stream.of(
-			new RhSsoOperatorProvisioner(mock(RhSsoOperatorApplication.class)));
+			new RhSsoOpenShiftOperatorProvisioner(mock(RhSsoOperatorApplication.class)));
 
 	private static Stream<OperatorProvisioner> provisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
@@ -79,20 +78,24 @@ public class OperatorSubscriptionTestCase {
 
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
-		IntersmashExtension.operatorCleanup();
+		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
+		OpenShifts.adminBinary().execute("apply", "-f",
+				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 	}
 
 	@AfterAll
 	public static void removeOperatorGroup() {
 		// remove operator group - this should be done by InteropExtension
-		IntersmashExtension.operatorCleanup();
+		IntersmashExtension.operatorCleanup(false, true);
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
 	@MethodSource("provisionerProvider")
 	public void operatorSubscriptionTest(OperatorProvisioner operatorProvisioner) {
+		final Application mockedApplication = operatorProvisioner.getApplication();
+		Mockito.when(mockedApplication.getName())
+				.thenReturn("app-" + mockedApplication.getClass().getSimpleName().substring(0, 10));
 		operatorProvisioner.configure();
 		try {
 			operatorProvisioner.subscribe();

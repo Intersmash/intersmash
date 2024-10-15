@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.apache.maven.settings.building.SettingsBuildingException;
 import org.eclipse.aether.resolution.ArtifactResolutionException;
+import org.jboss.intersmash.application.input.BinarySource;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.input.BinarySource;
 import org.jboss.intersmash.util.maven.ArtifactProvider;
 
 import cz.xtf.builder.builders.SecretBuilder;

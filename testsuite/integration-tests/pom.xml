@@ -33,6 +33,10 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-kubernetes-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
             <artifactId>intersmash-core</artifactId>
         </dependency>
         <dependency>

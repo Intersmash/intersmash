@@ -19,7 +19,9 @@ import org.assertj.core.api.Assertions;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.provision.openshift.BootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.junit5.categories.wildfly.RequiresBootableJarDistribution;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,7 +33,8 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
 @RequiresBootableJarDistribution
-public class WildflyBootableJarTestCase {
+@OpenShiftTest
+public class WildflyBootableJarTestCase implements ProjectCreationCapable {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final BootableJarOpenShiftApplication application = OpenShiftProvisionerTestBase
 			.getWildflyBootableJarOpenShiftApplication();

@@ -18,7 +18,8 @@ package org.jboss.intersmash.application.openshift;
 import java.util.Collections;
 import java.util.List;
 
-import org.jboss.intersmash.application.openshift.input.BinarySource;
+import org.jboss.intersmash.application.input.BinarySource;
+import org.jboss.intersmash.application.k8s.HasSecrets;
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 
 import io.fabric8.kubernetes.api.model.EnvVar;

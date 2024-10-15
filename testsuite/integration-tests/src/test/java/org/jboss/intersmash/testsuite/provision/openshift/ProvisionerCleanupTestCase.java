@@ -18,26 +18,19 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
-import org.jboss.intersmash.provision.openshift.InfinispanOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.operator.OperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
+import org.jboss.intersmash.provision.olm.OperatorGroup;
+import org.jboss.intersmash.provision.openshift.*;
+import org.jboss.intersmash.provision.operator.OperatorProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeEach;
@@ -46,21 +39,22 @@ import lombok.extern.slf4j.Slf4j;
 
 @CleanBeforeEach
 @Slf4j
-public class ProvisionerCleanupTestCase {
+@OpenShiftTest
+public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 	protected static final OpenShift openShift = OpenShifts.master();
 
 	private static Stream<OpenShiftProvisioner> provisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// Infinispan
-					new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
+					new InfinispanOpenShiftOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
 					// WildFly
 					, new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
 					new WildflyBootableJarImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication())
 					// Keycloak
-					, new KeycloakOperatorProvisioner(
+					, new KeycloakOpenShiftOperatorProvisioner(
 							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
 					// MySQL
 					, new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication())
@@ -72,7 +66,7 @@ public class ProvisionerCleanupTestCase {
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// RHDG
-					new InfinispanOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
+					new InfinispanOpenShiftOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
 					// EAP latest GA
 					, new WildflyImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication())
@@ -81,7 +75,7 @@ public class ProvisionerCleanupTestCase {
 					// RHSSO 7.6.x
 					, new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso())
 					// RHBK
-					, new KeycloakOperatorProvisioner(
+					, new KeycloakOpenShiftOperatorProvisioner(
 							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
@@ -130,9 +124,9 @@ public class ProvisionerCleanupTestCase {
 		if (OperatorProvisioner.class.isAssignableFrom(provisioner.getClass())) {
 			operatorCleanup();
 			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
-					OperatorGroup.SINGLE_NAMESPACE.getMetadata().getName());
+					new OperatorGroup(OpenShiftConfig.namespace()).getMetadata().getName());
 			OpenShifts.adminBinary().execute("apply", "-f",
-					OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
+					new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		}
 	}
 

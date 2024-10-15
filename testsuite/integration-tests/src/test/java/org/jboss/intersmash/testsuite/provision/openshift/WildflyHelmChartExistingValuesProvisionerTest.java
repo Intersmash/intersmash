@@ -18,6 +18,8 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartOpenShiftProvisioner;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +31,8 @@ import cz.xtf.junit5.annotations.CleanBeforeAll;
  * a Helm values file AND {@code --set} overrides
  */
 @CleanBeforeAll
-public class WildflyHelmChartExistingValuesProvisionerTest {
+@OpenShiftTest
+public class WildflyHelmChartExistingValuesProvisionerTest implements ProjectCreationCapable {
 
 	@Test
 	public void basicProvisioningTest() {

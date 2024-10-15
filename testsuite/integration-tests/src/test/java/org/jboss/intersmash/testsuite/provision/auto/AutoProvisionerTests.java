@@ -19,6 +19,7 @@ import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftAppli
 import org.jboss.intersmash.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.provision.auto.AutoProvisioningManagedException;
 import org.jboss.intersmash.provision.openshift.auto.OpenShiftAutoProvisioner;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * {@link OpenShiftAutoProvisioner}
  */
 @Slf4j
+@OpenShiftTest
 public class AutoProvisionerTests {
 
 	/**

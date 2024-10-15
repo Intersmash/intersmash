@@ -2,6 +2,7 @@ package org.jboss.intersmash.application.openshift;
 
 import java.nio.file.Path;
 
+import org.jboss.intersmash.application.k8s.HasSecrets;
 import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
 
 /**

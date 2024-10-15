@@ -15,12 +15,14 @@
  */
 package org.jboss.intersmash.junit5;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.jboss.intersmash.annotations.Intersmash;
 import org.jboss.intersmash.application.k8s.KubernetesApplication;
 import org.jboss.intersmash.application.openshift.OpenShiftApplication;
+import org.jboss.intersmash.application.operator.OperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
@@ -49,7 +51,7 @@ public class IntersmashExtensionHelper {
 			return result;
 		} else {
 			Intersmash[] intersmashes = extensionContext.getRequiredTestClass().getAnnotationsByType(Intersmash.class);
-			Intersmash intersmash;
+
 			if (intersmashes.length > 0) {
 				store.put(INTERSMASH, intersmashes[0]);
 				return (Intersmash) store.get(INTERSMASH);
@@ -58,13 +60,18 @@ public class IntersmashExtensionHelper {
 		}
 	}
 
+	public static Boolean isIntersmashTargetingOperator(ExtensionContext extensionContext) {
+		return Arrays.stream(getIntersmash(extensionContext).value())
+				.anyMatch(app -> OperatorApplication.class.isAssignableFrom(app.value()));
+	}
+
 	public static Boolean isIntersmashTargetingOpenShift(ExtensionContext extensionContext) {
-		return getProvisioners(extensionContext).entrySet().stream().anyMatch(e ->
-				e.getValue().getApplication() instanceof OpenShiftApplication);
+		return getProvisioners(extensionContext).entrySet().stream()
+				.anyMatch(e -> e.getValue().getApplication() instanceof OpenShiftApplication);
 	}
 
 	public static Boolean isIntersmashTargetingKubernetes(ExtensionContext extensionContext) {
-		return getProvisioners(extensionContext).entrySet().stream().anyMatch(e ->
-				e.getValue().getApplication() instanceof KubernetesApplication);
+		return getProvisioners(extensionContext).entrySet().stream()
+				.anyMatch(e -> e.getValue().getApplication() instanceof KubernetesApplication);
 	}
 }

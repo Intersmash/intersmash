@@ -26,10 +26,10 @@ import java.util.stream.Collectors;
 
 import org.assertj.core.util.Strings;
 import org.jboss.intersmash.IntersmashConfig;
+import org.jboss.intersmash.application.input.BinarySource;
+import org.jboss.intersmash.application.input.BuildInput;
+import org.jboss.intersmash.application.input.GitSource;
 import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.input.BinarySource;
-import org.jboss.intersmash.application.openshift.input.BuildInput;
-import org.jboss.intersmash.application.openshift.input.GitSource;
 import org.slf4j.event.Level;
 
 import cz.xtf.builder.builders.ApplicationBuilder;

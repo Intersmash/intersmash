@@ -31,29 +31,30 @@ import org.assertj.core.util.Strings;
 import org.infinispan.v1.Infinispan;
 import org.infinispan.v2alpha1.Cache;
 import org.jboss.intersmash.IntersmashConfig;
+import org.jboss.intersmash.application.input.BinarySource;
+import org.jboss.intersmash.application.input.BuildInput;
+import org.jboss.intersmash.application.input.BuildInputBuilder;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
 import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.InfinispanOperatorApplication;
-import org.jboss.intersmash.application.openshift.KafkaOperatorApplication;
-import org.jboss.intersmash.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.WildflyImageOpenShiftApplication;
-import org.jboss.intersmash.application.openshift.input.BinarySource;
-import org.jboss.intersmash.application.openshift.input.BuildInput;
-import org.jboss.intersmash.application.openshift.input.BuildInputBuilder;
 import org.jboss.intersmash.application.openshift.template.Eap7Template;
 import org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate;
 import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
-import org.jboss.intersmash.provision.openshift.operator.infinispan.infinispan.InfinispanBuilder;
+import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
+import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
+import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
+import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanBuilder;
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
@@ -84,6 +85,7 @@ import io.strimzi.api.kafka.model.listener.arraylistener.KafkaListenerType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@OpenShiftTest
 public class OpenShiftProvisionerTestBase {
 	static final EnvVar TEST_ENV_VAR = new EnvVarBuilder().withName("test-evn-key").withValue("test-evn-value").build();
 	static final String TEST_SECRET_FOO = "foo";
@@ -735,7 +737,8 @@ public class OpenShiftProvisionerTestBase {
 				final String hostName = OpenShifts.master().generateHostname(DEFAULT_KEYCLOAK_APP_NAME);
 				final String tlsSecretName = DEFAULT_KEYCLOAK_APP_NAME + "-tls-secret";
 				CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-						.generateSelfSignedCertificateAndKey(hostName.replaceFirst("[.].*$", ""), tlsSecretName);
+						.generateSelfSignedCertificateAndKey(hostName.replaceFirst("[.].*$", ""), tlsSecretName,
+								OpenShifts.master().getClient(), OpenShifts.master().getNamespace());
 				// build the basic Keycloak resource
 				return new org.keycloak.k8s.v2alpha1.KeycloakBuilder()
 						.withNewMetadata()

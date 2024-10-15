@@ -15,14 +15,12 @@
  */
 package org.jboss.intersmash.junit5;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.jboss.intersmash.IntersmashConfig;
@@ -31,19 +29,20 @@ import org.jboss.intersmash.annotations.Service;
 import org.jboss.intersmash.annotations.ServiceProvisioner;
 import org.jboss.intersmash.annotations.ServiceUrl;
 import org.jboss.intersmash.application.Application;
+import org.jboss.intersmash.k8s.KubernetesConfig;
+import org.jboss.intersmash.k8s.client.Kuberneteses;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.ProvisionerManager;
-import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
+import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.ExtensionContext.Namespace;
-import org.junit.jupiter.api.extension.ExtensionContext.Store;
 import org.junit.jupiter.api.extension.TestInstancePostProcessor;
 import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShifts;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,7 +81,9 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			// Cleanup - BTW we don't want to touch anything if the deployment phase is skipped
 			if (!IntersmashConfig.skipDeploy()) {
 				if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
-					operatorCleanup(IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext), IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext) && !IntersmashConfig.isOcp3x(OpenShifts.admin()));
+					operatorCleanup(IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext),
+							IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+									&& !IntersmashConfig.isOcp3x(OpenShifts.admin()));
 					deployOperatorGroup(extensionContext);
 				}
 				if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
@@ -95,7 +96,8 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			// deploy
 			applications.stream().forEach((application) -> {
 				if (!IntersmashConfig.skipDeploy()) {
-					deployApplication(IntersmashExtensionHelper.getProvisioners(extensionContext).get(application.getClass().getName()));
+					deployApplication(
+							IntersmashExtensionHelper.getProvisioners(extensionContext).get(application.getClass().getName()));
 				}
 			});
 		} catch (Throwable t) {
@@ -150,26 +152,22 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			// no Operator support on OCP3 clusters, OLM doesn't run there
 			if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
 				operatorCleanup(IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext),
-						IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext) && !IntersmashConfig.isOcp3x(OpenShifts.admin()));
+						IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
+								&& !IntersmashConfig.isOcp3x(OpenShifts.admin()));
 			}
 			// let's cleanup once we're done
-			safetyCleanup();
+			safetyCleanup(extensionContext);
 		}
 	}
 
-	private static void safetyCleanup() {
+	private static void safetyCleanup(ExtensionContext extensionContext) {
 		log.info("Cleaning up the remaining resources on the cluster.");
-		OpenShifts.master().clean().waitFor();
-	}
-
-	/**
-	 * Clean all OLM related objects.
-	 * <p>
-	 */
-	public static void operatorCleanup() {
-		OpenShifts.adminBinary().execute("delete", "subscription", "--all");
-		OpenShifts.adminBinary().execute("delete", "csvs", "--all");
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
+			OpenShifts.master().clean().waitFor();
+		}
+		if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
+			Kuberneteses.master().clean().waitFor();
+		}
 	}
 
 	@Override

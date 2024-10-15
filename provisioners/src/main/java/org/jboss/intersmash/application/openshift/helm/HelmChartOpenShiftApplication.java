@@ -18,7 +18,7 @@ package org.jboss.intersmash.application.openshift.helm;
 import java.util.Collections;
 import java.util.Map;
 
-import org.jboss.intersmash.application.openshift.HasSecrets;
+import org.jboss.intersmash.application.k8s.HasSecrets;
 import org.jboss.intersmash.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner;
 
