@@ -24,6 +24,8 @@
         <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community</intersmash.test.excludedGroups.by.execution-profile>
         <!-- And being community oriented, no tests are excluded based on WildFly target distribution (e.g.: WildFly can run Bootable JAR tests) -->
         <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.no-test-excluded.default</intersmash.test.excludedGroups.by.wildfly-target-distribution>
+        <!-- Tests that require either K8s or OpenShift are excluded by default, and can be enabled by explicitly setting one related profile (ts.k8s, ts.openshift) -->
+        <intersmash.test.excludedGroups.by.target-platform>ts.k8s,ts.openshift</intersmash.test.excludedGroups.by.target-platform>
     </properties>
 
     <dependencies>
@@ -94,7 +96,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration combine.children="append">
-                    <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution}</excludedGroups>
+                    <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                 </configuration>
             </plugin>
             <plugin>
@@ -130,6 +132,20 @@
                 <!-- Exclude tests that shouldn't be executed when dealing base EAP, i.e. Bootable Jar tests
                 (Bootable JAR is only available with WildFLy or EAP XP, ot base EAP) -->
                 <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.wildfly.requires-bootable-jar</intersmash.test.excludedGroups.by.wildfly-target-distribution>
+            </properties>
+        </profile>
+        <profile>
+            <id>ts.k8s</id>
+            <properties>
+                <!-- Exclude OpenShift tests -->
+                <intersmash.test.excludedGroups.by.target-platform>ts.openshift</intersmash.test.excludedGroups.by.target-platform>
+            </properties>
+        </profile>
+        <profile>
+            <id>ts.openshift</id>
+            <properties>
+                <!-- Exclude k8s tests -->
+                <intersmash.test.excludedGroups.by.target-platform>ts.k8s</intersmash.test.excludedGroups.by.target-platform>
             </properties>
         </profile>
     </profiles>

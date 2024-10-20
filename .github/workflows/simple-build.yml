@@ -12,16 +12,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Set up Maven
         uses: stCarolas/setup-maven@v4.5
         with:
           maven-version: 3.8.7
-      - uses: actions/checkout@v3
       - name: Set up JDK 17
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
       - name: Build with Maven
-        run:  mvn -version ; mvn clean install -U -B -DskipTests ; mvn test -pl testsuite/deployments/deployments-provider,core,provisioners -am
+        run:  mvn -version ; mvn clean install -U -B -DskipTests ; mvn test -B -pl testsuite/deployments/deployments-provider,kubernetes-client,core,provisioners -am
