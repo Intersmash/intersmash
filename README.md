@@ -162,7 +162,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Red Hat JBoss EAP 8              | JBoss EAP 8.0.x (and XP 5.x) |                                                                                                                   |
 | Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z) |                                                                                                                   |
 |                                  |                              |                                                                                                                   |
-| Hyperfoil                        | 0.24.2                       |                                                                                                                   | 
+| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                          | 
 
 Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
 more information can be found in [the provisioners' documentation](./provisioners/README.md), or in the resources there linked.
@@ -175,8 +175,8 @@ We welcome community contributions to other Kubernetes implementations.
 
 
 ## Future goals
-* K8s support and Quarkus provisioning
-* documentation and examples enhancements
+* OpenShift AI provisioning
+* Documentation and examples enhancements
 
 see the [current milestone](https://github.com/Intersmash/intersmash/milestone/2) for a complete list of issues.
 
