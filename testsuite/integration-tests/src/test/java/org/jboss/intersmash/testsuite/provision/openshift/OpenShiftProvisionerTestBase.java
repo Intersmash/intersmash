@@ -340,7 +340,8 @@ public class OpenShiftProvisionerTestBase {
 								: " -Pts.wildfly.target-distribution."
 										+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
 				list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
-				list.add(new EnvVarBuilder().withName("ARTIFACT_DIR").withValue(deploymentRelativePath + "target").build());
+				list.add(new EnvVarBuilder().withName("MAVEN_S2I_ARTIFACT_DIRS").withValue(deploymentRelativePath + "target")
+						.build());
 
 				return Collections.unmodifiableList(list);
 			}
