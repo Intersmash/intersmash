@@ -559,21 +559,8 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public Kafka getKafka() {
 				if (kafka == null) {
-					final String kafkaVersion, kafkaProtocol;
-					if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
-						kafkaVersion = KafkaOperatorApplication.KAFKA_VERSION;
-						kafkaProtocol = KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION;
-					} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
-						kafkaVersion = "3.6.0";
-						kafkaProtocol = "3.6";
-					} else {
-						throw new IllegalStateException(
-								String.format("Unknown Intersmash test suite execution profile: %s",
-										IntersmashTestsuiteProperties.getTestExecutionProfile()));
-					}
-
 					Map<String, Object> config = new HashMap<>();
-					config.put("inter.broker.protocol.version", kafkaProtocol);
+					config.put("inter.broker.protocol.version", KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION);
 					config.put("offsets.topic.replication.factor", KAFKA_INSTANCE_NUM);
 					config.put("transaction.state.log.min.isr", KAFKA_INSTANCE_NUM);
 					config.put("transaction.state.log.replication.factor", KAFKA_INSTANCE_NUM);
@@ -604,7 +591,7 @@ public class OpenShiftProvisionerTestBase {
 							.endKafkaAuthorizationSimple()
 							.withReplicas(KAFKA_INSTANCE_NUM)
 							.withNewEphemeralStorage().endEphemeralStorage()
-							.withVersion(kafkaVersion)
+							.withVersion(KafkaOperatorApplication.KAFKA_VERSION)
 							.endKafka()
 							.withNewZookeeper()
 							.withReplicas(KAFKA_INSTANCE_NUM)

@@ -104,7 +104,7 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	}
 
 	public void waitForKafkaClusterCreation() {
-		FailFastCheck ffCheck = () -> false;
+		FailFastCheck ffCheck = getFailFastCheck();
 		int expectedReplicas = getApplication().getKafka().getSpec().getKafka().getReplicas();
 		new SimpleWaiter(() -> kafka().get() != null)
 				.failFast(ffCheck)
@@ -121,7 +121,7 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 				.reason("Wait for a conditions field of the Kafka cluster instance to be initialized.")
 				.level(Level.DEBUG)
 				.waitFor();
-		new SimpleWaiter(() -> kafka().get().getStatus().getConditions().size() > 0)
+		new SimpleWaiter(() -> !kafka().get().getStatus().getConditions().isEmpty())
 				.failFast(ffCheck)
 				.reason("Wait for a conditions field of the Kafka cluster instance to contain at least one condition.")
 				.level(Level.DEBUG)

@@ -151,8 +151,8 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Infinispan                       | 15.0.5.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                         |
 | Red Hat Data Grid                | 8.5.0.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                                          |
 |                                  |                              |                                                                                                                   |
-| Kafka provided by Strimzi        | 3.6.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
-| Red Hat AMQ Streams              | 3.6.0.redhat-00005           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                    |
+| Kafka provided by Strimzi        | 3.8.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
+| Red Hat AMQ Streams              | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                    |
 |                                  |                              |                                                                                                                   |
 | Keycloak                         | 24.0.3                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                                      |
 | Red Hat Build of keycloak (RHBK) | 24.0.3.redhat-00004          | Or _latest_ in the `:24` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                             |
@@ -162,7 +162,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Red Hat JBoss EAP 8              | JBoss EAP 8.0.x (and XP 5.x) |                                                                                                                   |
 | Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z) |                                                                                                                   |
 |                                  |                              |                                                                                                                   |
-| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                          | 
+| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                  | 
 
 Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
 more information can be found in [the provisioners' documentation](./provisioners/README.md), or in the resources there linked.
