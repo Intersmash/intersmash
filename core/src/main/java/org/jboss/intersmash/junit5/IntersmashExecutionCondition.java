@@ -21,7 +21,7 @@ import java.util.function.Predicate;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.annotations.Intersmash;
 import org.jboss.intersmash.annotations.Service;
-import org.jboss.intersmash.application.openshift.OperatorApplication;
+import org.jboss.intersmash.application.operator.OperatorApplication;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -46,6 +46,7 @@ public class IntersmashExecutionCondition implements ExecutionCondition {
 		if (intersmashes.length > 0) {
 			intersmash = intersmashes[0];
 			log.debug("Running: {}", context.getRequiredTestClass().getSimpleName());
+			// evaluate peculiar OpenShift/Kubernetes requirements
 			if (IntersmashConfig.isOcp3x(OpenShifts.admin())
 					&& Arrays.stream(intersmash.value()).anyMatch(isOperatorApplication)) {
 				return ConditionEvaluationResult.disabled("OLM is not available on OCP 3.x clusters, " +

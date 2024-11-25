@@ -18,6 +18,8 @@ package org.jboss.intersmash.application.openshift;
 import java.util.Collections;
 import java.util.List;
 
+import org.jboss.intersmash.application.k8s.HasSecrets;
+
 import io.fabric8.kubernetes.api.model.Secret;
 
 /**

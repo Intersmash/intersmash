@@ -27,10 +27,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.Secret;
 import io.fabric8.kubernetes.api.model.SecretBuilder;
+import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -64,13 +63,14 @@ public class CertificatesUtils {
 	 * @param tlsSecretName: name of the secret to be created in OpenShift containing key and certificate
 	 * @return wrapper object {@link CertificateAndKey} containing details about the newly created key, certificate and secret
 	 */
-	public static CertificateAndKey generateSelfSignedCertificateAndKey(String hostname, String tlsSecretName) {
+	public static CertificateAndKey generateSelfSignedCertificateAndKey(String hostname, String tlsSecretName,
+			final NamespacedKubernetesClient client, final String namespace) {
 		CertificateAndKey certificateAndKey = new CertificateAndKey();
 
 		String certificate = hostname + "-certificate.pem";
 		String key = hostname + "-key.pem";
 		String truststoreFormat = "jks";
-		String truststorePassword = "1234PIPPOBAUDO";
+		String truststorePassword = "certificateSecret-1234";
 		String truststore = hostname + "-truststore." + truststoreFormat;
 
 		certificateAndKey.key = Paths.get(caDir.toFile().getAbsolutePath(), key);
@@ -83,7 +83,7 @@ public class CertificatesUtils {
 				caDir.resolve(key).toFile().exists() &&
 				caDir.resolve(truststore).toFile().exists()) {
 			certificateAndKey.existing = true;
-			Secret tlsSecret = OpenShifts.master().getSecret(tlsSecretName);
+			Secret tlsSecret = client.secrets().withName(tlsSecretName).get();
 			if (Objects.isNull(tlsSecret)) {
 				throw new RuntimeException(MessageFormat.format("Secret {} doesn't exist!", tlsSecretName));
 			}
@@ -101,7 +101,8 @@ public class CertificatesUtils {
 
 		// create secret
 		try {
-			Secret tlsSecret = createTlsSecret(tlsSecretName, certificateAndKey.key, certificateAndKey.certificate);
+			Secret tlsSecret = createTlsSecret(tlsSecretName, certificateAndKey.key, certificateAndKey.certificate, client,
+					namespace);
 			if (Objects.isNull(tlsSecret)) {
 				throw new RuntimeException(MessageFormat.format("Secret {} doesn't exist!", tlsSecretName));
 			}
@@ -142,7 +143,8 @@ public class CertificatesUtils {
 		}
 	}
 
-	public static Secret createTlsSecret(String secretName, Path key, Path certificate) throws IOException {
+	public static Secret createTlsSecret(final String secretName, final Path key, final Path certificate,
+			final NamespacedKubernetesClient client, final String namespace) throws IOException {
 		Map<String, String> data = new HashMap<>();
 		String keyDerData = Files.readString(key);
 		String crtDerData = Files.readString(certificate);
@@ -154,6 +156,6 @@ public class CertificatesUtils {
 				.withImmutable(false)
 				.addToData(data)
 				.build();
-		return OpenShifts.master().secrets().inNamespace(OpenShiftConfig.namespace()).createOrReplace(secret);
+		return client.secrets().inNamespace(namespace).createOrReplace(secret);
 	}
 }

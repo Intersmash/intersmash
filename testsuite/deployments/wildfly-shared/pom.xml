@@ -194,7 +194,7 @@
                                         </manifest>
                                     </channel>
                                 </channels>
-                                <!-- When testing against EAP (-Peap), wildfly-ee-galeon-pack is needed -->
+                                <!-- When testing against EAP 8, the wildfly-ee-galleon-pack is needed -->
                                 <feature-packs>
                                     <feature-pack>
                                         <location>${wildfly.ee-feature-pack.location}</location>
@@ -264,19 +264,73 @@
             <!-- Configuration settings for testing EAP XP -->
             <id>ts.wildfly.target-distribution.eapxp</id>
             <properties>
+                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
                 <!-- Default EAP XP `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
-                <bom.wildfly-microprofile.groupId>org.jboss.eap.xp</bom.wildfly-microprofile.groupId>
-                <bom.wildfly-microprofile.artifactId>wildfly-microprofile</bom.wildfly-microprofile.artifactId>
-                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-20240221</bom.wildfly-microprofile.version>
-                <!-- EAP XP Channel coordinates -->
+                <bom.wildfly-microprofile.groupId>org.jboss.bom</bom.wildfly-microprofile.groupId>
+                <bom.wildfly-microprofile.artifactId>jboss-eap-xp-microprofile</bom.wildfly-microprofile.artifactId>
+                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-00009</bom.wildfly-microprofile.version>
+                <!-- EAP 8 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
-                <wildfly.ee-channel.artifactId>eap-8.0-plus-eap-xp-5.0</wildfly.ee-channel.artifactId>
-                <wildfly.ee-channel.version>1.0.0.Final-redhat-00001</wildfly.ee-channel.version>
-                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-20240221</wildfly.feature-pack.location>
+                <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+                <!-- EAP XP Channel coordinates -->
+                <wildfly.xp-channel.groupId>org.jboss.eap.channels</wildfly.xp-channel.groupId>
+                <wildfly.xp-channel.artifactId>eap-xp-5.0</wildfly.xp-channel.artifactId>
+                <wildfly.xp-channel.version>1.0.0.GA-redhat-00006</wildfly.xp-channel.version>
+                <!-- WildFly FPL -->
+                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
             </properties>
             <build>
                 <pluginManagement>
                     <plugins>
+                        <plugin>
+                            <groupId>${wildfly-maven-plugin.groupId}</groupId>
+                            <artifactId>${wildfly-maven-plugin.artifactId}</artifactId>
+                            <version>${wildfly-maven-plugin.version}</version>
+                            <configuration>
+                                <channels>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${wildfly.ee-channel.groupId}</groupId>
+                                            <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
+                                            <version>${wildfly.ee-channel.version}</version>
+                                        </manifest>
+                                    </channel>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${wildfly.xp-channel.groupId}</groupId>
+                                            <artifactId>${wildfly.xp-channel.artifactId}</artifactId>
+                                            <version>${wildfly.xp-channel.version}</version>
+                                        </manifest>
+                                    </channel>
+                                </channels>
+                                <!-- When testing against EAP XP, the wildfly-galleon-pack is needed -->
+                                <feature-packs>
+                                    <feature-pack>
+                                        <location>${wildfly.feature-pack.location}</location>
+                                    </feature-pack>
+                                    <feature-pack>
+                                        <location>${wildfly.cloud-feature-pack.location}</location>
+                                    </feature-pack>
+                                </feature-packs>
+                                <galleon-options>
+                                    <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                         wildfly-jar-maven-plugin would collide  -->
+                                    <jboss-fork-embedded>true</jboss-fork-embedded>
+                                </galleon-options>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <goals>
+                                        <goal>package</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
                         <plugin>
                             <groupId>org.wildfly.plugins</groupId>
                             <artifactId>wildfly-jar-maven-plugin</artifactId>
@@ -293,6 +347,13 @@
                                             <groupId>${wildfly.ee-channel.groupId}</groupId>
                                             <artifactId>${wildfly.ee-channel.artifactId}</artifactId>
                                             <version>${wildfly.ee-channel.version}</version>
+                                        </manifest>
+                                    </channel>
+                                    <channel>
+                                        <manifest>
+                                            <groupId>${wildfly.xp-channel.groupId}</groupId>
+                                            <artifactId>${wildfly.xp-channel.artifactId}</artifactId>
+                                            <version>${wildfly.xp-channel.version}</version>
                                         </manifest>
                                     </channel>
                                 </channels>

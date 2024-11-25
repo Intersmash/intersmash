@@ -76,6 +76,10 @@
         </dependency>
         <dependency>
             <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-kubernetes-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.intersmash</groupId>
             <artifactId>intersmash-core</artifactId>
         </dependency>
         <dependency>
@@ -179,6 +183,20 @@
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>kubernetes-model-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-model</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client-api</artifactId>
         </dependency>
 
         <dependency>

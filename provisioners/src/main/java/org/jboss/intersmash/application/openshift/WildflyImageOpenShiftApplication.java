@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.jboss.intersmash.application.openshift.input.BinarySourceBuilder;
-import org.jboss.intersmash.application.openshift.input.BuildInput;
-import org.jboss.intersmash.application.openshift.input.BuildInputBuilder;
-import org.jboss.intersmash.application.openshift.input.GitSourceBuilder;
+import org.jboss.intersmash.application.input.BinarySourceBuilder;
+import org.jboss.intersmash.application.input.BuildInput;
+import org.jboss.intersmash.application.input.BuildInputBuilder;
+import org.jboss.intersmash.application.input.GitSourceBuilder;
 
 import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
 import cz.xtf.builder.builders.pod.VolumeMount;

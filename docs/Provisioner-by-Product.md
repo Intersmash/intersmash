@@ -13,7 +13,8 @@ The provisioner is selected by a factory, based on the _Application class_ type 
 | **PostgreSQL Image** (see PostgreSQLImageOpenShiftApplication)                        | PostgreSQLImageOpenShiftProvisioner         | :heavy_check_mark: | :x:                |
 | **Operator based services**                                                           |                                             |                    |                    |
 | **ActiveMQ Artemis & Red Hat AMQ Broker Operator** (see ActiveMQOperatorApplication)  | ActiveMQOperatorProvisioner                 | :heavy_check_mark: | :heavy_check_mark: |
-| **Hyperfoil Operator** (see HyperfoilOperatorApplication)                             | HyperfoilOperatorProvisioner                | :heavy_check_mark: | :x:                |
+| **Hyperfoil Operator** - Kubernetes (see HyperfoilOperatorApplication)                | HyperfoilKubernetesOperatorProvisioner      | :heavy_check_mark: | :x:                |
+| **Hyperfoil Operator** - OpenShift (see HyperfoilOperatorApplication)                 | HyperfoilOpenShiftOperatorProvisioner       | :heavy_check_mark: | :x:                |
 | **Infinispan & Red Hat DataGrid Operator** (see InfinispanOperatorApplication)        | InfinispanOperatorProvisioner               | :heavy_check_mark: | :heavy_check_mark: |
 | **Kafka/Red Hat AMQ Streams Operator** (see KafkaOperatorApplication)                 | KafkaOperatorProvisioner                    | :heavy_check_mark: | :heavy_check_mark: |
 | **Keycloak & Red Hat Build of Keycloak Operator** (see KeycloakOperatorApplication)   | KeycloakOperatorProvisioner                 | :heavy_check_mark: | :heavy_check_mark: |

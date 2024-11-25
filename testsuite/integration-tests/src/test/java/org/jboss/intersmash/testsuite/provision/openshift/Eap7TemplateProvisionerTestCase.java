@@ -22,6 +22,8 @@ import org.assertj.core.api.SoftAssertions;
 import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
 import org.jboss.intersmash.provision.openshift.Eap7TemplateOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -36,7 +38,8 @@ import io.fabric8.openshift.api.model.GitBuildSource;
 
 @CleanBeforeAll
 @NotForCommunityExecutionProfile
-public class Eap7TemplateProvisionerTestCase {
+@OpenShiftTest
+public class Eap7TemplateProvisionerTestCase implements ProjectCreationCapable {
 	private static final OpenShift openShift = OpenShifts.master();
 	private static final Eap7TemplateOpenShiftApplication application = OpenShiftProvisionerTestBase
 			.getEap7OpenShiftTemplateApplication();

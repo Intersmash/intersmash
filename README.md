@@ -3,7 +3,11 @@
 Intersmash is a Java library that makes it easy to automate the
 provisioning and execution of tests in cloud-native environments.
 It helps the user prototype and test complex interoperability scenarios on
-kubernetes compliant cloud-native environments and platforms, most notably OpenShift.  (*Other Kubernetes implementations will be supported in the future.*)
+kubernetes compliant cloud-native environments and platforms, most notably OpenShift.
+Kubernetes support is being introduced. Support for other platforms (Bare-metal etc.) could be added
+later on demand.
+
+
 
 Intersmash is designed with these principles.  
 * It is integrated with JUnit.
@@ -16,7 +20,9 @@ the user can easily create an implementation and integrate it into the framework
 to test on different Kubernetes compliant cloud implementations.  This will
 ensure application portability.
 
-For usage examples, see [Getting Started](./docs/GETTING_STARTED.md).
+## Next steps
+- See how to [configure Intersmash for running tests on OpenShift and Kubernetes, or both](./docs/CLOUD_TARGET.md).
+- For usage examples, see [Getting Started](./docs/GETTING_STARTED.md).
 
 ## Framework Design
 
@@ -145,8 +151,8 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Infinispan                       | 15.0.5.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                         |
 | Red Hat Data Grid                | 8.5.0.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                                          |
 |                                  |                              |                                                                                                                   |
-| Kafka provided by Strimzi        | 3.6.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
-| Red Hat AMQ Streams              | 3.6.0.redhat-00005           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                    |
+| Kafka provided by Strimzi        | 3.8.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
+| Red Hat AMQ Streams              | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                    |
 |                                  |                              |                                                                                                                   |
 | Keycloak                         | 24.0.3                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                                      |
 | Red Hat Build of keycloak (RHBK) | 24.0.3.redhat-00004          | Or _latest_ in the `:24` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                             |
@@ -156,7 +162,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Red Hat JBoss EAP 8              | JBoss EAP 8.0.x (and XP 5.x) |                                                                                                                   |
 | Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z) |                                                                                                                   |
 |                                  |                              |                                                                                                                   |
-| Hyperfoil                        | 0.24.2                       |                                                                                                                   | 
+| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                  | 
 
 Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
 more information can be found in [the provisioners' documentation](./provisioners/README.md), or in the resources there linked.
@@ -169,8 +175,8 @@ We welcome community contributions to other Kubernetes implementations.
 
 
 ## Future goals
-* K8s support and Quarkus provisioning
-* documentation and examples enhancements
+* OpenShift AI provisioning
+* Documentation and examples enhancements
 
 see the [current milestone](https://github.com/Intersmash/intersmash/milestone/2) for a complete list of issues.
 

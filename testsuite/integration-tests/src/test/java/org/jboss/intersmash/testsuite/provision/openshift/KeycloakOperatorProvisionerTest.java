@@ -22,12 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.jboss.intersmash.application.openshift.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
+import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.junit5.IntersmashExtension;
-import org.jboss.intersmash.provision.openshift.KeycloakOperatorProvisioner;
+import org.jboss.intersmash.provision.olm.OperatorGroup;
+import org.jboss.intersmash.provision.openshift.KeycloakOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.operator.resources.OperatorGroup;
+import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -51,6 +53,7 @@ import org.keycloak.k8s.v2alpha1.keycloakspec.db.PasswordSecret;
 import org.keycloak.k8s.v2alpha1.keycloakspec.db.UsernameSecret;
 import org.slf4j.event.Level;
 
+import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShiftWaiters;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
@@ -71,13 +74,12 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @CleanBeforeAll
-public class KeycloakOperatorProvisionerTest {
-	private static KeycloakOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
+@OpenShiftTest
+public class KeycloakOperatorProvisionerTest implements ProjectCreationCapable {
+	private static KeycloakOpenShiftOperatorProvisioner KEYCLOAK_OPERATOR_PROVISIONER;
 
 	private static final String POSTGRESQL_NAME = "postgresql";
 	private static final String POSTGRESQL_DATABASE = "keycloak";
-	private static final String POSTGRESQL_PASSWORD = "pippobaudo1234";
-	private static final String POSTGRESQL_USER = "user09M";
 
 	private static final PostgreSQLImageOpenShiftApplication pgSQLApplication = new PostgreSQLImageOpenShiftApplication() {
 		@Override
@@ -103,9 +105,9 @@ public class KeycloakOperatorProvisionerTest {
 	private static final PostgreSQLImageOpenShiftProvisioner POSTGRESQL_IMAGE_PROVISIONER = new PostgreSQLImageOpenShiftProvisioner(
 			pgSQLApplication);
 
-	private static KeycloakOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
+	private static KeycloakOpenShiftOperatorProvisioner initializeOperatorProvisioner(final Keycloak keycloak,
 			final String appName) {
-		KeycloakOperatorProvisioner operatorProvisioner = new KeycloakOperatorProvisioner(
+		KeycloakOpenShiftOperatorProvisioner operatorProvisioner = new KeycloakOpenShiftOperatorProvisioner(
 				new KeycloakOperatorApplication() {
 
 					@Override
@@ -129,9 +131,10 @@ public class KeycloakOperatorProvisionerTest {
 	@BeforeAll
 	public static void createOperatorGroup() throws IOException {
 		matchLabels.put("app", "sso");
-		IntersmashExtension.operatorCleanup();
+		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f", OperatorGroup.SINGLE_NAMESPACE.save().getAbsolutePath());
+		OpenShifts.adminBinary().execute("apply", "-f",
+				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 	}
 
 	@AfterAll
@@ -167,7 +170,7 @@ public class KeycloakOperatorProvisionerTest {
 	 * <br> - https://github.com/keycloak/keycloak-operator/tree/master/deploy/examples/keycloak
 	 */
 	@Test
-	public void exampleSso() {
+	public void exampleKeycloakTest() {
 		name = "example-sso";
 
 		final Keycloak keycloak = new Keycloak();
@@ -183,7 +186,8 @@ public class KeycloakOperatorProvisionerTest {
 		// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
 		String tlsSecretName = name + "-tls-secret";
 		CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
-				.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName);
+				.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""), tlsSecretName,
+						OpenShifts.master().getClient(), OpenShifts.master().getNamespace());
 		// add TLS config to keycloak using the secret we just created
 		Http http = new Http();
 		http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
@@ -216,7 +220,7 @@ public class KeycloakOperatorProvisionerTest {
 	 * <br> - https://github.com/keycloak/keycloak-operator/tree/master/deploy/examples/keycloak
 	 */
 	@Test
-	public void exampleSsoWithDatabase() {
+	public void exampleKeycloakWithDatabaseTest() {
 		POSTGRESQL_IMAGE_PROVISIONER.configure();
 		try {
 			POSTGRESQL_IMAGE_PROVISIONER.preDeploy();
@@ -239,7 +243,7 @@ public class KeycloakOperatorProvisionerTest {
 					String tlsSecretName = name + "-tls-secret";
 					CertificatesUtils.CertificateAndKey certificateAndKey = CertificatesUtils
 							.generateSelfSignedCertificateAndKey(hostname.getHostname().replaceFirst("[.].*$", ""),
-									tlsSecretName);
+									tlsSecretName, OpenShifts.master().getClient(), OpenShifts.master().getNamespace());
 					// add TLS config to keycloak using the secret we just created
 					Http http = new Http();
 					http.setTlsSecret(certificateAndKey.tlsSecret.getMetadata().getName());
