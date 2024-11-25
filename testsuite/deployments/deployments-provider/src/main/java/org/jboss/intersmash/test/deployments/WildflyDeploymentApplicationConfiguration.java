@@ -102,12 +102,21 @@ public interface WildflyDeploymentApplicationConfiguration {
 	}
 
 	/**
+	 * This must match the property name in the pom.xml file used to set the "wildfly-galleon-pack" feature pack GAV
+	 *
+	 * @return property name in the pom.xml file used to set the feature pack GAV
+	 */
+	default String featurePackLocationPropertyName() {
+		return WILDFLY_FEATURE_PACK_LOCATION;
+	}
+
+	/**
 	 * This must match the property name in the pom.xml file used to set the "wildfly-ee-galleon-pack" feature pack GAV
 	 *
 	 * @return property name in the pom.xml file used to set the feature pack GAV
 	 */
 	default String eeFeaturePackLocationPropertyName() {
-		return WILDFLY_FEATURE_PACK_LOCATION;
+		return WILDFLY_EE_FEATURE_PACK_LOCATION;
 	}
 
 	/**
@@ -206,7 +215,7 @@ public interface WildflyDeploymentApplicationConfiguration {
 				: (" -D" + this.eeFeaturePackLocationPropertyName() + "="
 						+ this.eeFeaturePackLocation())))
 				+ ((Strings.isNullOrEmpty(this.featurePackLocation()) ? ""
-						: (" -D" + this.featurePackLocation() + "="
+						: (" -D" + this.featurePackLocationPropertyName() + "="
 								+ this.featurePackLocation())))
 				+ ((Strings.isNullOrEmpty(this.cloudFeaturePackLocation()) ? ""
 						: (" -D" + this.cloudFeaturePackLocationPropertyName() + "="
