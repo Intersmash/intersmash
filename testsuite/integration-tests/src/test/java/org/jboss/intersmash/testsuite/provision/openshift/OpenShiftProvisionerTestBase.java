@@ -53,7 +53,6 @@ import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.Infin
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
-import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
