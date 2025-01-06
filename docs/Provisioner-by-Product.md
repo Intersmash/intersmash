@@ -20,6 +20,7 @@ The provisioner is selected by a factory, based on the _Application class_ type 
 | **Keycloak & Red Hat Build of Keycloak Operator** (see KeycloakOperatorApplication)   | KeycloakOperatorProvisioner                 | :heavy_check_mark: | :heavy_check_mark: |
 | **Red Hat SSO Operator** (see RhSsoOperatorApplication) - **DEPRECATED**              | RhSsoOperatorProvisioner                    | :x:                | :heavy_check_mark: |
 | **WildFly & JBoss EAP 8 Operator** (see WildflyOperatorApplication)                   | WildflyOperatorProvisioner                  | :heavy_check_mark: | :heavy_check_mark: |
+| **Open Data Hub operator** (see OpenDataHubOperatorApplication)                       | OpenDataHubOpenShiftOperatorProvisioner     | :heavy_check_mark: | :x:                |
 | **Template based services**                                                           |                                             |                    |                    |
 | **JBoss EAP 7 Legacy s2i Build Template** (see Eap7LegacyS2iBuildTemplateApplication) | Eap7LegacyS2iBuildTemplateProvisioner       | :x:                | :heavy_check_mark: |
 | **JBoss EAP 7 Legacy s2i Deployment Template** (see Eap7TemplateOpenShiftApplication) | Eap7TemplateOpenShiftProvisioner            | :x:                | :heavy_check_mark: |
