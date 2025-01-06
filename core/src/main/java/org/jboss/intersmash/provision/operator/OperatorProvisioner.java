@@ -64,8 +64,8 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class OperatorProvisioner<A extends OperatorApplication, C extends NamespacedKubernetesClient>
 		implements Provisioner<A>, Scalable {
 	// cache the current csv and list of provided custom resource definitions
-	static String currentCSV;
-	final String packageManifestName;
+	protected static String currentCSV;
+	protected final String packageManifestName;
 	private CatalogSource catalogSource;
 	private final A operatorApplication;
 	private PackageManifest packageManifest;
@@ -178,6 +178,16 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 			namespace = this.client().getNamespace();
 		}
 		return namespace;
+	}
+
+	/**
+	 * The CatalogSource is in the "openshift-marketplace" namespace by default on OpenShift, in the "olm" one on K8s.
+	 * When a custom operator image must be used, then a custom CatalogSource will be created in the current namespace.
+	 *
+	 * @return namespace where the custom CatalogSource is located
+	 */
+	protected String getTargetNamespace() {
+		return this.client().getNamespace();
 	}
 
 	/**
@@ -350,7 +360,7 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 		log.info("Subscribing the {} operator", packageManifestName);
 		// oc get packagemanifest wildfly -o template --template {{.status.defaultChannel}}
 		final String catalogSourceNamespace = getCatalogSourceNamespace();
-		final String targetNamespace = this.client().getNamespace();
+		final String targetNamespace = getTargetNamespace();
 		Subscription operatorSubscription = (envVariables == null || envVariables.isEmpty())
 				? new Subscription(catalogSourceNamespace, targetNamespace, getOperatorCatalogSource(),
 						packageManifestName,
@@ -462,7 +472,7 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 			if (operatorSpec.length != 3) {
 				throw new IllegalStateException("Failed to get operator deployment spec from csvs!");
 			}
-			BooleanSupplier bs = () -> this.client().inNamespace(this.client().getNamespace()).pods().list().getItems().stream()
+			BooleanSupplier bs = () -> this.client().inNamespace(this.getTargetNamespace()).pods().list().getItems().stream()
 					.filter(p -> !com.google.common.base.Strings.isNullOrEmpty(p.getMetadata().getLabels().get(operatorSpec[1]))
 							&& p.getMetadata().getLabels().get(operatorSpec[1]).equals(operatorSpec[2])
 							&& p.getStatus().getContainerStatuses().size() > 0
@@ -486,14 +496,22 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 	 * Documentation: https://docs.openshift.com/container-platform/4.4/operators/olm-deleting-operators-from-cluster.html#olm-deleting-operator-from-a-cluster-using-cli_olm-deleting-operators-from-a-cluster
 	 */
 	public void unsubscribe() {
-		this.execute("delete", "subscription", packageManifestName, "--ignore-not-found");
-		this.execute("delete", "csvs", currentCSV, "--ignore-not-found");
+		removeSubscription();
+		removeClusterServiceVersion();
 		for (String customResource : getCustomResourceDefinitions()) {
 			final String crds = this.execute("get", "crd", customResource, "--ignore-not-found");
 			if (crds != null && !crds.isEmpty()) {
 				log.info("CRD: {} is still defined on the cluster", customResource);
 			}
 		}
+	}
+
+	protected void removeClusterServiceVersion() {
+		this.execute("delete", "csvs", currentCSV, "--ignore-not-found");
+	}
+
+	protected void removeSubscription() {
+		this.execute("delete", "subscription", packageManifestName, "--ignore-not-found");
 	}
 
 	public String getCurrentCSV() {
