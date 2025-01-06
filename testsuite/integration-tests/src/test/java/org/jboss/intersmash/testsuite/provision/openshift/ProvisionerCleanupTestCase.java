@@ -62,7 +62,10 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 					, new PostgreSQLImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
 					new PostgreSQLTemplateOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
+							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication())
+					// ODH
+					, new OpenDataHubOpenShiftOperatorProvisioner(
+							OpenShiftProvisionerTestBase.getOpenDataHubOperatorApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// RHDG

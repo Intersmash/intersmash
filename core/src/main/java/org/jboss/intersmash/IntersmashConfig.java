@@ -85,6 +85,13 @@ public class IntersmashConfig {
 	private static final String HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = "intersmash.hyperfoil.operators.package_manifest";
 	private static final String COMMUNITY_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = "hyperfoil-bundle";
 	private static final String DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST;
+	private static final String OPEN_DATA_HUB_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.odh.operators.catalog_source";
+	private static final String OPEN_DATA_HUB_OPERATOR_INDEX_IMAGE = "intersmash.odh.operators.index_image";
+	private static final String OPEN_DATA_HUB_OPERATOR_CHANNEL = "intersmash.odh.operators.channel";
+	private static final String OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = "intersmash.odh.operators.package_manifest";
+	private static final String COMMUNITY_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = "opendatahub-operator";
+	private static final String DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST;
+
 	// Bootable Jar
 	private static final String BOOTABLE_JAR_IMAGE_URL = "intersmash.bootable.jar.image";
 
@@ -406,5 +413,44 @@ public class IntersmashConfig {
 
 	public static String keycloakOperatorPackageManifest() {
 		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	/**
+	 * Read the configuration property for the Open Data Hub Operator catalog source, i.e. {@code intersmash.odh.operators.catalog_source}.
+	 *
+	 * @return The value for the {@code intersmash.odh.operators.catalog_source} property or the default catalog source,
+	 * i.e. the value of {@code intersmash.olm.operators.catalog_source} property.
+	 */
+	public static String openDataHubOperatorCatalogSource() {
+		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+	}
+
+	/**
+	 * Read the configuration property for the Open Data Hub Operator index image, i.e. {@code intersmash.odh.operators.index_image}.
+	 *
+	 * @return The value for the {@code intersmash.odh.operators.index_image} property, representing a custom index image.
+	 */
+	public static String openDataHubOperatorIndexImage() {
+		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_INDEX_IMAGE);
+	}
+
+	/**
+	 * Read the configuration property for the Open Data Hub Operator channel to be used, i.e. {@code intersmash.odh.operators.channel}.
+	 *
+	 * @return The value for the {@code intersmash.odh.operators.channel} property. If not provided the default operator
+	 * channel is used.
+	 */
+	public static String openDataHubOperatorChannel() {
+		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_CHANNEL);
+	}
+
+	/**
+	 * Read the configuration property for the Open Data Hub Operator channel to be used, i.e. {@code intersmash.odh.operators.package_manifest}.
+	 *
+	 * @return The value for the {@code intersmash.odh.operators.package_manifest} property or the default package manifest
+	 * that should be used for this operator, i.e. {@code opendatahub-operator} property.
+	 */
+	public static String openDataHubOperatorPackageManifest() {
+		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST);
 	}
 }
