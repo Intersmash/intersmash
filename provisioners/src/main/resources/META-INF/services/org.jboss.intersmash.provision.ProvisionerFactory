@@ -16,5 +16,4 @@ org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisionerFa
 org.jboss.intersmash.provision.openshift.Eap7TemplateOpenShiftProvisionerFactory
 org.jboss.intersmash.provision.operator.HyperfoilOperatorProvisionerFactory
 org.jboss.intersmash.provision.openshift.auto.OpenShiftAutoProvisionerFactory
-
-
+org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisionerFactory

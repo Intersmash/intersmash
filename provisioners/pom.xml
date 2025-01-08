@@ -236,25 +236,26 @@
                 <artifactId>java-generator-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>default-crd-generation</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
+                        <configuration>
+                            <target>target/generated-sources</target>
+                            <source>src/main/resources/crds</source>
+                            <!--
+                                This is needed to force the Java generator from CRD to stick with the original names
+                                for enums, and avoid to uppercase them, since this could generate duplicate names,
+                                as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                             -->
+                            <enumUppercase>false</enumUppercase>
+                            <!--
+                                The following is required in order to generate Sundrio and Lombok annotations
+                            -->
+                            <extraAnnotations>true</extraAnnotations>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <target>target/generated-sources</target>
-                    <source>src/main/resources/crds</source>
-                    <!--
-                        This is needed to force the Java generator from CRD to stick with the original names
-                        for enums, and avoid to uppercase them, since this could generate duplicate names,
-                        as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
-                     -->
-                    <enumUppercase>false</enumUppercase>
-                    <!--
-                        The following is required in order to generate Sundrio and Lombok annotations
-                    -->
-                    <extraAnnotations>true</extraAnnotations>
-                </configuration>
             </plugin>
 
             <plugin>

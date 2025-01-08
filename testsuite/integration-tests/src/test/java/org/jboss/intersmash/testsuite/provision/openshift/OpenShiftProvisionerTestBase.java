@@ -49,11 +49,11 @@ import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
 import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
+import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanBuilder;
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
-import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
@@ -70,6 +70,10 @@ import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
+import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
+import io.opendatahub.datasciencecluster.v1.DataScienceClusterBuilder;
+import io.opendatahub.dscinitialization.v1.DSCInitialization;
+import io.opendatahub.dscinitialization.v1.DSCInitializationBuilder;
 import io.strimzi.api.kafka.model.AclOperation;
 import io.strimzi.api.kafka.model.AclResourcePatternType;
 import io.strimzi.api.kafka.model.AclRule;
@@ -777,6 +781,46 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public String getName() {
 				return DEFAULT_INFINISPAN_APP_NAME;
+			}
+		};
+	}
+
+	/**
+	 * Provide an instance of {@link OpenDataHubOperatorApplication}, that represents a minimal Open Data Hub
+	 * application service that is used for instance by {@link ProvisionerCleanupTestCase}
+	 *
+	 * @return A concreate instance of {@link OpenDataHubOperatorApplication}, that represents a minimal Open Data Hub
+	 * application service.
+	 */
+	static OpenDataHubOperatorApplication getOpenDataHubOperatorApplication() {
+		return new OpenDataHubOperatorApplication() {
+
+			private static final String APP_NAME = "example-odh";
+
+			@Override
+			public DataScienceCluster getDataScienceCluster() {
+				return new DataScienceClusterBuilder()
+						.withNewMetadata()
+						.withName(APP_NAME)
+						.endMetadata()
+						.build();
+			}
+
+			@Override
+			public DSCInitialization getDSCInitialization() {
+				return new DSCInitializationBuilder()
+						.withNewMetadata()
+						.withName(APP_NAME)
+						.endMetadata()
+						.withNewSpec()
+						.withApplicationsNamespace(OpenShifts.master().getNamespace())
+						.endSpec()
+						.build();
+			}
+
+			@Override
+			public String getName() {
+				return APP_NAME;
 			}
 		};
 	}
