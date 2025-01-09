@@ -40,7 +40,7 @@
         <!-- Keycloak SAML -->
         <keycloak-saml-adapter-galleon-pack.groupId>org.keycloak</keycloak-saml-adapter-galleon-pack.groupId>
         <keycloak-saml-adapter-galleon-pack.artifactId>keycloak-saml-adapter-galleon-pack</keycloak-saml-adapter-galleon-pack.artifactId>
-        <keycloak-saml-adapter-galleon-pack.version>22.0.5</keycloak-saml-adapter-galleon-pack.version>
+        <keycloak-saml-adapter-galleon-pack.version>26.0.7</keycloak-saml-adapter-galleon-pack.version>
     </properties>
 
     <dependencyManagement>
