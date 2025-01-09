@@ -148,8 +148,8 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | ActiveMQ Artemis                 | 1.0.15                       | The one provided by the custom index image, i.e. quay.io/jbossqe-eap/intersmash-activemq-operator-catalog:v1.0.11 |
 | Red Hat AMQ Broker               | 7.11.z                       | Or _latest_ in the `:7.11` tag image stream, see registry.redhat.io/amq7/amq-broker-init-rhel8                    |
 |                                  |                              |                                                                                                                   |
-| Infinispan                       | 15.0.5.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                         |
-| Red Hat Data Grid                | 8.5.0.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                                          |
+| Infinispan                       | 15.1.1.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                         |
+| Red Hat Data Grid                | 8.5.2.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                                          |
 |                                  |                              |                                                                                                                   |
 | Kafka provided by Strimzi        | 3.8.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
 | Red Hat AMQ Streams              | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                    |
