@@ -154,8 +154,8 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Kafka provided by Strimzi        | 3.8.0                        | Provided by the Strimzi Operator `stable` channel                                                                 |
 | Red Hat AMQ Streams              | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                    |
 |                                  |                              |                                                                                                                   |
-| Keycloak                         | 24.0.3                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                                      |
-| Red Hat Build of keycloak (RHBK) | 24.0.3.redhat-00004          | Or _latest_ in the `:24` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                             |
+| Keycloak                         | 26.0.7                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                                      |
+| Red Hat Build of keycloak (RHBK) | 26.0.7.redhat-00001          | Or _latest_ in the `:26.0` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                           |
 | Red Hat SSO - **DEPRECATED**     | 7.6.z                        | The _latest_ in the `:7.6` tag image stream, see registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:7.6            |
 |                                  |                              |                                                                                                                   |
 | WildFly                          | 32.0.0.Final                 |                                                                                                                   |                                                      

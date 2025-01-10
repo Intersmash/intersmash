@@ -218,7 +218,7 @@ a given service on cloud environments via APIs that leverage the
 [Operator Framework](https://github.com/operator-framework).  Operator-based provisioners implement a common contract and high level behavior which is defined by Intersmash's, abstract class, _OperatorProvisioner_.
 [Operator provisioning How-to](docs/operator-howto.md),
 describes the steps needed to create a new operator-based provisioner.
-[KeycloakOperatorProvisionerFactory](src/main/java/org/jboss/intersmash/provision/openshift/KeycloakOperatorProvisionerFactory.java) provides a reference to a _Provisioner_ and _Application_ implementing this feature.
+[KeycloakOperatorProvisionerFactory](src/main/java/org/jboss/intersmash/provision/operator/KeycloakOperatorProvisionerFactory.java) provides a reference to a _Provisioner_ and _Application_ implementing this feature.
 
 A list of operator based provisioners [here](../docs/Operator-Based-Provisioning.md)
 

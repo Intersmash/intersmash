@@ -7,7 +7,7 @@ Kubernetes Client Java Generator Maven plugin, starting from a given operator CR
 This means that generated sources are not under version control and a build is needed in order to use or to inspect them.
 
 This guide will demonstrate the initial approach and will use the Keycloak operator as an 
-example of a operator based provisioner.
+example for implementing an operator based provisioner.
 
 ## Implementation
 
@@ -32,7 +32,7 @@ Put all of this collected info into the Intersmash issue which is tracking the o
 
 #### Example Outcome
 * sources: https://github.com/keycloak/keycloak/tree/main/operator
-* CRDs: https://github.com/keycloak/keycloak-k8s-resources/tree/22.0.4/kubernetes
+* CRDs: https://github.com/keycloak/keycloak-k8s-resources/tree/26.0.7/kubernetes
 * documentation: https://www.keycloak.org/guides#operator
 * operator marketplace id = `keycloak-operator`
 * provided CRs: [`keycloaks.k8s.keycloak.org`, `keycloakrealmimports.k8s.keycloak.org`]
