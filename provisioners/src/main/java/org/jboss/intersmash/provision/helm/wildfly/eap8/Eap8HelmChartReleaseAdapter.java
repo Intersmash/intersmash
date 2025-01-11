@@ -79,6 +79,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withDeploymentEnvironmentVariables(
 			Map<String, String> deploymentEnvironmentVariables) {
 		this.setDeploymentEnvironmentVariables(deploymentEnvironmentVariables);
@@ -122,6 +123,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables) {
 		this.setBuildEnvironmentVariables(buildEnvironmentVariables);
 		return this;
@@ -205,6 +207,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withVolumes(List<Volume> volumes) {
 		this.setVolumes(volumes);
 		return this;
@@ -300,6 +303,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 		adaptee.getDeploy().getRoute().setHost(routeHost);
 	}
 
+	@Override
 	public WildflyHelmChartRelease withRouteHost(String routeHost) {
 		this.setRouteHost(routeHost);
 		return this;
