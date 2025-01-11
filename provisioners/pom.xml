@@ -289,6 +289,20 @@
                             <targetPackage>org.jboss.intersmash.model.helm.charts.values.eap8</targetPackage>
                         </configuration>
                     </execution>
+
+                    <execution>
+                        <id>charts.values.generate-schema-model.eap81</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- JBoss EAP 8 Helm Chart model is generated from JSON schema at https://github.com/jbossas/eap-charts/blob/eap81-dev/charts/eap81/values.schema.json -->
+                            <sourceDirectory>${basedir}/src/main/resources/org/jboss/intersmash/provision/helm/values/schema/eap81</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/</outputDirectory>
+                            <targetPackage>org.jboss.intersmash.model.helm.charts.values.eap81</targetPackage>
+                        </configuration>
+                    </execution>
+
                     <execution>
                         <id>charts.values.generate-schema-model.xp5</id>
                         <goals>
@@ -299,6 +313,19 @@
                             <sourceDirectory>${basedir}/src/main/resources/org/jboss/intersmash/provision/helm/values/schema/xp5</sourceDirectory>
                             <outputDirectory>${project.build.directory}/generated-sources/</outputDirectory>
                             <targetPackage>org.jboss.intersmash.model.helm.charts.values.xp5</targetPackage>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>charts.values.generate-schema-model.xp6</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- JBoss EAP XP 6 Helm Chart model is generated from JSON schema at https://github.com/jbossas/eap-charts/eap-xp6-dev/charts/eap-xp6/values.schema.json -->
+                            <sourceDirectory>${basedir}/src/main/resources/org/jboss/intersmash/provision/helm/values/schema/xp6</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/</outputDirectory>
+                            <targetPackage>org.jboss.intersmash.model.helm.charts.values.xp6</targetPackage>
                         </configuration>
                     </execution>
 

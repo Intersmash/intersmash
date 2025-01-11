@@ -80,6 +80,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withDeploymentEnvironmentVariables(
 			Map<String, String> deploymentEnvironmentVariables) {
 		this.setDeploymentEnvironmentVariables(deploymentEnvironmentVariables);
@@ -123,6 +124,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables) {
 		this.setBuildEnvironmentVariables(buildEnvironmentVariables);
 		return this;
@@ -209,6 +211,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withVolumes(List<Volume> volumes) {
 		this.setVolumes(volumes);
 		return this;
@@ -264,6 +267,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		}
 	}
 
+	@Override
 	public WildflyHelmChartRelease withVolumeMounts(List<VolumeMount> volumeMounts) {
 		this.setVolumeMounts(volumeMounts);
 		return this;
@@ -304,6 +308,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		adaptee.getDeploy().getRoute().setHost(routeHost);
 	}
 
+	@Override
 	public WildflyHelmChartRelease withRouteHost(String routeHost) {
 		this.setRouteHost(routeHost);
 		return this;
