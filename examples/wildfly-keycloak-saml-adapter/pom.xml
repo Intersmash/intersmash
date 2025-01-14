@@ -19,9 +19,9 @@
         <formatting-style-base-directory>${project.parent.parent.basedir}/ide-config</formatting-style-base-directory>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
         <!-- Wildfly default version -->
-        <version.wildfly-server>32.0.0.Final</version.wildfly-server>
+        <version.wildfly-server>35.0.0.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin version -->
-        <wildfly-maven-plugin.version>5.0.0.Final</wildfly-maven-plugin.version>
+        <wildfly-maven-plugin.version>5.1.1.Final</wildfly-maven-plugin.version>
         <!-- Default WildFly `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
         <bom.wildfly-ee.version>${version.wildfly-server}</bom.wildfly-ee.version>
         <!--
@@ -35,7 +35,7 @@
         -->
         <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
-        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:6.0.0.Final</wildfly.cloud-feature-pack.location>
+        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:7.0.2.Final</wildfly.cloud-feature-pack.location>
 
         <!-- Keycloak SAML -->
         <keycloak-saml-adapter-galleon-pack.groupId>org.keycloak</keycloak-saml-adapter-galleon-pack.groupId>

@@ -271,7 +271,7 @@
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <!-- WildFly Helm Chart model is generated from JSON schema at https://github.com/wildfly/wildfly-charts/blob/wildfly-2.3.2/charts/wildfly/values.schema.json -->
+                            <!-- WildFly Helm Chart model is generated from JSON schema at https://github.com/wildfly/wildfly-charts/blob/wildfly-2.4.0/charts/wildfly/values.schema.json -->
                             <sourceDirectory>${basedir}/src/main/resources/org/jboss/intersmash/provision/helm/values/schema/wildfly</sourceDirectory>
                             <outputDirectory>target/generated-sources</outputDirectory>
                             <targetPackage>org.jboss.intersmash.model.helm.charts.values.wildfly</targetPackage>

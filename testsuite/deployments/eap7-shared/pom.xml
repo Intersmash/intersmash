@@ -20,14 +20,14 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Default EAP 7 version -->
-        <jboss-eap7.version>7.4.13.GA</jboss-eap7.version>
-        <jboss-eap7-xp.version>4.0.1.GA-7.4.13.GA</jboss-eap7-xp.version>
+        <jboss-eap7.version>7.4.20.GA</jboss-eap7.version>
+        <jboss-eap7-xp.version>4.0.2.GA-7.4.20.GA</jboss-eap7-xp.version>
         <!-- Default EAP `ee` BOM version is set here for pulling the right EAP BOM -->
         <bom.jboss-eap7-jakartaee.groupId>org.jboss.bom</bom.jboss-eap7-jakartaee.groupId>
         <bom.jboss-eap7-jakartaee.artifactId>jboss-eap-jakartaee8</bom.jboss-eap7-jakartaee.artifactId>
         <bom.jboss-eap7-jakartaee.version>${jboss-eap7.version}</bom.jboss-eap7-jakartaee.version>
 
-        <eap7.xp-feature-pack.location>org.jboss.eap:wildfly-galleon-pack:4.0.1.GA-redhat-00007</eap7.xp-feature-pack.location>
+        <eap7.xp-feature-pack.location>org.jboss.eap:wildfly-galleon-pack:4.0.2.GA-redhat-00009</eap7.xp-feature-pack.location>
         <!--
             Default version for the Bootable JAR Plugin is set here and can be overridden
         -->
