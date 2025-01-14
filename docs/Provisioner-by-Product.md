@@ -16,7 +16,7 @@ The provisioner is selected by a factory, based on the _Application class_ type 
 | **Hyperfoil Operator** - Kubernetes (see HyperfoilOperatorApplication)                | HyperfoilKubernetesOperatorProvisioner      | :heavy_check_mark: | :x:                |
 | **Hyperfoil Operator** - OpenShift (see HyperfoilOperatorApplication)                 | HyperfoilOpenShiftOperatorProvisioner       | :heavy_check_mark: | :x:                |
 | **Infinispan & Red Hat DataGrid Operator** (see InfinispanOperatorApplication)        | InfinispanOperatorProvisioner               | :heavy_check_mark: | :heavy_check_mark: |
-| **Kafka/Red Hat AMQ Streams Operator** (see KafkaOperatorApplication)                 | KafkaOperatorProvisioner                    | :heavy_check_mark: | :heavy_check_mark: |
+| **Kafka/Streams for Apache Kafka Operator** (see KafkaOperatorApplication)            | KafkaOperatorProvisioner                    | :heavy_check_mark: | :heavy_check_mark: |
 | **Keycloak & Red Hat Build of Keycloak Operator** (see KeycloakOperatorApplication)   | KeycloakOperatorProvisioner                 | :heavy_check_mark: | :heavy_check_mark: |
 | **Red Hat SSO Operator** (see RhSsoOperatorApplication) - **DEPRECATED**              | RhSsoOperatorProvisioner                    | :x:                | :heavy_check_mark: |
 | **WildFly & JBoss EAP 8 Operator** (see WildflyOperatorApplication)                   | WildflyOperatorProvisioner                  | :heavy_check_mark: | :heavy_check_mark: |
