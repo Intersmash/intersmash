@@ -20,11 +20,11 @@
         <version.ide-config>1.1</version.ide-config>
         <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
 
-        <version.wildfly-server>32.0.0.Final</version.wildfly-server>
+        <version.wildfly-server>35.0.0.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
-        <wildfly-maven-plugin.version>5.0.0.Final</wildfly-maven-plugin.version>
+        <wildfly-maven-plugin.version>5.1.1.Final</wildfly-maven-plugin.version>
         <!-- Default WildFly `ee` BOM version is set here and can be overridden for pulling the right BOM -->
         <bom.wildfly-ee.groupId>org.wildfly.bom</bom.wildfly-ee.groupId>
         <bom.wildfly-ee.artifactId>wildfly-ee</bom.wildfly-ee.artifactId>

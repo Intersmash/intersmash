@@ -44,7 +44,7 @@
         </formatting-style-base-directory>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
 
-        <version.wildfly.feature-pack>29.0.1.Final</version.wildfly.feature-pack>
+        <version.wildfly.feature-pack>35.0.0.Final</version.wildfly.feature-pack>
     </properties>
 
     <dependencies>
