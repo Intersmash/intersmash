@@ -1,13 +1,14 @@
 # Intersmash - Cloud-native testing with Java
 
+![Simple build workflow](https://github.com/Intersmash/intersmash/actions/workflows/simple-build.yml/badge.svg)
+![Kubernetes E2E Tests](https://github.com/Intersmash/intersmash/actions/workflows/kubernetes-e2e.yml/badge.svg)
+
 Intersmash is a Java library that makes it easy to automate the
 provisioning and execution of tests in cloud-native environments.
 It helps the user prototype and test complex interoperability scenarios on
 kubernetes compliant cloud-native environments and platforms, most notably OpenShift.
 Kubernetes support is being introduced. Support for other platforms (Bare-metal etc.) could be added
 later on demand.
-
-
 
 Intersmash is designed with these principles.  
 * It is integrated with JUnit.
@@ -20,49 +21,49 @@ the user can easily create an implementation and integrate it into the framework
 to test on different Kubernetes compliant cloud implementations.  This will
 ensure application portability.
 
+## Supported services
+
+Intersmash aims at providing tools for provisioning up to the latest stable release generally
+available.
+The following table is a best-effort tracker for the version that each supported service has been tested with.
+That being said, since each service could be provisioned via different means - like templates and operators -
+having their own release cadence - it _could_ happen that a service version is provisioned which is not the one listed.
+
+Feel free to submit an issue in such a case, Intersmash welcomes community contributions to keep the tooling up to date.
+
+| Service                          | Supported version            | Notes                                                                                                                                                                           |
+|:---------------------------------|:-----------------------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ActiveMQ Artemis                 | 2.38.0                       | The one provided by the custom index image, i.e. quay.io/jbossqe-eap/intersmash-activemq-operator-index:1.2.9, which lists to images in https://quay.io/organization/arkmq-org  |
+| Red Hat AMQ Broker               | 7.12.z                       | Or _latest_ in the `:7.12` tag image stream, see registry.redhat.io/amq7/amq-broker-init-rhel8                                                                                  |
+|                                  |                              |                                                                                                                                                                                 |
+| Infinispan                       | 15.1.1.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                                                                                       |
+| Red Hat Data Grid                | 8.5.2.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                                                                                                        |
+|                                  |                              |                                                                                                                                                                                 |
+| Kafka provided by Strimzi        | 3.8.0                        | Provided by the Strimzi Operator `stable` channel                                                                                                                               |
+| Red Hat AMQ Streams              | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat AMQ Streams Operator `stable` channel                                                                                                  |
+|                                  |                              |                                                                                                                                                                                 |
+| Keycloak                         | 26.0.7                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                                                                                                    |
+| Red Hat Build of keycloak (RHBK) | 26.0.7.redhat-00001          | Or _latest_ in the `:26.0` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                                                                                         |
+| Red Hat SSO - **DEPRECATED**     | 7.6.z                        | The _latest_ in the `:7.6` tag image stream, see registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:7.6                                                                          |
+|                                  |                              |                                                                                                                                                                                 |
+| WildFly                          | 32.0.0.Final                 |                                                                                                                                                                                 |                                                      
+| Red Hat JBoss EAP 8              | JBoss EAP 8.0.x (and XP 5.x) |                                                                                                                                                                                 |
+| Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z) |                                                                                                                                                                                 |
+|                                  |                              |                                                                                                                                                                                 |
+| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                                                                                | 
+|                                  |                              |                                                                                                                                                                                 |
+| Open Data Hub                    | 2.22.0                       | Supports provisioning on OpenShift via the Operator                                                                                                                             |
+
+Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
+more information can be found in [the provisioners' documentation](./provisioners/README.md), or in the resources there linked.
+
 ## Next steps
 - See how to [configure Intersmash for running tests on OpenShift and Kubernetes, or both](./docs/CLOUD_TARGET.md).
 - For usage examples, see [Getting Started](./docs/GETTING_STARTED.md).
-
-## Framework Design
-
-Intersmash provides a set of annotations, APIs and application service contracts the developer uses to describe the test scenario, within the test class.
-This information is used by the framework to deploy the services and to manage their
-life-cycle orchestration directly from the test class.
-A curated list of service "provisioners" is provided to cover the most common use cases, for example provisioning the Kafka Operator, or a PostgreSql service via templates, or a s2i build and deploy a WildFly application.
-The full list of provided services can be found [here](./docs/Provisioner-by-Product.md).
-
-### Components
-
-There are three main components that make up the framework:
-
-* **annotations**: Intersmash annotations are used to declare the
-  *product components* that make up the test scenario.
-  These statements can be applied to the test class and its fields. 
-
-  There are four annotations
-  - **@Intersmash**: applied to the test class level definition, contains a list of identified services that make up the test scenario.
-  - **@Service**:  the class reference to an individual service
-  - **@ServiceUrl**: applied to a given test class field, injects into the test class as a String or URL the address of a service
-  - **@ServiceProvisioner**: applied to a given test class field, injects into the test class a provisioner that enables control over platform-specific actions or example, scaling the deployment up and down.
+- More usage and technical details in [Building blocks](./docs/BUILDING_BLOCKS.md)
 
 
-* **applications**: An Intersmash provided interface that describes
-  the configuration and specific properties of a given service.  For every supported *product component*
-  there is a corresponding "application" interface class.  The Framework's naming convention for these classes is *ProductComponentName*Application.java. (e.g. BootableJarOpenShiftApplication.java, ActiveMQOperatorApplication.java HelmChartOpenShiftApplication.java, ... etc)
-  The interface provides default values for most of the service's configuration information.
-  The user is required to create an implementation class of the interface and
-  provide some select information.  It is this user created implemented class that is declared in the annotations, @Service, @ServiceUrl, and @ServiceProvisioner.
-
-
-* **provisioners**: Classes that take care of deploying, undeploying, managing the
-  life-cycle orchestration of services, and control the specific workflow that
-  needs to be executed for the test scenario.  The user has no direct interaction
-  with these classes.
-  See [the Intersmash provisioning documentation](./provisioners/README.md)
-  to learn about supported services provisioners.
-
-### Properties
+## Configuration
 [XTF](https://github.com/xtf-cz/xtf) is used by Intersmash to communicate
 with OpenShift.  This tool provides a means to pass configuration properties
 from Intersmash to OpenShift.
@@ -112,62 +113,40 @@ mvn clean install -DskipTests
 
 **Note:** to run the Intersmash testsuite Openshift and XTF properties files with corresponding configuration information are needed. See the Framework Design section above.
 
-* Run the testsuite against community deliverables, e.g.: Keycloak operator or WildFly images:
+* Run the testsuite against community deliverables, e.g.: the Keycloak operator, or WildFly images:
 ```shell
 mvn test -pl testsuite/ -Pts.execution-profile.community
 ```
-This is usually executed to test community images, deliverables and for application servers like WildFly - deployments built from community artifacts.
+This is usually executed to test community images and deliverables. 
+Regarding the _deployments_ used by the testsuite, by default those are built out of community (i.e. WildFly) bits.
 
-* Run the testsuite against productised deliverables, e.g.: Red Hat Single Sign On operator or JBoss EAP images:
+* Run the testsuite against the product variant deliverables of a community project, e.g.: the Red Hat Build of Keycloak 
+operator, or JBoss EAP images:
 ```shell
 mvn test -pl testsuite/ -Pts.execution-profile.prod
 ```
-This is usually executed to test productised images, deliverables and - for application servers like JBoss EAP - deployments built from community artifacts.
+This is usually executed to test product based image and deliverables.
+In such a case the EAP or EAP XP _deployment applications_ used by the test suite should be built out of product grade 
+artifacts, which is done by enabling the `ts.wildfly.target-distribution.eap` or 
+`ts.wildfly.target-distribution.eapxp` profiles, respectively, e.g.:
 
+```shell
+mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap
+```
 
-### Project Modules
-* **core** - core interfaces, annotations and extensions.
-* **provisioners** - implementations of interfaces from `core` for selected services.
-* **testsuite** - tests that verify the integration with OpenShift. (**Note:**  OpenShift is needed in order to run them.)
-  * **test-deployments** - sources for shared deployments which are used by the testsuite.
-    * **deployments-provider** - provides support to get path to compiled deployments
-* **examples** - Test samples that illustrate the use of Intersmash.
+* Run Kubernetes integration tests:
+```shell
+mvn test -pl testsuite/ -Pts.execution-profile.community -Pts.k8s 
+```
+This is useful when running the testsuite against a Kubernetes cluster, so that only Kubernetes integration test will be 
+executed, while OpenShift ones will be skipped.
 
-## Supported services
-
-Intersmash aims at providing tools for provisioning up to the latest stable release generally
-available. 
-The following table is a best-effort tracker for the version that each supported service has been tested with.
-That being said, since each service could be provisioned via different means - like templates and operators - 
-having their own release cadence - it _could_ happen that a service version is provisioned which is not the one listed.
-
-Feel free to submit an issue in such a case, Intersmash welcomes community contributions to keep the tooling up to date.
-
-| Service                          | Supported version            | Notes                                                                                                                                                                          |
-|:---------------------------------|:-----------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| ActiveMQ Artemis                 | 2.38.0                       | The one provided by the custom index image, i.e. quay.io/jbossqe-eap/intersmash-activemq-operator-index:1.2.9, which lists to images in https://quay.io/organization/arkmq-org |
-| Red Hat AMQ Broker               | 7.12.z                       | Or _latest_ in the `:7.12` tag image stream, see registry.redhat.io/amq7/amq-broker-init-rhel8                                                                                 |
-|                                  |                              |                                                                                                                                                                                |
-| Infinispan                       | 15.1.3.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                                                                                                      |
-| Red Hat Data Grid                | 8.5.2.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                                                                                                       |
-|                                  |                              |                                                                                                                                                                                |
-| Kafka provided by Strimzi        | 3.9.0                        | Provided by the Strimzi Operator `stable` channel                                                                                                                              |
-| Streams for Apache Kafka         | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat Streams for Apache Kafka Operator `stable` channel                                                                                    |
-|                                  |                              |                                                                                                                                                                                |
-| Keycloak                         | 26.0.8                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                                                                                                   |
-| Red Hat Build of keycloak (RHBK) | 26.0.8.redhat-00001          | Or _latest_ in the `:26.0` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                                                                                        |
-| Red Hat SSO - **DEPRECATED**     | 7.6.z                        | The _latest_ in the `:7.6` tag image stream, see registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:7.6                                                                         |
-|                                  |                              |                                                                                                                                                                                |
-| WildFly                          | 32.0.0.Final                 |                                                                                                                                                                                |                                                      
-| Red Hat JBoss EAP 8              | JBoss EAP 8.0.x (and XP 5.x) |                                                                                                                                                                                |
-| Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z) |                                                                                                                                                                                |
-|                                  |                              |                                                                                                                                                                                |
-| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                                                                               | 
-|                                  |                              |                                                                                                                                                                                |
-| Open Data Hub                    | 2.22.0                       | Supports provisioning on OpenShift via the Operator                                                                                                                            |
-
-Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
-more information can be found in [the provisioners' documentation](./provisioners/README.md), or in the resources there linked.
+* Run OpenShift integration tests:
+```shell
+mvn test -pl testsuite/ -Pts.execution-profile.community -Pts.openshift 
+```
+This is useful when running the testsuite against an OpenShift cluster, so that only OpenShift integration test will be
+executed, while Kubernetes ones will be skipped.
 
 ## Platforms
 
