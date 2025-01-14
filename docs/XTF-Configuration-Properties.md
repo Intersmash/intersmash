@@ -49,10 +49,10 @@
 | intersmash.rhsso.operators.package_manifest        | Red Hat Single Sign On 7 custom package manifest for Operator                                                                    |
 | intersmash.rhsso.operators.channel                 | Red Hat Single Sign On 7 desired channel for Operator                                                                            |
 |                                                    |                                                                                                                                  |
-| intersmash.kafka.operators.catalog_source          | Kafka/Red Hat AMQ Streams custom catalog for Operator                                                                            |
-| intersmash.kafka.operators.index_image             | Kafka/Red Hat AMQ Streams custom index image for Operator                                                                        |
-| intersmash.kafka.operators.package_manifest        | Kafka/Red Hat AMQ Streams custom package manifest for Operator                                                                   |
-| intersmash.kafka.operators.channel                 | Kafka/Red Hat AMQ Streams desired channel for Operator                                                                           |
+| intersmash.kafka.operators.catalog_source          | Kafka/Streams for Apache Kafka custom catalog for Operator                                                                            |
+| intersmash.kafka.operators.index_image             | Kafka/Streams for Apache Kafka custom index image for Operator                                                                        |
+| intersmash.kafka.operators.package_manifest        | Kafka/Streams for Apache Kafka custom package manifest for Operator                                                                   |
+| intersmash.kafka.operators.channel                 | Kafka/Streams for Apache Kafka desired channel for Operator                                                                           |
 |                                                    |                                                                                                                                  |
 | intersmash.activemq.image                          | Apache ActiveMQ Broker/Red Hat AMQ Broker image URL                                                                              |
 | intersmash.activemq.init.image                     | ActiveMQ Broker/Red Hat AMQ Broker init image URL                                                                                |
