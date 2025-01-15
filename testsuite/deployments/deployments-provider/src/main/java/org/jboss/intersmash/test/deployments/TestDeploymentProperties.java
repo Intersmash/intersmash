@@ -23,12 +23,18 @@ import java.util.Properties;
  */
 public class TestDeploymentProperties {
 	static Properties properties;
-	private static String VERSION = "version";
-	private static String GROUPD_ID = "groupID";
-	private static String DEPLOYMENTS_PROVIDER_PATH = "deploymentsProviderPath";
-	private static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE = "wildflyDeploymentsBuildProfile";
-	public static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP = "eap";
-	public static String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP_XP = "eapxp";
+	private static final String VERSION = "version";
+	private static final String GROUPD_ID = "groupID";
+	private static final String DEPLOYMENTS_PROVIDER_PATH = "deploymentsProviderPath";
+	private static final String WILDFLY_DEPLOYMENTS_BUILD_PROFILE = "wildflyDeploymentsBuildProfile";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP = "eap";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP_XP = "eapxp";
+	private static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM = "wildflyDeploymentsBuildStream";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY = "community";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_80 = "eap80";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81 = "eap81";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5 = "eapxp5";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6 = "eapxp6";
 
 	static {
 		properties = new Properties();
@@ -55,15 +61,39 @@ public class TestDeploymentProperties {
 		return properties.getProperty(WILDFLY_DEPLOYMENTS_BUILD_PROFILE);
 	}
 
+	public static String getWildflyDeploymentsBuildStream() {
+		return properties.getProperty(WILDFLY_DEPLOYMENTS_BUILD_STREAM);
+	}
+
 	public static Boolean isWildFlyDeploymentsBuildProfileEnabled() {
 		return "".equals(getWildflyDeploymentsBuildProfile());
+	}
+
+	public static Boolean isCommunityDeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(getWildflyDeploymentsBuildStream());
 	}
 
 	public static Boolean isEapDeploymentsBuildProfileEnabled() {
 		return WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP.equals(getWildflyDeploymentsBuildProfile());
 	}
 
+	public static Boolean isEap80DeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_80.equals(getWildflyDeploymentsBuildStream());
+	}
+
+	public static Boolean isEap81DeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81.equals(getWildflyDeploymentsBuildStream());
+	}
+
 	public static Boolean isEapXpDeploymentsBuildProfileEnabled() {
 		return WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP_XP.equals(getWildflyDeploymentsBuildProfile());
+	}
+
+	public static Boolean isEapXp5DeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5.equals(getWildflyDeploymentsBuildStream());
+	}
+
+	public static Boolean isEapXp6DeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6.equals(getWildflyDeploymentsBuildStream());
 	}
 }

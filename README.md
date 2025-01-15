@@ -134,6 +134,14 @@ artifacts, which is done by enabling the `ts.wildfly.target-distribution.eap` or
 mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap
 ```
 
+Regarding the EAP XP version, Intersmash supports provisioning both XP 5 and XP 6, and the deployments used by the 
+Intersmash testsuite can be built by using related artifacts and feature packs by enabling either the `ts.wildfly.eapxp.stream.xp6`, 
+or the `ts.wildfly.eapxp.stream.xp5` profile, e.g.:
+
+```shell
+mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eapxp -Pts.wildfly.eapxp.stream.xp5
+```
+
 * Run Kubernetes integration tests:
 ```shell
 mvn test -pl testsuite/ -Pts.execution-profile.community -Pts.k8s 
