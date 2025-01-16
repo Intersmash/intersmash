@@ -25,10 +25,16 @@ import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
+import org.jboss.intersmash.model.helm.charts.values.eap81.HelmEap81Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
+import org.jboss.intersmash.model.helm.charts.values.xp5.HelmXp5Release;
+import org.jboss.intersmash.model.helm.charts.values.xp6.HelmXp6Release;
 import org.jboss.intersmash.provision.helm.wildfly.WildFlyHelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 import org.jboss.intersmash.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.eap81.Eap81HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.xp5.EapXp5HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.xp6.EapXp6HelmChartReleaseAdapter;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
@@ -45,7 +51,16 @@ public class WildflyHelmChartOpenShiftExampleApplication
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			release = loadRelease(new WildFlyHelmChartReleaseAdapter(new HelmWildflyRelease()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
-			release = loadRelease(new Eap8HelmChartReleaseAdapter(new HelmEap8Release()));
+			if (TestDeploymentProperties.isEap80DeploymentsBuildStreamEnabled()) {
+				release = loadRelease(new Eap8HelmChartReleaseAdapter(new HelmEap8Release()));
+			} else if (TestDeploymentProperties.isEap81DeploymentsBuildStreamEnabled()) {
+				release = loadRelease(new Eap81HelmChartReleaseAdapter(new HelmEap81Release()));
+			} else if (TestDeploymentProperties.isEapXp5DeploymentsBuildStreamEnabled()) {
+				release = loadRelease(new EapXp5HelmChartReleaseAdapter(new HelmXp5Release()));
+			} else if (TestDeploymentProperties.isEapXp6DeploymentsBuildStreamEnabled()) {
+				release = loadRelease(new EapXp6HelmChartReleaseAdapter(new HelmXp6Release()));
+			} else
+				throw new IllegalStateException("Not a valid WildFly deployments stream!");
 		} else
 			throw new IllegalStateException("Not a valid testing profile!");
 	}
