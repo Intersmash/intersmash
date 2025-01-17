@@ -101,9 +101,11 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 						.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
 						.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL());
 			} else
-				throw new IllegalStateException("Not a valid WildFly deployments stream!");
+				throw new IllegalStateException(String.format("Not a valid WildFly deployments stream! (%s)",
+						TestDeploymentProperties.getWildflyDeploymentsBuildStream()));
 		} else
-			throw new IllegalStateException("Not a valid testing profile!");
+			throw new IllegalStateException(String.format("Not a valid testing profile! (%s)",
+					IntersmashTestsuiteProperties.getTestExecutionProfile()));
 		// let's compute some additional maven args for our s2i build to happen on a Pod
 		String mavenAdditionalArgs = "-Denforcer.skip=true";
 		// let's add configurable deployment additional args:
@@ -114,6 +116,14 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 						: " -Pts.wildfly.target-distribution."
 								+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
 		wildflyHelmChartRelease.setBuildEnvironmentVariables(Map.of("MAVEN_ARGS_APPEND", mavenAdditionalArgs));
+		// let's pass the stream for building the deployment too...
+		final String deploymentStream = TestDeploymentProperties.getWildflyDeploymentsBuildStream();
+		if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
+			mavenAdditionalArgs = mavenAdditionalArgs.concat(
+					(Strings.isNullOrEmpty(deploymentStream) ? ""
+							: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
+							+ deploymentStream));
+		}
 		return wildflyHelmChartRelease;
 	}
 

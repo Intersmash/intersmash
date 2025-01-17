@@ -253,4 +253,17 @@ public interface WildflyDeploymentApplicationConfiguration {
 						: " -Dmaven-mirror.url=" + this.getMavenMirrorUrl()));
 		return result;
 	}
+
+	default String getWildflyDeploymentVariantFromStream(final String deploymentStream) {
+		switch (deploymentStream) {
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_80:
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81:
+				return "eap";
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5:
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6:
+				return "eapxp";
+			default:
+				throw new IllegalStateException("Unexpected value: " + deploymentStream);
+		}
+	}
 }

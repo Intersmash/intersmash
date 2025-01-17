@@ -60,9 +60,10 @@ public class WildflyHelmChartOpenShiftExampleApplication
 			} else if (TestDeploymentProperties.isEapXp6DeploymentsBuildStreamEnabled()) {
 				release = loadRelease(new EapXp6HelmChartReleaseAdapter(new HelmXp6Release()));
 			} else
-				throw new IllegalStateException("Not a valid WildFly deployments stream!");
+				throw new IllegalStateException(String.format("Not a valid WildFly deployments stream! (%s)", TestDeploymentProperties.getWildflyDeploymentsBuildStream()));
 		} else
-			throw new IllegalStateException("Not a valid testing profile!");
+			throw new IllegalStateException(String.format("Not a valid testing profile! (%s)",
+					IntersmashTestsuiteProperties.getTestExecutionProfile()));
 	}
 
 	private HelmChartRelease loadRelease(final WildflyHelmChartRelease release) {
@@ -75,6 +76,14 @@ public class WildflyHelmChartOpenShiftExampleApplication
 				(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
 						: " -Pts.wildfly.target-distribution."
 								+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
+		// let's pass the stream for building the deployment too...
+		final String deploymentStream = TestDeploymentProperties.getWildflyDeploymentsBuildStream();
+		if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
+			mavenAdditionalArgs = mavenAdditionalArgs.concat(
+					(Strings.isNullOrEmpty(deploymentStream) ? ""
+							: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
+							+ deploymentStream));
+		}
 		// ok, let's configure the release via the WildflyHelmChartRelease fluent(-ish) API,
 		// which offers a common reference for both WildFly and EAP (latest)
 		release

@@ -59,6 +59,8 @@ import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.jboss.intersmash.util.wildfly.Eap7CliScriptBuilder;
+import org.keycloak.k8s.v2alpha1.Keycloak;
+import org.keycloak.k8s.v2alpha1.KeycloakBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.HostnameBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.HttpBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.IngressBuilder;
@@ -343,6 +345,14 @@ public class OpenShiftProvisionerTestBase {
 						(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
 								: " -Pts.wildfly.target-distribution."
 										+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
+				// let's pass the stream for building the deployment too...
+				final String deploymentStream = TestDeploymentProperties.getWildflyDeploymentsBuildStream();
+				if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
+					mavenAdditionalArgs = mavenAdditionalArgs.concat(
+							(Strings.isNullOrEmpty(deploymentStream) ? ""
+									: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
+									+ deploymentStream));
+				}
 				list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				list.add(new EnvVarBuilder().withName("MAVEN_S2I_ARTIFACT_DIRS").withValue(deploymentRelativePath + "target")
 						.build());
@@ -406,6 +416,14 @@ public class OpenShiftProvisionerTestBase {
 						(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
 								: " -Pts.wildfly.target-distribution."
 										+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
+				// let's pass the stream for building the deployment too...
+				final String deploymentStream = TestDeploymentProperties.getWildflyDeploymentsBuildStream();
+				if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
+					mavenAdditionalArgs = mavenAdditionalArgs.concat(
+							(Strings.isNullOrEmpty(deploymentStream) ? ""
+									: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
+									+ deploymentStream));
+				}
 				if (!Strings.isNullOrEmpty(mavenAdditionalArgs)) {
 					list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				}
@@ -724,7 +742,7 @@ public class OpenShiftProvisionerTestBase {
 		final String DEFAULT_KEYCLOAK_APP_NAME = "example-sso";
 		return new KeycloakOperatorApplication() {
 			@Override
-			public org.keycloak.k8s.v2alpha1.Keycloak getKeycloak() {
+			public Keycloak getKeycloak() {
 				// create key, certificate and tls secret: Keycloak expects the secret to be created beforehand
 				final String hostName = OpenShifts.master().generateHostname(DEFAULT_KEYCLOAK_APP_NAME);
 				final String tlsSecretName = DEFAULT_KEYCLOAK_APP_NAME + "-tls-secret";
@@ -732,7 +750,7 @@ public class OpenShiftProvisionerTestBase {
 						.generateSelfSignedCertificateAndKey(hostName.replaceFirst("[.].*$", ""), tlsSecretName,
 								OpenShifts.master().getClient(), OpenShifts.master().getNamespace());
 				// build the basic Keycloak resource
-				return new org.keycloak.k8s.v2alpha1.KeycloakBuilder()
+				return new KeycloakBuilder()
 						.withNewMetadata()
 						.withName(DEFAULT_KEYCLOAK_APP_NAME)
 						.withLabels(Map.of("app", getName()))

@@ -129,6 +129,8 @@
         <version.maven>3.3.9</version.maven>
         <version.junit5.platform>1.7.0</version.junit5.platform>
         <version.assertj-core>3.24.2</version.assertj-core>
+        <!-- Surefire Maven plugin arguments -->
+        <surefire-maven-plugin.args>${client.jvm.jpms.args}</surefire-maven-plugin.args>
     </properties>
 
     <dependencyManagement>

@@ -45,6 +45,13 @@
         <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
         <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:6.0.0.Final</wildfly.cloud-feature-pack.location>
+        <!-- EE Channel coordinates -->
+        <wildfly.ee-channel.groupId></wildfly.ee-channel.groupId>
+        <wildfly.ee-channel.artifactId></wildfly.ee-channel.artifactId>
+        <wildfly.ee-channel.version></wildfly.ee-channel.version>
+        <wildfly.xp-channel.groupId></wildfly.xp-channel.groupId>
+        <wildfly.xp-channel.artifactId></wildfly.xp-channel.artifactId>
+        <wildfly.xp-channel.version></wildfly.xp-channel.version>
 
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
@@ -202,8 +209,14 @@
 
     <profiles>
         <profile>
-            <id>ts.wildfly.target-distribution.eap</id>
+            <!-- Configuration settings for testing EAP 8.1 (same as EAP 8.0 ATM) - TODO: update as EAP 8.1 deliverables are GA -->
+            <id>ts.eap-stream.81</id>
             <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap81</intersmash.deployments.wildfly.build.stream>
                 <!-- WildFly/EAP 8 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
@@ -230,6 +243,45 @@
                 <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
                 <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
             </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP 8.0 -->
+            <id>ts.eap-stream.80</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap80</intersmash.deployments.wildfly.build.stream>
+                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
+                <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+                <bom.wildfly-ee.groupId>org.jboss.bom</bom.wildfly-ee.groupId>
+                <bom.wildfly-ee.artifactId>jboss-eap-ee</bom.wildfly-ee.artifactId>
+                <bom.wildfly-ee.version>8.0.0.GA-redhat-00009</bom.wildfly-ee.version>
+                <!--
+                    EAP8 feature packs and channel:
+
+                        - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                        - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                        - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+                    Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
+                    Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+                -->
+                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
+                <!-- EAP 8 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+            </properties>
+        </profile>
+        <profile>
+            <id>ts.wildfly.target-distribution.eap</id>
             <build>
                 <plugins>
                     <plugin>
@@ -275,31 +327,72 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
-            <!-- Configuration settings for testing EAP XP -->
-            <id>ts.wildfly.target-distribution.eapxp</id>
+            <!-- Configuration settings for testing EAP XP 6 (same as XP 5 ATM) - TODO: update as XP 6 deliverables are GA -->
+            <id>ts.eapxp-stream.xp6</id>
             <properties>
-                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp6</intersmash.deployments.wildfly.build.stream>
+                <!-- WildFly/EAP 8.1 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
                 <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
-                <!-- Default EAP XP `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
+                <!-- Default EAP XP 6 `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-microprofile.groupId>org.jboss.bom</bom.wildfly-microprofile.groupId>
                 <bom.wildfly-microprofile.artifactId>jboss-eap-xp-microprofile</bom.wildfly-microprofile.artifactId>
                 <bom.wildfly-microprofile.version>5.0.0.GA-redhat-00009</bom.wildfly-microprofile.version>
-                <!-- EAP 8 Channel coordinates -->
+                <!-- EAP 8.1 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
                 <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
                 <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
-                <!-- EAP XP Channel coordinates -->
+                <!-- EAP XP 6 Channel coordinates -->
                 <wildfly.xp-channel.groupId>org.jboss.eap.channels</wildfly.xp-channel.groupId>
                 <wildfly.xp-channel.artifactId>eap-xp-5.0</wildfly.xp-channel.artifactId>
                 <wildfly.xp-channel.version>1.0.0.GA-redhat-00006</wildfly.xp-channel.version>
-                <!-- WildFly FPL -->
+                <!-- FPLs -->
                 <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
-                <!--                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.ee-feature-pack.location>-->
                 <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
             </properties>
+        </profile>
+
+        <profile>
+            <!-- Configuration settings for testing EAP XP 5 -->
+            <id>ts.eapxp-stream.xp5</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp5</intersmash.deployments.wildfly.build.stream>
+                <!-- WildFly/EAP 8.0 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
+                <!-- Default EAP XP 5 `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
+                <bom.wildfly-microprofile.groupId>org.jboss.bom</bom.wildfly-microprofile.groupId>
+                <bom.wildfly-microprofile.artifactId>jboss-eap-xp-microprofile</bom.wildfly-microprofile.artifactId>
+                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-00009</bom.wildfly-microprofile.version>
+                <!-- EAP 8.0 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+                <!-- EAP XP 5 Channel coordinates -->
+                <wildfly.xp-channel.groupId>org.jboss.eap.channels</wildfly.xp-channel.groupId>
+                <wildfly.xp-channel.artifactId>eap-xp-5.0</wildfly.xp-channel.artifactId>
+                <wildfly.xp-channel.version>1.0.0.GA-redhat-00006</wildfly.xp-channel.version>
+                <!-- FPLs -->
+                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Configuration settings for testing EAP XP -->
+            <id>ts.wildfly.target-distribution.eapxp</id>
             <build>
                 <pluginManagement>
                     <plugins>
