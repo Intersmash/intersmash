@@ -27,8 +27,10 @@
         <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
 
-        <!-- By default, the following prop is empty, stating that the build profile is none -->
+        <!-- By default, the following prop is empty, stating that the build profile for WildFly deployments is the community one -->
         <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
+        <!-- By default, the following prop is set to community, stating that the build stream for WildFly deployments is the community one -->
+        <intersmash.deployments.wildfly.build.stream>community</intersmash.deployments.wildfly.build.stream>
     </properties>
 
     <build>
