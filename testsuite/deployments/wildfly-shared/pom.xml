@@ -46,7 +46,7 @@
             Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
             the productized version
         -->
-        <version.wildfly-jar-maven-plugin>12.0.0.Beta1</version.wildfly-jar-maven-plugin>
+        <version.wildfly-jar-maven-plugin>12.0.0.Final</version.wildfly-jar-maven-plugin>
         <!-- EE Channel coordinates -->
         <wildfly.ee-channel.groupId></wildfly.ee-channel.groupId>
         <wildfly.ee-channel.artifactId></wildfly.ee-channel.artifactId>

@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <name>Intersmash Parent: Aggregator</name>
-    <description>Intersmash - Run your cloud-native tests with Java!</description>
+    <description>Intersmash - Cloud-native tests with Java!</description>
     <url>http://github.com/Intersmash/intersmash</url>
 
     <licenses>
