@@ -135,11 +135,11 @@ mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribu
 ```
 
 Regarding EAP _minor_ version, Intersmash supports provisioning both EAP 8.0 and EAP 8.1, and the deployments used by the
-Intersmash testsuite can be built on related artifacts and feature packs by enabling either the `ts.eap-stream.eap80`,
-or the `ts.eap-stream.eap81` profile, e.g.:
+Intersmash testsuite can be built on related artifacts and feature packs by enabling either the `ts.eap-stream.80`,
+or the `ts.eap-stream.81` profile, e.g.:
 
 ```shell
-mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap -Pts.eap-stream.eap80
+mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap -Pts.eap-stream.80
 ```
 
 Regarding EAP XP _major_ version, Intersmash supports provisioning both XP 5 and XP 6, and the deployments used by the 

@@ -97,6 +97,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration combine.children="append">
                     <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                    <systemPropertyVariables>
+                        <xtf.global_test_properties.path>${project.basedir}/openshift-global-test.properties</xtf.global_test_properties.path>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
@@ -147,6 +150,106 @@
                 <!-- Exclude k8s tests -->
                 <intersmash.test.excludedGroups.by.target-platform>ts.k8s</intersmash.test.excludedGroups.by.target-platform>
             </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP 8.0 -->
+            <id>ts.eap-stream.80</id>
+                <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap80</intersmash.deployments.wildfly.build.stream>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                            <systemPropertyVariables>
+                                <xtf.global_test_properties.path>${project.basedir}/eap80-global-test.properties</xtf.global_test_properties.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP 8.1 -->
+            <id>ts.eap-stream.81</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap81</intersmash.deployments.wildfly.build.stream>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                            <systemPropertyVariables>
+                                <xtf.global_test_properties.path>${project.basedir}/eap81-global-test.properties</xtf.global_test_properties.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP XP 5 -->
+            <id>ts.eapxp-stream.xp5</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp5</intersmash.deployments.wildfly.build.stream>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                            <systemPropertyVariables>
+                                <xtf.global_test_properties.path>${project.basedir}/eapxp5-global-test.properties</xtf.global_test_properties.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP XP 6 -->
+            <id>ts.eapxp-stream.xp6</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp6</intersmash.deployments.wildfly.build.stream>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                            <systemPropertyVariables>
+                                <xtf.global_test_properties.path>${project.basedir}/eapxp6-global-test.properties</xtf.global_test_properties.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 

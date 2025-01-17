@@ -157,7 +157,7 @@
     <profiles>
         <profile>
             <!-- Configuration settings for testing EAP 8.1 (same as EAP 8.0 ATM) - TODO: update as EAP 8.1 deliverables are GA -->
-            <id>ts.eap-stream.eap81</id>
+            <id>ts.eap-stream.81</id>
             <properties>
                 <!--
                     When this profile is active, the following property is set to have it available at runtime,
@@ -193,7 +193,7 @@
         </profile>
         <profile>
             <!-- Configuration settings for testing EAP 8.0 -->
-            <id>ts.eap-stream.eap80</id>
+            <id>ts.eap-stream.80</id>
             <properties>
                 <!--
                     When this profile is active, the following property is set to have it available at runtime,
@@ -227,6 +227,7 @@
                 <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
             </properties>
         </profile>
+
         <profile>
             <id>ts.wildfly.target-distribution.eap</id>
             <build>
@@ -312,7 +313,6 @@
             </build>
         </profile>
 
-
         <profile>
             <!-- Configuration settings for testing EAP XP 6 (same as XP 5 ATM) - TODO: update as XP 6 deliverables are GA -->
             <id>ts.eapxp-stream.xp6</id>
@@ -321,7 +321,7 @@
                     When this profile is active, the following property is set to have it available at runtime,
                     see TestDeploymentProperties
                 -->
-                <intersmash.deployments.wildfly.build.stream>xp6</intersmash.deployments.wildfly.build.stream>
+                <intersmash.deployments.wildfly.build.stream>eapxp6</intersmash.deployments.wildfly.build.stream>
                 <!-- WildFly/EAP 8.1 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
@@ -352,7 +352,7 @@
                     When this profile is active, the following property is set to have it available at runtime,
                     see TestDeploymentProperties
                 -->
-                <intersmash.deployments.wildfly.build.stream>xp5</intersmash.deployments.wildfly.build.stream>
+                <intersmash.deployments.wildfly.build.stream>eapxp5</intersmash.deployments.wildfly.build.stream>
                 <!-- WildFly/EAP 8.0 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
