@@ -191,7 +191,8 @@ class EapHelmChartReleaseAdapterTest {
 		Assertions.assertEquals("url", eap81HelmChartRelease.getSourceRepositoryUrl());
 		Assertions.assertEquals("ref", eap81HelmChartRelease.getSourceRepositoryRef());
 		Assertions.assertEquals("context-dir", eap81HelmChartRelease.getContextDir());
-		Assertions.assertEquals("fp1,fp2", eap81HelmChartRelease.getS2iFeaturePacks().stream().collect(Collectors.joining(",")));
+		Assertions.assertEquals("fp1,fp2",
+				eap81HelmChartRelease.getS2iFeaturePacks().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals("gl1,gl2",
 				eap81HelmChartRelease.getS2iGalleonLayers().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals("ch1", eap81HelmChartRelease.getS2iChannels().stream().collect(Collectors.joining(",")));
@@ -285,7 +286,8 @@ class EapHelmChartReleaseAdapterTest {
 		Assertions.assertEquals("url", wildflyHelmChartRelease.getSourceRepositoryUrl());
 		Assertions.assertEquals("ref", wildflyHelmChartRelease.getSourceRepositoryRef());
 		Assertions.assertEquals("context-dir", wildflyHelmChartRelease.getContextDir());
-		Assertions.assertEquals("fp1,fp2", wildflyHelmChartRelease.getS2iFeaturePacks().stream().collect(Collectors.joining(",")));
+		Assertions.assertEquals("fp1,fp2",
+				wildflyHelmChartRelease.getS2iFeaturePacks().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals("gl1,gl2",
 				wildflyHelmChartRelease.getS2iGalleonLayers().stream().collect(Collectors.joining(",")));
 		Assertions.assertEquals(Boolean.TRUE, wildflyHelmChartRelease.isBuildEnabled());
