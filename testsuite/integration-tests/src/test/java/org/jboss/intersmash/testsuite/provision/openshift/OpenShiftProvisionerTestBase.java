@@ -351,7 +351,7 @@ public class OpenShiftProvisionerTestBase {
 					mavenAdditionalArgs = mavenAdditionalArgs.concat(
 							(Strings.isNullOrEmpty(deploymentStream) ? ""
 									: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-									+ deploymentStream));
+											+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 				}
 				list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				list.add(new EnvVarBuilder().withName("MAVEN_S2I_ARTIFACT_DIRS").withValue(deploymentRelativePath + "target")
@@ -422,7 +422,7 @@ public class OpenShiftProvisionerTestBase {
 					mavenAdditionalArgs = mavenAdditionalArgs.concat(
 							(Strings.isNullOrEmpty(deploymentStream) ? ""
 									: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-									+ deploymentStream));
+											+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 				}
 				if (!Strings.isNullOrEmpty(mavenAdditionalArgs)) {
 					list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());

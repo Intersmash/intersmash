@@ -115,15 +115,15 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 				(Strings.isNullOrEmpty(TestDeploymentProperties.getWildflyDeploymentsBuildProfile()) ? ""
 						: " -Pts.wildfly.target-distribution."
 								+ TestDeploymentProperties.getWildflyDeploymentsBuildProfile()));
-		wildflyHelmChartRelease.setBuildEnvironmentVariables(Map.of("MAVEN_ARGS_APPEND", mavenAdditionalArgs));
 		// let's pass the stream for building the deployment too...
 		final String deploymentStream = TestDeploymentProperties.getWildflyDeploymentsBuildStream();
 		if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
 			mavenAdditionalArgs = mavenAdditionalArgs.concat(
 					(Strings.isNullOrEmpty(deploymentStream) ? ""
 							: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-							+ deploymentStream));
+									+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 		}
+		wildflyHelmChartRelease.setBuildEnvironmentVariables(Map.of("MAVEN_ARGS_APPEND", mavenAdditionalArgs));
 		return wildflyHelmChartRelease;
 	}
 
