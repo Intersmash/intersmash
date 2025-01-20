@@ -266,4 +266,19 @@ public interface WildflyDeploymentApplicationConfiguration {
 				throw new IllegalStateException("Unexpected value: " + deploymentStream);
 		}
 	}
+
+	default String getWildflyDeploymentVariantProfileNameFromStream(final String deploymentStream) {
+		switch (deploymentStream) {
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_80:
+				return "80";
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81:
+				return "81";
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5:
+				return "xp5";
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6:
+				return "xp6";
+			default:
+				throw new IllegalStateException("Unexpected value: " + deploymentStream);
+		}
+	}
 }
