@@ -154,13 +154,6 @@
         <profile>
             <!-- Configuration settings for testing EAP 8.0 -->
             <id>ts.eap-stream.80</id>
-                <properties>
-                <!--
-                    When this profile is active, the following property is set to have it available at runtime,
-                    see TestDeploymentProperties
-                -->
-                <intersmash.deployments.wildfly.build.stream>eap80</intersmash.deployments.wildfly.build.stream>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -179,13 +172,6 @@
         <profile>
             <!-- Configuration settings for testing EAP 8.1 -->
             <id>ts.eap-stream.81</id>
-            <properties>
-                <!--
-                    When this profile is active, the following property is set to have it available at runtime,
-                    see TestDeploymentProperties
-                -->
-                <intersmash.deployments.wildfly.build.stream>eap81</intersmash.deployments.wildfly.build.stream>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -204,13 +190,6 @@
         <profile>
             <!-- Configuration settings for testing EAP XP 5 -->
             <id>ts.eapxp-stream.xp5</id>
-            <properties>
-                <!--
-                    When this profile is active, the following property is set to have it available at runtime,
-                    see TestDeploymentProperties
-                -->
-                <intersmash.deployments.wildfly.build.stream>eapxp5</intersmash.deployments.wildfly.build.stream>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -229,13 +208,6 @@
         <profile>
             <!-- Configuration settings for testing EAP XP 6 -->
             <id>ts.eapxp-stream.xp6</id>
-            <properties>
-                <!--
-                    When this profile is active, the following property is set to have it available at runtime,
-                    see TestDeploymentProperties
-                -->
-                <intersmash.deployments.wildfly.build.stream>eapxp6</intersmash.deployments.wildfly.build.stream>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
