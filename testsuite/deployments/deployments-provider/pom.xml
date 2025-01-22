@@ -16,6 +16,11 @@
     <properties>
         <project.version>${project.version}</project.version>
         <formatting-style-base-directory>${project.parent.parent.parent.basedir}/ide-config/</formatting-style-base-directory>
+
+        <!-- By default, the following prop is empty, stating that the build profile for WildFly deployments is the community one -->
+        <intersmash.deployments.wildfly.build.profile></intersmash.deployments.wildfly.build.profile>
+        <!-- By default, the following prop is set to community, stating that the build stream for WildFly deployments is the community one -->
+        <intersmash.deployments.wildfly.build.stream>community</intersmash.deployments.wildfly.build.stream>
     </properties>
     <build>
         <resources>
@@ -90,6 +95,50 @@
                     When this profile is active, the following property is set to have it available at runtime,
                     see TestDeploymentProperties#getWildflyDeploymentsBuildProfile -->
                 <intersmash.deployments.wildfly.build.profile>eapxp</intersmash.deployments.wildfly.build.profile>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP 8.0 -->
+            <id>ts.eap-stream.80</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap80</intersmash.deployments.wildfly.build.stream>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP 8.1 -->
+            <id>ts.eap-stream.81</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap81</intersmash.deployments.wildfly.build.stream>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP XP 5 -->
+            <id>ts.eapxp-stream.xp5</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp5</intersmash.deployments.wildfly.build.stream>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP XP 6 -->
+            <id>ts.eapxp-stream.xp6</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp6</intersmash.deployments.wildfly.build.stream>
             </properties>
         </profile>
         <profile>
