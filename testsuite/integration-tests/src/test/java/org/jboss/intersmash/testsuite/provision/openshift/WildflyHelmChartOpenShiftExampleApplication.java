@@ -88,6 +88,9 @@ public class WildflyHelmChartOpenShiftExampleApplication
 		// ok, let's configure the release via the WildflyHelmChartRelease fluent(-ish) API,
 		// which offers a common reference for both WildFly and EAP (latest)
 		release
+				// we explicitly set we need an s2i build, ot Bootable JAR, otherwise the OpenJDK image would be
+				// used since the Bootable JAR mode is the default.
+				.withBuildMode(WildflyHelmChartRelease.BuildMode.S2I)
 				.withSourceRepositoryUrl(IntersmashConfig.deploymentsRepositoryUrl())
 				.withSourceRepositoryRef(IntersmashConfig.deploymentsRepositoryRef())
 				.withContextDir("testsuite/deployments/openshift-jakarta-sample-standalone")
