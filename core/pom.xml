@@ -76,53 +76,31 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <!--
-                The intersmash-core POM must be published because is transitively pulled in by the build
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-
     <profiles>
         <profile>
-            <id>doc</id>
+            <id>jboss-release</id>
             <build>
                 <plugins>
-                    <!-- Generate sources and Javadoc artifacts -->
+                    <!--
+                        The intersmash-core POM must be published because is transitively pulled in by the build
+                    -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
                     </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
-            <id>publish</id>
+            <id>gpg-sign</id>
             <build>
                 <plugins>
                     <plugin>
