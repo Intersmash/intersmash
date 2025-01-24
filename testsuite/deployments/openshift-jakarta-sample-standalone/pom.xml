@@ -55,6 +55,7 @@
 
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
+        <version.maven-deploy-plugin>3.0.0-M1</version.maven-deploy-plugin>
     </properties>
 
     <dependencyManagement>
@@ -202,6 +203,14 @@
                             <content>/* (C)$YEAR */</content>  <!-- or <file>${project.basedir}/license-header</file> -->
                         </licenseHeader>
                     </java>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <version>${version.maven-deploy-plugin}</version>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
