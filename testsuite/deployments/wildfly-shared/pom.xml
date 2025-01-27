@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.jboss.intersmash.test</groupId>
         <artifactId>test-deployments</artifactId>
-        <version>0.0.3-SNAPSHOT</version>
+        <version>0.0.3.Beta1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>wildfly-shared</artifactId>
@@ -48,12 +46,12 @@
         -->
         <version.wildfly-jar-maven-plugin>12.0.0.Final</version.wildfly-jar-maven-plugin>
         <!-- EE Channel coordinates -->
-        <wildfly.ee-channel.groupId></wildfly.ee-channel.groupId>
-        <wildfly.ee-channel.artifactId></wildfly.ee-channel.artifactId>
-        <wildfly.ee-channel.version></wildfly.ee-channel.version>
-        <wildfly.xp-channel.groupId></wildfly.xp-channel.groupId>
-        <wildfly.xp-channel.artifactId></wildfly.xp-channel.artifactId>
-        <wildfly.xp-channel.version></wildfly.xp-channel.version>
+        <wildfly.ee-channel.groupId />
+        <wildfly.ee-channel.artifactId />
+        <wildfly.ee-channel.version />
+        <wildfly.xp-channel.groupId />
+        <wildfly.xp-channel.artifactId />
+        <wildfly.xp-channel.version />
     </properties>
 
     <modules>
@@ -479,7 +477,7 @@
                                     <configuration>
                                         <output-file-name>${project.build.finalName}-bootable-openshift.jar</output-file-name>
                                         <!-- Enable cloud support for OCP -->
-                                        <cloud/>
+                                        <cloud />
                                     </configuration>
                                     <goals>
                                         <goal>package</goal>

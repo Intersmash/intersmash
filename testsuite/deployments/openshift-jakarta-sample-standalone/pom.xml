@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>openshift-jakarta-sample-standalone</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>0.0.3.Beta1</version>
     <packaging>war</packaging>
 
     <name>Intersmash Test Deployments: OpenShift Jakarta Sample standalone deployment</name>
@@ -46,12 +45,12 @@
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
         <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:6.0.0.Final</wildfly.cloud-feature-pack.location>
         <!-- EE Channel coordinates -->
-        <wildfly.ee-channel.groupId></wildfly.ee-channel.groupId>
-        <wildfly.ee-channel.artifactId></wildfly.ee-channel.artifactId>
-        <wildfly.ee-channel.version></wildfly.ee-channel.version>
-        <wildfly.xp-channel.groupId></wildfly.xp-channel.groupId>
-        <wildfly.xp-channel.artifactId></wildfly.xp-channel.artifactId>
-        <wildfly.xp-channel.version></wildfly.xp-channel.version>
+        <wildfly.ee-channel.groupId />
+        <wildfly.ee-channel.artifactId />
+        <wildfly.ee-channel.version />
+        <wildfly.xp-channel.groupId />
+        <wildfly.xp-channel.artifactId />
+        <wildfly.xp-channel.version />
 
         <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
         <version.spotless-maven-plugin>2.35.0</version.spotless-maven-plugin>
