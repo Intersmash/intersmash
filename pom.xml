@@ -517,6 +517,16 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${version.maven-deploy-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${version.maven-assembly-plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
                     <version>${version.maven-source-plugin}</version>
                 </plugin>
@@ -690,6 +700,19 @@
                     <tagNameFormat>@{project.version}</tagNameFormat>
                 </configuration>
             </plugin>
+            <!-- Attach source jar to all builds.  Runs during the package phase.-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -727,74 +750,62 @@
         <profile>
             <id>jboss-release</id>
             <build>
-                <pluginManagement>
-                    <plugins>
-                        <!-- Create a source-release artifact that contains the fully buildable
-                                 project directory source structure.  This should be released to
-                                 the Maven repository for each JBoss project release. -->
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-assembly-plugin</artifactId>
-                            <version>${version.maven-assembly-plugin}</version>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>org.apache.apache.resources</groupId>
-                                    <artifactId>apache-source-release-assembly-descriptor</artifactId>
-                                    <version>1.5</version>
-                                </dependency>
-                            </dependencies>
-                            <executions>
-                                <execution>
-                                    <id>source-release-assembly</id>
-                                    <phase>package</phase>
-                                    <goals>
-                                        <goal>single</goal>
-                                    </goals>
-                                    <configuration>
-                                        <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
-                                        <descriptorRefs>
-                                            <descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>
-                                        </descriptorRefs>
-                                        <tarLongFileMode>gnu</tarLongFileMode>
-                                    </configuration>
-                                </execution>
-                            </executions>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-deploy-plugin</artifactId>
-                            <version>${version.maven-deploy-plugin}</version>
-                            <configuration>
-                                <altReleaseDeploymentRepository>${jboss.releases.repo.id}::${jboss.releases.repo.url}</altReleaseDeploymentRepository>
-                                <altSnapshotDeploymentRepository>${jboss.snapshots.repo.id}::${jboss.snapshots.repo.url}</altSnapshotDeploymentRepository>
-                            </configuration>
-                        </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                            <version>${version.maven-javadoc-plugin}</version>
-                            <configuration>
-                                <doclint>none</doclint>
-                            </configuration>
-                            <executions>
-                                <execution>
-                                    <id>attach-javadocs</id>
-                                    <goals>
-                                        <goal>jar</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
                 <plugins>
-                    <!--
-                        The intersmash-parent POM must be published because there are projects which could use it, even as a
-                        transitive dependency
-                    -->
+                    <!-- Create a source-release artifact that contains the fully buildable
+                             project directory source structure.  This should be released to
+                             the Maven repository for each JBoss project release. -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <version>${version.maven-assembly-plugin}</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.apache.resources</groupId>
+                                <artifactId>apache-source-release-assembly-descriptor</artifactId>
+                                <version>1.5</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>source-release-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <runOnlyAtExecutionRoot>true</runOnlyAtExecutionRoot>
+                                    <descriptorRefs>
+                                        <descriptorRef>${sourceReleaseAssemblyDescriptor}</descriptorRef>
+                                    </descriptorRefs>
+                                    <tarLongFileMode>gnu</tarLongFileMode>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
+                        <version>${version.maven-deploy-plugin}</version>
+                        <configuration>
+                            <altReleaseDeploymentRepository>${jboss.releases.repo.id}::${jboss.releases.repo.url}</altReleaseDeploymentRepository>
+                            <altSnapshotDeploymentRepository>${jboss.snapshots.repo.id}::${jboss.snapshots.repo.url}</altSnapshotDeploymentRepository>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${version.maven-javadoc-plugin}</version>
+                        <configuration>
+                            <doclint>none</doclint>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>
