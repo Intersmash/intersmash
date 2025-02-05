@@ -78,6 +78,10 @@ public interface OpenShiftProvisioner<T extends Application> extends Provisioner
 		}
 	}
 
+	default OpenShift getOpenShift() {
+		return openShift;
+	}
+
 	default String getUrl(String routeName, boolean secure) {
 		String protocol = secure ? "https" : "http";
 		return protocol + "://" + openShift.generateHostname(routeName);
