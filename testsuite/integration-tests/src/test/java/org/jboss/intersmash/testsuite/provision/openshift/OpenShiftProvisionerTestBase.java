@@ -350,8 +350,10 @@ public class OpenShiftProvisionerTestBase {
 				if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
 					mavenAdditionalArgs = mavenAdditionalArgs.concat(
 							(Strings.isNullOrEmpty(deploymentStream) ? ""
-									: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-											+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
+									: String.format(" -Pts.%s-stream.",
+											TestDeploymentProperties.getWildflyDeploymentVariantFromStream(deploymentStream))
+											+ TestDeploymentProperties
+													.getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 				}
 				list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());
 				list.add(new EnvVarBuilder().withName("MAVEN_S2I_ARTIFACT_DIRS").withValue(deploymentRelativePath + "target")
@@ -421,8 +423,10 @@ public class OpenShiftProvisionerTestBase {
 				if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
 					mavenAdditionalArgs = mavenAdditionalArgs.concat(
 							(Strings.isNullOrEmpty(deploymentStream) ? ""
-									: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-											+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
+									: String.format(" -Pts.%s-stream.",
+											TestDeploymentProperties.getWildflyDeploymentVariantFromStream(deploymentStream))
+											+ TestDeploymentProperties
+													.getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 				}
 				if (!Strings.isNullOrEmpty(mavenAdditionalArgs)) {
 					list.add(new EnvVarBuilder().withName("MAVEN_ARGS_APPEND").withValue(mavenAdditionalArgs).build());

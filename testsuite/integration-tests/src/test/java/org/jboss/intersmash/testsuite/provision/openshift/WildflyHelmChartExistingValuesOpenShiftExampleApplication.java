@@ -120,8 +120,10 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 		if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
 			mavenAdditionalArgs = mavenAdditionalArgs.concat(
 					(Strings.isNullOrEmpty(deploymentStream) ? ""
-							: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-									+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
+							: String.format(" -Pts.%s-stream.",
+									TestDeploymentProperties.getWildflyDeploymentVariantFromStream(deploymentStream))
+									+ TestDeploymentProperties
+											.getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 		}
 		wildflyHelmChartRelease.setBuildEnvironmentVariables(Map.of("MAVEN_ARGS_APPEND", mavenAdditionalArgs));
 		return wildflyHelmChartRelease;

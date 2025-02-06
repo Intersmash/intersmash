@@ -82,8 +82,10 @@ public class WildflyHelmChartOpenShiftExampleApplication
 		if (!TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY.equals(deploymentStream)) {
 			mavenAdditionalArgs = mavenAdditionalArgs.concat(
 					(Strings.isNullOrEmpty(deploymentStream) ? ""
-							: String.format(" -Pts.%s-stream.", getWildflyDeploymentVariantFromStream(deploymentStream))
-									+ getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
+							: String.format(" -Pts.%s-stream.",
+									TestDeploymentProperties.getWildflyDeploymentVariantFromStream(deploymentStream))
+									+ TestDeploymentProperties
+											.getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 		}
 		// ok, let's configure the release via the WildflyHelmChartRelease fluent(-ish) API,
 		// which offers a common reference for both WildFly and EAP (latest)
