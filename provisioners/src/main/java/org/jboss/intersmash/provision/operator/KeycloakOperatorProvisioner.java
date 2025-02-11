@@ -127,10 +127,12 @@ public abstract class KeycloakOperatorProvisioner<C extends NamespacedKubernetes
 		}
 
 		// create custom resources
-		keycloakClient().createOrReplace(getApplication().getKeycloak());
+		keycloakClient().resource(getApplication().getKeycloak()).create();
 		getApplication().getKeycloakRealmImports().stream()
-				.forEach(ri -> keycloakRealmImportClient().createOrReplace(ri));
-
+				.forEach(ri -> {
+					keycloakRealmImportClient().resource(ri).create();
+					waitFor(ri);
+				});
 		// Wait for Keycloak (and PostgreSQL) to be ready
 		waitFor(getApplication().getKeycloak());
 		// wait for all resources to be ready
@@ -165,13 +167,13 @@ public abstract class KeycloakOperatorProvisioner<C extends NamespacedKubernetes
 					&& Objects.nonNull(res.get().getStatus())) {
 				KeycloakRealmImport imp = res.get();
 				return imp.getStatus().getConditions().stream().filter(
-						cond -> cond.getStatus() != null
+						cond -> "True".equals(cond.getStatus())
 								&& "Done".equalsIgnoreCase(cond.getType())
 								&& com.google.common.base.Strings.isNullOrEmpty(cond.getMessage()))
 						.count() == 1
 						&&
 						imp.getStatus().getConditions().stream().filter(
-								cond -> cond.getStatus() == null
+								cond -> "False".equals(cond.getStatus())
 										&& "HasErrors".equalsIgnoreCase(cond.getType())
 										&& com.google.common.base.Strings.isNullOrEmpty(cond.getMessage()))
 								.count() == 1;
@@ -190,7 +192,7 @@ public abstract class KeycloakOperatorProvisioner<C extends NamespacedKubernetes
 			new SimpleWaiter(() -> keycloakRealmImports().stream().allMatch(
 					realmImport -> realmImport.getStatus().getConditions().stream().anyMatch(
 							condition -> "Done".equalsIgnoreCase(condition.getType())
-									&& condition.getStatus() != null)))
+									&& "True".equals(condition.getStatus()))))
 					.reason("Wait for KeycloakRealmImports to be done.").level(Level.DEBUG).waitFor();
 		}
 	}
