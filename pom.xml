@@ -124,7 +124,7 @@
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
         <version.sundrio.builder-annotations>0.101.0</version.sundrio.builder-annotations>
         <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
-        <version.aether>1.1.0</version.aether>
+        <version.aether>1.1.0.redhat-1</version.aether>
         <version.maven>3.3.9</version.maven>
         <version.junit5.platform>1.7.0</version.junit5.platform>
         <version.assertj-core>3.24.2</version.assertj-core>
