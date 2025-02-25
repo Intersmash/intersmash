@@ -66,12 +66,12 @@ public class IntersmashExtensionHelper {
 	}
 
 	public static Boolean isIntersmashTargetingOpenShift(ExtensionContext extensionContext) {
-		return getProvisioners(extensionContext).entrySet().stream()
-				.anyMatch(e -> e.getValue().getApplication() instanceof OpenShiftApplication);
+		return Arrays.stream(getIntersmash(extensionContext).value())
+				.anyMatch(app -> OpenShiftApplication.class.isAssignableFrom(app.value()));
 	}
 
 	public static Boolean isIntersmashTargetingKubernetes(ExtensionContext extensionContext) {
-		return getProvisioners(extensionContext).entrySet().stream()
-				.anyMatch(e -> e.getValue().getApplication() instanceof KubernetesApplication);
+		return Arrays.stream(getIntersmash(extensionContext).value())
+				.anyMatch(app -> KubernetesApplication.class.isAssignableFrom(app.value()));
 	}
 }
