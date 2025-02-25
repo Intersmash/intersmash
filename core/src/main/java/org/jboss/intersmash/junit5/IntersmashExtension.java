@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,9 +63,30 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 				log.warn("No @Intersmah defined");
 				return;
 			}
-			// cache application provisioners
+			final Boolean intersmashTargetingOperator = IntersmashExtensionHelper
+					.isIntersmashTargetingOperator(extensionContext);
+			final Boolean intersmashTargetingKubernetes = IntersmashExtensionHelper
+					.isIntersmashTargetingKubernetes(extensionContext);
+			final Boolean intersmashTargetingOpenShift = IntersmashExtensionHelper
+					.isIntersmashTargetingOpenShift(extensionContext);
+
+			// Cleanup - BTW we don't want to touch anything if the deployment phase is skipped
+			if (!IntersmashConfig.skipDeploy()) {
+				if (intersmashTargetingOperator) {
+					operatorCleanup(intersmashTargetingKubernetes,
+							intersmashTargetingOpenShift && !IntersmashConfig.isOcp3x(OpenShifts.admin()));
+					deployOperatorGroup(extensionContext);
+				}
+				if (intersmashTargetingOpenShift) {
+					OpenShifts.master().clean().waitFor();
+				}
+				if (intersmashTargetingKubernetes) {
+					Kuberneteses.master().clean().waitFor();
+				}
+			}
+
+			// deploy
 			Service[] services = intersmash.value();
-			List<Application> applications = new LinkedList<>();
 			log.debug("# of services: {}", services.length);
 			for (Service service : services) {
 				final Application application = getApplicationFromService(service);
@@ -76,30 +96,11 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 				Provisioner provisioner = ProvisionerManager.getProvisioner(application);
 				// keep the provisioner in the JUpiter Extension Store
 				IntersmashExtensionHelper.getProvisioners(extensionContext).put(application.getClass().getName(), provisioner);
-				applications.add(application);
-			}
-			// Cleanup - BTW we don't want to touch anything if the deployment phase is skipped
-			if (!IntersmashConfig.skipDeploy()) {
-				if (IntersmashExtensionHelper.isIntersmashTargetingOperator(extensionContext)) {
-					operatorCleanup(IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext),
-							IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
-									&& !IntersmashConfig.isOcp3x(OpenShifts.admin()));
-					deployOperatorGroup(extensionContext);
-				}
-				if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)) {
-					OpenShifts.master().clean().waitFor();
-				}
-				if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
-					Kuberneteses.master().clean().waitFor();
-				}
-			}
-			// deploy
-			applications.stream().forEach((application) -> {
 				if (!IntersmashConfig.skipDeploy()) {
 					deployApplication(
 							IntersmashExtensionHelper.getProvisioners(extensionContext).get(application.getClass().getName()));
 				}
-			});
+			}
 		} catch (Throwable t) {
 			tt = Optional.of(t);
 		} finally {
