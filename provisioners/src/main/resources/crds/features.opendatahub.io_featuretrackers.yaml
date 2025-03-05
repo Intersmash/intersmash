@@ -1,9 +1,11 @@
+# See https://raw.githubusercontent.com/opendatahub-io/opendatahub-operator/refs/tags/v2.25.0/bundle/manifests/features.opendatahub.io_featuretrackers.yamlapiVersion: apiextensions.k8s.io/v1
 ---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.16.1
+  creationTimestamp: null
   name: featuretrackers.features.opendatahub.io
 spec:
   group: features.opendatahub.io
@@ -99,3 +101,9 @@ spec:
     storage: true
     subresources:
       status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: null
+  storedVersions: null
