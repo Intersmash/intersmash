@@ -19,7 +19,7 @@
         <version.ide-config>1.1</version.ide-config>
         <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
 
-        <version.wildfly-server>35.0.0.Final</version.wildfly-server>
+        <version.wildfly-server>35.0.1.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
