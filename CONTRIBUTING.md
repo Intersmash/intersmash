@@ -38,6 +38,3 @@ mvn process-sources
 
 to format your code before sending it for revision.
 CI jobs will run the checks (`mvn formatter:validate impsort:check`) and fail in case of wrong formatting.
-
-To set up your IDE to comply with the formatting, please get the 
-[eclipse-format.xml](./ide-config/eclipse-format.xml) configuration file and follow [Eclipse Code Formatter instructions](https://github.com/krasa/EclipseCodeFormatter#instructions).

@@ -37,12 +37,6 @@
     <artifactId>wstrust-test</artifactId>
     <name>Intersmash Demos : (Wildfly): Webservices Trust Example (test)</name>
 
-
-    <properties>
-        <formatting-style-base-directory>${project.parent.parent.parent.basedir}/ide-config
-        </formatting-style-base-directory>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.jboss.intersmash.examples</groupId>

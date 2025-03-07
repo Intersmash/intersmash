@@ -13,10 +13,6 @@
 
     <name>Intersmash Test Deployments (Wildfly): Hello World example</name>
 
-    <properties>
-        <formatting-style-base-directory>${project.parent.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
-    </properties>
-
     <dependencies>
         <!-- Import the CDI API, we use provided scope as the API is included in WildFly -->
         <dependency>

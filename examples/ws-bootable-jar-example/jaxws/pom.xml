@@ -41,7 +41,6 @@
 
 
     <properties>
-        <formatting-style-base-directory>${project.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
         <version.jbossws-cxf>6.2.0.Final</version.jbossws-cxf>
     </properties>
 

@@ -9,15 +9,9 @@
     <name>Intersmash Test Deployments: OpenShift Jakarta Sample standalone deployment</name>
 
     <properties>
-        <formatting-style-base-directory>${project.basedir}/ide-config</formatting-style-base-directory>
-        <formatting-style-file>eclipse-format.xml</formatting-style-file>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-
-        <version.impsort-maven-plugin>1.8.0</version.impsort-maven-plugin>
-        <version.ide-config>1.1</version.ide-config>
-        <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
 
         <version.wildfly-server>35.0.0.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin coordinates -->
@@ -107,16 +101,6 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>net.revelc.code.formatter</groupId>
-                    <artifactId>formatter-maven-plugin</artifactId>
-                    <version>${version.formatter-maven-plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>net.revelc.code</groupId>
-                    <artifactId>impsort-maven-plugin</artifactId>
-                    <version>${version.impsort-maven-plugin}</version>
-                </plugin>
 
                 <plugin>
                     <groupId>com.diffplug.spotless</groupId>
@@ -127,40 +111,6 @@
         </pluginManagement>
 
         <plugins>
-            <plugin>
-                <groupId>net.revelc.code.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-                <configuration>
-                    <configFile>${formatting-style-base-directory}/${formatting-style-file}</configFile>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>format</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.revelc.code</groupId>
-                <artifactId>impsort-maven-plugin</artifactId>
-                <configuration>
-                    <groups>jakarta.,java.,javax.,org.,com.</groups>
-                    <staticGroups>*</staticGroups>
-                    <removeUnused>true</removeUnused>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>sort-imports</id>
-                        <goals>
-                            <goal>sort</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
