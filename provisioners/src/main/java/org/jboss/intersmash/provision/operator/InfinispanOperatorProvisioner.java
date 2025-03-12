@@ -28,9 +28,14 @@ import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.operator.model.infinispan.cache.CacheList;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanList;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.spec.InfinispanConditionBuilder;
+import org.jboss.intersmash.provision.util.k8s.log.collect.PodLogsCollector;
+import org.jboss.intersmash.provision.util.k8s.log.collect.PodLogsCollectorBuilder;
+import org.jboss.intersmash.provision.util.k8s.log.collect.PodLogsRelatedWaiterException;
+import org.jboss.intersmash.provision.util.k8s.log.collect.PodLogsReport;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.waiting.SimpleWaiter;
+import cz.xtf.core.waiting.WaiterException;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
@@ -72,29 +77,39 @@ public abstract class InfinispanOperatorProvisioner<C extends NamespacedKubernet
 		return this.client().services().withName(name).get();
 	}
 
-	// TODO: check for removal
-	//	default List<Pod> getStatefulSetPods() {
-	//		StatefulSet statefulSet = getStatefulSet(getApplication().getName());
-	//		return Objects.nonNull(statefulSet)
-	//				? getPods().stream()
-	//				.filter(p -> p.getMetadata().getLabels().get("controller-revision-hash") != null
-	//						&& p.getMetadata().getLabels().get("controller-revision-hash")
-	//						.equals(statefulSet.getStatus().getUpdateRevision()))
-	//				.collect(Collectors.toList())
-	//				: List.of();
-	//	}
-
 	private void waitForResourceReadiness() {
 		// it must be well-formed
 		// see https://github.com/kubernetes/apimachinery/blob/v0.20.4/pkg/apis/meta/v1/types.go#L1289
-		new SimpleWaiter(
-				() -> infinispan().get().getStatus().getConditions().stream()
-						.anyMatch(
-								c -> c.getType().equals(InfinispanConditionBuilder.ConditionType.ConditionWellFormed.getValue())
-										&& c.getStatus().equals("True")))
-				.reason("Wait for infinispan resource to be ready").level(Level.DEBUG)
-				.waitFor();
-		// and with the expected number of Cache CR(s)
+		// but fail and collect failing replica logs on iteration so that they can be injected into the failure
+		// exception.
+		try {
+			new SimpleWaiter(
+					() -> infinispan().get().getStatus().getConditions().stream()
+							.anyMatch(
+									c -> c.getType()
+											.equals(InfinispanConditionBuilder.ConditionType.ConditionWellFormed.getValue())
+											&& c.getStatus().equals("True")))
+					.reason("Wait for infinispan resource to be ready").level(Level.DEBUG)
+					// collector.collect()
+					.onIteration(() -> {
+						List<PodLogsReport> podLogsReports = collectRestartedReplicaPodLogs();
+						if (!podLogsReports.isEmpty()) {
+							// Waiter implementations run serialized hooks, hence we can break the loop from the runnable
+							// code, and throw an exception that contains the pod logs, and renders them in the message
+							throw new PodLogsRelatedWaiterException(podLogsReports);
+						}
+					})
+					// let's iterate with 10 seconds cadence
+					.interval(TimeUnit.SECONDS, 10)
+					.waitFor();
+		} catch (PodLogsRelatedWaiterException we) {
+			throw new WaiterException(
+					"\n\n\t*** Start of collected pod log traces ***\n\n"
+							// generate()
+							.concat(PodLogsReport.generate(we.getPodLogsReports()))
+							.concat("\n\n\t*** End of collected pod log traces ***\n\n"));
+		}
+		// ... and let's wait for the expected number of Cache CR(s)
 		if (getApplication().getCaches().size() > 0)
 			new SimpleWaiter(() -> cachesClient().list().getItems().size() == caches().size())
 					.reason("Wait for caches to be ready.").level(Level.DEBUG).waitFor();
@@ -161,6 +176,29 @@ public abstract class InfinispanOperatorProvisioner<C extends NamespacedKubernet
 				waitForResourceReadiness();
 			}
 		}
+	}
+
+	/**
+	 * Identify the Infinispan replicas, then initialize a {@link PodLogsCollector} instance with a pod selector
+	 * predicate, to let the collector target only <i>restarted</i> replicas, and a predicate to filter log lines
+	 * containing the "ERROR" marker.
+	 * The collector {@link PodLogsCollector#collect()} method is called to return a collection of pod logs.
+	 * @return A list of {@link PodLogsReport} instances.
+	 */
+	private List<PodLogsReport> collectRestartedReplicaPodLogs() {
+		// identify replicas (label app=application.name)
+		final List<Pod> existingReplicas = this.getInfinispanPods();
+		// build a pod collector for RESTARTED replicas
+		PodLogsCollector restartedReplicaPodLogsCollector = new PodLogsCollectorBuilder()
+				.withClient(this.client())
+				.withPods(existingReplicas)
+				// filter: only pod with container statuses that have been restarted at least once
+				.withPodSelector(p -> p.getStatus().getContainerStatuses().stream()
+						.anyMatch(cs -> cs.getRestartCount() > 0))
+				// filter server ERROR log lines
+				.withLineSelector((line) -> line.contains(" ERROR "))
+				.build();
+		return restartedReplicaPodLogsCollector.collect();
 	}
 
 	// =================================================================================================================
