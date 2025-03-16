@@ -13,7 +13,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <version.wildfly-server>35.0.0.Final</version.wildfly-server>
+        <version.wildfly-server>35.0.1.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
