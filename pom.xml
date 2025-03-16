@@ -627,8 +627,12 @@
                     <!-- define a language-specific format -->
                     <java>
                         <removeUnusedImports/>
-                        <importOrder/>
-                        <eclipse/>
+                        <importOrder>
+                            <order>jakarta,java,javax,org,com</order>
+                        </importOrder>
+                        <eclipse>
+                            <file>eclipse-formatter.xml</file>
+                        </eclipse>
                         <!-- make sure every file has the following copyright header.
                           optionally, Spotless can set copyright years by digging
                           through git history (see "license" section below) -->

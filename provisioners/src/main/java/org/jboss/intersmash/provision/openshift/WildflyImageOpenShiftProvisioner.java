@@ -127,12 +127,12 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 			if (archiveFile.isDirectory()) {
 				/*
 				  S2I Binary build which takes as input the source code of a maven project located on the local filesystem;
-
+				
 				  This kind of build corresponds to the following workflows:
-
+				
 				  1. "Maven Project": The maven build is run inside the builder image,
 				     E.g.:
-
+				
 						oc new-build --name=wildfly-build-from-source-code \
 							--labels=intersmash.app=wildfly-test-app \
 							--binary=true \
@@ -141,21 +141,21 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 							--env=ADMIN_PASSWORD=pass.1234 \
 							--env=MAVEN_ARGS_APPEND="-Dwildfly.ee-feature-pack.location=org.wildfly:wildfly-galleon-pack:27.0.0.Alpha4 -Dwildfly.cloud-feature-pack.location=org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.0.Alpha4" \
 							--image=quay.io/wildfly/wildfly-s2i-jdk11:latest
-
+				
 						oc start-build wildfly-build-from-source-code \
 							--from-dir=/some-path/intersmash-tools/intersmash-tools-provisioners/src/test/resources/apps/openshift-jakarta-sample \
 							--follow
-
+				
 						oc new-app wildfly-build-from-source-code
-
+				
 				  2. "target/server": The maven build is run on the local machine and then, server and application are uploaded to the builder image,
 				  	 E.g.:
-
+				
 				  		cd /path/intersmash/intersmash-tools/intersmash-tools-provisioners/src/test/resources/apps/openshift-jakarta-sample/target/server
 						mvn install -P openshift \
 							-Dwildfly.ee-feature-pack.location=org.wildfly:wildfly-galleon-pack:27.0.0.Alpha4 \
 							-Dwildfly.cloud-feature-pack.location=org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.0.Alpha4
-
+				
 						oc new-build --name=wildfly-build-from-server \
 							--labels=intersmash.app=wildfly-test-app \
 							--binary=true \
@@ -163,11 +163,11 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 							--env=ADMIN_USERNAME=admin \
 							--env=ADMIN_PASSWORD=pass.1234 \
 							--image=quay.io/wildfly/wildfly-s2i-jdk11:latest
-
+				
 						oc start-build wildfly-build-from-server \
 							--from-dir=./target/server \
 							--follow
-
+				
 						oc new-app wildfly-build-from-server
 				 */
 				BinaryBuild binaryBuild;
@@ -186,16 +186,16 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 			} else if (archiveFile.isFile()) {
 				/*
 				  Legacy S2I Binary build which takes as input an already built artifact e.g. WAR file;
-
+				
 				  Note that WILDFLY images do not contain the server anymore;
-
+				
 				  This scenario is probably to be pruned: now, if the build of th maven project happens outside
 				  openshift, you start a binary build "--from-dir" using the "target/server" folder;
-
+				
 				  This workflow is just preserved to support legacy builds where no server is provisioned because the
 				  maven project isn't configured to use the new "wildfly-maven-plugin";
 				  E.g.
-
+				
 					oc new-build --name=wildfly-build-from-war \
 						--labels=intersmash.app=wildfly-test-app \
 						--binary=true \
@@ -205,11 +205,11 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 						--env=GALLEON_PROVISION_FEATURE_PACKS="org.wildfly:wildfly-galleon-pack:27.0.0.Alpha4,org.wildfly.cloud:wildfly-cloud-galleon-pack:2.0.0.Alpha4" \
 						--env=GALLEON_PROVISION_LAYERS=cloud-server \
 						--image=quay.io/wildfly/wildfly-s2i-jdk11:latest
-
+				
 					oc start-build wildfly-build-from-war \
 						--from-file=/some-path/intersmash/intersmash-tools/intersmash-tools-provisioners/src/test/resources/apps/openshift-jakarta-sample/target/ROOT.war \
 						--follow
-
+				
 					oc new-app wildfly-build-from-war
 				 */
 				BinaryBuildFromFile wildflyBuild = new BinaryBuildFromFile(
