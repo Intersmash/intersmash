@@ -14,8 +14,6 @@
     <properties>
         <logDirectory>${basedir}/log/test-logs</logDirectory>
         <version.org.keycloak.keycloak-admin-client>26.0.3</version.org.keycloak.keycloak-admin-client>
-
-        <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
     </properties>
 
     <dependencies>

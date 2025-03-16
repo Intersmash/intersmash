@@ -12,7 +12,6 @@
     <name>Intersmash Testsuite: Integration tests</name>
 
     <properties>
-        <formatting-style-base-directory>${project.parent.parent.basedir}/ide-config</formatting-style-base-directory>
         <!--
             By default, the following prop is set to community, stating that the test execution profile is using
             community images and deliverables

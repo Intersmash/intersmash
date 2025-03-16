@@ -13,7 +13,6 @@
 
     <properties>
         <project.version>${project.version}</project.version>
-        <formatting-style-base-directory>${project.parent.parent.parent.basedir}/ide-config/</formatting-style-base-directory>
 
         <!-- By default, the following prop is empty, stating that the build profile for WildFly deployments is the community one -->
         <intersmash.deployments.wildfly.build.profile />

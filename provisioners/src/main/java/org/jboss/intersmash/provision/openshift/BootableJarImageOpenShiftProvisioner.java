@@ -145,9 +145,9 @@ public abstract class BootableJarImageOpenShiftProvisioner
 			} else if (archiveFile.isFile()) {
 				/*
 				  S2I Binary build which takes as input a bootable Jar;
-
+				
 				  This kind of build corresponds to the following workflow:
-
+				
 						oc new-build --name=wildfly-build-from-bootable-jar \
 							--labels=intersmash.app=wildfly-test-app \
 							--binary=true \
@@ -155,11 +155,11 @@ public abstract class BootableJarImageOpenShiftProvisioner
 							--env=ADMIN_USERNAME=admin \
 							--env=ADMIN_PASSWORD=pass.1234 \
 							--image=registry.redhat.io/ubi8/openjdk-11
-
+				
 						oc start-build wildfly-build-from-bootable-jar \
 							--from-file=bootable-openshift.jar \
 							--follow
-
+				
 						oc new-app wildfly-build-from-bootable-jar
 				 */
 				bootableJarBuild = new BinaryBuildFromFile(

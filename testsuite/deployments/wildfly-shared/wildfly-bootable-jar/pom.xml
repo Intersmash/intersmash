@@ -14,7 +14,6 @@
 
     <properties>
         <failOnMissingWebXml>false</failOnMissingWebXml>
-        <formatting-style-base-directory>${project.parent.parent.parent.parent.basedir}/ide-config</formatting-style-base-directory>
     </properties>
 
     <dependencyManagement>

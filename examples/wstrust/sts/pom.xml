@@ -40,8 +40,6 @@
     <name>Intersmash Demos : (Wildfly): Webservices Trust Example (sts)</name>
 
     <properties>
-        <formatting-style-base-directory>${project.parent.parent.parent.basedir}/ide-config
-        </formatting-style-base-directory>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
 
         <version.wildfly.feature-pack>35.0.0.Final</version.wildfly.feature-pack>

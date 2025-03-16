@@ -81,7 +81,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call addBenchmarkCall(String ifMatch, String storedFilesBenchmark, File body, final ApiCallback _callback)
 			throws ApiException {
@@ -156,7 +156,7 @@ public class HyperfoilApi {
 	 * @param body Benchmark definition. (optional)
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public void addBenchmark(String ifMatch, String storedFilesBenchmark, File body) throws ApiException {
 		addBenchmarkWithHttpInfo(ifMatch, storedFilesBenchmark, body);
@@ -171,7 +171,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Void&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Void> addBenchmarkWithHttpInfo(String ifMatch, String storedFilesBenchmark, File body)
 			throws ApiException {
@@ -189,7 +189,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call addBenchmarkAsync(String ifMatch, String storedFilesBenchmark, File body,
 			final ApiCallback<Void> _callback) throws ApiException {
@@ -206,7 +206,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call agentCpuCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -275,7 +275,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object agentCpu(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = agentCpuWithHttpInfo(runId);
@@ -289,7 +289,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> agentCpuWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = agentCpuValidateBeforeCall(runId, null);
@@ -306,7 +306,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call agentCpuAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -325,7 +325,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call createReportCall(String runId, String source, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -400,7 +400,7 @@ public class HyperfoilApi {
 	 * @return String
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public String createReport(String runId, String source) throws ApiException {
 		ApiResponse<String> localVarResp = createReportWithHttpInfo(runId, source);
@@ -415,7 +415,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<String> createReportWithHttpInfo(String runId, String source) throws ApiException {
 		okhttp3.Call localVarCall = createReportValidateBeforeCall(runId, source, null);
@@ -433,7 +433,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call createReportAsync(String runId, String source, final ApiCallback<String> _callback)
 			throws ApiException {
@@ -454,7 +454,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAgentLogCall(String agent, Integer offset, String ifMatch, final ApiCallback _callback)
 			throws ApiException {
@@ -535,7 +535,7 @@ public class HyperfoilApi {
 	 * @return String
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public String getAgentLog(String agent, Integer offset, String ifMatch) throws ApiException {
 		ApiResponse<String> localVarResp = getAgentLogWithHttpInfo(agent, offset, ifMatch);
@@ -551,7 +551,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<String> getAgentLogWithHttpInfo(String agent, Integer offset, String ifMatch) throws ApiException {
 		okhttp3.Call localVarCall = getAgentLogValidateBeforeCall(agent, offset, ifMatch, null);
@@ -570,7 +570,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAgentLogAsync(String agent, Integer offset, String ifMatch, final ApiCallback<String> _callback)
 			throws ApiException {
@@ -589,7 +589,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAllStatsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -658,7 +658,7 @@ public class HyperfoilApi {
 	 * @return File
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public File getAllStats(String runId) throws ApiException {
 		ApiResponse<File> localVarResp = getAllStatsWithHttpInfo(runId);
@@ -672,7 +672,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;File&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<File> getAllStatsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getAllStatsValidateBeforeCall(runId, null);
@@ -689,7 +689,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAllStatsAsync(String runId, final ApiCallback<File> _callback) throws ApiException {
 
@@ -707,7 +707,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAllStatsCsvCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -776,7 +776,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getAllStatsCsv(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getAllStatsCsvWithHttpInfo(runId);
@@ -790,7 +790,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getAllStatsCsvWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getAllStatsCsvValidateBeforeCall(runId, null);
@@ -807,7 +807,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAllStatsCsvAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -825,7 +825,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAllStatsJsonCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -894,7 +894,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getAllStatsJson(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getAllStatsJsonWithHttpInfo(runId);
@@ -908,7 +908,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getAllStatsJsonWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getAllStatsJsonValidateBeforeCall(runId, null);
@@ -925,7 +925,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getAllStatsJsonAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -943,7 +943,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkCall(String name, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -1012,7 +1012,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getBenchmark(String name) throws ApiException {
 		ApiResponse<Object> localVarResp = getBenchmarkWithHttpInfo(name);
@@ -1026,7 +1026,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getBenchmarkWithHttpInfo(String name) throws ApiException {
 		okhttp3.Call localVarCall = getBenchmarkValidateBeforeCall(name, null);
@@ -1043,7 +1043,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkAsync(String name, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -1061,7 +1061,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkFilesCall(String name, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -1130,7 +1130,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getBenchmarkFiles(String name) throws ApiException {
 		ApiResponse<Object> localVarResp = getBenchmarkFilesWithHttpInfo(name);
@@ -1144,7 +1144,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getBenchmarkFilesWithHttpInfo(String name) throws ApiException {
 		okhttp3.Call localVarCall = getBenchmarkFilesValidateBeforeCall(name, null);
@@ -1161,7 +1161,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkFilesAsync(String name, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -1179,7 +1179,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkForRunCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -1248,7 +1248,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getBenchmarkForRun(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getBenchmarkForRunWithHttpInfo(runId);
@@ -1262,7 +1262,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getBenchmarkForRunWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getBenchmarkForRunValidateBeforeCall(runId, null);
@@ -1279,7 +1279,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkForRunAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -1299,7 +1299,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkStructureCall(String name, Integer maxCollectionSize, List<String> templateParam,
 			final ApiCallback _callback) throws ApiException {
@@ -1380,7 +1380,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getBenchmarkStructure(String name, Integer maxCollectionSize, List<String> templateParam)
 			throws ApiException {
@@ -1397,7 +1397,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getBenchmarkStructureWithHttpInfo(String name, Integer maxCollectionSize,
 			List<String> templateParam) throws ApiException {
@@ -1417,7 +1417,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getBenchmarkStructureAsync(String name, Integer maxCollectionSize, List<String> templateParam,
 			final ApiCallback<Object> _callback) throws ApiException {
@@ -1437,7 +1437,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getControllerLogCall(Integer offset, String ifMatch, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -1510,7 +1510,7 @@ public class HyperfoilApi {
 	 * @return String
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public String getControllerLog(Integer offset, String ifMatch) throws ApiException {
 		ApiResponse<String> localVarResp = getControllerLogWithHttpInfo(offset, ifMatch);
@@ -1525,7 +1525,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<String> getControllerLogWithHttpInfo(Integer offset, String ifMatch) throws ApiException {
 		okhttp3.Call localVarCall = getControllerLogValidateBeforeCall(offset, ifMatch, null);
@@ -1543,7 +1543,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getControllerLogAsync(Integer offset, String ifMatch, final ApiCallback<String> _callback)
 			throws ApiException {
@@ -1565,7 +1565,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getHistogramStatsCall(String runId, String phase, Integer stepId, String metric,
 			final ApiCallback _callback) throws ApiException {
@@ -1666,7 +1666,7 @@ public class HyperfoilApi {
 	 * @return List&lt;Histogram&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public List<Histogram> getHistogramStats(String runId, String phase, Integer stepId, String metric) throws ApiException {
 		ApiResponse<List<Histogram>> localVarResp = getHistogramStatsWithHttpInfo(runId, phase, stepId, metric);
@@ -1683,7 +1683,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;List&lt;Histogram&gt;&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<List<Histogram>> getHistogramStatsWithHttpInfo(String runId, String phase, Integer stepId, String metric)
 			throws ApiException {
@@ -1704,7 +1704,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getHistogramStatsAsync(String runId, String phase, Integer stepId, String metric,
 			final ApiCallback<List<Histogram>> _callback) throws ApiException {
@@ -1723,7 +1723,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRecentConnectionsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -1792,7 +1792,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getRecentConnections(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getRecentConnectionsWithHttpInfo(runId);
@@ -1806,7 +1806,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getRecentConnectionsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getRecentConnectionsValidateBeforeCall(runId, null);
@@ -1823,7 +1823,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRecentConnectionsAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -1841,7 +1841,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRecentSessionsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -1910,7 +1910,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getRecentSessions(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getRecentSessionsWithHttpInfo(runId);
@@ -1924,7 +1924,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getRecentSessionsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getRecentSessionsValidateBeforeCall(runId, null);
@@ -1941,7 +1941,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRecentSessionsAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -1959,7 +1959,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRecentStatsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2028,7 +2028,7 @@ public class HyperfoilApi {
 	 * @return RequestStatisticsResponse
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public RequestStatisticsResponse getRecentStats(String runId) throws ApiException {
 		ApiResponse<RequestStatisticsResponse> localVarResp = getRecentStatsWithHttpInfo(runId);
@@ -2042,7 +2042,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;RequestStatisticsResponse&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<RequestStatisticsResponse> getRecentStatsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getRecentStatsValidateBeforeCall(runId, null);
@@ -2059,7 +2059,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRecentStatsAsync(String runId, final ApiCallback<RequestStatisticsResponse> _callback)
 			throws ApiException {
@@ -2078,7 +2078,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRunCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2147,7 +2147,7 @@ public class HyperfoilApi {
 	 * @return Run
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Run getRun(String runId) throws ApiException {
 		ApiResponse<Run> localVarResp = getRunWithHttpInfo(runId);
@@ -2161,7 +2161,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Run&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Run> getRunWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getRunValidateBeforeCall(runId, null);
@@ -2178,7 +2178,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRunAsync(String runId, final ApiCallback<Run> _callback) throws ApiException {
 
@@ -2197,7 +2197,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRunFileCall(String runId, String _file, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2277,7 +2277,7 @@ public class HyperfoilApi {
 	 * @return File
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public File getRunFile(String runId, String _file) throws ApiException {
 		ApiResponse<File> localVarResp = getRunFileWithHttpInfo(runId, _file);
@@ -2292,7 +2292,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;File&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<File> getRunFileWithHttpInfo(String runId, String _file) throws ApiException {
 		okhttp3.Call localVarCall = getRunFileValidateBeforeCall(runId, _file, null);
@@ -2310,7 +2310,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getRunFileAsync(String runId, String _file, final ApiCallback<File> _callback) throws ApiException {
 
@@ -2327,7 +2327,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTokenCall(final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2388,7 +2388,7 @@ public class HyperfoilApi {
 	 * Returns authorization token that can be used instead of credentials with Basic Auth.
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public void getToken() throws ApiException {
 		getTokenWithHttpInfo();
@@ -2400,7 +2400,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Void&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Void> getTokenWithHttpInfo() throws ApiException {
 		okhttp3.Call localVarCall = getTokenValidateBeforeCall(null);
@@ -2414,7 +2414,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTokenAsync(final ApiCallback<Void> _callback) throws ApiException {
 
@@ -2430,7 +2430,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTotalConnectionsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2499,7 +2499,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getTotalConnections(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getTotalConnectionsWithHttpInfo(runId);
@@ -2513,7 +2513,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getTotalConnectionsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getTotalConnectionsValidateBeforeCall(runId, null);
@@ -2530,7 +2530,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTotalConnectionsAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -2548,7 +2548,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTotalSessionsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2617,7 +2617,7 @@ public class HyperfoilApi {
 	 * @return Object
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Object getTotalSessions(String runId) throws ApiException {
 		ApiResponse<Object> localVarResp = getTotalSessionsWithHttpInfo(runId);
@@ -2631,7 +2631,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Object&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Object> getTotalSessionsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getTotalSessionsValidateBeforeCall(runId, null);
@@ -2648,7 +2648,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTotalSessionsAsync(String runId, final ApiCallback<Object> _callback) throws ApiException {
 
@@ -2666,7 +2666,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTotalStatsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2735,7 +2735,7 @@ public class HyperfoilApi {
 	 * @return RequestStatisticsResponse
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public RequestStatisticsResponse getTotalStats(String runId) throws ApiException {
 		ApiResponse<RequestStatisticsResponse> localVarResp = getTotalStatsWithHttpInfo(runId);
@@ -2749,7 +2749,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;RequestStatisticsResponse&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<RequestStatisticsResponse> getTotalStatsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = getTotalStatsValidateBeforeCall(runId, null);
@@ -2766,7 +2766,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getTotalStatsAsync(String runId, final ApiCallback<RequestStatisticsResponse> _callback)
 			throws ApiException {
@@ -2784,7 +2784,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getVersionCall(final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2846,7 +2846,7 @@ public class HyperfoilApi {
 	 * @return Version
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Version getVersion() throws ApiException {
 		ApiResponse<Version> localVarResp = getVersionWithHttpInfo();
@@ -2859,7 +2859,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Version&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Version> getVersionWithHttpInfo() throws ApiException {
 		okhttp3.Call localVarCall = getVersionValidateBeforeCall(null);
@@ -2875,7 +2875,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call getVersionAsync(final ApiCallback<Version> _callback) throws ApiException {
 
@@ -2893,7 +2893,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call killRunCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -2961,7 +2961,7 @@ public class HyperfoilApi {
 	 * @param runId  (required)
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public void killRun(String runId) throws ApiException {
 		killRunWithHttpInfo(runId);
@@ -2974,7 +2974,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Void&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Void> killRunWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = killRunValidateBeforeCall(runId, null);
@@ -2989,7 +2989,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call killRunAsync(String runId, final ApiCallback<Void> _callback) throws ApiException {
 
@@ -3004,7 +3004,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listAgentsCall(final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3066,7 +3066,7 @@ public class HyperfoilApi {
 	 * @return List&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public List<String> listAgents() throws ApiException {
 		ApiResponse<List<String>> localVarResp = listAgentsWithHttpInfo();
@@ -3079,7 +3079,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;List&lt;String&gt;&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<List<String>> listAgentsWithHttpInfo() throws ApiException {
 		okhttp3.Call localVarCall = listAgentsValidateBeforeCall(null);
@@ -3095,7 +3095,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listAgentsAsync(final ApiCallback<List<String>> _callback) throws ApiException {
 
@@ -3112,7 +3112,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listBenchmarksCall(final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3174,7 +3174,7 @@ public class HyperfoilApi {
 	 * @return List&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public List<String> listBenchmarks() throws ApiException {
 		ApiResponse<List<String>> localVarResp = listBenchmarksWithHttpInfo();
@@ -3187,7 +3187,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;List&lt;String&gt;&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<List<String>> listBenchmarksWithHttpInfo() throws ApiException {
 		okhttp3.Call localVarCall = listBenchmarksValidateBeforeCall(null);
@@ -3203,7 +3203,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listBenchmarksAsync(final ApiCallback<List<String>> _callback) throws ApiException {
 
@@ -3221,7 +3221,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listConnectionsCall(String runId, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3290,7 +3290,7 @@ public class HyperfoilApi {
 	 * @return String
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public String listConnections(String runId) throws ApiException {
 		ApiResponse<String> localVarResp = listConnectionsWithHttpInfo(runId);
@@ -3304,7 +3304,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<String> listConnectionsWithHttpInfo(String runId) throws ApiException {
 		okhttp3.Call localVarCall = listConnectionsValidateBeforeCall(runId, null);
@@ -3321,7 +3321,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listConnectionsAsync(String runId, final ApiCallback<String> _callback) throws ApiException {
 
@@ -3339,7 +3339,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listRunsCall(Boolean details, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3406,7 +3406,7 @@ public class HyperfoilApi {
 	 * @return Run
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Run listRuns(Boolean details) throws ApiException {
 		ApiResponse<Run> localVarResp = listRunsWithHttpInfo(details);
@@ -3420,7 +3420,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Run&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Run> listRunsWithHttpInfo(Boolean details) throws ApiException {
 		okhttp3.Call localVarCall = listRunsValidateBeforeCall(details, null);
@@ -3437,7 +3437,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listRunsAsync(Boolean details, final ApiCallback<Run> _callback) throws ApiException {
 
@@ -3456,7 +3456,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listSessionsCall(String runId, Boolean inactive, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3531,7 +3531,7 @@ public class HyperfoilApi {
 	 * @return String
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public String listSessions(String runId, Boolean inactive) throws ApiException {
 		ApiResponse<String> localVarResp = listSessionsWithHttpInfo(runId, inactive);
@@ -3546,7 +3546,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<String> listSessionsWithHttpInfo(String runId, Boolean inactive) throws ApiException {
 		okhttp3.Call localVarCall = listSessionsValidateBeforeCall(runId, inactive, null);
@@ -3564,7 +3564,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listSessionsAsync(String runId, Boolean inactive, final ApiCallback<String> _callback)
 			throws ApiException {
@@ -3582,7 +3582,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listTemplatesCall(final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3644,7 +3644,7 @@ public class HyperfoilApi {
 	 * @return List&lt;String&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public List<String> listTemplates() throws ApiException {
 		ApiResponse<List<String>> localVarResp = listTemplatesWithHttpInfo();
@@ -3657,7 +3657,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;List&lt;String&gt;&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<List<String>> listTemplatesWithHttpInfo() throws ApiException {
 		okhttp3.Call localVarCall = listTemplatesValidateBeforeCall(null);
@@ -3673,7 +3673,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call listTemplatesAsync(final ApiCallback<List<String>> _callback) throws ApiException {
 
@@ -3690,7 +3690,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call openApiCall(final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3752,7 +3752,7 @@ public class HyperfoilApi {
 	 * @return File
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public File openApi() throws ApiException {
 		ApiResponse<File> localVarResp = openApiWithHttpInfo();
@@ -3765,7 +3765,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;File&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<File> openApiWithHttpInfo() throws ApiException {
 		okhttp3.Call localVarCall = openApiValidateBeforeCall(null);
@@ -3781,7 +3781,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call openApiAsync(final ApiCallback<File> _callback) throws ApiException {
 
@@ -3799,7 +3799,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call shutdownCall(Boolean force, final ApiCallback _callback) throws ApiException {
 		String basePath = null;
@@ -3865,7 +3865,7 @@ public class HyperfoilApi {
 	 * @param force  (optional, default to false)
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public void shutdown(Boolean force) throws ApiException {
 		shutdownWithHttpInfo(force);
@@ -3878,7 +3878,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Void&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Void> shutdownWithHttpInfo(Boolean force) throws ApiException {
 		okhttp3.Call localVarCall = shutdownValidateBeforeCall(force, null);
@@ -3893,7 +3893,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call shutdownAsync(Boolean force, final ApiCallback<Void> _callback) throws ApiException {
 
@@ -3913,7 +3913,7 @@ public class HyperfoilApi {
 	 * @return Call to execute
 	 * @throws ApiException If fail to serialize the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call startBenchmarkCall(String name, String desc, String xTriggerJob, String runId,
 			List<String> templateParam, final ApiCallback _callback) throws ApiException {
@@ -4004,7 +4004,7 @@ public class HyperfoilApi {
 	 * @return Run
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public Run startBenchmark(String name, String desc, String xTriggerJob, String runId, List<String> templateParam)
 			throws ApiException {
@@ -4023,7 +4023,7 @@ public class HyperfoilApi {
 	 * @return ApiResponse&lt;Run&gt;
 	 * @throws ApiException If fail to call the API, e.g. server error or cannot deserialize the response body
 	 *
-
+	
 	 */
 	public ApiResponse<Run> startBenchmarkWithHttpInfo(String name, String desc, String xTriggerJob, String runId,
 			List<String> templateParam) throws ApiException {
@@ -4045,7 +4045,7 @@ public class HyperfoilApi {
 	 * @return The request call
 	 * @throws ApiException If fail to process the API call, e.g. serializing the request body object
 	 *
-
+	
 	 */
 	public okhttp3.Call startBenchmarkAsync(String name, String desc, String xTriggerJob, String runId,
 			List<String> templateParam, final ApiCallback<Run> _callback) throws ApiException {

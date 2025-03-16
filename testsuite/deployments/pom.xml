@@ -20,8 +20,6 @@
     </modules>
 
     <properties>
-        <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
-
         <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
     </properties>

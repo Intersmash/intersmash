@@ -11,10 +11,6 @@
 
     <name>Intersmash Core</name>
 
-    <properties>
-        <formatting-style-base-directory>${project.parent.basedir}/ide-config</formatting-style-base-directory>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>dev.failsafe</groupId>

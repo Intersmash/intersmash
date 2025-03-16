@@ -47,9 +47,6 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <formatting-style-base-directory>${project.basedir}/ide-config</formatting-style-base-directory>
-        <formatting-style-file>eclipse-format.xml</formatting-style-file>
-
         <!--
             Using XTF snapshot in order to include fixes in:
             https://github.com/xtf-cz/xtf/pull/532
@@ -64,7 +61,6 @@
         <version.mockito.core>4.9.0</version.mockito.core>
         <version.logback>1.2.13</version.logback>
         <version.org.slf4j>1.7.30</version.org.slf4j>
-        <version.ide-config>1.1</version.ide-config>
         <version.io.strimzi-api>0.38.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
         <version.io.fabric8>6.8.1</version.io.fabric8>
@@ -76,8 +72,6 @@
         -->
         <version.intersmash.activemq.operators>v1.0.11</version.intersmash.activemq.operators>
 
-        <version.impsort-maven-plugin>1.8.0</version.impsort-maven-plugin>
-        <version.formatter-maven-plugin>2.21.0</version.formatter-maven-plugin>
         <version.maven-compiler-plugin>3.8.1</version.maven-compiler-plugin>
         <version.maven-checkstyle-plugin>3.1.1</version.maven-checkstyle-plugin>
         <version.maven-clean-plugin>3.1.0</version.maven-clean-plugin>
@@ -485,16 +479,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>net.revelc.code.formatter</groupId>
-                    <artifactId>formatter-maven-plugin</artifactId>
-                    <version>${version.formatter-maven-plugin}</version>
-                </plugin>
-                <plugin>
-                    <groupId>net.revelc.code</groupId>
-                    <artifactId>impsort-maven-plugin</artifactId>
-                    <version>${version.impsort-maven-plugin}</version>
-                </plugin>
-                <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-clean-plugin</artifactId>
                     <version>${version.maven-clean-plugin}</version>
@@ -604,41 +588,6 @@
 
         <plugins>
             <plugin>
-                <groupId>net.revelc.code.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-                <configuration>
-                    <configFile>${formatting-style-base-directory}/${formatting-style-file}</configFile>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>format</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>format</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>net.revelc.code</groupId>
-                <artifactId>impsort-maven-plugin</artifactId>
-                <configuration>
-                    <groups>jakarta.,java.,javax.,org.,com.</groups>
-                    <staticGroups>*</staticGroups>
-                    <removeUnused>true</removeUnused>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>sort-imports</id>
-                        <phase>process-sources</phase>
-                        <goals>
-                            <goal>sort</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
                 <configuration>
@@ -677,6 +626,13 @@
                 <configuration>
                     <!-- define a language-specific format -->
                     <java>
+                        <removeUnusedImports/>
+                        <importOrder>
+                            <order>jakarta,java,javax,org,com</order>
+                        </importOrder>
+                        <eclipse>
+                            <file>eclipse-formatter.xml</file>
+                        </eclipse>
                         <!-- make sure every file has the following copyright header.
                           optionally, Spotless can set copyright years by digging
                           through git history (see "license" section below) -->
