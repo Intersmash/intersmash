@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>openshift-jakarta-sample-standalone</artifactId>
-    <version>0.0.3.Beta3-SNAPSHOT</version>
+    <version>0.0.3</version>
     <packaging>war</packaging>
 
     <name>Intersmash Test Deployments: OpenShift Jakarta Sample standalone deployment</name>
@@ -145,9 +145,9 @@
                 <configuration>
                     <!-- define a language-specific format -->
                     <java>
-                        <removeUnusedImports/>
-                        <importOrder/>
-                        <eclipse/>
+                        <removeUnusedImports />
+                        <importOrder />
+                        <eclipse />
                         <!-- make sure every file has the following copyright header.
                           optionally, Spotless can set copyright years by digging
                           through git history (see "license" section below) -->
