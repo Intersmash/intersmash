@@ -18,7 +18,7 @@
     <properties>
         <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
         <!-- Wildfly default version -->
-        <version.wildfly-server>35.0.0.Final</version.wildfly-server>
+        <version.wildfly-server>37.0.0.Final</version.wildfly-server>
         <!-- WildFly Maven Plugin version -->
         <wildfly-maven-plugin.version>5.1.1.Final</wildfly-maven-plugin.version>
         <!-- Default WildFly `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
