@@ -17,11 +17,11 @@ package org.jboss.intersmash.application.operator;
 
 import java.util.List;
 
+import io.strimzi.api.kafka.model.kafka.Kafka;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
+import io.strimzi.api.kafka.model.topic.KafkaTopic;
+import io.strimzi.api.kafka.model.user.KafkaUser;
 import org.jboss.intersmash.provision.operator.KafkaOperatorProvisioner;
-
-import io.strimzi.api.kafka.model.Kafka;
-import io.strimzi.api.kafka.model.KafkaTopic;
-import io.strimzi.api.kafka.model.KafkaUser;
 
 /**
  * End user Application interface which presents Kafka operator application on OpenShift Container Platform.
@@ -33,40 +33,50 @@ import io.strimzi.api.kafka.model.KafkaUser;
  */
 public interface KafkaOperatorApplication extends OperatorApplication {
 
-	String KAFKA_VERSION = "3.8.0";
-	String INTER_BROKER_PROTOCOL_VERSION = "3.8";
+	String KAFKA_VERSION = "4.0.0";
+	String METADATA_VERSION = "4.0.-IV3";
 	int KAFKA_INSTANCE_NUM = 3;
 	int TOPIC_RECONCILIATION_INTERVAL_SECONDS = 90;
 	long USER_RECONCILIATION_INTERVAL_SECONDS = 120L;
+	String STRIMZI_IO_KAFKA_LABEL_CLUSTER = "strimzi.io/cluster";
+	String STRIMZI_IO_KAFKA_LABEL_NODE_POOLS = "strimzi.io/node-pools";
+	String STRIMZI_IO_KAFKA_LABEL_KRAFT = "strimzi.io/kraft";
+	String STRIMZI_IO_KAFKA_LABEL_KRAFT_CONTROLLER_ROLE = "strimzi.io/controller-role";
+	String STRIMZI_IO_KAFKA_LABEL_KRAFT_BROKER_ROLE = "strimzi.io/broker-role";
+
+	default boolean isKRaftModeEnabled() {
+		return false;
+	}
 
 	/**
-	 * Provides Kafka Cluster definition. Note: even though the Kafka operator supports multiple instances of
-	 * these Kafka clusters, with current implementation we expect to have only one.
+	 * Provides {@link Kafka} CR definition.
+	 * <p>
+	 *     Note: even though the Kafka operator supports multiple instances of
+	 * 	   these Kafka clusters, with current implementation we expect to have only one.
+	 * </p>
 	 *
-	 * @return Kafka Cluster
+	 * @return {@link Kafka} instance.
 	 */
 	Kafka getKafka();
 
 	/**
-	 * Provides list of Kafka Topics definitions.
+	 * Provides list of {@link KafkaTopic} definitions.
 	 *
-	 * @return list of Kafka Topics
+	 * @return list of {@link KafkaTopic} instances.
 	 */
 	List<KafkaTopic> getTopics();
 
 	/**
-	 * Provides list of Kafka Users definitions.
+	 * Provides list of {@link KafkaUser} definitions.
 	 *
-	 * @return list of Kafka Users
+	 * @return list of {@link KafkaUser} instances.
 	 */
 	List<KafkaUser> getUsers();
 
-	// TODO will be implemented on demand:
-	//	List<KafkaConnect> getKafkaConnects();
-	//	List<KafkaConnectS2I> getKafkaConnectSourceToImage();
-	//	List<KafkaMirrorMaker> getKafkaMirrorMaker();
-	//	List<KafkaBridge> getKafkaBridge();
-	//	List<KafkaConnector> getKafkaConnectors();
-	//	List<KafkaMirrorMaker2> getKafkaMirrorMaker2s();
-	//	List<KafkaRebalance> getKafkaRebalances();
+	/**
+	 * Provides list of {@link KafkaNodePool> definitions for runing Strimzi/Streams for Apache Kafka in KRaft mode.
+	 * <p>
+	 * @return list of {@link KafkaNodePool> instances
+	 */
+	List<KafkaNodePool> getNodePools();
 }

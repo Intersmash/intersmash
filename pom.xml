@@ -61,7 +61,7 @@
         <version.mockito.core>4.9.0</version.mockito.core>
         <version.logback>1.2.13</version.logback>
         <version.org.slf4j>1.7.30</version.org.slf4j>
-        <version.io.strimzi-api>0.38.0</version.io.strimzi-api>
+        <version.io.strimzi-api>0.47.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
         <version.io.fabric8>6.8.1</version.io.fabric8>
         <version.openshift-client>6.8.1</version.openshift-client>
@@ -797,18 +797,6 @@
             <snapshots>
                 <enabled>true</enabled>
                 <updatePolicy>always</updatePolicy>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
-        <!-- Strimzi 0.37 SNAPSHOT to have Fabric8 kubernetes client version aligned with XTF (6.8.1) -->
-        <repository>
-            <id>ossrh-s</id>
-            <name>OSS Sonatype Snapshots Repository</name>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
             </snapshots>
             <releases>
                 <enabled>false</enabled>
