@@ -27,6 +27,25 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import io.fabric8.openshift.api.model.operator.v1.StorageBuilder;
+import io.strimzi.api.kafka.model.kafka.EphemeralStorage;
+import io.strimzi.api.kafka.model.kafka.EphemeralStorageBuilder;
+import io.strimzi.api.kafka.model.kafka.KRaftMetadataStorage;
+import io.strimzi.api.kafka.model.kafka.Kafka;
+import io.strimzi.api.kafka.model.kafka.KafkaBuilder;
+import io.strimzi.api.kafka.model.kafka.listener.GenericKafkaListener;
+import io.strimzi.api.kafka.model.kafka.listener.KafkaListenerType;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePoolBuilder;
+import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
+import io.strimzi.api.kafka.model.topic.KafkaTopic;
+import io.strimzi.api.kafka.model.topic.KafkaTopicBuilder;
+import io.strimzi.api.kafka.model.user.KafkaUser;
+import io.strimzi.api.kafka.model.user.KafkaUserBuilder;
+import io.strimzi.api.kafka.model.user.acl.AclOperation;
+import io.strimzi.api.kafka.model.user.acl.AclResourcePatternType;
+import io.strimzi.api.kafka.model.user.acl.AclRule;
+import io.strimzi.api.kafka.model.user.acl.AclRuleBuilder;
 import org.assertj.core.util.Strings;
 import org.infinispan.v1.Infinispan;
 import org.infinispan.v2alpha1.Cache;
@@ -76,18 +95,6 @@ import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
 import io.opendatahub.datasciencecluster.v1.DataScienceClusterBuilder;
 import io.opendatahub.dscinitialization.v1.DSCInitialization;
 import io.opendatahub.dscinitialization.v1.DSCInitializationBuilder;
-import io.strimzi.api.kafka.model.AclOperation;
-import io.strimzi.api.kafka.model.AclResourcePatternType;
-import io.strimzi.api.kafka.model.AclRule;
-import io.strimzi.api.kafka.model.AclRuleBuilder;
-import io.strimzi.api.kafka.model.Kafka;
-import io.strimzi.api.kafka.model.KafkaBuilder;
-import io.strimzi.api.kafka.model.KafkaTopic;
-import io.strimzi.api.kafka.model.KafkaTopicBuilder;
-import io.strimzi.api.kafka.model.KafkaUser;
-import io.strimzi.api.kafka.model.KafkaUserBuilder;
-import io.strimzi.api.kafka.model.listener.arraylistener.GenericKafkaListener;
-import io.strimzi.api.kafka.model.listener.arraylistener.KafkaListenerType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -569,7 +576,7 @@ public class OpenShiftProvisionerTestBase {
 	 *
 	 * @return instance of {@link KafkaOperatorApplication} to be used for test purposes
 	 */
-	public static KafkaOperatorApplication getKafkaApplication() {
+	public static KafkaOperatorApplication getKafkaEphemeralApplication() {
 		return new KafkaOperatorApplication() {
 			static final String NAME = "kafka-test";
 			private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;
@@ -581,19 +588,23 @@ public class OpenShiftProvisionerTestBase {
 			private Kafka kafka;
 			private List<KafkaTopic> topics;
 			private List<KafkaUser> users;
+			private List<KafkaNodePool> nodePools;
+
+			@Override
+			public boolean isKRaftModeEnabled() {
+				return true;
+			}
 
 			@Override
 			public Kafka getKafka() {
 				if (kafka == null) {
 					Map<String, Object> config = new HashMap<>();
-					config.put("inter.broker.protocol.version", KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION);
-					config.put("offsets.topic.replication.factor", KAFKA_INSTANCE_NUM);
-					config.put("transaction.state.log.min.isr", KAFKA_INSTANCE_NUM);
-					config.put("transaction.state.log.replication.factor", KAFKA_INSTANCE_NUM);
-
 					config.put("default.replication.factor", KAFKA_INSTANCE_NUM);
 					config.put("min.insync.replicas", 2);
-
+					config.put("offsets.topic.replication.factor", KAFKA_INSTANCE_NUM);
+					config.put("transaction.state.log.min.isr", 2);
+					config.put("transaction.state.log.replication.factor", KAFKA_INSTANCE_NUM);
+					
 					GenericKafkaListener listener = new GenericKafkaListener();
 					listener.setName("plain");
 					listener.setPort(KAFKA_PORT);
@@ -602,7 +613,13 @@ public class OpenShiftProvisionerTestBase {
 
 					// Initialize Kafka resource
 					kafka = new KafkaBuilder()
-							.withNewMetadata().withName(NAME).endMetadata()
+							.withNewMetadata()
+							.withName(NAME)
+							.withLabels(Map.of(
+									KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_NODE_POOLS, "enabled",
+									KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_KRAFT, "enabled"
+							))
+							.endMetadata()
 							.withNewSpec()
 							.withNewEntityOperator()
 							.withNewTopicOperator().withReconciliationIntervalSeconds(TOPIC_RECONCILIATION_INTERVAL_SECONDS)
@@ -618,11 +635,8 @@ public class OpenShiftProvisionerTestBase {
 							.withReplicas(KAFKA_INSTANCE_NUM)
 							.withNewEphemeralStorage().endEphemeralStorage()
 							.withVersion(KafkaOperatorApplication.KAFKA_VERSION)
+							.withMetadataVersion(KafkaOperatorApplication.METADATA_VERSION)
 							.endKafka()
-							.withNewZookeeper()
-							.withReplicas(KAFKA_INSTANCE_NUM)
-							.withNewEphemeralStorage().endEphemeralStorage()
-							.endZookeeper()
 							.endSpec()
 							.build();
 				}
@@ -636,7 +650,7 @@ public class OpenShiftProvisionerTestBase {
 					topics = new LinkedList<>();
 
 					Map<String, String> labels = new HashMap<>();
-					labels.put("strimzi.io/cluster", NAME);
+					labels.put(KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_CLUSTER, NAME);
 
 					KafkaTopic topic = new KafkaTopicBuilder()
 							.withNewMetadata()
@@ -661,7 +675,7 @@ public class OpenShiftProvisionerTestBase {
 					users = new LinkedList<>();
 
 					Map<String, String> labels = new HashMap<>();
-					labels.put("strimzi.io/cluster", NAME);
+					labels.put(KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_CLUSTER, NAME);
 
 					AclRule acl = new AclRuleBuilder()
 							.withHost("*")
@@ -690,6 +704,48 @@ public class OpenShiftProvisionerTestBase {
 				}
 
 				return users;
+			}
+
+			@Override
+			public List<KafkaNodePool> getNodePools() {
+				if (nodePools == null) {
+					nodePools = new LinkedList<>();
+					// Kafka in KRaft mode ephemeral with both controller and broker node pools
+					final KafkaNodePool controller = new KafkaNodePoolBuilder()
+							.withNewMetadata()
+							.withName(NAME + "-controller")
+							.withLabels(Map.of(KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_CLUSTER, NAME))
+							.endMetadata()
+							.withNewSpec()
+							.withReplicas(KAFKA_INSTANCE_NUM)
+							.withRoles(ProcessRoles.CONTROLLER)
+							.withStorage(
+									new EphemeralStorageBuilder()
+											.withId(0)
+											.withKraftMetadata(KRaftMetadataStorage.SHARED)
+											.build()
+							)
+							.endSpec()
+							.build();
+					final KafkaNodePool broker = new KafkaNodePoolBuilder()
+							.withNewMetadata()
+							.withName(NAME + "-broker")
+							.withLabels(Map.of(KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_CLUSTER, NAME))
+							.endMetadata()
+							.withNewSpec()
+							.withReplicas(KAFKA_INSTANCE_NUM)
+							.withRoles(ProcessRoles.BROKER)
+							.withStorage(
+									new EphemeralStorageBuilder()
+											.withId(0)
+											.withKraftMetadata(KRaftMetadataStorage.SHARED)
+											.build()
+							)
+							.endSpec()
+							.build();
+					nodePools.addAll(List.of(controller, broker));
+				}
+				return nodePools;
 			}
 
 			@Override
