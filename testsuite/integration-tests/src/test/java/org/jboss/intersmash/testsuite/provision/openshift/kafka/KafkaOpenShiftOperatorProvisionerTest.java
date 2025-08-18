@@ -34,6 +34,8 @@ import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
+import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -43,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @CleanBeforeAll
 @OpenShiftTest
 public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCapable {
-	private static KafkaOperatorApplication application = OpenShiftProvisionerTestBase.getKafkaApplication();
+	private static KafkaOperatorApplication application = OpenShiftProvisionerTestBase.getKafkaEphemeralApplication();
 	private static final KafkaOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();
 
 	private static KafkaOpenShiftOperatorProvisioner initializeOperatorProvisioner() {
@@ -109,14 +111,37 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 				"Unexpected number of cluster operator pods for '" + KafkaOperatorProvisioner.OPERATOR_ID + "'");
 
 		int kafkaReplicas = operatorProvisioner.getApplication().getKafka().getSpec().getKafka().getReplicas();
-		int zookeeperReplicas = operatorProvisioner.getApplication().getKafka().getSpec().getZookeeper().getReplicas();
-
+		int totalPodCount = kafkaReplicas;
+		if (!operatorProvisioner.getApplication().isKRaftModeEnabled()) {
+			int zookeeperReplicas = operatorProvisioner.getApplication().getKafka().getSpec().getZookeeper().getReplicas();
+			Assertions.assertEquals(zookeeperReplicas, operatorProvisioner.getZookeeperPods().size(),
+					"Unexpected number of Zookeeper pods for '" + operatorProvisioner.getApplication().getName() + "'");
+			totalPodCount += zookeeperReplicas;
+		} else {
+			final KafkaNodePool controllerNodePool = operatorProvisioner.getApplication().getNodePools().stream()
+					.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.CONTROLLER)).findAny()
+					.orElseThrow(() -> new IllegalStateException(
+							"Kafka cluster configured in KRaft mode must define one KafkaNodePool resource with the \"controller\" role."));
+			int controllerNodePoolReplicas = controllerNodePool.getSpec().getReplicas();
+			Assertions.assertEquals(controllerNodePoolReplicas, operatorProvisioner.getControllerNodePoolPods().size(),
+					"Unexpected number of KafkaNodePool pods with \"controller\" role for '"
+							+ operatorProvisioner.getApplication().getName() + "'");
+			totalPodCount += controllerNodePoolReplicas;
+			final KafkaNodePool brokerNodePool = operatorProvisioner.getApplication().getNodePools().stream()
+					.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER)).findAny()
+					.orElseThrow(() -> new IllegalStateException(
+							"Kafka cluster configured in KRaft mode must define one KafkaNodePool resource with the \"broker\" role."));
+			int brokerNodePoolReplicas = brokerNodePool.getSpec().getReplicas();
+			Assertions.assertEquals(brokerNodePoolReplicas, operatorProvisioner.getBrokerNodePoolPods().size(),
+					"Unexpected number of KafkaNodePool pods with \"broker\" role for '"
+							+ operatorProvisioner.getApplication().getName() + "'");
+			totalPodCount += brokerNodePoolReplicas;
+		}
 		Assertions.assertEquals(kafkaReplicas, operatorProvisioner.getKafkaPods().size(),
 				"Unexpected number of Kafka pods for '" + operatorProvisioner.getApplication().getName() + "'");
-		Assertions.assertEquals(zookeeperReplicas, operatorProvisioner.getZookeeperPods().size(),
-				"Unexpected number of Zookeeper pods for '" + operatorProvisioner.getApplication().getName() + "'");
-		Assertions.assertEquals(1 + kafkaReplicas + zookeeperReplicas, operatorProvisioner.getPods().size(),
-				"Unexpected number of pods for '" + operatorProvisioner.getApplication().getName() + "'");
+		// "+ 1" here represents the operator controller pod
+		Assertions.assertEquals(totalPodCount + 1, operatorProvisioner.getPods().size(),
+				"Unexpected total number of pods for '" + operatorProvisioner.getApplication().getName() + "'");
 
 		String testTopicName = operatorProvisioner.getApplication().getTopics().get(0).getMetadata().getName();
 		Assertions.assertEquals(1, operatorProvisioner.kafkasTopicClient().list().getItems().stream().filter(
@@ -141,13 +166,37 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		Assertions.assertEquals(1, operatorProvisioner.getClusterOperatorPods().size(),
 				"Unexpected number of cluster operator pods for '" + KafkaOperatorProvisioner.OPERATOR_ID + "'");
 
-		int zookeeperReplicas = operatorProvisioner.getApplication().getKafka().getSpec().getZookeeper().getReplicas();
-
-		Assertions.assertEquals(scaledNum, operatorProvisioner.getKafkaPods().size(),
+		final int kafkaReplicas = operatorProvisioner.getKafkaPods().size();
+		Assertions.assertEquals(scaledNum, kafkaReplicas,
 				"Unexpected number of Kafka pods for '" + operatorProvisioner.getApplication().getName() + "'");
-		Assertions.assertEquals(zookeeperReplicas, operatorProvisioner.getZookeeperPods().size(),
-				"Unexpected number of Zookeeper pods for '" + operatorProvisioner.getApplication().getName() + "'");
-		Assertions.assertEquals(1 + scaledNum + zookeeperReplicas, operatorProvisioner.getPods().size(),
+		int totalPodCount = kafkaReplicas;
+		if (!operatorProvisioner.getApplication().isKRaftModeEnabled()) {
+			int zookeeperReplicas = operatorProvisioner.getApplication().getKafka().getSpec().getZookeeper().getReplicas();
+			Assertions.assertEquals(zookeeperReplicas, operatorProvisioner.getZookeeperPods().size(),
+					"Unexpected number of Zookeeper pods for '" + operatorProvisioner.getApplication().getName() + "'");
+			totalPodCount += zookeeperReplicas;
+		} else {
+			final KafkaNodePool controllerNodePool = operatorProvisioner.getApplication().getNodePools().stream()
+					.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.CONTROLLER)).findAny()
+					.orElseThrow(() -> new IllegalStateException(
+							"Kafka cluster configured in KRaft mode must define one KafkaNodePool resource with the \"controller\" role."));
+			int controllerNodePoolReplicas = controllerNodePool.getSpec().getReplicas();
+			Assertions.assertEquals(controllerNodePoolReplicas, operatorProvisioner.getControllerNodePoolPods().size(),
+					"Unexpected number of KafkaNodePool pods with \"controller\" role for '"
+							+ operatorProvisioner.getApplication().getName() + "'");
+			totalPodCount += controllerNodePoolReplicas;
+			final KafkaNodePool brokerNodePool = operatorProvisioner.getApplication().getNodePools().stream()
+					.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER)).findAny()
+					.orElseThrow(() -> new IllegalStateException(
+							"Kafka cluster configured in KRaft mode must define one KafkaNodePool resource with the \"broker\" role."));
+			int brokerNodePoolReplicas = brokerNodePool.getSpec().getReplicas();
+			Assertions.assertEquals(brokerNodePoolReplicas, operatorProvisioner.getBrokerNodePoolPods().size(),
+					"Unexpected number of KafkaNodePool pods with \"broker\" role for '"
+							+ operatorProvisioner.getApplication().getName() + "'");
+			totalPodCount += brokerNodePoolReplicas;
+		}
+		// "+ 1" here represents the operator controller pod
+		Assertions.assertEquals(totalPodCount + 1, operatorProvisioner.getPods().size(),
 				"Unexpected number of pods for '" + operatorProvisioner.getApplication().getName() + "'");
 	}
 
@@ -155,9 +204,18 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		Assertions.assertEquals(0, operatorProvisioner.getKafkaPods().size(),
 				"Looks like there are some leftover Kafka pods after '" + operatorProvisioner.getApplication().getName()
 						+ "' application deletion.");
-		Assertions.assertEquals(0, operatorProvisioner.getZookeeperPods().size(),
-				"Looks like there are some leftover Zookeeper pods after '" + operatorProvisioner.getApplication().getName()
-						+ "' application deletion.");
+		if (!operatorProvisioner.getApplication().isKRaftModeEnabled()) {
+			Assertions.assertEquals(0, operatorProvisioner.getZookeeperPods().size(),
+					"Looks like there are some leftover Zookeeper pods after '" + operatorProvisioner.getApplication().getName()
+							+ "' application deletion.");
+		} else {
+			Assertions.assertEquals(0, operatorProvisioner.getControllerNodePoolPods().size(),
+					"Unexpected number of KafkaNodePool pods with \"controller\" role for '"
+							+ operatorProvisioner.getApplication().getName() + "'");
+			Assertions.assertEquals(0, operatorProvisioner.getBrokerNodePoolPods().size(),
+					"Unexpected number of KafkaNodePool pods with \"broker\" role for '"
+							+ operatorProvisioner.getApplication().getName() + "'");
+		}
 		Assertions.assertEquals(0, operatorProvisioner.getPods().size(),
 				"Looks like there are some leftover pods after '" + operatorProvisioner.getApplication().getName()
 						+ "' application deletion.");
