@@ -25,7 +25,8 @@ import io.strimzi.api.kafka.model.topic.KafkaTopic;
 import io.strimzi.api.kafka.model.user.KafkaUser;
 
 /**
- * End user Application interface which presents Kafka operator application on OpenShift Container Platform.
+ * End user {@link org.jboss.intersmash.application.Application} interface which defines the contract of a
+ * Strimzi/Streams for Apache Kafka service deployed by the relevant operator.
  * <p>
  * The application will be deployed by:
  * <ul>
@@ -64,30 +65,33 @@ public interface KafkaOperatorApplication extends OperatorApplication {
 	}
 
 	/**
-	 * Provides Kafka Cluster definition. Note: even though the Kafka operator supports multiple instances of
-	 * these Kafka clusters, with current implementation we expect to have only one.
+	 * Provides {@link Kafka} CR definition.
+	 * <p>
+	 *     Note: even though the Kafka operator supports multiple instances of
+	 * 	   these Kafka clusters, with current implementation we expect to have only one.
+	 * </p>
 	 *
-	 * @return Kafka Cluster
+	 * @return {@link Kafka} instance.
 	 */
 	Kafka getKafka();
 
 	/**
-	 * Provides list of Kafka Topics definitions.
+	 * Provides list of {@link KafkaTopic} definitions.
 	 *
-	 * @return list of Kafka Topics
+	 * @return list of {@link KafkaTopic} instances.
 	 */
 	List<KafkaTopic> getTopics();
 
 	/**
-	 * Provides list of Kafka Users definitions.
+	 * Provides list of {@link KafkaUser} definitions.
 	 *
-	 * @return list of Kafka Users
+	 * @return list of {@link KafkaUser} instances.
 	 */
 	List<KafkaUser> getUsers();
 
 	/**
 	 * Provides list of {@link KafkaNodePool> definitions for runing Strimzi/Streams for Apache Kafka in KRaft mode.
-	 * <p>
+	 *
 	 * @return list of {@link KafkaNodePool> instances
 	 */
 	List<KafkaNodePool> getNodePools();
