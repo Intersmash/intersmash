@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.intersmash.testsuite.provision.openshift;
+package org.jboss.intersmash.testsuite.provision.openshift.kafka;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
+import cz.xtf.core.config.XTFConfig;
 import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
@@ -27,34 +28,56 @@ import org.jboss.intersmash.provision.openshift.KafkaOpenShiftOperatorProvisione
 import org.jboss.intersmash.provision.operator.KafkaOperatorProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import com.google.common.base.Strings;
+
+import cz.xtf.core.config.OpenShiftConfig;
+import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.strimzi.api.kafka.model.kafka.Kafka;
 import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
 import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
 import lombok.extern.slf4j.Slf4j;
+import uk.org.webcompere.systemstubs.jupiter.SystemStub;
+import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
+import uk.org.webcompere.systemstubs.properties.SystemProperties;
 
 /**
- * Simple class that tests basic features of {@link KafkaOpenShiftOperatorProvisioner}.
+ * Test class that verifies provisioning features of {@link KafkaOpenShiftOperatorProvisioner} on OpenShift.
+ * <p>
+ *     The test class verifies provisioning with both latest (i.e. KRaft based) and legacy (i.e. Zookeeper based)
+ *     versions of the Strimzi/Streams for Apache Kafka operator. In order to do so it uses respectively the
+ *     {@link KafkaKRaftEphemeralOpenShiftOperatorApplication} and {@link KafkaZookeperEphemeralOpenShiftOperatorApplication}
+ *     {@link org.jboss.intersmash.application.Application} descriptor variants.
+ * </p>
  */
 @Slf4j
 @CleanBeforeAll
 @OpenShiftTest
+@ExtendWith(SystemStubsExtension.class)
 public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCapable {
-	private static KafkaOperatorApplication application = OpenShiftProvisionerTestBase.getKafkaEphemeralApplication();
-	private static final KafkaOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();
 
-	private static KafkaOpenShiftOperatorProvisioner initializeOperatorProvisioner() {
-		KafkaOpenShiftOperatorProvisioner operatorProvisioner = new KafkaOpenShiftOperatorProvisioner(application);
-		return operatorProvisioner;
+	@SystemStub
+	private SystemProperties systemProperties;
+
+	private static Stream<Arguments> applicationProvider() {
+		return Stream.of(
+				Arguments.of(new KafkaKRaftEphemeralOpenShiftOperatorApplication(), "stable"),
+				Arguments.of(new KafkaZookeperEphemeralOpenShiftOperatorApplication(), "amq-streams-2.9.x")
+		);
 	}
 
-	@BeforeAll
-	public static void createOperatorGroup() throws IOException {
+	private KafkaOpenShiftOperatorProvisioner initializeOperatorProvisioner(
+			final KafkaOperatorApplication kafkaOperatorApplication) {
+		return new KafkaOpenShiftOperatorProvisioner(kafkaOperatorApplication);
+	}
+
+	private void createOperatorGroup(final KafkaOpenShiftOperatorProvisioner operatorProvisioner) throws IOException {
 		operatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
@@ -65,8 +88,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		// Let's skip subscribe operation here since we use regular deploy/undeploy where subscribe is called anyway.
 	}
 
-	@AfterAll
-	public static void removeOperatorGroup() {
+	private void removeOperatorGroup(final KafkaOpenShiftOperatorProvisioner operatorProvisioner) {
 		// clean any leftovers
 		operatorProvisioner.unsubscribe();
 		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
@@ -74,36 +96,47 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 	}
 
 	/**
-	 * Test actual deploy/scale/undeploy workflow by the operator
-	 * <p>
-	 * Does subscribe/unsubscribe on its own, so no need to call explicitly here
+	 * Test actual deploy/scale/undeploy workflow by both latest (i.e. KRaft based) and legacy (i.e. Zookeeper based)
+	 * versions of the Strimzi/Streams for Apache Kafka operator.
 	 */
-	@Test
-	public void basicProvisioningTest() {
-		operatorProvisioner.deploy();
+	@ParameterizedTest(name = "{argumentsWithNames}")
+	@MethodSource("applicationProvider")
+	public void basicProvisioningTest(KafkaOperatorApplication kafkaOperatorApplication, String desiredChannel)
+			throws IOException {
+		// set the desired channel
+		systemProperties.set("intersmash.kafka.operators.channel", desiredChannel);
+		// reload XTF configuration to take the desired channel into account...
+		XTFConfig.loadConfig();
+		final KafkaOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner(kafkaOperatorApplication);
+		createOperatorGroup(operatorProvisioner);
 		try {
-			verifyDeployed();
-			// when computing desired replicas, we need to discriminate whether the definition
-			// is still based on Kafka + Zookeper or KRaft (KafkaNodePool) based
-			final KafkaOperatorApplication application = operatorProvisioner.getApplication();
-			final Kafka applicationKafkaDefinition = application.getKafka();
-			final List<KafkaNodePool> applicationKafkaNodePoolDefinitions = application.getNodePools();
-			final KafkaNodePool brokerNodePoolDefinition = applicationKafkaNodePoolDefinitions.stream()
-					.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER))
-					.findFirst().orElseThrow(
-							() -> new IllegalStateException(
-									"There are no KafkaNodePool resources defined with the \"broker\" role"));
-			final int scaledNum = application.isKRaftModeEnabled() ? brokerNodePoolDefinition.getSpec().getReplicas()
-					: applicationKafkaDefinition.getSpec().getKafka().getReplicas() + 1;
-			operatorProvisioner.scale(scaledNum, true);
-			verifyScaledDeployed(scaledNum);
+			operatorProvisioner.deploy();
+			try {
+				verifyDeployed(operatorProvisioner);
+				// when computing desired replicas, we need to discriminate whether the definition
+				// is still based on Kafka + Zookeper or KRaft (KafkaNodePool) based
+				final KafkaOperatorApplication application = operatorProvisioner.getApplication();
+				final Kafka applicationKafkaDefinition = application.getKafka();
+				final List<KafkaNodePool> applicationKafkaNodePoolDefinitions = application.getNodePools();
+				final KafkaNodePool brokerNodePoolDefinition = applicationKafkaNodePoolDefinitions.stream()
+						.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER))
+						.findFirst().orElseThrow(
+								() -> new IllegalStateException(
+										"There are no KafkaNodePool resources defined with the \"broker\" role"));
+				final int scaledNum = application.isKRaftModeEnabled() ? brokerNodePoolDefinition.getSpec().getReplicas()
+						: applicationKafkaDefinition.getSpec().getKafka().getReplicas() + 1;
+				operatorProvisioner.scale(scaledNum, true);
+				verifyScaledDeployed(operatorProvisioner, scaledNum);
+			} finally {
+				operatorProvisioner.undeploy();
+			}
+			verifyUndeployed(operatorProvisioner);
 		} finally {
-			operatorProvisioner.undeploy();
+			removeOperatorGroup(operatorProvisioner);
 		}
-		verifyUndeployed();
 	}
 
-	private void verifyDeployed() {
+	private void verifyDeployed(final KafkaOpenShiftOperatorProvisioner operatorProvisioner) {
 		Assertions.assertEquals(1, operatorProvisioner.getClusterOperatorPods().size(),
 				"Unexpected number of cluster operator pods for '" + KafkaOperatorProvisioner.OPERATOR_ID + "'");
 
@@ -159,7 +192,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 				"Test user '" + testUserName + "' is not ready for use");
 	}
 
-	private void verifyScaledDeployed(int scaledNum) {
+	private void verifyScaledDeployed(final KafkaOpenShiftOperatorProvisioner operatorProvisioner, int scaledNum) {
 		Assertions.assertEquals(1, operatorProvisioner.getClusterOperatorPods().size(),
 				"Unexpected number of cluster operator pods for '" + KafkaOperatorProvisioner.OPERATOR_ID + "'");
 
@@ -197,7 +230,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 				"Unexpected number of pods for '" + operatorProvisioner.getApplication().getName() + "'");
 	}
 
-	private void verifyUndeployed() {
+	private void verifyUndeployed(final KafkaOpenShiftOperatorProvisioner operatorProvisioner) {
 		Assertions.assertEquals(0, operatorProvisioner.getKafkaPods().size(),
 				"Looks like there are some leftover Kafka pods after '" + operatorProvisioner.getApplication().getName()
 						+ "' application deletion.");
