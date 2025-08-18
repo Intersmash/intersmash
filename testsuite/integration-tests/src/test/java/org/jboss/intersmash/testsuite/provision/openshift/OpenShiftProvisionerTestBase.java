@@ -615,7 +615,7 @@ public class OpenShiftProvisionerTestBase {
 					kafka = new KafkaBuilder()
 							.withNewMetadata()
 							.withName(NAME)
-							.withLabels(Map.of(
+							.withAnnotations(Map.of(
 									KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_NODE_POOLS, "enabled",
 									KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_KRAFT, "enabled"
 							))
