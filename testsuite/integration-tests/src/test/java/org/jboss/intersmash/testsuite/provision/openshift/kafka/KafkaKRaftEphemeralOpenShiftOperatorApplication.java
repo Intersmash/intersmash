@@ -52,9 +52,9 @@ public class KafkaKRaftEphemeralOpenShiftOperatorApplication implements KafkaOpe
 	private static final String KAFKA_VERSION = KafkaOperatorApplication.KAFKA_VERSION;
 	private static final String KAFKA_METADATA_VERSION = KafkaOperatorApplication.METADATA_VERSION;
 	private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;
-	private static final int TOPIC_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.TOPIC_RECONCILIATION_INTERVAL_SECONDS
+	private static final long TOPIC_RECONCILIATION_INTERVAL_MS = KafkaOperatorApplication.TOPIC_RECONCILIATION_INTERVAL_SECONDS
 			* 1000;
-	private static final long USER_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.USER_RECONCILIATION_INTERVAL_SECONDS
+	private static final long USER_RECONCILIATION_INTERVAL_MS = KafkaOperatorApplication.USER_RECONCILIATION_INTERVAL_SECONDS
 			* 1000;
 
 	private static final int KAFKA_PORT = 9092;
@@ -90,9 +90,9 @@ public class KafkaKRaftEphemeralOpenShiftOperatorApplication implements KafkaOpe
 					.endMetadata()
 					.withNewSpec()
 					.withNewEntityOperator()
-					.withNewTopicOperator().withReconciliationIntervalSeconds(TOPIC_RECONCILIATION_INTERVAL_SECONDS)
+					.withNewTopicOperator().withReconciliationIntervalMs(TOPIC_RECONCILIATION_INTERVAL_MS)
 					.endTopicOperator()
-					.withNewUserOperator().withReconciliationIntervalSeconds(USER_RECONCILIATION_INTERVAL_SECONDS)
+					.withNewUserOperator().withReconciliationIntervalMs(USER_RECONCILIATION_INTERVAL_MS)
 					.endUserOperator()
 					.endEntityOperator()
 					.withNewKafka()

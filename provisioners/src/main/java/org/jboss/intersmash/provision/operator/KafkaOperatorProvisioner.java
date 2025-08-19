@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
@@ -40,6 +41,7 @@ import io.strimzi.api.kafka.model.kafka.Kafka;
 import io.strimzi.api.kafka.model.kafka.KafkaList;
 import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
 import io.strimzi.api.kafka.model.nodepool.KafkaNodePoolList;
+import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
 import io.strimzi.api.kafka.model.topic.KafkaTopic;
 import io.strimzi.api.kafka.model.topic.KafkaTopicList;
 import io.strimzi.api.kafka.model.user.KafkaUser;
@@ -72,22 +74,25 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	}
 
 	/**
-	 * Get list of all Kafka pods on OpenShift instance with regards this Kafka cluster.
-	 * <p>
-	 * @return list of Kafka broker pods
+	 * Provides access to the list of Strimzi/Streams for Apache Kafka pods with the {@link ProcessRoles#BROKER} role
+	 * @return A list of pods which is semantically meant to represent the actual Kafka pods, i.e. those
+	 * having the {@code strimzi.io/broker-role} label
 	 */
 	public List<Pod> getKafkaPods() {
 		return this.client().pods().inNamespace(this.client().getNamespace())
-				.withLabels(Map.of("app.kubernetes.io/name", "kafka", "strimzi.io/broker-role", "true"))
+				.withLabels(Map.of(
+						"app.kubernetes.io/name", "kafka",
+						KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_BROKER_ROLE, "true"))
 				.list().getItems();
 	}
 
 	/**
-	 * Get list of all Zookeeper pods on OpenShift instance with regards this Kafka cluster.
-	 * <br><br>
-	 * Note: Operator actually creates also pods for Kafka, instance entity operator pods and cluster operator pod.
-	 * But we list only Zookeeper related pods here.
-	 * @return list of Kafka pods
+	 * Provides access to the list of Strimzi/Streams for Apache Kafka Zookeeper (i.e. legacy implementation) pods.
+	 * <p>
+	 *     Note: The operator actually creates pods for Kafka brokers and the entity operator instance, and the cluster
+	 *     operator pod, but only Zookeeper related pods are returned here.
+	 * </p>
+	 * @return A collection of {@link Pod} instances representing the Zookeeper cluster pods.
 	 */
 	public List<Pod> getZookeeperPods() {
 		List<Pod> pods = this.client().pods().inNamespace(this.client().getNamespace())
@@ -125,7 +130,7 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 
 	public void waitForKafkaClusterCreation() {
 		FailFastCheck ffCheck = getFailFastCheck();
-		int expectedReplicas = getApplication().getKafka().getSpec().getKafka().getReplicas();
+		int expectedReplicas = getConfiguredReplicas();
 		new SimpleWaiter(() -> getKafkaResource().get() != null)
 				.failFast(ffCheck)
 				.reason("Wait for Kafka cluster instance to be initialized.")
@@ -246,6 +251,61 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 				"Waiting for user '" + userName + "' condition to be 'Ready'").level(Level.DEBUG).waitFor();
 	}
 
+	/**
+	 * Returns the number of configured Kafka replicas, based on whether the service is configured to enable
+	 * the legacy (i.e. Zookeeper based) or latest (i.e. KRaft based) mode.
+	 * @return The number of configured Kafka replicas.
+	 */
+	public int getConfiguredReplicas() {
+		// when computing desired replicas, we need to discriminate whether the definition
+		// is still based on Kafka + Zookeeper or KRaft (KafkaNodePool) based
+		final KafkaOperatorApplication application = getApplication();
+		final Kafka applicationKafkaDefinition = application.getKafka();
+		if (application.isKRaftModeEnabled()) {
+			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
+			if (brokerNodePoolDefinitions.size() != 1) {
+				throw new IllegalStateException(
+						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+			}
+			return brokerNodePoolDefinitions.get(0).getSpec().getReplicas();
+		}
+		return applicationKafkaDefinition.getSpec().getKafka().getReplicas();
+	}
+
+	/**
+	 * Sets the number of configured Kafka replicas, based on whether the service is configured to enable
+	 * the legacy (i.e. Zookeeper based) or latest (i.e. KRaft based) mode.
+	 */
+	protected void setConfiguredReplicas(final int configuredReplicas) {
+		// when setting desired replicas, we need to discriminate whether the definition
+		// is still based on Kafka + Zookeeper or KRaft (KafkaNodePool) based
+		final KafkaOperatorApplication application = getApplication();
+		final Kafka applicationKafkaDefinition = application.getKafka();
+		if (application.isKRaftModeEnabled()) {
+			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
+			if (brokerNodePoolDefinitions.size() != 1) {
+				throw new IllegalStateException(
+						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+			}
+			brokerNodePoolDefinitions.get(0).getSpec().setReplicas(configuredReplicas);
+		} else {
+			applicationKafkaDefinition.getSpec().getKafka().setReplicas(configuredReplicas);
+		}
+	}
+
+	/**
+	 * Provides access to the {@link KafkaNodePool} instances in {@link KafkaOperatorApplication#getNodePools()} to
+	 * return those having the {@link ProcessRoles#BROKER} label.
+	 * @return A list of {@link KafkaNodePool} instances in {@link KafkaOperatorApplication#getNodePools()} which are
+	 * configured with the {@code  strimzi.io/broker-role} label.
+	 */
+	private List<KafkaNodePool> getApplicationKafkaBrokerNodePools() {
+		final List<KafkaNodePool> applicationKafkaNodePoolDefinitions = getApplication().getNodePools();
+		return applicationKafkaNodePoolDefinitions.stream()
+				.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER))
+				.collect(Collectors.toList());
+	}
+
 	// =================================================================================================================
 	// Related to generic operator provisioning behavior
 	// =================================================================================================================
@@ -357,9 +417,21 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 
 	@Override
 	public void scale(int replicas, boolean wait) {
-		final Kafka kafka = getApplication().getKafka();
-		kafka.getSpec().getKafka().setReplicas(replicas);
-		kafkaResourceClient().resource(kafka).update();
+		final KafkaOperatorApplication application = getApplication();
+		final Kafka kafka = application.getKafka();
+		setConfiguredReplicas(replicas);
+		// depending on whether Zookeeper or KRaft support, the scale logic is implemented by updating either the
+		// Kafka CR or KafkaNodePool (broker) CR
+		if (application.isKRaftModeEnabled()) {
+			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
+			if (brokerNodePoolDefinitions.size() != 1) {
+				throw new IllegalStateException(
+						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+			}
+			kafkaNodePoolResourceClient().resource(brokerNodePoolDefinitions.get(0)).update();
+		} else {
+			kafkaResourceClient().resource(kafka).update();
+		}
 		if (wait) {
 			waitForKafkaClusterCreation();
 		}
@@ -505,13 +577,5 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 
 	public KafkaTopicList getKafkaTopicResources() {
 		return kafkaTopicResourceClient().list();
-	}
-
-	/**
-	 * Access the list of {@link KafkaNodePool} Custom Resources in the cluster.
-	 * @return A List of {@link KafkaNodePool} cluster CRs.
-	 */
-	public KafkaNodePoolList getKafkaNodePoolResources() {
-		return kafkaNodePoolResourceClient().list();
 	}
 }
