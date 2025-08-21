@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -47,7 +46,6 @@ import org.jboss.intersmash.application.openshift.template.Eap7Template;
 import org.jboss.intersmash.application.openshift.template.PostgreSQLTemplate;
 import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
-import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanBuilder;
@@ -76,18 +74,6 @@ import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
 import io.opendatahub.datasciencecluster.v1.DataScienceClusterBuilder;
 import io.opendatahub.dscinitialization.v1.DSCInitialization;
 import io.opendatahub.dscinitialization.v1.DSCInitializationBuilder;
-import io.strimzi.api.kafka.model.AclOperation;
-import io.strimzi.api.kafka.model.AclResourcePatternType;
-import io.strimzi.api.kafka.model.AclRule;
-import io.strimzi.api.kafka.model.AclRuleBuilder;
-import io.strimzi.api.kafka.model.Kafka;
-import io.strimzi.api.kafka.model.KafkaBuilder;
-import io.strimzi.api.kafka.model.KafkaTopic;
-import io.strimzi.api.kafka.model.KafkaTopicBuilder;
-import io.strimzi.api.kafka.model.KafkaUser;
-import io.strimzi.api.kafka.model.KafkaUserBuilder;
-import io.strimzi.api.kafka.model.listener.arraylistener.GenericKafkaListener;
-import io.strimzi.api.kafka.model.listener.arraylistener.KafkaListenerType;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -554,142 +540,6 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public PostgreSQLTemplate getTemplate() {
 				return PostgreSQLTemplate.POSTGRESQL_EPHEMERAL;
-			}
-
-			@Override
-			public String getName() {
-				return NAME;
-			}
-		};
-	}
-
-	/**
-	 * This method serves just for testing purpose. It implements necessary methods of {@link
-	 * KafkaOperatorApplication} interface so we can successfully use it in our tests.
-	 *
-	 * @return instance of {@link KafkaOperatorApplication} to be used for test purposes
-	 */
-	public static KafkaOperatorApplication getKafkaApplication() {
-		return new KafkaOperatorApplication() {
-			static final String NAME = "kafka-test";
-			private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;
-			private static final int TOPIC_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.TOPIC_RECONCILIATION_INTERVAL_SECONDS;
-			private static final long USER_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.USER_RECONCILIATION_INTERVAL_SECONDS;
-
-			private static final int KAFKA_PORT = 9092;
-
-			private Kafka kafka;
-			private List<KafkaTopic> topics;
-			private List<KafkaUser> users;
-
-			@Override
-			public Kafka getKafka() {
-				if (kafka == null) {
-					Map<String, Object> config = new HashMap<>();
-					config.put("inter.broker.protocol.version", KafkaOperatorApplication.INTER_BROKER_PROTOCOL_VERSION);
-					config.put("offsets.topic.replication.factor", KAFKA_INSTANCE_NUM);
-					config.put("transaction.state.log.min.isr", KAFKA_INSTANCE_NUM);
-					config.put("transaction.state.log.replication.factor", KAFKA_INSTANCE_NUM);
-
-					config.put("default.replication.factor", KAFKA_INSTANCE_NUM);
-					config.put("min.insync.replicas", 2);
-
-					GenericKafkaListener listener = new GenericKafkaListener();
-					listener.setName("plain");
-					listener.setPort(KAFKA_PORT);
-					listener.setType(KafkaListenerType.INTERNAL);
-					listener.setTls(false);
-
-					// Initialize Kafka resource
-					kafka = new KafkaBuilder()
-							.withNewMetadata().withName(NAME).endMetadata()
-							.withNewSpec()
-							.withNewEntityOperator()
-							.withNewTopicOperator().withReconciliationIntervalSeconds(TOPIC_RECONCILIATION_INTERVAL_SECONDS)
-							.endTopicOperator()
-							.withNewUserOperator().withReconciliationIntervalSeconds(USER_RECONCILIATION_INTERVAL_SECONDS)
-							.endUserOperator()
-							.endEntityOperator()
-							.withNewKafka()
-							.withConfig(config)
-							.withListeners(listener)
-							.withNewKafkaAuthorizationSimple()
-							.endKafkaAuthorizationSimple()
-							.withReplicas(KAFKA_INSTANCE_NUM)
-							.withNewEphemeralStorage().endEphemeralStorage()
-							.withVersion(KafkaOperatorApplication.KAFKA_VERSION)
-							.endKafka()
-							.withNewZookeeper()
-							.withReplicas(KAFKA_INSTANCE_NUM)
-							.withNewEphemeralStorage().endEphemeralStorage()
-							.endZookeeper()
-							.endSpec()
-							.build();
-				}
-
-				return kafka;
-			}
-
-			@Override
-			public List<KafkaTopic> getTopics() {
-				if (topics == null) {
-					topics = new LinkedList<>();
-
-					Map<String, String> labels = new HashMap<>();
-					labels.put("strimzi.io/cluster", NAME);
-
-					KafkaTopic topic = new KafkaTopicBuilder()
-							.withNewMetadata()
-							.withName("test-topic")
-							.withLabels(labels)
-							.endMetadata()
-							.withNewSpec()
-							.withPartitions(1)
-							.withReplicas(1)
-							.endSpec()
-							.build();
-
-					topics.add(topic);
-				}
-
-				return topics;
-			}
-
-			@Override
-			public List<KafkaUser> getUsers() {
-				if (users == null) {
-					users = new LinkedList<>();
-
-					Map<String, String> labels = new HashMap<>();
-					labels.put("strimzi.io/cluster", NAME);
-
-					AclRule acl = new AclRuleBuilder()
-							.withHost("*")
-							.withOperation(AclOperation.DESCRIBE)
-							.withNewAclRuleTopicResource()
-							.withName("test-topic")
-							.withPatternType(AclResourcePatternType.LITERAL)
-							.endAclRuleTopicResource()
-							.build();
-
-					KafkaUser user = new KafkaUserBuilder()
-							.withNewMetadata()
-							.withName("test-user")
-							.withLabels(labels)
-							.endMetadata()
-							.withNewSpec()
-							.withNewKafkaUserTlsClientAuthentication()
-							.endKafkaUserTlsClientAuthentication()
-							.withNewKafkaUserAuthorizationSimple()
-							.withAcls(acl)
-							.endKafkaUserAuthorizationSimple()
-							.endSpec()
-							.build();
-
-					users.add(user);
-				}
-
-				return users;
 			}
 
 			@Override

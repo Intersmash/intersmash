@@ -19,12 +19,14 @@ import java.util.List;
 
 import org.jboss.intersmash.provision.operator.KafkaOperatorProvisioner;
 
-import io.strimzi.api.kafka.model.Kafka;
-import io.strimzi.api.kafka.model.KafkaTopic;
-import io.strimzi.api.kafka.model.KafkaUser;
+import io.strimzi.api.kafka.model.kafka.Kafka;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
+import io.strimzi.api.kafka.model.topic.KafkaTopic;
+import io.strimzi.api.kafka.model.user.KafkaUser;
 
 /**
- * End user Application interface which presents Kafka operator application on OpenShift Container Platform.
+ * End user {@link org.jboss.intersmash.application.Application} interface which defines the contract of a
+ * Strimzi/Streams for Apache Kafka service deployed by the relevant operator.
  * <p>
  * The application will be deployed by:
  * <ul>
@@ -33,38 +35,69 @@ import io.strimzi.api.kafka.model.KafkaUser;
  */
 public interface KafkaOperatorApplication extends OperatorApplication {
 
-	String KAFKA_VERSION = "3.8.0";
-	String INTER_BROKER_PROTOCOL_VERSION = "3.8";
+	String KAFKA_VERSION = "4.0.0";
+	/**
+	 * The {@code metadata.version} property is only relevant to Kafka versions that support KRaft,
+	 * and we set the default to be aligned with {@link KafkaOperatorApplication#KAFKA_VERSION}.
+	 */
+	String METADATA_VERSION = "4.0.-IV3";
 	int KAFKA_INSTANCE_NUM = 3;
 	int TOPIC_RECONCILIATION_INTERVAL_SECONDS = 90;
 	long USER_RECONCILIATION_INTERVAL_SECONDS = 120L;
+	String STRIMZI_IO_KAFKA_LABEL_CLUSTER = "strimzi.io/cluster";
+	String STRIMZI_IO_KAFKA_LABEL_NODE_POOLS = "strimzi.io/node-pools";
+	String STRIMZI_IO_KAFKA_LABEL_KRAFT = "strimzi.io/kraft";
+	String STRIMZI_IO_KAFKA_LABEL_CONTROLLER_ROLE = "strimzi.io/controller-role";
+	String STRIMZI_IO_KAFKA_LABEL_BROKER_ROLE = "strimzi.io/broker-role";
 
 	/**
-	 * Provides Kafka Cluster definition. Note: even though the Kafka operator supports multiple instances of
-	 * these Kafka clusters, with current implementation we expect to have only one.
+	 * Whether the Kafka KRaft mode is supported.
+	 * <p>
+	 *     KRaft mode is meant to support Kafka 4, and it replaces the Zookeper implementation, which is now deprecated
+	 *     for removal.<br>
+	 *     In terms of versions, KRaft mode must be enabled since Strimzi 0.46 and Stream for Apache Kafka 3.0.
+	 * </p>
+	 * @return A boolean indicating whether the Strimzi/Streams for Apache Kafka service is configured to work
+	 * in KRaft mode.
+	 */
+	default boolean isKRaftModeEnabled() {
+		return true;
+	}
+
+	/**
+	 * Provides {@link Kafka} CR definition.
+	 * <p>
+	 *     Note: even though the Kafka operator supports multiple instances of
+	 * 	   these Kafka clusters, with current implementation we expect to have only one.
+	 * </p>
 	 *
-	 * @return Kafka Cluster
+	 * @return {@link Kafka} instance.
 	 */
 	Kafka getKafka();
 
 	/**
-	 * Provides list of Kafka Topics definitions.
+	 * Provides list of {@link KafkaTopic} definitions.
 	 *
-	 * @return list of Kafka Topics
+	 * @return list of {@link KafkaTopic} instances.
 	 */
 	List<KafkaTopic> getTopics();
 
 	/**
-	 * Provides list of Kafka Users definitions.
+	 * Provides list of {@link KafkaUser} definitions.
 	 *
-	 * @return list of Kafka Users
+	 * @return list of {@link KafkaUser} instances.
 	 */
 	List<KafkaUser> getUsers();
 
+	/**
+	 * Provides list of {@link KafkaNodePool> definitions for runing Strimzi/Streams for Apache Kafka in KRaft mode.
+	 *
+	 * @return list of {@link KafkaNodePool> instances
+	 */
+	List<KafkaNodePool> getNodePools();
+
 	// TODO will be implemented on demand:
 	//	List<KafkaConnect> getKafkaConnects();
-	//	List<KafkaConnectS2I> getKafkaConnectSourceToImage();
-	//	List<KafkaMirrorMaker> getKafkaMirrorMaker();
 	//	List<KafkaBridge> getKafkaBridge();
 	//	List<KafkaConnector> getKafkaConnectors();
 	//	List<KafkaMirrorMaker2> getKafkaMirrorMaker2s();

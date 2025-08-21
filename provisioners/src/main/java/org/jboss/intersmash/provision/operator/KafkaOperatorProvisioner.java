@@ -16,8 +16,10 @@
 package org.jboss.intersmash.provision.operator;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
+import java.util.stream.Collectors;
 
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
@@ -35,18 +37,21 @@ import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.strimzi.api.kafka.Crds;
-import io.strimzi.api.kafka.KafkaList;
-import io.strimzi.api.kafka.KafkaTopicList;
-import io.strimzi.api.kafka.KafkaUserList;
-import io.strimzi.api.kafka.model.Kafka;
-import io.strimzi.api.kafka.model.KafkaTopic;
-import io.strimzi.api.kafka.model.KafkaUser;
+import io.strimzi.api.kafka.model.kafka.Kafka;
+import io.strimzi.api.kafka.model.kafka.KafkaList;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePoolList;
+import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
+import io.strimzi.api.kafka.model.topic.KafkaTopic;
+import io.strimzi.api.kafka.model.topic.KafkaTopicList;
+import io.strimzi.api.kafka.model.user.KafkaUser;
+import io.strimzi.api.kafka.model.user.KafkaUserList;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Deploys an application that implements {@link KafkaOperatorApplication} interface and which is extended by this
- * class.
+ * Deploys an application that implements {@link KafkaOperatorApplication} interface via the
+ * Strimzi/Streams for Apache Kafka operator.
  */
 @Slf4j
 public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesClient> extends
@@ -59,75 +64,95 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	// =================================================================================================================
 	// Kafka related
 	// =================================================================================================================
+	/**
+	 * Provides access to the list of Strimzi/Streams for Apache Kafka operator pods.
+	 * @return A list of {@link Pod} instances representing Strimzi/Streams for Apache Kafka operator pods.
+	 */
 	public List<Pod> getClusterOperatorPods() {
 		return this.client().pods().inNamespace(this.client().getNamespace())
 				.withLabel("strimzi.io/kind", "cluster-operator").list().getItems();
 	}
 
 	/**
-	 * Get list of all Kafka pods on OpenShift instance with regards this Kafka cluster.
-	 * <br><br>
-	 * Note: Operator actually creates also pods for Kafka, instance entity operator pods and cluster operator pod.
-	 * But we list only Kafka related pods here.
-	 * @return list of Kafka pods
+	 * Provides access to the list of Strimzi/Streams for Apache Kafka pods with the {@link ProcessRoles#BROKER} role
+	 * @return A list of pods which is semantically meant to represent the actual Kafka pods, i.e. those
+	 * having the {@code strimzi.io/broker-role} label
 	 */
 	public List<Pod> getKafkaPods() {
-		List<Pod> kafkaPods = this.client().pods().inNamespace(this.client().getNamespace())
-				.withLabel("app.kubernetes.io/name", "kafka").list().getItems();
-		// Let's filter out just those who match particular naming
-		for (Pod kafkaPod : kafkaPods) {
-			if (!kafkaPod.getMetadata().getName().contains(getApplication().getName() + "-kafka-")) {
-				kafkaPods.remove(kafkaPod);
-			}
-		}
-
-		return kafkaPods;
+		return this.client().pods().inNamespace(this.client().getNamespace())
+				.withLabels(Map.of(
+						"app.kubernetes.io/name", "kafka",
+						KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_BROKER_ROLE, "true"))
+				.list().getItems();
 	}
 
 	/**
-	 * Get list of all Zookeeper pods on OpenShift instance with regards this Kafka cluster.
-	 * <br><br>
-	 * Note: Operator actually creates also pods for Kafka, instance entity operator pods and cluster operator pod.
-	 * But we list only Zookeeper related pods here.
-	 * @return list of Kafka pods
+	 * Provides access to the list of Strimzi/Streams for Apache Kafka Zookeeper (i.e. legacy implementation) pods.
+	 * <p>
+	 *     Note: The operator actually creates pods for Kafka brokers and the entity operator instance, and the cluster
+	 *     operator pod, but only Zookeeper related pods are returned here.
+	 * </p>
+	 * @return A collection of {@link Pod} instances representing the Zookeeper cluster pods.
 	 */
 	public List<Pod> getZookeeperPods() {
-		List<Pod> kafkaPods = this.client().pods().inNamespace(this.client().getNamespace())
+		List<Pod> pods = this.client().pods().inNamespace(this.client().getNamespace())
 				.withLabel("app.kubernetes.io/name", "zookeeper").list().getItems();
 		// Let's filter out just those who match particular naming
-		for (Pod kafkaPod : kafkaPods) {
-			if (!kafkaPod.getMetadata().getName().contains(getApplication().getName() + "-zookeeper-")) {
-				kafkaPods.remove(kafkaPod);
+		for (Pod pod : pods) {
+			if (!pod.getMetadata().getName().contains(getApplication().getName() + "-zookeeper-")) {
+				pods.remove(pod);
 			}
 		}
-		return kafkaPods;
+		return pods;
+	}
+
+	/**
+	 * When operating in KRaft mode, returns the pods generated by the {@link io.strimzi.api.kafka.model.nodepool.KafkaNodePool} CR
+	 * having the {@code role} set to {@link io.strimzi.api.kafka.model.nodepool.ProcessRoles#CONTROLLER}
+	 *
+	 * @return A list of {@link Pod} instances that represent the Kafka KRaft {@code controller} nodes.
+	 */
+	public List<Pod> getControllerNodePoolPods() {
+		return this.client().pods().inNamespace(this.client().getNamespace())
+				.withLabel(KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_CONTROLLER_ROLE, "true").list().getItems();
+	}
+
+	/**
+	 * When operating in KRaft mode, returns the pods generated by the {@link io.strimzi.api.kafka.model.nodepool.KafkaNodePool} CR
+	 * having the {@code role} set to {@link io.strimzi.api.kafka.model.nodepool.ProcessRoles#BROKER}
+	 *
+	 * @return A list of {@link Pod} instances that represent the Kafka KRaft {@code broker} nodes.
+	 */
+	public List<Pod> getBrokerNodePoolPods() {
+		return this.client().pods().inNamespace(this.client().getNamespace())
+				.withLabel(KafkaOperatorApplication.STRIMZI_IO_KAFKA_LABEL_BROKER_ROLE, "true").list().getItems();
 	}
 
 	public void waitForKafkaClusterCreation() {
 		FailFastCheck ffCheck = getFailFastCheck();
-		int expectedReplicas = getApplication().getKafka().getSpec().getKafka().getReplicas();
-		new SimpleWaiter(() -> kafka().get() != null)
+		int expectedReplicas = getConfiguredReplicas();
+		new SimpleWaiter(() -> getKafkaResource().get() != null)
 				.failFast(ffCheck)
 				.reason("Wait for Kafka cluster instance to be initialized.")
 				.level(Level.DEBUG)
 				.waitFor();
-		new SimpleWaiter(() -> kafka().get().getStatus() != null)
+		new SimpleWaiter(() -> getKafkaResource().get().getStatus() != null)
 				.failFast(ffCheck)
 				.reason("Wait for a status field of the Kafka cluster instance to be initialized.")
 				.level(Level.DEBUG)
 				.waitFor();
-		new SimpleWaiter(() -> kafka().get().getStatus().getConditions() != null)
+		new SimpleWaiter(() -> getKafkaResource().get().getStatus().getConditions() != null)
 				.failFast(ffCheck)
 				.reason("Wait for a conditions field of the Kafka cluster instance to be initialized.")
 				.level(Level.DEBUG)
 				.waitFor();
-		new SimpleWaiter(() -> !kafka().get().getStatus().getConditions().isEmpty())
+		new SimpleWaiter(() -> !getKafkaResource().get().getStatus().getConditions().isEmpty())
 				.failFast(ffCheck)
 				.reason("Wait for a conditions field of the Kafka cluster instance to contain at least one condition.")
 				.level(Level.DEBUG)
 				.waitFor();
 		new SimpleWaiter(
-				() -> kafka().get().getStatus().getConditions().stream()
+				() -> getKafkaResource().get().getStatus().getConditions().stream()
 						.anyMatch(c -> "Ready".equals(c.getType()) && "True".equals(c.getStatus())))
 				.failFast(ffCheck)
 				.reason("Wait for a conditions field of the Kafka cluster instance to be in state 'Ready'.")
@@ -160,7 +185,7 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 			log.error(completeMessage);
 		}
 
-		kafka().get().getStatus().getConditions().stream().forEach(c -> {
+		getKafkaResource().get().getStatus().getConditions().stream().forEach(c -> {
 			String conditionMessage = "    |- " + c.getType() + ":" + c.getStatus() + ":" + c.getMessage();
 			if (success) {
 				log.info(conditionMessage);
@@ -173,26 +198,26 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	private void waitForKafkaTopicCreation(KafkaTopic topic) {
 		String topicName = topic.getMetadata().getName();
 
-		new SimpleWaiter(() -> kafkasTopicClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaTopicResources().getItems().stream().filter(
 				t -> topicName.equals(t.getMetadata().getName())).count() == 1,
 				"Waiting for topic '" + topicName + "' to be created").level(Level.DEBUG).waitFor();
 
-		new SimpleWaiter(() -> kafkasTopicClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaTopicResources().getItems().stream().filter(
 				t -> topicName.equals(t.getMetadata().getName())).allMatch(t -> t.getStatus() != null),
 				"Waiting for topic '" + topicName + "' status is non-null").level(Level.DEBUG).waitFor();
 
-		new SimpleWaiter(() -> kafkasTopicClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaTopicResources().getItems().stream().filter(
 				t -> topicName.equals(t.getMetadata().getName())).allMatch(t -> t.getStatus().getConditions() != null),
 				"Waiting for topic '" + topicName + "' conditions are non-null").level(Level.DEBUG).waitFor();
 
-		new SimpleWaiter(() -> kafkasTopicClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaTopicResources().getItems().stream().filter(
 				t -> topicName.equals(t.getMetadata().getName())).allMatch(
 						t -> t.getStatus().getConditions().size() > 0),
 				"Waiting for topic '" + topicName + "' conditions size is greater than 0").level(
 						Level.DEBUG)
 				.waitFor();
 
-		new SimpleWaiter(() -> kafkasTopicClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaTopicResources().getItems().stream().filter(
 				t -> topicName.equals(t.getMetadata().getName())).allMatch(
 						t -> "Ready".equals(t.getStatus().getConditions().get(0).getType())),
 				"Waiting for topic '" + topicName + "' condition to be 'Ready'").level(Level.DEBUG).waitFor();
@@ -201,33 +226,88 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	private void waitForKafkaUserCreation(KafkaUser user) {
 		String userName = user.getMetadata().getName();
 
-		new SimpleWaiter(() -> kafkasUserClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaUserResources().getItems().stream().filter(
 				u -> userName.equals(u.getMetadata().getName())).count() == 1,
 				"Waiting for user '" + userName + "' to be created").level(Level.DEBUG).waitFor();
 
-		new SimpleWaiter(() -> kafkasUserClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaUserResources().getItems().stream().filter(
 				u -> userName.equals(u.getMetadata().getName())).allMatch(u -> u.getStatus() != null),
 				"Waiting for user '" + userName + "' status is non-null").level(Level.DEBUG).waitFor();
 
-		new SimpleWaiter(() -> kafkasUserClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaUserResources().getItems().stream().filter(
 				u -> userName.equals(u.getMetadata().getName())).allMatch(u -> u.getStatus().getConditions() != null),
 				"Waiting for user '" + userName + "' conditions are non-null").level(Level.DEBUG).waitFor();
 
-		new SimpleWaiter(() -> kafkasUserClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaUserResources().getItems().stream().filter(
 				u -> userName.equals(u.getMetadata().getName())).allMatch(
 						u -> u.getStatus().getConditions().size() > 0),
 				"Waiting for user '" + userName + "' conditions size is greater than 0").level(
 						Level.DEBUG)
 				.waitFor();
 
-		new SimpleWaiter(() -> kafkasUserClient().list().getItems().stream().filter(
+		new SimpleWaiter(() -> getKafkaUserResources().getItems().stream().filter(
 				u -> userName.equals(u.getMetadata().getName())).allMatch(
 						u -> "Ready".equals(u.getStatus().getConditions().get(0).getType())),
 				"Waiting for user '" + userName + "' condition to be 'Ready'").level(Level.DEBUG).waitFor();
 	}
 
+	/**
+	 * Returns the number of configured Kafka replicas, based on whether the service is configured to enable
+	 * the legacy (i.e. Zookeeper based) or latest (i.e. KRaft based) mode.
+	 * @return The number of configured Kafka replicas.
+	 */
+	public int getConfiguredReplicas() {
+		// when computing desired replicas, we need to discriminate whether the definition
+		// is still based on Kafka + Zookeeper or KRaft (KafkaNodePool) based
+		final KafkaOperatorApplication application = getApplication();
+		final Kafka applicationKafkaDefinition = application.getKafka();
+		if (application.isKRaftModeEnabled()) {
+			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
+			if (brokerNodePoolDefinitions.size() != 1) {
+				throw new IllegalStateException(
+						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+			}
+			return brokerNodePoolDefinitions.get(0).getSpec().getReplicas();
+		}
+		return applicationKafkaDefinition.getSpec().getKafka().getReplicas();
+	}
+
+	/**
+	 * Sets the number of configured Kafka replicas, based on whether the service is configured to enable
+	 * the legacy (i.e. Zookeeper based) or latest (i.e. KRaft based) mode.
+	 */
+	protected void setConfiguredReplicas(final int configuredReplicas) {
+		// when setting desired replicas, we need to discriminate whether the definition
+		// is still based on Kafka + Zookeeper or KRaft (KafkaNodePool) based
+		final KafkaOperatorApplication application = getApplication();
+		final Kafka applicationKafkaDefinition = application.getKafka();
+		if (application.isKRaftModeEnabled()) {
+			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
+			if (brokerNodePoolDefinitions.size() != 1) {
+				throw new IllegalStateException(
+						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+			}
+			brokerNodePoolDefinitions.get(0).getSpec().setReplicas(configuredReplicas);
+		} else {
+			applicationKafkaDefinition.getSpec().getKafka().setReplicas(configuredReplicas);
+		}
+	}
+
+	/**
+	 * Provides access to the {@link KafkaNodePool} instances in {@link KafkaOperatorApplication#getNodePools()} to
+	 * return those having the {@link ProcessRoles#BROKER} label.
+	 * @return A list of {@link KafkaNodePool} instances in {@link KafkaOperatorApplication#getNodePools()} which are
+	 * configured with the {@code  strimzi.io/broker-role} label.
+	 */
+	private List<KafkaNodePool> getApplicationKafkaBrokerNodePools() {
+		final List<KafkaNodePool> applicationKafkaNodePoolDefinitions = getApplication().getNodePools();
+		return applicationKafkaNodePoolDefinitions.stream()
+				.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER))
+				.collect(Collectors.toList());
+	}
+
 	// =================================================================================================================
-	// Related to generic provisioning behavior
+	// Related to generic operator provisioning behavior
 	// =================================================================================================================
 	@Override
 	protected String getOperatorCatalogSource() {
@@ -253,28 +333,35 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	@Override
 	public void deploy() {
 		subscribe();
-		if (getApplication().getKafka() != null) {
+		final Kafka applicationKafka = getApplication().getKafka();
+		if (applicationKafka != null) {
+			final boolean isKRaftModeEnabled = getApplication().isKRaftModeEnabled();
+			final List<KafkaNodePool> applicationKafkaNodePools = getApplication().getNodePools();
+			// When KRaft mode is enabled, first create KafkaNodePool resources
+			if (isKRaftModeEnabled) {
+				applicationKafkaNodePools.stream().forEach(np -> kafkaNodePoolResourceClient().resource(np).create());
+			}
 			// Create a Kafka cluster instance
-			kafkasClient().createOrReplace(getApplication().getKafka());
+			kafkaResourceClient().resource(applicationKafka).create();
 			waitForKafkaClusterCreation();
 		}
-		if (getApplication().getTopics() != null) {
-			for (KafkaTopic topic : getApplication().getTopics()) {
+		final List<KafkaTopic> applicationKafkaTopics = getApplication().getTopics();
+		if (applicationKafkaTopics != null) {
+			applicationKafkaTopics.stream().forEach(topic -> {
 				// Create a Kafka topic instance
-				kafkasTopicClient().createOrReplace(topic);
-
+				kafkaTopicResourceClient().resource(topic).create();
 				// Wait for it to be created and ready...
 				waitForKafkaTopicCreation(topic);
-			}
+			});
 		}
-		if (getApplication().getUsers() != null) {
-			for (KafkaUser user : getApplication().getUsers()) {
+		final List<KafkaUser> applicationKafkaUsers = getApplication().getUsers();
+		if (applicationKafkaUsers != null) {
+			applicationKafkaUsers.stream().forEach(user -> {
 				// Create a Kafka user instance
-				kafkasUserClient().createOrReplace(user);
-
+				kafkaUserResourceClient().resource(user).create();
 				// Wait for it to be created and ready...
 				waitForKafkaUserCreation(user);
-			}
+			});
 		}
 	}
 
@@ -284,29 +371,39 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 		List<StatusDetails> deletionDetails;
 		boolean deleted;
 		if (getApplication().getUsers() != null) {
-			deletionDetails = kafkasUserClient().delete();
+			deletionDetails = kafkaUserResourceClient().delete();
 			deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
 			if (!deleted) {
 				log.warn("Wasn't able to remove all relevant 'Kafka User' resources created for '{}' instance!",
 						getApplication().getName());
 			}
-			new SimpleWaiter(() -> kafkasUserClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
+			new SimpleWaiter(() -> kafkaUserResourceClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
 		}
 		if (getApplication().getTopics() != null) {
-			deletionDetails = kafkasTopicClient().delete();
+			deletionDetails = kafkaTopicResourceClient().delete();
 			deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
 			if (!deleted) {
 				log.warn("Wasn't able to remove all relevant 'Kafka Topic' resources created for '{}' instance!",
 						getApplication().getName());
 			}
-			new SimpleWaiter(() -> kafkasTopicClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
+			new SimpleWaiter(() -> kafkaTopicResourceClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
 		}
 		if (getApplication().getKafka() != null) {
-			deletionDetails = kafka().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
+			deletionDetails = kafkaResourceClient().withPropagationPolicy(DeletionPropagation.FOREGROUND).delete();
 			deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
 			if (!deleted) {
 				log.warn("Wasn't able to remove all relevant 'Kafka' resources created for '{}' instance!",
 						getApplication().getName());
+			}
+			// remove also KafkaNodePool CRs when in KRaft mode
+			if (getApplication().isKRaftModeEnabled()) {
+				deletionDetails = kafkaNodePoolResourceClient().delete();
+				deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+				if (!deleted) {
+					log.warn("Wasn't able to remove all relevant 'KafkaNodePool' CRs created for '{}' instance!",
+							getApplication().getName());
+				}
+				new SimpleWaiter(() -> kafkaNodePoolResourceClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
 			}
 			new SimpleWaiter(() -> getKafkaPods().isEmpty()).level(Level.DEBUG).waitFor();
 		}
@@ -320,12 +417,21 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 
 	@Override
 	public void scale(int replicas, boolean wait) {
-		Kafka kafka = getApplication().getKafka();
-		// Note we change replicas of Kafka instances only (no Zookeeper replicas number change).
-		kafka.getSpec().getKafka().setReplicas(replicas);
-
-		kafkasClient().createOrReplace(kafka);
-
+		final KafkaOperatorApplication application = getApplication();
+		final Kafka kafka = application.getKafka();
+		setConfiguredReplicas(replicas);
+		// depending on whether Zookeeper or KRaft support, the scale logic is implemented by updating either the
+		// Kafka CR or KafkaNodePool (broker) CR
+		if (application.isKRaftModeEnabled()) {
+			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
+			if (brokerNodePoolDefinitions.size() != 1) {
+				throw new IllegalStateException(
+						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+			}
+			kafkaNodePoolResourceClient().resource(brokerNodePoolDefinitions.get(0)).update();
+		} else {
+			kafkaResourceClient().resource(kafka).update();
+		}
 		if (wait) {
 			waitForKafkaClusterCreation();
 		}
@@ -334,9 +440,8 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	// =================================================================================================================
 	// Client related
 	// =================================================================================================================
-	// this is the packagemanifest for the hyperfoil operator;
-	// you can get it with command:
-	// oc get packagemanifest hyperfoil-bundle -o template --template='{{ .metadata.name }}'
+	// this is the packagemanifest for the operator as obtained with the following command:
+	// oc get packagemanifest <operator-csv> -o template --template='{{ .metadata.name }}'
 	public static String OPERATOR_ID = IntersmashConfig.kafkaOperatorPackageManifest();
 
 	/**
@@ -347,48 +452,130 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	protected abstract NonNamespaceOperation<CustomResourceDefinition, CustomResourceDefinitionList, Resource<CustomResourceDefinition>> customResourceDefinitionsClient();
 
 	/**
-	 * Get a client capable of working with {@link Kafka} custom resource on our OpenShift instance.
+	 * Get a client capable of working with {@link Kafka} custom resource.
 	 *
-	 * @return client for operations with {@link Kafka} custom resource on our OpenShift instance
+	 * @return client for operations with {@link Kafka} custom resource
+	 * @deprecated Use {@link KafkaOperatorProvisioner#kafkaResourceClient()} instead.
 	 */
+	@Deprecated
 	public NonNamespaceOperation<Kafka, KafkaList, Resource<Kafka>> kafkasClient() {
+		return kafkaResourceClient();
+	}
+
+	/**
+	 * Get a client capable of working with {@link Kafka} Custom Resources.
+	 *
+	 * @return Client for operations with {@link Kafka} CRs.
+	 */
+	public NonNamespaceOperation<Kafka, KafkaList, Resource<Kafka>> kafkaResourceClient() {
 		return Crds.kafkaOperation(this.client()).inNamespace(this.client().getNamespace());
 	}
 
 	/**
-	 * Get a client capable of working with {@link KafkaUser} custom resource on our OpenShift instance.
+	 * Get a client capable of working with {@link KafkaNodePool} custom resource.
 	 *
-	 * @return client for operations with {@link KafkaUser} custom resource on our OpenShift instance
+	 * @return client for operations with {@link KafkaNodePool} custom resource
 	 */
+	public NonNamespaceOperation<KafkaNodePool, KafkaNodePoolList, Resource<KafkaNodePool>> kafkaNodePoolResourceClient() {
+		return Crds.kafkaNodePoolOperation(this.client()).inNamespace(this.client().getNamespace());
+	}
+
+	/**
+	 * Get a client capable of working with {@link KafkaUser} custom resource.
+	 *
+	 * @return client for operations with {@link KafkaUser} custom resource
+	 * @deprecated Use {@link KafkaOperatorProvisioner#kafkaUserResourceClient()} instead.
+	 */
+	@Deprecated
 	public NonNamespaceOperation<KafkaUser, KafkaUserList, Resource<KafkaUser>> kafkasUserClient() {
+		return kafkaUserResourceClient();
+	}
+
+	/**
+	 * Get a client capable of working with {@link KafkaUser} Custom Resources.
+	 *
+	 * @return Client for operations with {@link KafkaUser} CRs.
+	 */
+	public NonNamespaceOperation<KafkaUser, KafkaUserList, Resource<KafkaUser>> kafkaUserResourceClient() {
 		return Crds.kafkaUserOperation(this.client()).inNamespace(this.client().getNamespace());
 	}
 
 	/**
-	 * Get a client capable of working with {@link KafkaTopic} custom resource on our OpenShift instance.
+	 * Get a client capable of working with {@link KafkaTopic} custom resource.
 	 *
-	 * @return client for operations with {@link KafkaTopic} custom resource on our OpenShift instance
+	 * @return client for operations with {@link KafkaTopic} custom resource
+	 * @deprecated Use {@link KafkaOperatorProvisioner#kafkaTopicResourceClient()} instead.
 	 */
+	@Deprecated
 	public NonNamespaceOperation<KafkaTopic, KafkaTopicList, Resource<KafkaTopic>> kafkasTopicClient() {
+		return kafkaTopicResourceClient();
+	}
+
+	/**
+	 * Get a client capable of working with {@link KafkaTopic} Custom Resources.
+	 *
+	 * @return Client for operations with {@link KafkaTopic} CRs.
+	 */
+	public NonNamespaceOperation<KafkaTopic, KafkaTopicList, Resource<KafkaTopic>> kafkaTopicResourceClient() {
 		return Crds.topicOperation(this.client()).inNamespace(this.client().getNamespace());
 	}
 
 	/**
-	 * Kafka cluster resource on OpenShift instance. The Kafka resource returned is the one that is tied with the
-	 * appropriate Application for which this provisioner is created for. The instance is determined based on the name
-	 * value defined in specifications.
+	 * Access the {@link Kafka} cluster Custom Resource.
 	 *
-	 * @return returns Kafka cluster resource on OpenShift instance that is tied with our relevant Application only
+	 * <p>
+	 *     The {@link Kafka} Custom Resource returned is the one that is tied with the
+	 * 	   appropriate Application for which this provisioner is created for. The instance is determined based on the name
+	 *     value defined in specifications.
+	 * </p>
+	 * @return returns {@link Kafka} cluster CR instance that is tied with our relevant application only
+	 * @deprecated Use {@link KafkaOperatorProvisioner#getKafkaResource()} instead.
 	 */
+	@Deprecated
 	public Resource<Kafka> kafka() {
-		return kafkasClient().withName(getApplication().getKafka().getMetadata().getName());
+		return getKafkaResource();
 	}
 
+	/**
+	 * Access the {@link Kafka} cluster Custom Resource.
+	 *
+	 * <p>
+	 *     The {@link Kafka} Custom Resource returned is the one that is tied with the
+	 * 	   {@link org.jboss.intersmash.application.Application} the provisioner instance is created for.
+	 * </p>
+	 * @return {@link Kafka} cluster CR instance that is tied with the provisioned Kafka service
+	 */
+	public Resource<Kafka> getKafkaResource() {
+		return kafkaResourceClient().withName(getApplication().getKafka().getMetadata().getName());
+	}
+
+	/**
+	 * Access the list of {@link KafkaUser} cluster Custom Resources.
+	 * <p>
+	 * <b>Deprecated</b>: use {@link KafkaOperatorProvisioner#getKafkaUserResources()} instead.
+	 * @return A List of {@link KafkaUser} cluster CRs.
+	 */
+	@Deprecated
 	public KafkaUserList getUsers() {
-		return kafkasUserClient().list();
+		return getKafkaUserResources();
 	}
 
+	public KafkaUserList getKafkaUserResources() {
+		return kafkaUserResourceClient().list();
+	}
+
+	/**
+	 * Access the list of {@link KafkaTopic} Custom Resources in the cluster.
+	 * <p>
+	 * <b>Deprecated</b>: use {@link KafkaOperatorProvisioner#getKafkaTopicResources()} instead.
+	 * @return A List of {@link KafkaTopic} cluster CRs.
+	 */
+	@Deprecated
 	public KafkaTopicList getTopics() {
-		return kafkasTopicClient().list();
+		return getKafkaTopicResources();
+	}
+
+	public KafkaTopicList getKafkaTopicResources() {
+		return kafkaTopicResourceClient().list();
 	}
 }
