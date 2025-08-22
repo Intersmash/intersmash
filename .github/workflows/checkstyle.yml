@@ -1,0 +1,28 @@
+name: Intersmash - Checkstyle
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  style-check:
+    if: '! github.event.pull_request.draft'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+      - name: Pre-fetch required dependencies
+        run: mvn clean install --batch-mode -pl style-config -am -DskipTests
+      - name: Check source code formatting, file headers, etc.
+        run: mvn spotless:check --batch-mode
