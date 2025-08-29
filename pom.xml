@@ -132,10 +132,10 @@
         <!-- ***************** -->
         <!-- Repository Deployment URLs -->
         <!-- ***************** -->
-        <jboss.releases.repo.id>jboss-releases-repository</jboss.releases.repo.id>
-        <jboss.releases.repo.url>https://repository.jboss.org/nexus/service/local/staging/deploy/maven2/</jboss.releases.repo.url>
+        <jboss.releases.repo.id>jbossqe-eap-releases-repository</jboss.releases.repo.id>
+        <jboss.releases.repo.url>https://repository.jboss.org/nexus/repository/jbossqe-eap/</jboss.releases.repo.url>
         <jboss.snapshots.repo.id>jboss-snapshots-repository</jboss.snapshots.repo.id>
-        <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/content/repositories/snapshots/</jboss.snapshots.repo.url>
+        <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/repository/snapshots/</jboss.snapshots.repo.url>
     </properties>
 
     <dependencyManagement>
@@ -866,7 +866,7 @@
     <distributionManagement>
         <repository>
             <id>${jboss.releases.repo.id}</id>
-            <name>JBoss Releases Repository</name>
+            <name>JBoss QE EAP Releases Repository</name>
             <url>${jboss.releases.repo.url}</url>
         </repository>
         <snapshotRepository>
