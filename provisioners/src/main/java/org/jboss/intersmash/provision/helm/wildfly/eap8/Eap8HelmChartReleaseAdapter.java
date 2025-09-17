@@ -250,6 +250,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 										v.getMountPropagation(),
 										v.getName(),
 										v.getReadOnly(),
+										"false",
 										v.getSubPath(), null))
 								.collect(Collectors.toList());
 	}
