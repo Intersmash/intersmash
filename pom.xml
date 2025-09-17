@@ -48,11 +48,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <!--
-            Using XTF snapshot in order to include fixes in:
-            https://github.com/xtf-cz/xtf/pull/532
-        -->
-        <xtf.version>0.32</xtf.version>
+        <xtf.version>0.37-fabric8-6.14.0-SNAPSHOT</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 
