@@ -22,7 +22,7 @@ extended easily, since Intersmash _provisioners_ are pluggable components.
 | Red Hat JBoss EAP                | 3.0.0                      | stable       | https://github.com/wildfly/wildfly-operator               | As available from the OpenShift OperatorHub                                                                                                                                                                       |
 | Hyperfoil                        | 0.26.0                     | alpha        | https://github.com/Hyperfoil/hyperfoil-operator           | Available for both **Kubernetes** and **OpenShift**. We force the CRs version for the used Hyperfoil runtime to be 0.24.2, see https://github.com/Hyperfoil/hyperfoil-operator/issues/18                          |
 | Open Data Hub                    | 2.22.0                     | fast         | https://github.com/opendatahub-io/opendatahub-operator    | As available from the OpenShift OperatorHub                                                                                                                                                                       |
-
+| OpenShift AI                     | 2.22.2                     | stable       | https://github.com/red-hat-data-services/rhods-operator    | As available from the OpenShift OperatorHub                                                                                                                                                                       |
 
 Intersmash operator-based provisioners implement a common contract and high level behavior which is defined by the
 [OperatorProvisioner](../core/src/main/java/org/jboss/intersmash/provision/openshift/operator/OperatorProvisioner.java)

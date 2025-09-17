@@ -238,7 +238,7 @@
                         </goals>
                         <configuration>
                             <target>target/generated-sources</target>
-                            <source>src/main/resources/crds</source>
+                            <source>src/main/resources/crds/default</source>
                             <!--
                                 This is needed to force the Java generator from CRD to stick with the original names
                                 for enums, and avoid to uppercase them, since this could generate duplicate names,
@@ -249,6 +249,34 @@
                                 The following is required in order to generate Sundrio and Lombok annotations
                             -->
                             <extraAnnotations>true</extraAnnotations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <!-- Red Hat OpenShift differentiation from community Open Data Hub CRDs -->
+                        <id>rhoai-crd-generation</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <target>target/generated-sources</target>
+                            <source>src/main/resources/crds/overrides/rhoai</source>
+                            <!--
+                                This is needed to force the Java generator from CRD to stick with the original names
+                                for enums, and avoid to uppercase them, since this could generate duplicate names,
+                                as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                             -->
+                            <enumUppercase>false</enumUppercase>
+                            <!--
+                                The following is required in order to generate Sundrio and Lombok annotations
+                            -->
+                            <extraAnnotations>true</extraAnnotations>
+
+                            <packageOverrides>
+                                <io.opendatahub.datasciencecluster.v1>org.jboss.intersmash.rhoai.datasciencecluster.v1</io.opendatahub.datasciencecluster.v1>
+                                <io.opendatahub.dscinitialization.v1>org.jboss.intersmash.rhoai.dscinitialization.v1</io.opendatahub.dscinitialization.v1>
+                                <io.opendatahub.features.v1>org.jboss.intersmash.rhoai.features.v1</io.opendatahub.features.v1>
+                                <io.opendatahub.platform.services.v1alpha1>org.jboss.intersmash.rhoai.platform.services.v1alpha1</io.opendatahub.platform.services.v1alpha1>
+                            </packageOverrides>
                         </configuration>
                     </execution>
                 </executions>
