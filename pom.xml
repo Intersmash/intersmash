@@ -48,11 +48,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <!--
-            Using XTF snapshot in order to include fixes in:
-            https://github.com/xtf-cz/xtf/pull/532
-        -->
-        <xtf.version>0.32</xtf.version>
+        <xtf.version>0.37</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 
@@ -64,8 +60,8 @@
         <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.io.strimzi-api>0.47.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
-        <version.io.fabric8>6.8.1</version.io.fabric8>
-        <version.openshift-client>6.8.1</version.openshift-client>
+        <version.io.fabric8>6.14.0</version.io.fabric8>
+        <version.openshift-client>6.14.0</version.openshift-client>
 
         <!--
             Version used for the activemq-artemis-operator;
