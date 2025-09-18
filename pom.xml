@@ -59,7 +59,7 @@
         <version.logback>1.2.13</version.logback>
         <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.io.strimzi-api>0.47.0</version.io.strimzi-api>
-        <version.com.fasterxml.jackson>2.13.1</version.com.fasterxml.jackson>
+        <version.com.fasterxml.jackson>2.19.2</version.com.fasterxml.jackson>
         <version.io.fabric8>6.14.0</version.io.fabric8>
         <version.openshift-client>6.14.0</version.openshift-client>
 
