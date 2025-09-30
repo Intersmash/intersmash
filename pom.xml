@@ -113,7 +113,7 @@
         <version.junit5.jupiter.system.stubs>2.0.1</version.junit5.jupiter.system.stubs>
         <version.spotless-maven-plugin>2.44.3</version.spotless-maven-plugin>
         <version.dev-failsafe.failsafe>3.3.1</version.dev-failsafe.failsafe>
-        <version.sundrio.builder-annotations>0.101.0</version.sundrio.builder-annotations>
+        <version.sundrio.builder-annotations>0.230.0</version.sundrio.builder-annotations>
         <version.maven-gpg-plugin>3.1.0</version.maven-gpg-plugin>
         <version.aether>1.1.0</version.aether>
         <version.maven>3.3.9</version.maven>
