@@ -15,11 +15,11 @@
     <properties>
         <version.microprofile-config-api>1.3</version.microprofile-config-api>
 
-        <version.wildfly-server>37.0.1.Final</version.wildfly-server>
+        <version.wildfly-server>38.0.0.Beta1</version.wildfly-server>
         <!-- WildFly Maven Plugin coordinates -->
         <wildfly-maven-plugin.groupId>org.wildfly.plugins</wildfly-maven-plugin.groupId>
         <wildfly-maven-plugin.artifactId>wildfly-maven-plugin</wildfly-maven-plugin.artifactId>
-        <wildfly-maven-plugin.version>5.1.1.Final</wildfly-maven-plugin.version>
+        <wildfly-maven-plugin.version>5.1.4.Final</wildfly-maven-plugin.version>
         <!-- Default WildFly `ee` BOM version is set here and can be overridden for pulling the right BOM -->
         <bom.wildfly-ee.groupId>org.wildfly.bom</bom.wildfly-ee.groupId>
         <bom.wildfly-ee.artifactId>wildfly-ee</bom.wildfly-ee.artifactId>
@@ -39,16 +39,16 @@
         -->
         <wildfly.feature-pack.location>org.wildfly:wildfly-galleon-pack:${version.wildfly-server}</wildfly.feature-pack.location>
         <wildfly.ee-feature-pack.location>org.wildfly:wildfly-ee-galleon-pack:${version.wildfly-server}</wildfly.ee-feature-pack.location>
-        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:7.0.2.Final</wildfly.cloud-feature-pack.location>
+        <wildfly.cloud-feature-pack.location>org.wildfly.cloud:wildfly-cloud-galleon-pack:8.0.0.Final</wildfly.cloud-feature-pack.location>
         <!--
             Default version for the Bootable JAR Plugin is set here and can be overridden, e.g. also for pulling
             the productized version
         -->
         <version.wildfly-jar-maven-plugin>12.0.0.Final</version.wildfly-jar-maven-plugin>
         <!-- EE Channel coordinates -->
-        <wildfly.ee-channel.groupId />
-        <wildfly.ee-channel.artifactId />
-        <wildfly.ee-channel.version />
+        <wildfly.ee-channel.groupId>org.wildfly.channels</wildfly.ee-channel.groupId>
+        <wildfly.ee-channel.artifactId>wildfly</wildfly.ee-channel.artifactId>
+        <wildfly.ee-channel.version>${version.wildfly-server}</wildfly.ee-channel.version>
         <wildfly.xp-channel.groupId />
         <wildfly.xp-channel.artifactId />
         <wildfly.xp-channel.version />
@@ -165,11 +165,11 @@
                 <!-- WildFly/EAP 8 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
-                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
+                <wildfly-maven-plugin.version>2.0.0.Final-redhat-00009</wildfly-maven-plugin.version>
                 <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-ee.groupId>org.jboss.bom</bom.wildfly-ee.groupId>
                 <bom.wildfly-ee.artifactId>jboss-eap-ee</bom.wildfly-ee.artifactId>
-                <bom.wildfly-ee.version>8.0.0.GA-redhat-00009</bom.wildfly-ee.version>
+                <bom.wildfly-ee.version>8.1.0.SP1-redhat-00003</bom.wildfly-ee.version>
                 <!--
                     EAP8 feature packs and channel:
 
@@ -180,13 +180,13 @@
                     Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
                     Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
                 -->
-                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.feature-pack.location>
-                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.ee-feature-pack.location>
-                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
+                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.1.0.GA-redhat-00017</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.1.0.GA-redhat-00017</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:2.0.0.Final-redhat-00011</wildfly.cloud-feature-pack.location>
                 <!-- EAP 8 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
-                <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
-                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+                <wildfly.ee-channel.artifactId>eap-8.1</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.1.GA-redhat-00005</wildfly.ee-channel.version>
             </properties>
         </profile>
         <profile>
@@ -201,11 +201,11 @@
                 <!-- WildFly/EAP 8 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
-                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
+                <wildfly-maven-plugin.version>1.0.1.Final-redhat-00025</wildfly-maven-plugin.version>
                 <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-ee.groupId>org.jboss.bom</bom.wildfly-ee.groupId>
                 <bom.wildfly-ee.artifactId>jboss-eap-ee</bom.wildfly-ee.artifactId>
-                <bom.wildfly-ee.version>8.0.0.GA-redhat-00009</bom.wildfly-ee.version>
+                <bom.wildfly-ee.version>8.0.9.GA-redhat-00014</bom.wildfly-ee.version>
                 <!--
                     EAP8 feature packs and channel:
 
@@ -216,13 +216,13 @@
                     Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
                     Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
                 -->
-                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.feature-pack.location>
-                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.0.GA-redhat-00011</wildfly.ee-feature-pack.location>
-                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
+                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.11.SP1-redhat-00001</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.0.11.SP1-redhat-00001</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.1.0.Final-redhat-00001</wildfly.cloud-feature-pack.location>
                 <!-- EAP 8 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
                 <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
-                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+                <wildfly.ee-channel.version>1.9.1.GA-redhat-00006</wildfly.ee-channel.version>
             </properties>
         </profile>
 
@@ -323,22 +323,22 @@
                 <!-- WildFly/EAP 8.1 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
-                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
+                <wildfly-maven-plugin.version>1.0.1.Final-redhat-00025</wildfly-maven-plugin.version>
                 <!-- Default EAP XP 6 `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-microprofile.groupId>org.jboss.bom</bom.wildfly-microprofile.groupId>
                 <bom.wildfly-microprofile.artifactId>jboss-eap-xp-microprofile</bom.wildfly-microprofile.artifactId>
-                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-00009</bom.wildfly-microprofile.version>
+                <bom.wildfly-microprofile.version>5.0.3.GA-redhat-00001</bom.wildfly-microprofile.version>
                 <!-- EAP 8.1 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
                 <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
-                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+                <wildfly.ee-channel.version>1.9.1.GA-redhat-00006</wildfly.ee-channel.version>
                 <!-- EAP XP 6 Channel coordinates -->
                 <wildfly.xp-channel.groupId>org.jboss.eap.channels</wildfly.xp-channel.groupId>
                 <wildfly.xp-channel.artifactId>eap-xp-5.0</wildfly.xp-channel.artifactId>
-                <wildfly.xp-channel.version>1.0.0.GA-redhat-00006</wildfly.xp-channel.version>
+                <wildfly.xp-channel.version>1.3.0.GA-redhat-00001</wildfly.xp-channel.version>
                 <!-- FPLs -->
-                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
-                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
+                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.4.GA-redhat-00001</wildfly.feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.xp.cloud:eap-xp-cloud-galleon-pack:1.0.0.Final-redhat-00010</wildfly.cloud-feature-pack.location>
             </properties>
         </profile>
 
@@ -354,22 +354,22 @@
                 <!-- WildFly/EAP 8.0 Maven Plugin coordinates -->
                 <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
                 <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
-                <wildfly-maven-plugin.version>1.0.0.Final-redhat-00014</wildfly-maven-plugin.version>
+                <wildfly-maven-plugin.version>1.0.1.Final-redhat-00025</wildfly-maven-plugin.version>
                 <!-- Default EAP XP 5 `microprofile` BOM version is set here and can be overridden for pulling the right BOM -->
                 <bom.wildfly-microprofile.groupId>org.jboss.bom</bom.wildfly-microprofile.groupId>
                 <bom.wildfly-microprofile.artifactId>jboss-eap-xp-microprofile</bom.wildfly-microprofile.artifactId>
-                <bom.wildfly-microprofile.version>5.0.0.GA-redhat-00009</bom.wildfly-microprofile.version>
+                <bom.wildfly-microprofile.version>5.0.3.GA-redhat-00001</bom.wildfly-microprofile.version>
                 <!-- EAP 8.0 Channel coordinates -->
                 <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
                 <wildfly.ee-channel.artifactId>eap-8.0</wildfly.ee-channel.artifactId>
-                <wildfly.ee-channel.version>1.0.1.GA-redhat-00003</wildfly.ee-channel.version>
+                <wildfly.ee-channel.version>1.9.1.GA-redhat-00006</wildfly.ee-channel.version>
                 <!-- EAP XP 5 Channel coordinates -->
                 <wildfly.xp-channel.groupId>org.jboss.eap.channels</wildfly.xp-channel.groupId>
                 <wildfly.xp-channel.artifactId>eap-xp-5.0</wildfly.xp-channel.artifactId>
-                <wildfly.xp-channel.version>1.0.0.GA-redhat-00006</wildfly.xp-channel.version>
+                <wildfly.xp-channel.version>1.3.0.GA-redhat-00001</wildfly.xp-channel.version>
                 <!-- FPLs -->
-                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.0.GA-redhat-00005</wildfly.feature-pack.location>
-                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:1.0.0.Final-redhat-00008</wildfly.cloud-feature-pack.location>
+                <wildfly.feature-pack.location>org.jboss.eap.xp:wildfly-galleon-pack:5.0.4.GA-redhat-00001</wildfly.feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.xp.cloud:eap-xp-cloud-galleon-pack:1.0.0.Final-redhat-00010</wildfly.cloud-feature-pack.location>
             </properties>
         </profile>
 
