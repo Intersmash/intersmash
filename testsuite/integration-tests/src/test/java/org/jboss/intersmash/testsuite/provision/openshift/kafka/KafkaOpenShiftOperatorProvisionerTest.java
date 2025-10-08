@@ -23,6 +23,7 @@ import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.KafkaOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.KafkaOperatorProvisioner;
+import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.junit.jupiter.api.Assertions;
@@ -61,9 +62,19 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 	private SystemProperties systemProperties;
 
 	private static Stream<Arguments> applicationProvider() {
-		return Stream.of(
-				Arguments.of(new KafkaKRaftEphemeralOpenShiftOperatorApplication(), "stable"),
-				Arguments.of(new KafkaZookeperEphemeralOpenShiftOperatorApplication(), "amq-streams-2.9.x"));
+		if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+			return Stream.of(
+					Arguments.of(new KafkaKRaftEphemeralOpenShiftOperatorApplication(), "stable"),
+					Arguments.of(new KafkaZookeperEphemeralOpenShiftOperatorApplication(), "amq-streams-2.9.x"));
+		} else if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+			return Stream.of(
+					// when testing the community operator we only go for "stable", rather than checking older versions
+					Arguments.of(new KafkaKRaftEphemeralOpenShiftOperatorApplication(), "stable"));
+		} else {
+			throw new IllegalStateException(
+					String.format("Unknown Intersmash test suite execution profile: %s",
+							IntersmashTestsuiteProperties.getTestExecutionProfile()));
+		}
 	}
 
 	private KafkaOpenShiftOperatorProvisioner initializeOperatorProvisioner(
