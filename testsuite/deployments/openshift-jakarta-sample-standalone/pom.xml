@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>openshift-jakarta-sample-standalone</artifactId>
-    <version>0.0.4-SNAPSHOT</version>
+    <version>0.0.4.Beta2</version>
     <packaging>war</packaging>
 
     <name>Intersmash Test Deployments: OpenShift Jakarta Sample standalone deployment</name>
@@ -146,7 +146,7 @@
                     <dependency>
                         <groupId>org.jboss.intersmash</groupId>
                         <artifactId>style-config</artifactId>
-                        <version>0.0.4-SNAPSHOT</version>
+                        <version>0.0.4.Beta2</version>
                     </dependency>
                 </dependencies>
                 <configuration>
