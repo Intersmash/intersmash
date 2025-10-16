@@ -254,6 +254,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 										v.getMountPropagation(),
 										v.getName(),
 										v.getReadOnly(),
+										"false",
 										v.getSubPath(), null))
 								.collect(Collectors.toList());
 	}

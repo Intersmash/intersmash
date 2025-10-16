@@ -251,6 +251,7 @@ public class EapXp5HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmX
 										v.getMountPropagation(),
 										v.getName(),
 										v.getReadOnly(),
+										"false",
 										v.getSubPath(), null))
 								.collect(Collectors.toList());
 	}
