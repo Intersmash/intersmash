@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.intersmash</groupId>
         <artifactId>intersmash-parent</artifactId>
-        <version>0.0.4.Beta2</version>
+        <version>0.0.4.Beta3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>intersmash-kubernetes-client</artifactId>
