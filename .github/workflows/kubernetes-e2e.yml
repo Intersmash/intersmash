@@ -27,11 +27,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
-      - name: Start minikube
-        uses: medyagh/setup-minikube@latest
+      - name: Setup Minikube
+        uses: manusa/actions-setup-minikube@v2.14.0
         with:
-          kubernetes-version: ${{ matrix.kubernetes }}
-          minikube-version: 1.36.0
+          driver: docker
+          minikube version: 'v1.32.0'
+          kubernetes version: 'v1.30.0'
+          github token: ${{ secrets.GITHUB_TOKEN }}
+          start args: "--memory='4gb' --cpus='2'"
       - name: Install operator-sdk
         run: |
           set -x
