@@ -48,6 +48,7 @@ import org.jboss.intersmash.application.openshift.template.RhSsoTemplate;
 import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
+import org.jboss.intersmash.application.operator.OpenShiftAIOperatorApplication;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanBuilder;
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
@@ -681,6 +682,46 @@ public class OpenShiftProvisionerTestBase {
 			@Override
 			public DSCInitialization getDSCInitialization() {
 				return new DSCInitializationBuilder()
+						.withNewMetadata()
+						.withName(APP_NAME)
+						.endMetadata()
+						.withNewSpec()
+						.withApplicationsNamespace(OpenShifts.master().getNamespace())
+						.endSpec()
+						.build();
+			}
+
+			@Override
+			public String getName() {
+				return APP_NAME;
+			}
+		};
+	}
+
+	/**
+	 * Provide an instance of {@link OpenShiftAIOperatorApplication}, that represents a minimal Open Data Hub
+	 * application service that is used for instance by {@link ProvisionerCleanupTestCase}
+	 *
+	 * @return A concreate instance of {@link OpenShiftAIOperatorApplication}, that represents a minimal Open Data Hub
+	 * application service.
+	 */
+	static OpenShiftAIOperatorApplication getOpenShiftAIOperatorApplication() {
+		return new OpenShiftAIOperatorApplication() {
+
+			private static final String APP_NAME = "example-rhods";
+
+			@Override
+			public org.jboss.intersmash.rhoai.datasciencecluster.v1.DataScienceCluster getDataScienceCluster() {
+				return new org.jboss.intersmash.rhoai.datasciencecluster.v1.DataScienceClusterBuilder()
+						.withNewMetadata()
+						.withName(APP_NAME)
+						.endMetadata()
+						.build();
+			}
+
+			@Override
+			public org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitialization getDSCInitialization() {
+				return new org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitializationBuilder()
 						.withNewMetadata()
 						.withName(APP_NAME)
 						.endMetadata()

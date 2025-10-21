@@ -92,6 +92,13 @@ public class IntersmashConfig {
 	private static final String COMMUNITY_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = "opendatahub-operator";
 	private static final String DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST;
 
+	private static final String OPENSHIFT_AI_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.rhods.operators.catalog_source";
+	private static final String OPENSHIFT_AI_OPERATOR_INDEX_IMAGE = "intersmash.rhods.operators.index_image";
+	private static final String OPENSHIFT_AI_OPERATOR_CHANNEL = "intersmash.rhods.operators.channel";
+	private static final String OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST = "intersmash.rhods.operators.package_manifest";
+	private static final String PRODUCT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST = "rhods-operator";
+	private static final String DEFAULT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST = PRODUCT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST;
+
 	// Bootable Jar
 	private static final String BOOTABLE_JAR_IMAGE_URL = "intersmash.bootable.jar.image";
 
@@ -452,5 +459,44 @@ public class IntersmashConfig {
 	 */
 	public static String openDataHubOperatorPackageManifest() {
 		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	/**
+	 * Read the configuration property for the OpenShift AI Operator catalog source, i.e. {@code intersmash.rhods.operators.catalog_source}.
+	 *
+	 * @return The value for the {@code intersmash.rhods.operators.catalog_source} property or the default catalog source,
+	 * i.e. the value of {@code intersmash.olm.operators.catalog_source} property.
+	 */
+	public static String openShiftAIOperatorCatalogSource() {
+		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+	}
+
+	/**
+	 * Read the configuration property for the OpenShift AI Operator index image, i.e. {@code intersmash.rhods.operators.index_image}.
+	 *
+	 * @return The value for the {@code intersmash.rhods.operators.index_image} property, representing a custom index image.
+	 */
+	public static String openShiftAIOperatorIndexImage() {
+		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_INDEX_IMAGE);
+	}
+
+	/**
+	 * Read the configuration property for the OpenShift AI Operator channel to be used, i.e. {@code intersmash.rhods.operators.channel}.
+	 *
+	 * @return The value for the {@code intersmash.rhods.operators.channel} property. If not provided the default operator
+	 * channel is used.
+	 */
+	public static String openShiftAIOperatorChannel() {
+		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_CHANNEL);
+	}
+
+	/**
+	 * Read the configuration property for the OpenShift AI Operator channel to be used, i.e. {@code intersmash.rhods.operators.package_manifest}.
+	 *
+	 * @return The value for the {@code intersmash.rhods.operators.package_manifest} property or the default package manifest
+	 * that should be used for this operator, i.e. {@code rhods-operator} property.
+	 */
+	public static String openShiftAIOperatorPackageManifest() {
+		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST);
 	}
 }

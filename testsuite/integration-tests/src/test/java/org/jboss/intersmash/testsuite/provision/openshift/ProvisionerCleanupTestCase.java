@@ -79,7 +79,10 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 					, new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso())
 					// RHBK
 					, new KeycloakOpenShiftOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
+					// OpenShift AI
+					, new OpenShiftAIOpenShiftOperatorProvisioner(
+							OpenShiftProvisionerTestBase.getOpenShiftAIOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
