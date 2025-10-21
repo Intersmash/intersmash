@@ -88,7 +88,7 @@
 
         <version.shrinkwrap>1.2.6</version.shrinkwrap>
 
-        <version.org.eclipse.jgit>6.6.1.202309021850-r</version.org.eclipse.jgit>
+        <version.org.eclipse.jgit>7.1.1.202505221757-r-redhat-00001</version.org.eclipse.jgit>
         <version.maven-dependency-plugin>3.2.0</version.maven-dependency-plugin>
         <version.maven-deploy-plugin>3.0.0-M1</version.maven-deploy-plugin>
         <version.maven-source-plugin>3.2.1</version.maven-source-plugin>
