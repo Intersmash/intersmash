@@ -70,7 +70,7 @@ jobs:
           -Dintersmash.olm.operators.namespace=olm \
           -Dintersmash.hyperfoil.operators.catalog_source=operatorhubio-catalog
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: failure()
         with:
           name: logs-${{ matrix.kubernetes }}
