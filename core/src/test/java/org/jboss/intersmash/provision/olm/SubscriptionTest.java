@@ -40,6 +40,7 @@ public class SubscriptionTest {
 				"dummy-operator",
 				"alpha",
 				OperatorProvisioner.INSTALLPLAN_APPROVAL_MANUAL,
+				"my-operator-current-CSV",
 				Map.of(
 						"PROP_1", propertyValue,
 						"PROP_2", propertyValue,

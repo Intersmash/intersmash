@@ -72,6 +72,11 @@ public abstract class OpenShiftAIOperatorProvisioner<C extends NamespacedKuberne
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.openShiftAIOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		FailFastCheck ffCheck = getFailFastCheck();
 

@@ -43,8 +43,8 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 
 	private SubscriptionFluent<SubscriptionBuilder>.SpecNested<SubscriptionBuilder> getConfiguredSubscriptionBuilder(
 			final String sourceNamespace, final String targetNamespace, final String source, final String name,
-			final String channel, final String installPlanApproval) {
-		return new SubscriptionBuilder()
+			final String channel, final String installPlanApproval, final String startingCSV) {
+		SubscriptionFluent<SubscriptionBuilder>.SpecNested<SubscriptionBuilder> subscriptionBuilderSpecNested = new SubscriptionBuilder()
 				.withNewMetadata()
 				.withName(name)
 				.withNamespace(targetNamespace)
@@ -55,14 +55,18 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 				.withSource(source)
 				.withSourceNamespace(sourceNamespace)
 				.withInstallPlanApproval(Strings.isNullOrEmpty(installPlanApproval) ? "Automatic" : installPlanApproval);
+		if (startingCSV != null && !startingCSV.isBlank()) {
+			subscriptionBuilderSpecNested.withStartingCSV(startingCSV);
+		}
+		return subscriptionBuilderSpecNested;
 	}
 
 	public Subscription(final String sourceNamespace, final String targetNamespace, final String source,
-			final String name, final String channel, final String installPlanApproval,
+			final String name, final String channel, final String installPlanApproval, final String startingCSV,
 			final Map<String, String> envVariables) {
 		this();
 		io.fabric8.openshift.api.model.operatorhub.v1alpha1.Subscription loaded = getConfiguredSubscriptionBuilder(
-				sourceNamespace, targetNamespace, source, name, channel, installPlanApproval)
+				sourceNamespace, targetNamespace, source, name, channel, installPlanApproval, startingCSV)
 				.withNewConfig()
 				.addAllToEnv(
 						envVariables.entrySet().stream()
@@ -76,10 +80,10 @@ public class Subscription extends io.fabric8.openshift.api.model.operatorhub.v1a
 	}
 
 	public Subscription(final String sourceNamespace, final String targetNamespace, final String source,
-			final String name, final String channel, final String installPlanApproval) {
+			final String name, final String channel, final String installPlanApproval, final String startingCSV) {
 		this();
 		io.fabric8.openshift.api.model.operatorhub.v1alpha1.Subscription loaded = getConfiguredSubscriptionBuilder(
-				sourceNamespace, targetNamespace, source, name, channel, installPlanApproval)
+				sourceNamespace, targetNamespace, source, name, channel, installPlanApproval, startingCSV)
 				.endSpec()
 				.build();
 		this.setMetadata(loaded.getMetadata());

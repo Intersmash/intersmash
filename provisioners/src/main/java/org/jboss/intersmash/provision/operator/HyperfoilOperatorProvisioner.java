@@ -114,6 +114,11 @@ public abstract class HyperfoilOperatorProvisioner<C extends NamespacedKubernete
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.hyperfoilOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		FailFastCheck ffCheck = getFailFastCheck();
 

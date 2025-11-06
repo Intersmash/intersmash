@@ -44,6 +44,7 @@ public class IntersmashConfig {
 	private static final String INFINISPAN_OPERATOR_INDEX_IMAGE = "intersmash.infinispan.operators.index_image";
 	private static final String INFINISPAN_OPERATOR_CHANNEL = "intersmash.infinispan.operators.channel";
 	private static final String INFINISPAN_OPERATOR_PACKAGE_MANIFEST = "intersmash.infinispan.operators.package_manifest";
+	private static final String INFINISPAN_OPERATOR_VERSION = "intersmash.infinispan.operators.version";
 	private static final String COMMUNITY_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = "infinispan";
 	private static final String PRODUCT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = "datagrid";
 	private static final String DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_INFINISPAN_OPERATOR_PACKAGE_MANIFEST;
@@ -54,7 +55,9 @@ public class IntersmashConfig {
 	private static final String RHSSO_OPERATOR_CHANNEL = "intersmash.rhsso.operators.channel";
 	private static final String KEYCLOAK_OPERATOR_CHANNEL = "intersmash.keycloak.operators.channel";
 	private static final String RHSSO_OPERATOR_PACKAGE_MANIFEST = "intersmash.rhsso.operators.package_manifest";
+	private static final String RHSSO_OPERATOR_VERSION = "intersmash.rhsso.operators.version";
 	private static final String KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "intersmash.keycloak.operators.package_manifest";
+	private static final String KEYCLOAK_OPERATOR_VERSION = "intersmash.keycloak.operators.version";
 	private static final String COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "keycloak-operator";
 	private static final String PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = "rhsso-operator";
 	private static final String DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST;
@@ -62,6 +65,7 @@ public class IntersmashConfig {
 	private static final String WILDFLY_OPERATOR_INDEX_IMAGE = "intersmash.wildfly.operators.index_image";
 	private static final String WILDFLY_OPERATOR_CHANNEL = "intersmash.wildfly.operators.channel";
 	private static final String WILDFLY_OPERATOR_PACKAGE_MANIFEST = "intersmash.wildfly.operators.package_manifest";
+	private static final String WILDFLY_OPERATOR_VERSION = "intersmash.wildfly.operators.version";
 	private static final String COMMUNITY_WILDFLY_OPERATOR_PACKAGE_MANIFEST = "wildfly";
 	private static final String PRODUCT_WILDFLY_OPERATOR_PACKAGE_MANIFEST = "eap";
 	private static final String DEFAULT_WILDFLY_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_WILDFLY_OPERATOR_PACKAGE_MANIFEST;
@@ -69,6 +73,7 @@ public class IntersmashConfig {
 	private static final String KAFKA_OPERATOR_INDEX_IMAGE = "intersmash.kafka.operators.index_image";
 	private static final String KAFKA_OPERATOR_CHANNEL = "intersmash.kafka.operators.channel";
 	private static final String KAFKA_OPERATOR_PACKAGE_MANIFEST = "intersmash.kafka.operators.package_manifest";
+	private static final String KAFKA_OPERATOR_VERSION = "intersmash.kafka.operators.version";
 	private static final String COMMUNITY_KAFKA_OPERATOR_PACKAGE_MANIFEST = "strimzi-kafka-operator";
 	private static final String PRODUCT_KAFKA_OPERATOR_PACKAGE_MANIFEST = "amq-streams";
 	private static final String DEFAULT_KAFKA_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_KAFKA_OPERATOR_PACKAGE_MANIFEST;
@@ -76,6 +81,7 @@ public class IntersmashConfig {
 	private static final String ACTIVEMQ_OPERATOR_INDEX_IMAGE = "intersmash.activemq.operators.index_image";
 	private static final String ACTIVEMQ_OPERATOR_CHANNEL = "intersmash.activemq.operators.channel";
 	private static final String ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST = "intersmash.activemq.operators.package_manifest";
+	private static final String ACTIVEMQ_OPERATOR_VERSION = "intersmash.activemq.operators.version";
 	private static final String COMMUNITY_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST = "artemis";
 	private static final String PRODUCT_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST = "amq-broker-rhel8";
 	private static final String DEFAULT_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST;
@@ -83,12 +89,14 @@ public class IntersmashConfig {
 	private static final String HYPERFOIL_OPERATOR_INDEX_IMAGE = "intersmash.hyperfoil.operators.index_image";
 	private static final String HYPERFOIL_OPERATOR_CHANNEL = "intersmash.hyperfoil.operators.channel";
 	private static final String HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = "intersmash.hyperfoil.operators.package_manifest";
+	private static final String HYPERFOIL_OPERATOR_VERSION = "intersmash.hyperfoil.operators.version";
 	private static final String COMMUNITY_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = "hyperfoil-bundle";
 	private static final String DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST;
 	private static final String OPEN_DATA_HUB_OPERATOR_CATALOG_SOURCE_NAME = "intersmash.odh.operators.catalog_source";
 	private static final String OPEN_DATA_HUB_OPERATOR_INDEX_IMAGE = "intersmash.odh.operators.index_image";
 	private static final String OPEN_DATA_HUB_OPERATOR_CHANNEL = "intersmash.odh.operators.channel";
 	private static final String OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = "intersmash.odh.operators.package_manifest";
+	private static final String OPEN_DATA_HUB_OPERATOR_VERSION = "intersmash.odh.operators.version";
 	private static final String COMMUNITY_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = "opendatahub-operator";
 	private static final String DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST = COMMUNITY_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST;
 
@@ -96,6 +104,7 @@ public class IntersmashConfig {
 	private static final String OPENSHIFT_AI_OPERATOR_INDEX_IMAGE = "intersmash.rhods.operators.index_image";
 	private static final String OPENSHIFT_AI_OPERATOR_CHANNEL = "intersmash.rhods.operators.channel";
 	private static final String OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST = "intersmash.rhods.operators.package_manifest";
+	private static final String OPENSHIFT_AI_OPERATOR_VERSION = "intersmash.rhods.operators.version";
 	private static final String PRODUCT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST = "rhods-operator";
 	private static final String DEFAULT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST = PRODUCT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST;
 
@@ -167,6 +176,10 @@ public class IntersmashConfig {
 		return XTFConfig.get(INFINISPAN_OPERATOR_PACKAGE_MANIFEST, DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST);
 	}
 
+	public static String infinispanOperatorVersion() {
+		return XTFConfig.get(INFINISPAN_OPERATOR_VERSION);
+	}
+
 	public static String rhSsoOperatorCatalogSource() {
 		return XTFConfig.get(RHSSO_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
@@ -181,6 +194,10 @@ public class IntersmashConfig {
 
 	public static String rhSsoOperatorPackageManifest() {
 		return XTFConfig.get(RHSSO_OPERATOR_PACKAGE_MANIFEST, PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String rhSsoOperatorVersion() {
+		return XTFConfig.get(RHSSO_OPERATOR_VERSION);
 	}
 
 	public static String wildflyOperatorCatalogSource() {
@@ -199,6 +216,10 @@ public class IntersmashConfig {
 		return XTFConfig.get(WILDFLY_OPERATOR_PACKAGE_MANIFEST, DEFAULT_WILDFLY_OPERATOR_PACKAGE_MANIFEST);
 	}
 
+	public static String wildflyOperatorVersion() {
+		return XTFConfig.get(WILDFLY_OPERATOR_VERSION);
+	}
+
 	public static String kafkaOperatorCatalogSource() {
 		return XTFConfig.get(KAFKA_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
@@ -213,6 +234,10 @@ public class IntersmashConfig {
 
 	public static String kafkaOperatorPackageManifest() {
 		return XTFConfig.get(KAFKA_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KAFKA_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String kafkaOperatorVersion() {
+		return XTFConfig.get(KAFKA_OPERATOR_VERSION);
 	}
 
 	public static String activeMQOperatorCatalogSource() {
@@ -231,6 +256,10 @@ public class IntersmashConfig {
 		return XTFConfig.get(ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST, DEFAULT_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST);
 	}
 
+	public static String activeMQOperatorVersion() {
+		return XTFConfig.get(ACTIVEMQ_OPERATOR_VERSION);
+	}
+
 	public static String hyperfoilOperatorCatalogSource() {
 		return XTFConfig.get(HYPERFOIL_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
@@ -245,6 +274,10 @@ public class IntersmashConfig {
 
 	public static String hyperfoilOperatorPackageManifest() {
 		return XTFConfig.get(HYPERFOIL_OPERATOR_PACKAGE_MANIFEST, DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String hyperfoilOperatorVersion() {
+		return XTFConfig.get(HYPERFOIL_OPERATOR_VERSION);
 	}
 
 	public static String bootableJarImageURL() {
@@ -422,6 +455,10 @@ public class IntersmashConfig {
 		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
 	}
 
+	public static String keycloakOperatorVersion() {
+		return XTFConfig.get(KEYCLOAK_OPERATOR_VERSION);
+	}
+
 	/**
 	 * Read the configuration property for the Open Data Hub Operator catalog source, i.e. {@code intersmash.odh.operators.catalog_source}.
 	 *
@@ -462,6 +499,16 @@ public class IntersmashConfig {
 	}
 
 	/**
+	 * Read the configuration property for the Open Data Hub Operator version to be used, i.e. {@code intersmash.odh.operators.version}.
+	 *
+	 * @return The value for the {@code intersmash.odh.operators.version} property
+	 * that should be used for this operator, i.e. {@code opendatahub-operator} property.
+	 */
+	public static String openDataHubOperatorVersion() {
+		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_VERSION);
+	}
+
+	/**
 	 * Read the configuration property for the OpenShift AI Operator catalog source, i.e. {@code intersmash.rhods.operators.catalog_source}.
 	 *
 	 * @return The value for the {@code intersmash.rhods.operators.catalog_source} property or the default catalog source,
@@ -498,5 +545,9 @@ public class IntersmashConfig {
 	 */
 	public static String openShiftAIOperatorPackageManifest() {
 		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST);
+	}
+
+	public static String openShiftAIOperatorVersion() {
+		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_VERSION);
 	}
 }

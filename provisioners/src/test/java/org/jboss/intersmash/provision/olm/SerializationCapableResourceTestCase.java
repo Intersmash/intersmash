@@ -39,7 +39,8 @@ public class SerializationCapableResourceTestCase {
 						"redhat-operators",
 						"dummy-operator",
 						"alpha",
-						OperatorProvisioner.INSTALLPLAN_APPROVAL_MANUAL),
+						OperatorProvisioner.INSTALLPLAN_APPROVAL_MANUAL,
+						"my-operator-CSV"),
 				new CatalogSource(
 						"my-custom-cs",
 						"my-namespace",
