@@ -52,7 +52,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 |                                  |                              |                                                                                                                                                                                |
 | Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                                                                                               | 
 |                                  |                              |                                                                                                                                                                                |
-| Open Data Hub                    | 2.22.0                       | Supports provisioning on OpenShift via the Operator                                                                                                                            |
+| Open Data Hub                    | 2.35.0                       | Supports provisioning on OpenShift via the Operator                                                                                                                            |
 | OpenShift AI                     | 2.22.2                       | Supports provisioning on OpenShift via the Operator                                                                                                                            |
 
 Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
