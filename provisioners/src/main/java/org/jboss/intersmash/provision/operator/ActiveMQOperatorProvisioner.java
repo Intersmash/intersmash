@@ -79,6 +79,11 @@ public abstract class ActiveMQOperatorProvisioner<C extends NamespacedKubernetes
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.activeMQOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		FailFastCheck ffCheck = () -> false;
 		subscribe();

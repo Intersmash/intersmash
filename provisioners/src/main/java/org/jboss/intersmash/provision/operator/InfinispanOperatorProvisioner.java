@@ -119,6 +119,11 @@ public abstract class InfinispanOperatorProvisioner<C extends NamespacedKubernet
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.infinispanOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		subscribe();
 		// create Infinispan CR

@@ -325,6 +325,11 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.kafkaOperatorVersion();
+	}
+
+	@Override
 	public List<Pod> getPods() {
 		return this.client().pods().inNamespace(this.client().getNamespace())
 				.withLabel("strimzi.io/cluster", getApplication().getName()).list().getItems();
