@@ -46,6 +46,10 @@ public interface KubernetesProvisioner<T extends Application> extends Provisione
 		return Kuberneteses.adminBinary().execute(args);
 	}
 
+	default String executeInNamespace(final String namespace, String... args) {
+		return Kuberneteses.adminBinary(namespace).execute(args);
+	}
+
 	@Override
 	default void preDeploy() {
 		// create secrets

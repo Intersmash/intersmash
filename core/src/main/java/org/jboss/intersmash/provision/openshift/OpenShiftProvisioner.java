@@ -54,6 +54,10 @@ public interface OpenShiftProvisioner<T extends Application> extends Provisioner
 		return OpenShifts.adminBinary().execute(args);
 	}
 
+	default String executeInNamespace(final String namespace, String... args) {
+		return OpenShifts.adminBinary(namespace).execute(args);
+	}
+
 	@Override
 	default void preDeploy() {
 		// create secrets
