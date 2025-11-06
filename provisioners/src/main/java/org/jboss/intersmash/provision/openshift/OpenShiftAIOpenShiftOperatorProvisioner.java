@@ -69,17 +69,22 @@ public class OpenShiftAIOpenShiftOperatorProvisioner
 		return OpenShiftProvisioner.super.execute(args);
 	}
 
+	@Override
+	public String executeInNamespace(String namespace, String... args) {
+		return OpenShiftProvisioner.super.executeInNamespace(namespace, args);
+	}
+
 	// =================================================================================================================
 	// Related to generic provisioning behavior
 	// =================================================================================================================
 	@Override
 	protected void removeClusterServiceVersion() {
-		this.execute("delete", "csvs", currentCSV, "-n", this.getTargetNamespace(), "--ignore-not-found");
+		this.executeInNamespace(this.getTargetNamespace(), "delete", "csvs", currentCSV, "--ignore-not-found");
 	}
 
 	@Override
 	protected void removeSubscription() {
-		this.execute("delete", "subscription", packageManifestName, "-n", this.getTargetNamespace(), "--ignore-not-found");
+		this.execute(this.getTargetNamespace(), "delete", "subscription", packageManifestName, "--ignore-not-found");
 	}
 
 	// =================================================================================================================

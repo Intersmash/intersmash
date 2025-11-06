@@ -68,6 +68,11 @@ public class HyperfoilOpenShiftOperatorProvisioner
 	}
 
 	@Override
+	public String executeInNamespace(String namespace, String... args) {
+		return OpenShiftProvisioner.super.executeInNamespace(namespace, args);
+	}
+
+	@Override
 	protected FailFastCheck getFailFastCheck() {
 		if (ffCheck == null) {
 			ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),

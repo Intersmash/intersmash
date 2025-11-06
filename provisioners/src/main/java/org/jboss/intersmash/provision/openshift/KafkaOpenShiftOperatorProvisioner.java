@@ -53,6 +53,11 @@ public class KafkaOpenShiftOperatorProvisioner
 		return OpenShiftProvisioner.super.execute(args);
 	}
 
+	@Override
+	public String executeInNamespace(String namespace, String... args) {
+		return OpenShiftProvisioner.super.executeInNamespace(namespace, args);
+	}
+
 	// =================================================================================================================
 	// Client related
 	// =================================================================================================================

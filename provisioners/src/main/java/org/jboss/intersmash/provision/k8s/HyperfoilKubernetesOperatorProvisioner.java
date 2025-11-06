@@ -66,6 +66,11 @@ public class HyperfoilKubernetesOperatorProvisioner
 		return KubernetesProvisioner.super.execute(args);
 	}
 
+	@Override
+	public String executeInNamespace(String namespace, String... args) {
+		return KubernetesProvisioner.super.executeInNamespace(namespace, args);
+	}
+
 	/**
 	 * On Kubernetes, the HyperFoil operator will expose the controller service externally via a {@code NodePort} type {@link Service}
 	 * @return A {@link URL} instance that represents the HyperFoil controller service external URL
