@@ -38,8 +38,8 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | Infinispan                       | 15.1.3.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                              |
 | Red Hat Data Grid                | 8.5.2.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                               |
 |                                  |                              |                                                                                                        |
-| Kafka provided by Strimzi        | 3.9.0                        | Provided by the Strimzi Operator `stable` channel                                                      |
-| Streams for Apache Kafka         | 3.8.0.redhat-00007           | Or _default_, as provided by the Red Hat Streams for Apache Kafka Operator `stable` channel            |
+| Kafka provided by Strimzi        | 4.0.0                        | Provided by the Strimzi Operator `stable` channel                                                      |
+| Streams for Apache Kafka         | 4.0.0                        | Or _default_, as provided by the Red Hat Streams for Apache Kafka Operator `stable` channel            |
 |                                  |                              |                                                                                                        |
 | Keycloak                         | 26.4.4                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                           |
 | Red Hat Build of keycloak (RHBK) | 26.4.2.redhat-00002          | Or _latest_ in the `:26.4` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                |
