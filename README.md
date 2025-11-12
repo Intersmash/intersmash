@@ -35,7 +35,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 | ActiveMQ Artemis                 | 2.42.0                       | Or _default_ provided by the default ArkMQ Operator `stable` channel                                   |
 | Red Hat AMQ Broker               | 7.13.x                       | Or _latest_ in the `:7.13` tag image stream, see registry.redhat.io/amq7/amq-broker-rhel9              |
 |                                  |                              |                                                                                                        |
-| Infinispan                       | 15.1.3.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                              |
+| Infinispan                       | 15.2.6.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                              |
 | Red Hat Data Grid                | 8.5.2.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                               |
 |                                  |                              |                                                                                                        |
 | Kafka provided by Strimzi        | 4.0.0                        | Provided by the Strimzi Operator `stable` channel                                                      |
@@ -163,11 +163,6 @@ mvn test -pl testsuite/ -Pts.execution-profile.community -Pts.openshift
 ```
 This is useful when running the testsuite against an OpenShift cluster, so that only OpenShift integration test will be
 executed, while Kubernetes ones will be skipped.
-
-* Run Open Data Hub/OpenShift AI integration tests:
-```shell
-mvn test -pl testsuite/ -Pts.ai 
-```
 
 ## Platforms
 
