@@ -98,6 +98,11 @@ public abstract class WildflyOperatorProvisioner<C extends NamespacedKubernetesC
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.wildflyOperatorVersion();
+	}
+
+	@Override
 	public URL getURL() {
 		String url = "http://" + wildFlyServer().get().getStatus().getHosts().get(0);
 		try {

@@ -79,6 +79,11 @@ public abstract class KeycloakOperatorProvisioner<C extends NamespacedKubernetes
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.keycloakOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		FailFastCheck ffCheck = () -> false;
 		// Keycloak Operator codebase contains the name of the Keycloak image to deploy: user can override Keycloak image to

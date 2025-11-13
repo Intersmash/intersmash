@@ -72,6 +72,11 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.openDataHubOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		FailFastCheck ffCheck = getFailFastCheck();
 

@@ -147,7 +147,8 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 
 		PackageChannel packageChannel = initPackageChannel(operatorChannel);
 
-		currentCSV = packageChannel.getCurrentCSV();
+		currentCSV = initStartingCSV(packageManifest);
+
 		customResourceDefinitions = packageChannel.getCurrentCSVDesc().getCustomresourcedefinitions().getOwned().stream()
 				.map(CRDDescription::getName).collect(Collectors.toSet());
 
@@ -165,6 +166,8 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 	protected abstract String getOperatorIndexImage();
 
 	protected abstract String getOperatorChannel();
+
+	protected abstract String getVersion();
 
 	/**
 	 * The CatalogSource is in the "openshift-marketplace" namespace by default on OpenShift, in the "olm" one on K8s.
@@ -298,11 +301,31 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 		return catalogSourcePackageManifest;
 	}
 
+	private String initStartingCSV(PackageManifest packageManifest) {
+		final String packageManifestName = packageManifest.getMetadata().getName();
+		log.debug("Listing CSVs belonging to: {}", packageManifestName);
+		PackageChannel channel = packageManifest.getStatus().getChannels().stream().filter(
+				c -> c.getName().equals(this.operatorChannel)).findFirst()
+				.orElseThrow(() -> new IllegalStateException(
+						String.format("Cannot find desired channel in PackageManifest (%s): %s", packageManifestName,
+								this.operatorChannel)));
+		List<Map<String, Object>> entries = (List<Map<String, Object>>) channel.getAdditionalProperties().get("entries");
+		final String version = getVersion();
+		if (version == null || version.isBlank()) {
+			return channel.getCurrentCSV();
+		}
+		return entries.stream()
+				.filter(v -> v.get("version").equals(version))
+				.map(e -> e.get("name").toString())
+				.findFirst()
+				.orElse(channel.getCurrentCSV());
+	}
+
 	private PackageChannel initPackageChannel(String channelName) {
 		return packageManifest.getStatus().getChannels().stream()
 				.filter(ch -> ch.getName().equals(channelName)).findFirst()
 				.orElseThrow(
-						() -> new IllegalStateException("Unable retrieve currentCSV for " + channelName + " in "
+						() -> new IllegalStateException("Unable retrieve channel (" + channelName + ") in PackageManifest: "
 								+ packageManifest.getMetadata().getName()));
 	}
 
@@ -331,7 +354,11 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 	 * https://docs.openshift.com/container-platform/4.4/operators/olm-adding-operators-to-cluster.html#olm-installing-operator-from-operatorhub-using-cli_olm-adding-operators-to-a-cluster
 	 */
 	public void subscribe() {
-		subscribe(null, null);
+		final String version = getVersion();
+		if (version == null || version.isBlank()) {
+			subscribe(null, null);
+		} else
+			subscribe(INSTALLPLAN_APPROVAL_MANUAL, null);
 	}
 
 	/**
@@ -364,10 +391,10 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 		Subscription operatorSubscription = (envVariables == null || envVariables.isEmpty())
 				? new Subscription(catalogSourceNamespace, targetNamespace, getOperatorCatalogSource(),
 						packageManifestName,
-						operatorChannel, installPlanApproval)
+						operatorChannel, installPlanApproval, currentCSV)
 				: new Subscription(catalogSourceNamespace, targetNamespace, getOperatorCatalogSource(),
 						packageManifestName,
-						operatorChannel, installPlanApproval, envVariables);
+						operatorChannel, installPlanApproval, currentCSV, envVariables);
 		try {
 			this.execute("apply", "-f", operatorSubscription.save().getAbsolutePath());
 		} catch (IOException e) {

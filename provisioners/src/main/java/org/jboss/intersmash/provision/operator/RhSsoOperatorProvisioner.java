@@ -99,6 +99,11 @@ public abstract class RhSsoOperatorProvisioner<C extends NamespacedKubernetesCli
 	}
 
 	@Override
+	public String getVersion() {
+		return IntersmashConfig.rhSsoOperatorVersion();
+	}
+
+	@Override
 	public void deploy() {
 		FailFastCheck ffCheck = () -> false;
 		// Keycloak Operator codebase contains the name of the Keycloak image to deploy: user can override Keycloak image to
