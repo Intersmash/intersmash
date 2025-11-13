@@ -97,10 +97,13 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 
 	protected abstract String execute(String... args);
 
+	protected abstract String executeInNamespace(final String namespace, String... args);
+
 	public PackageManifest getPackageManifest(String operatorName, String operatorNamespace) {
 		try {
 			return new ObjectMapper()
-					.readValue(this.execute("get", "packagemanifest", operatorName, "-n", operatorNamespace, "-o", "json"),
+					.readValue(
+							this.executeInNamespace(operatorNamespace, "get", "packagemanifest", operatorName, "-o", "json"),
 							PackageManifest.class);
 		} catch (JsonProcessingException e) {
 			throw new IllegalStateException("Couldn't deserialize package manifest data: " + operatorName, e);
@@ -109,7 +112,7 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 
 	public List<CatalogSource> getCatalogSources(final String catalogSourceNamespace) {
 		try {
-			return new ObjectMapper().readValue(this.execute("get", "catsrc", "-n", catalogSourceNamespace, "-o", "json"),
+			return new ObjectMapper().readValue(this.executeInNamespace(catalogSourceNamespace, "get", "catsrc", "-o", "json"),
 					CatalogSourceList.class).getItems();
 		} catch (JsonProcessingException e) {
 			throw new IllegalStateException("Couldn't deserialize catalog source data: " + catalogSourceNamespace, e);
@@ -261,8 +264,8 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 				AtomicReference<String> catalogSourceStatus = new AtomicReference<>();
 				new SimpleWaiter(() -> {
 					// oc get CatalogSource redhat-operators -n openshift-marketplace -o template --template {{.status.connectionState.lastObservedState}}
-					catalogSourceStatus.set(this.execute("get", "CatalogSource", catalogSource.getMetadata().getName(),
-							"-n", operatorCatalogSourceNamespace,
+					catalogSourceStatus.set(this.executeInNamespace(operatorCatalogSourceNamespace,
+							"get", "CatalogSource", catalogSource.getMetadata().getName(),
 							"-o", "template", "--template",
 							"{{.status.connectionState.lastObservedState}}",
 							"--ignore-not-found"));
@@ -408,10 +411,12 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 			// wait for installPlan to be attached to the subscription
 			new SimpleWaiter(() -> {
 				// oc get subscription rhsso-operator -o template --template="{{.status.installplan.name}}"
-				installPlan.set(this.execute("get", "subscription", operatorSubscription.getMetadata().getName(),
-						"-o", "template", "--template",
-						"{{ if .status.installPlanRef.name }}{{.status.installPlanRef.name}}{{ end }}",
-						"--ignore-not-found"));
+				installPlan.set(
+						this.executeInNamespace(this.getTargetNamespace(),
+								"get", "subscription", operatorSubscription.getMetadata().getName(),
+								"-o", "template", "--template",
+								"{{ if .status.installPlanRef.name }}{{.status.installPlanRef.name}}{{ end }}",
+								"--ignore-not-found"));
 				if (!Strings.isNullOrEmpty(installPlan.get())) {
 					log.info("Pending approval on InstallPlan {} for Subscription {}", installPlan.get(),
 							operatorSubscription.getMetadata().getName());
@@ -422,7 +427,8 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 					.level(Level.DEBUG)
 					.failFast(getFailFastCheck())
 					.waitFor();
-			String outcome = this.execute("patch", "InstallPlan", installPlan.get(),
+			String outcome = this.executeInNamespace(this.getTargetNamespace(),
+					"patch", "InstallPlan", installPlan.get(),
 					"--type", "merge", "--patch", "{\"spec\":{\"approved\":true}}");
 			if (!Strings.isNullOrEmpty(outcome) && outcome.contains("patched")) {
 				log.info("Approved InstallPlan {} for subscription {}",

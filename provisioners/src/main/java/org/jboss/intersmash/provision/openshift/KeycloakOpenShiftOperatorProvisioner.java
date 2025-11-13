@@ -62,6 +62,11 @@ public class KeycloakOpenShiftOperatorProvisioner
 		return OpenShiftProvisioner.super.execute(args);
 	}
 
+	@Override
+	public String executeInNamespace(String namespace, String... args) {
+		return OpenShiftProvisioner.super.executeInNamespace(namespace, args);
+	}
+
 	// =================================================================================================================
 	// Operator based provisioning concrete implementation, see OperatorProvisioner
 	// =================================================================================================================

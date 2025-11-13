@@ -51,6 +51,11 @@ public class WildflyOpenShiftOperatorProvisioner
 		return OpenShifts.adminBinary().execute(args);
 	}
 
+	@Override
+	public String executeInNamespace(String namespace, String... args) {
+		return OpenShiftProvisioner.super.executeInNamespace(namespace, args);
+	}
+
 	// =================================================================================================================
 	// Client related
 	// =================================================================================================================
