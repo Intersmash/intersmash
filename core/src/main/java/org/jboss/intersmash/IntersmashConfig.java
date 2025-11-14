@@ -197,7 +197,7 @@ public class IntersmashConfig {
 	}
 
 	public static String rhSsoOperatorVersion() {
-		return XTFConfig.get(RHSSO_OPERATOR_VERSION);
+		return XTFConfig.get(RHSSO_OPERATOR_VERSION, "7.6.11-opr-003");
 	}
 
 	public static String wildflyOperatorCatalogSource() {
