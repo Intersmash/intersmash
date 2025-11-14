@@ -58,11 +58,11 @@ public class OperatorSubscriptionTestCase {
 			new ActiveMQOpenShiftOperatorProvisioner(mock(ActiveMQOperatorApplication.class)),
 			new InfinispanOpenShiftOperatorProvisioner(mock(InfinispanOperatorApplication.class)),
 			new KafkaOpenShiftOperatorProvisioner(mock(KafkaOperatorApplication.class)),
-			new WildflyOpenShiftOperatorProvisioner(mock(WildflyOperatorApplication.class)));
+			new WildflyOpenShiftOperatorProvisioner(mock(WildflyOperatorApplication.class)),
+			new KeycloakOpenShiftOperatorProvisioner(mock(KeycloakOperatorApplication.class)));
 
 	private static final Stream<OperatorProvisioner> COMMUNITY_ONLY_PROVISIONERS = Stream.of(
-			new HyperfoilOpenShiftOperatorProvisioner(mock(HyperfoilOperatorApplication.class)),
-			new KeycloakOpenShiftOperatorProvisioner(mock(KeycloakOperatorApplication.class)));
+			new HyperfoilOpenShiftOperatorProvisioner(mock(HyperfoilOperatorApplication.class)));
 
 	private static final Stream<OperatorProvisioner> PRODUCT_ONLY_PROVISIONERS = Stream.of(
 			new RhSsoOpenShiftOperatorProvisioner(mock(RhSsoOperatorApplication.class)));
