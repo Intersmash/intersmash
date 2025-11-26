@@ -84,7 +84,7 @@ public class OpenShiftAIOpenShiftOperatorProvisioner
 
 	@Override
 	protected void removeSubscription() {
-		this.execute(this.getTargetNamespace(), "delete", "subscription", packageManifestName, "--ignore-not-found");
+		this.executeInNamespace(this.getTargetNamespace(), "delete", "subscription", packageManifestName, "--ignore-not-found");
 	}
 
 	// =================================================================================================================
