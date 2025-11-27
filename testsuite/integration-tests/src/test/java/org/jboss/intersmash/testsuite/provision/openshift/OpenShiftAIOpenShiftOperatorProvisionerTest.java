@@ -161,12 +161,12 @@ public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreat
 	private void verifyMinimalDataScienceCluster(final DataScienceCluster dataScienceCluster,
 			final DSCInitialization dscInitialization) {
 		// create and verify that objects exist
-		operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).create();
-		new SimpleWaiter(() -> operatorProvisioner.dataScienceClusterClient().list().getItems().size() == 1)
-				.level(Level.DEBUG)
-				.waitFor();
 		operatorProvisioner.dscInitializationClient().resource(dscInitialization).create();
 		new SimpleWaiter(() -> operatorProvisioner.dscInitializationClient().list().getItems().size() == 1)
+				.level(Level.DEBUG)
+				.waitFor();
+		operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).create();
+		new SimpleWaiter(() -> operatorProvisioner.dataScienceClusterClient().list().getItems().size() == 1)
 				.level(Level.DEBUG)
 				.waitFor();
 		final DataScienceCluster createdDataScienceCluster = operatorProvisioner.dataScienceCluster().get();
