@@ -18,7 +18,7 @@
         -->
         <intersmash.test.execution.profile>community</intersmash.test.execution.profile>
         <!-- And being community oriented, then exclude product specific tests by default -->
-        <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community</intersmash.test.excludedGroups.by.execution-profile>
+        <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community,ts.ai</intersmash.test.excludedGroups.by.execution-profile>
         <!-- And being community oriented, no tests are excluded based on WildFly target distribution (e.g.: WildFly can run Bootable JAR tests) -->
         <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.no-test-excluded.default</intersmash.test.excludedGroups.by.wildfly-target-distribution>
         <!-- Tests that require either K8s or OpenShift are excluded by default, and can be enabled by explicitly setting one related profile (ts.k8s, ts.openshift) -->
@@ -123,7 +123,7 @@
                 <!-- Set the intersmash.test.execution.profile property to `prod`, it is read by test classes -->
                 <intersmash.test.execution.profile>prod</intersmash.test.execution.profile>
                 <!-- Exclude tests that shouldn't be executed when dealing with products -->
-                <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-prod</intersmash.test.excludedGroups.by.execution-profile>
+                <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-prod,ts.ai</intersmash.test.excludedGroups.by.execution-profile>
             </properties>
         </profile>
         <profile>

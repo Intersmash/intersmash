@@ -21,6 +21,7 @@ import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
@@ -54,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @CleanBeforeAll
 @OpenShiftTest
 @NotForProductizedExecutionProfile
+@AiTest
 public class OpenDataHubOpenShiftOperatorProvisionerTest implements ProjectCreationCapable {
 	private static final OpenDataHubOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();
 

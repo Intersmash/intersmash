@@ -28,6 +28,7 @@ import org.jboss.intersmash.rhoai.datasciencecluster.v1.datascienceclusterspec.c
 import org.jboss.intersmash.rhoai.datasciencecluster.v1.datascienceclusterspec.components.kserve.serving.ingressgateway.Certificate;
 import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitialization;
 import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitializationBuilder;
+import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
@@ -54,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @CleanBeforeAll
 @OpenShiftTest
 @NotForCommunityExecutionProfile
+@AiTest
 public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreationCapable {
 	private static final OpenShiftAIOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();
 
