@@ -82,14 +82,14 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 
 		subscribe();
 
+		dscInitializationClient().createOrReplace(getApplication().getDSCInitialization());
+
 		dataScienceClusterClient().createOrReplace(getApplication().getDataScienceCluster());
 		new SimpleWaiter(() -> dataScienceCluster().get().getStatus() != null)
 				.failFast(ffCheck)
 				.reason("Wait for status field to be initialized.")
 				.level(Level.DEBUG)
 				.waitFor();
-
-		dscInitializationClient().createOrReplace(getApplication().getDSCInitialization());
 	}
 
 	@Override

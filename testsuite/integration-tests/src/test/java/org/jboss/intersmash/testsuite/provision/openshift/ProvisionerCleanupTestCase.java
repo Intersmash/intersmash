@@ -22,6 +22,7 @@ import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.*;
 import org.jboss.intersmash.provision.operator.OperatorProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
+import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
@@ -62,10 +63,7 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 					, new PostgreSQLImageOpenShiftProvisioner(
 							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
 					new PostgreSQLTemplateOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication())
-					// ODH
-					, new OpenDataHubOpenShiftOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getOpenDataHubOperatorApplication()));
+							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
 			return Stream.of(
 					// RHDG
@@ -79,10 +77,23 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 					, new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso())
 					// RHBK
 					, new KeycloakOpenShiftOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
-					// OpenShift AI
-					, new OpenShiftAIOpenShiftOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getOpenShiftAIOperatorApplication()));
+							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
+		} else {
+			throw new IllegalStateException(
+					String.format("Unknown Intersmash test suite execution profile: %s",
+							IntersmashTestsuiteProperties.getTestExecutionProfile()));
+		}
+	}
+
+	private static Stream<OpenShiftProvisioner> aiProvisionerProvider() {
+		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
+			// ODH
+			return Stream.of(new OpenDataHubOpenShiftOperatorProvisioner(
+					OpenShiftProvisionerTestBase.getOpenDataHubOperatorApplication()));
+		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
+			// OpenShift AI
+			return Stream.of(new OpenShiftAIOpenShiftOperatorProvisioner(
+					OpenShiftProvisionerTestBase.getOpenShiftAIOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
@@ -91,8 +102,19 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
-	@MethodSource("provisionerProvider")
+	@MethodSource({ "provisionerProvider" })
 	public void testProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) throws IOException {
+		testProvisioning(provisioner);
+	}
+
+	@AiTest
+	@ParameterizedTest(name = "{displayName}#class({0})")
+	@MethodSource({ "aiProvisionerProvider" })
+	public void testAiProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) throws IOException {
+		testProvisioning(provisioner);
+	}
+
+	private static void testProvisioning(OpenShiftProvisioner provisioner) throws IOException {
 		evalOperatorSetup(provisioner);
 		try {
 			provisioner.configure();
