@@ -145,7 +145,8 @@ public class KafkaKRaftEphemeralOpenShiftOperatorApplication implements KafkaOpe
 
 			AclRule acl = new AclRuleBuilder()
 					.withHost("*")
-					.withOperation(AclOperation.DESCRIBE)
+					// starting from Strimzi 0.49 ."operation" is deprecated and ".operations" must be used
+					.withOperations(AclOperation.DESCRIBE)
 					.withNewAclRuleTopicResource()
 					.withName("test-topic")
 					.withPatternType(AclResourcePatternType.LITERAL)
