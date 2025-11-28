@@ -47,7 +47,7 @@ public class OpenShiftAIOpenShiftOperatorProvisioner
 		// ... and common OpenShift provisioning logic, too
 		implements OpenShiftProvisioner<OpenShiftAIOperatorApplication> {
 
-	private static final String OPENSHIFT_OPERATORS_NAMESPACE = "openshift-operators";
+	private static final String OPENSHIFT_OPERATORS_NAMESPACE = "openshift-operators"; // --> redhat-ods-operator
 
 	public OpenShiftAIOpenShiftOperatorProvisioner(
 			@NonNull OpenShiftAIOperatorApplication application) {
