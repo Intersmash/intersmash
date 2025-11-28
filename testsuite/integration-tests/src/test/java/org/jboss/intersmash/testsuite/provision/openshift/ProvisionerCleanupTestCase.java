@@ -136,6 +136,10 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 			}
 			Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
 			openShift.configMaps().withName("no-delete").delete();
+			// this resource isn't automatically deleted on undeploy
+			if (provisioner instanceof OpenShiftAIOpenShiftOperatorProvisioner) {
+				OpenShifts.adminBinary().execute("label", "configmap", "odh-trusted-ca-bundle", OpenShift.KEEP_LABEL + "=true");
+			}
 			openShift.waiters().isProjectClean().waitFor();
 		} finally {
 			evalOperatorTeardown(provisioner);
