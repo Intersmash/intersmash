@@ -82,8 +82,6 @@ public abstract class OpenShiftAIOperatorProvisioner<C extends NamespacedKuberne
 
 		subscribe();
 
-		dscInitializationClient().createOrReplace(getApplication().getDSCInitialization());
-
 		dataScienceClusterClient().createOrReplace(getApplication().getDataScienceCluster());
 		new SimpleWaiter(() -> dataScienceCluster().get().getStatus() != null)
 				.failFast(ffCheck)
@@ -104,17 +102,6 @@ public abstract class OpenShiftAIOperatorProvisioner<C extends NamespacedKuberne
 				.reason("Waiting for the the 'DataScienceCluster' resource to be removed.")
 				.level(Level.DEBUG)
 				.waitFor();
-
-		if (getApplication().getDSCInitialization() != null) {
-			final String appName = getApplication().getName();
-			deletionDetails = dscInitializationClient().withName(appName).delete();
-			deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
-			if (!deleted) {
-				log.warn("Wasn't able to remove the 'DSCInitialization' resources created for '{}' instance!",
-						appName);
-			}
-			new SimpleWaiter(() -> dscInitializationClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
-		}
 		// delete the OLM subscription
 		unsubscribe();
 		new SimpleWaiter(() -> getPods().isEmpty())
