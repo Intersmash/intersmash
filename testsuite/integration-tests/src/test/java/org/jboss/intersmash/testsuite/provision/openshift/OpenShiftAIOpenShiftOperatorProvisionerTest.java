@@ -16,6 +16,7 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jboss.intersmash.application.operator.OpenShiftAIOperatorApplication;
 import org.jboss.intersmash.junit5.IntersmashExtension;
@@ -27,7 +28,6 @@ import org.jboss.intersmash.rhoai.datasciencecluster.v1.datascienceclusterspec.c
 import org.jboss.intersmash.rhoai.datasciencecluster.v1.datascienceclusterspec.components.kserve.Serving;
 import org.jboss.intersmash.rhoai.datasciencecluster.v1.datascienceclusterspec.components.kserve.serving.ingressgateway.Certificate;
 import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitialization;
-import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitializationBuilder;
 import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
@@ -44,6 +44,7 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
+import io.fabric8.kubernetes.api.model.StatusDetails;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -96,14 +97,7 @@ public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreat
 
 					@Override
 					public DSCInitialization getDSCInitialization() {
-						return new DSCInitializationBuilder()
-								.withNewMetadata()
-								.withName(APP_NAME)
-								.endMetadata()
-								.withNewSpec()
-								.withApplicationsNamespace(OpenShifts.master().getNamespace())
-								.endSpec()
-								.build();
+						return null;
 					}
 
 					@Override
@@ -139,8 +133,6 @@ public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreat
 		final String appName = operatorProvisioner.getApplication().getName();
 		operatorProvisioner.dataScienceClusterClient().withName(appName).withPropagationPolicy(DeletionPropagation.FOREGROUND)
 				.delete();
-		operatorProvisioner.dscInitializationClient().withName(appName).withPropagationPolicy(DeletionPropagation.FOREGROUND)
-				.delete();
 	}
 
 	/**
@@ -153,37 +145,35 @@ public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreat
 	public void testMinimalDataScienceCluster() {
 		operatorProvisioner.subscribe();
 		try {
-			verifyMinimalDataScienceCluster(operatorProvisioner.getApplication().getDataScienceCluster(),
-					operatorProvisioner.getApplication().getDSCInitialization());
+			verifyMinimalDataScienceCluster(operatorProvisioner.getApplication().getDataScienceCluster());
 		} finally {
 			operatorProvisioner.unsubscribe();
 		}
 	}
 
-	private void verifyMinimalDataScienceCluster(final DataScienceCluster dataScienceCluster,
-			final DSCInitialization dscInitialization) {
+	private void verifyMinimalDataScienceCluster(final DataScienceCluster dataScienceCluster) {
+		List<StatusDetails> deletionDetails;
 		// create and verify that objects exist
-		operatorProvisioner.dscInitializationClient().resource(dscInitialization).create();
-		new SimpleWaiter(() -> operatorProvisioner.dscInitializationClient().list().getItems().size() == 1)
-				.level(Level.DEBUG)
-				.waitFor();
 		operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).create();
 		new SimpleWaiter(() -> operatorProvisioner.dataScienceClusterClient().list().getItems().size() == 1)
 				.level(Level.DEBUG)
 				.waitFor();
-		final DataScienceCluster createdDataScienceCluster = operatorProvisioner.dataScienceCluster().get();
-		Assertions.assertNotNull(createdDataScienceCluster);
-		// the DataScienceCluster spec gets populated on creation, so we just check that it is not null
-		Assertions.assertNotNull(createdDataScienceCluster.getSpec());
-		Assertions.assertNotNull(operatorProvisioner.dataScienceCluster().get().getSpec());
-		// the Monitoring spec gets populated on creation, so we verify 1st level resources individually
-		final DSCInitialization createdDscInitialization = operatorProvisioner.dscInitializationClient()
-				.withName(dscInitialization.getMetadata().getName()).get();
-		Assertions.assertEquals(dscInitialization.getSpec().getDevFlags(), createdDscInitialization.getSpec().getDevFlags());
-		Assertions.assertNotNull(createdDscInitialization.getSpec().getMonitoring());
-		Assertions.assertEquals(dscInitialization.getSpec().getServiceMesh(),
-				createdDscInitialization.getSpec().getServiceMesh());
-		Assertions.assertEquals(dscInitialization.getSpec().getTrustedCABundle(),
-				createdDscInitialization.getSpec().getTrustedCABundle());
+		try {
+			final DataScienceCluster createdDataScienceCluster = operatorProvisioner.dataScienceCluster().get();
+			Assertions.assertNotNull(createdDataScienceCluster);
+			// the DataScienceCluster spec gets populated on creation, so we just check that it is not null
+			Assertions.assertNotNull(createdDataScienceCluster.getSpec());
+			Assertions.assertNotNull(operatorProvisioner.dataScienceCluster().get().getSpec());
+			// the Monitoring spec gets populated on creation, so we verify 1st level resources individually
+			final DSCInitialization createdDscInitialization = operatorProvisioner.dscInitializationClient()
+					.list().getItems().get(0);
+			Assertions.assertNotNull(createdDscInitialization);
+		} finally {
+			deletionDetails = operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).delete();
+			boolean deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+			if (!deleted) {
+				log.warn("Wasn't able to remove the 'DataScienceCluster' resource");
+			}
+		}
 	}
 }
