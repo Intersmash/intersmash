@@ -118,7 +118,7 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 		// delete the OLM subscription
 		unsubscribe();
 		new SimpleWaiter(() -> getPods().isEmpty())
-				.reason("Waiting for the all the HyperFoil pods to be stopped.")
+				.reason("Waiting for the all the Open Data Hub operator pods to be stopped.")
 				.level(Level.DEBUG)
 				.waitFor();
 	}

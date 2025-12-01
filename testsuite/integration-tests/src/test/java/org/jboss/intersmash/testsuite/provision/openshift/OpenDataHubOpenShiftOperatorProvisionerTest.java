@@ -16,13 +16,13 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.junit5.IntersmashExtension;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
-import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.junit.jupiter.api.AfterAll;
@@ -37,6 +37,7 @@ import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.core.waiting.SimpleWaiter;
 import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
+import io.fabric8.kubernetes.api.model.StatusDetails;
 import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
 import io.opendatahub.datasciencecluster.v1.DataScienceClusterBuilder;
 import io.opendatahub.datasciencecluster.v1.datascienceclusterspec.components.kserve.Nim;
@@ -162,28 +163,46 @@ public class OpenDataHubOpenShiftOperatorProvisionerTest implements ProjectCreat
 
 	private void verifyMinimalDataScienceCluster(final DataScienceCluster dataScienceCluster,
 			final DSCInitialization dscInitialization) {
+		List<StatusDetails> deletionDetails;
 		// create and verify that objects exist
 		operatorProvisioner.dscInitializationClient().resource(dscInitialization).create();
 		new SimpleWaiter(() -> operatorProvisioner.dscInitializationClient().list().getItems().size() == 1)
 				.level(Level.DEBUG)
 				.waitFor();
-		operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).create();
-		new SimpleWaiter(() -> operatorProvisioner.dataScienceClusterClient().list().getItems().size() == 1)
-				.level(Level.DEBUG)
-				.waitFor();
-		final DataScienceCluster createdDataScienceCluster = operatorProvisioner.dataScienceCluster().get();
-		Assertions.assertNotNull(createdDataScienceCluster);
-		// the DataScienceCluster spec gets populated on creation, so we just check that it is not null
-		Assertions.assertNotNull(createdDataScienceCluster.getSpec());
-		Assertions.assertNotNull(operatorProvisioner.dataScienceCluster().get().getSpec());
-		// the Monitoring spec gets populated on creation, so we verify 1st level resources individually
-		final DSCInitialization createdDscInitialization = operatorProvisioner.dscInitializationClient()
-				.withName(dscInitialization.getMetadata().getName()).get();
-		Assertions.assertEquals(dscInitialization.getSpec().getDevFlags(), createdDscInitialization.getSpec().getDevFlags());
-		Assertions.assertNotNull(createdDscInitialization.getSpec().getMonitoring());
-		Assertions.assertEquals(dscInitialization.getSpec().getServiceMesh(),
-				createdDscInitialization.getSpec().getServiceMesh());
-		Assertions.assertEquals(dscInitialization.getSpec().getTrustedCABundle(),
-				createdDscInitialization.getSpec().getTrustedCABundle());
+		try {
+			operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).create();
+			new SimpleWaiter(() -> operatorProvisioner.dataScienceClusterClient().list().getItems().size() == 1)
+					.level(Level.DEBUG)
+					.waitFor();
+			try {
+				final DataScienceCluster createdDataScienceCluster = operatorProvisioner.dataScienceCluster().get();
+				Assertions.assertNotNull(createdDataScienceCluster);
+				// the DataScienceCluster spec gets populated on creation, so we just check that it is not null
+				Assertions.assertNotNull(createdDataScienceCluster.getSpec());
+				Assertions.assertNotNull(operatorProvisioner.dataScienceCluster().get().getSpec());
+				// the Monitoring spec gets populated on creation, so we verify 1st level resources individually
+				final DSCInitialization createdDscInitialization = operatorProvisioner.dscInitializationClient()
+						.withName(dscInitialization.getMetadata().getName()).get();
+				Assertions.assertEquals(dscInitialization.getSpec().getDevFlags(),
+						createdDscInitialization.getSpec().getDevFlags());
+				Assertions.assertNotNull(createdDscInitialization.getSpec().getMonitoring());
+				Assertions.assertEquals(dscInitialization.getSpec().getServiceMesh(),
+						createdDscInitialization.getSpec().getServiceMesh());
+				Assertions.assertEquals(dscInitialization.getSpec().getTrustedCABundle(),
+						createdDscInitialization.getSpec().getTrustedCABundle());
+			} finally {
+				deletionDetails = operatorProvisioner.dataScienceClusterClient().resource(dataScienceCluster).delete();
+				boolean deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+				if (!deleted) {
+					log.warn("Wasn't able to remove the 'DataScienceCluster' resource");
+				}
+			}
+		} finally {
+			deletionDetails = operatorProvisioner.dscInitializationClient().resource(dscInitialization).delete();
+			boolean deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+			if (!deleted) {
+				log.warn("Wasn't able to remove the 'DSCInitialization' resource");
+			}
+		}
 	}
 }
