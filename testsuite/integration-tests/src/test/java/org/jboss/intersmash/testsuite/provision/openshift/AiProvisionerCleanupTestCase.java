@@ -15,11 +15,26 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
-import java.io.IOException;
-import java.util.stream.Stream;
-
+import cz.xtf.core.config.OpenShiftConfig;
+import cz.xtf.core.openshift.OpenShift;
+import cz.xtf.core.openshift.OpenShifts;
+import cz.xtf.junit5.annotations.CleanBeforeEach;
+import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
+import lombok.extern.slf4j.Slf4j;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
-import org.jboss.intersmash.provision.openshift.*;
+import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
+import org.jboss.intersmash.provision.openshift.InfinispanOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.KeycloakOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.OpenShiftAIOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
+import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.operator.OperatorProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
@@ -31,53 +46,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeEach;
-import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.stream.Stream;
 
 @CleanBeforeEach
 @Slf4j
-@OpenShiftTest
-public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
+@AiTest
+public class AiProvisionerCleanupTestCase implements ProjectCreationCapable {
 	protected static final OpenShift openShift = OpenShifts.master();
 
-	private static Stream<OpenShiftProvisioner> provisionerProvider() {
+	private static Stream<OpenShiftProvisioner> aiProvisionerProvider() {
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
-			return Stream.of(
-					// Infinispan
-					new InfinispanOpenShiftOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
-					// WildFly
-					, new WildflyBootableJarImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyBootableJarOpenShiftApplication()),
-					new WildflyBootableJarImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getEap7BootableJarOpenShiftApplication())
-					// Keycloak
-					, new KeycloakOpenShiftOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication())
-					// MySQL
-					, new MysqlImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getMysqlOpenShiftApplication())
-					// PostgreSql
-					, new PostgreSQLImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLImageOpenShiftApplication()),
-					new PostgreSQLTemplateOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getPostgreSQLTemplateOpenShiftApplication()));
+			// ODH
+			return Stream.of(new OpenDataHubOpenShiftOperatorProvisioner(
+					OpenShiftProvisionerTestBase.getOpenDataHubOperatorApplication()));
 		} else if (IntersmashTestsuiteProperties.isProductizedTestExecutionProfileEnabled()) {
-			return Stream.of(
-					// RHDG
-					new InfinispanOpenShiftOperatorProvisioner(OpenShiftProvisionerTestBase.getInfinispanOperatorApplication())
-					// EAP latest GA
-					, new WildflyImageOpenShiftProvisioner(
-							OpenShiftProvisionerTestBase.getWildflyOpenShiftLocalBinaryTargetServerApplication())
-					// EAP 7
-					, new Eap7ImageOpenShiftProvisioner(OpenShiftProvisionerTestBase.getEap7OpenShiftImageApplication())
-					// RHSSO 7.6.x
-					, new RhSsoTemplateOpenShiftProvisioner(OpenShiftProvisionerTestBase.getHttpsRhSso())
-					// RHBK
-					, new KeycloakOpenShiftOperatorProvisioner(
-							OpenShiftProvisionerTestBase.getKeycloakOperatorApplication()));
+			// OpenShift AI
+			return Stream.of(new OpenShiftAIOpenShiftOperatorProvisioner(
+					OpenShiftProvisionerTestBase.getOpenShiftAIOperatorApplication()));
 		} else {
 			throw new IllegalStateException(
 					String.format("Unknown Intersmash test suite execution profile: %s",
@@ -86,8 +72,8 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")
-	@MethodSource({ "provisionerProvider" })
-	public void testProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) throws IOException {
+	@MethodSource({ "aiProvisionerProvider" })
+	public void testAiProvisioningWorkflowCleanup(OpenShiftProvisioner provisioner) throws IOException {
 		testProvisioning(provisioner);
 	}
 
@@ -133,33 +119,6 @@ public class ProvisionerCleanupTestCase implements ProjectCreationCapable {
 			OpenShifts.adminBinary().execute("apply", "-f",
 					new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		}
-	}
-
-	/**
-	 * EapS2iBuild application requires additional image streams to be created. CleanBeforeEach would delete it if the
-	 * provisioner is initialized in {@link #provisionerProvider()}, so we need a separate test method.
-	 */
-	@Test
-	@NotForCommunityExecutionProfile
-	public void eap7LegacyS2iBuild() {
-		Eap7LegacyS2iBuildTemplateProvisioner provisioner = new Eap7LegacyS2iBuildTemplateProvisioner(
-				OpenShiftProvisionerTestBase.getEap7LegacyS2iBuildTemplateApplication());
-		provisioner.preDeploy();
-		provisioner.deploy();
-		openShift.configMaps().create(new ConfigMapBuilder().withNewMetadata().withName("no-delete").endMetadata().build());
-		provisioner.undeploy();
-		provisioner.postUndeploy();
-		Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
-		openShift.configMaps().withName("no-delete").delete();
-		// delete the images streams created by EapS2iBuildTemplateApplication
-		openShift.imageStreams()
-				.withName(((String) provisioner.getApplication().getParameters().get("EAP_IMAGE")).split(":")[0])
-				.delete();
-		openShift.imageStreams()
-				.withName(((String) provisioner.getApplication().getParameters().get("EAP_RUNTIME_IMAGE")).split(":")[0])
-				.delete();
-
-		openShift.waiters().isProjectClean().waitFor();
 	}
 
 	/**

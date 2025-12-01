@@ -18,11 +18,11 @@
         -->
         <intersmash.test.execution.profile>community</intersmash.test.execution.profile>
         <!-- And being community oriented, then exclude product specific tests by default -->
-        <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community,ts.ai</intersmash.test.excludedGroups.by.execution-profile>
+        <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-community</intersmash.test.excludedGroups.by.execution-profile>
         <!-- And being community oriented, no tests are excluded based on WildFly target distribution (e.g.: WildFly can run Bootable JAR tests) -->
         <intersmash.test.excludedGroups.by.wildfly-target-distribution>ts.no-test-excluded.default</intersmash.test.excludedGroups.by.wildfly-target-distribution>
         <!-- Tests that require either K8s or OpenShift are excluded by default, and can be enabled by explicitly setting one related profile (ts.k8s, ts.openshift) -->
-        <intersmash.test.excludedGroups.by.target-platform>ts.k8s,ts.openshift</intersmash.test.excludedGroups.by.target-platform>
+        <intersmash.test.excludedGroups.by.target-platform>ts.k8s,ts.openshift,ts.ai</intersmash.test.excludedGroups.by.target-platform>
     </properties>
 
     <dependencies>
@@ -91,16 +91,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration combine.children="append">
-                    <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
-                    <systemPropertyVariables>
-                        <xtf.global_test_properties.path>${project.basedir}/openshift-global-test.properties</xtf.global_test_properties.path>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -118,12 +108,32 @@
 
     <profiles>
         <profile>
+            <id>default-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                            <systemPropertyVariables>
+                                <xtf.global_test_properties.path>${project.basedir}/openshift-global-test.properties</xtf.global_test_properties.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>ts.execution-profile.prod</id>
             <properties>
                 <!-- Set the intersmash.test.execution.profile property to `prod`, it is read by test classes -->
                 <intersmash.test.execution.profile>prod</intersmash.test.execution.profile>
                 <!-- Exclude tests that shouldn't be executed when dealing with products -->
-                <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-prod,ts.ai</intersmash.test.excludedGroups.by.execution-profile>
+                <intersmash.test.excludedGroups.by.execution-profile>ts.not-for-prod</intersmash.test.excludedGroups.by.execution-profile>
             </properties>
         </profile>
         <profile>
@@ -138,15 +148,36 @@
             <id>ts.k8s</id>
             <properties>
                 <!-- Exclude OpenShift tests -->
-                <intersmash.test.excludedGroups.by.target-platform>ts.openshift</intersmash.test.excludedGroups.by.target-platform>
+                <intersmash.test.excludedGroups.by.target-platform>ts.openshift,ts.ai</intersmash.test.excludedGroups.by.target-platform>
             </properties>
         </profile>
         <profile>
             <id>ts.openshift</id>
             <properties>
                 <!-- Exclude k8s tests -->
-                <intersmash.test.excludedGroups.by.target-platform>ts.k8s</intersmash.test.excludedGroups.by.target-platform>
+                <intersmash.test.excludedGroups.by.target-platform>ts.k8s,ts.ai</intersmash.test.excludedGroups.by.target-platform>
             </properties>
+        </profile>
+        <profile>
+            <id>ts.ai</id>
+            <properties>
+                <!-- Only execute AI (Open Data Hub, OpenShift AI) related tests -->
+                <intersmash.test.excludedGroups.by.target-platform>ts.k8s,ts.openshift</intersmash.test.excludedGroups.by.target-platform>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.children="append">
+                            <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
+                            <systemPropertyVariables>
+                                <xtf.global_test_properties.path>${project.basedir}/openshift-ai-global-test.properties</xtf.global_test_properties.path>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <!-- Configuration settings for testing EAP 8.0 -->
