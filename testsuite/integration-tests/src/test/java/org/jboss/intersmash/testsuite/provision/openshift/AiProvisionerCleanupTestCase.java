@@ -15,39 +15,26 @@
  */
 package org.jboss.intersmash.testsuite.provision.openshift;
 
+import java.io.IOException;
+import java.util.stream.Stream;
+
+import org.jboss.intersmash.provision.olm.OperatorGroup;
+import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.OpenShiftAIOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.provision.operator.OperatorProvisioner;
+import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
+import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
 import cz.xtf.core.config.OpenShiftConfig;
 import cz.xtf.core.openshift.OpenShift;
 import cz.xtf.core.openshift.OpenShifts;
 import cz.xtf.junit5.annotations.CleanBeforeEach;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.intersmash.provision.olm.OperatorGroup;
-import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.Eap7LegacyS2iBuildTemplateProvisioner;
-import org.jboss.intersmash.provision.openshift.InfinispanOpenShiftOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.KeycloakOpenShiftOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.MysqlImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.OpenShiftAIOpenShiftOperatorProvisioner;
-import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.PostgreSQLTemplateOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
-import org.jboss.intersmash.provision.operator.OperatorProvisioner;
-import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
-import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
-import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
-import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
-import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
-
-import java.io.IOException;
-import java.util.stream.Stream;
 
 @CleanBeforeEach
 @Slf4j
@@ -58,9 +45,9 @@ public class AiProvisionerCleanupTestCase implements ProjectCreationCapable {
 	private static Stream<OpenShiftProvisioner> aiProvisionerProvider() {
 		return Stream.of(
 				new OpenDataHubOpenShiftOperatorProvisioner(
-					OpenShiftProvisionerTestBase.getOpenDataHubOperatorApplication()),
+						OpenShiftProvisionerTestBase.getOpenDataHubOperatorApplication()),
 				new OpenShiftAIOpenShiftOperatorProvisioner(
-					OpenShiftProvisionerTestBase.getOpenShiftAIOperatorApplication()));
+						OpenShiftProvisionerTestBase.getOpenShiftAIOperatorApplication()));
 	}
 
 	@ParameterizedTest(name = "{displayName}#class({0})")

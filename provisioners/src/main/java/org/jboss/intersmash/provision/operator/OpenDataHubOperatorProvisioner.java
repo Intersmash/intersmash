@@ -15,10 +15,8 @@
  */
 package org.jboss.intersmash.provision.operator;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import io.opendatahub.platform.services.v1alpha1.Auth;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
@@ -42,6 +40,7 @@ import io.fabric8.kubernetes.client.dsl.internal.HasMetadataOperationsImpl;
 import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
 import io.opendatahub.dscinitialization.v1.DSCInitialization;
 import io.opendatahub.features.v1.FeatureTracker;
+import io.opendatahub.platform.services.v1alpha1.Auth;
 import io.opendatahub.platform.services.v1alpha1.Monitoring;
 import lombok.extern.slf4j.Slf4j;
 

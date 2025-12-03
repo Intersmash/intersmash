@@ -15,7 +15,6 @@
  */
 package org.jboss.intersmash.provision.openshift;
 
-import io.opendatahub.platform.services.v1alpha1.Auth;
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.model.odh.AuthList;
@@ -36,6 +35,7 @@ import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
 import io.opendatahub.dscinitialization.v1.DSCInitialization;
 import io.opendatahub.features.v1.FeatureTracker;
+import io.opendatahub.platform.services.v1alpha1.Auth;
 import io.opendatahub.platform.services.v1alpha1.Monitoring;
 import lombok.NonNull;
 

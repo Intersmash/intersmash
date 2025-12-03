@@ -15,8 +15,9 @@
  */
 package org.jboss.intersmash.provision.operator.model.rhoai;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
 import org.jboss.intersmash.rhoai.platform.services.v1alpha1.Auth;
+
+import io.fabric8.kubernetes.client.CustomResourceList;
 
 /**
  * Used by {@link org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner} client methods,
