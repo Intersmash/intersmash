@@ -200,6 +200,11 @@ public class OpenDataHubOpenShiftOperatorProvisionerTest implements ProjectCreat
 			if (!deleted) {
 				log.warn("Wasn't able to remove the 'DSCInitialization' resource");
 			}
+			deletionDetails = operatorProvisioner.authClient().delete();
+			deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+			if (!deleted) {
+				log.warn("Wasn't able to remove the 'Auth' resource");
+			}
 		}
 	}
 }

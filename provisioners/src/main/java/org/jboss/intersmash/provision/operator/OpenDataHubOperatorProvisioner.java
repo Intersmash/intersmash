@@ -18,9 +18,11 @@ package org.jboss.intersmash.provision.operator;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.opendatahub.platform.services.v1alpha1.Auth;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
+import org.jboss.intersmash.provision.operator.model.odh.AuthList;
 import org.jboss.intersmash.provision.operator.model.odh.DSCInitializationList;
 import org.jboss.intersmash.provision.operator.model.odh.DataScienceClusterList;
 import org.jboss.intersmash.provision.operator.model.odh.FeatureTrackerList;
@@ -100,14 +102,6 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 		boolean deleted;
 		final String appName = getApplication().getName();
 
-		deletionDetails = dscInitializationClient().withName(appName).delete();
-		deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
-		if (!deleted) {
-			log.warn("Wasn't able to remove the 'DSCInitialization' resources created for '{}' instance!",
-					appName);
-		}
-		new SimpleWaiter(() -> dscInitializationClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
-
 		deletionDetails = dataScienceCluster().delete();
 		deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
 		if (!deleted) {
@@ -117,6 +111,21 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 				.reason("Waiting for the the 'DataScienceCluster' resource to be removed.")
 				.level(Level.DEBUG)
 				.waitFor();
+
+		deletionDetails = dscInitializationClient().withName(appName).delete();
+		deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+		if (!deleted) {
+			log.warn("Wasn't able to remove the 'DSCInitialization' resources created for '{}' instance!",
+					appName);
+		}
+		new SimpleWaiter(() -> dscInitializationClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
+
+		deletionDetails = authClient().delete();
+		deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+		if (!deleted) {
+			log.warn("Wasn't able to remove the 'Auth' resource");
+		}
+		new SimpleWaiter(() -> authClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
 
 		// delete the OLM subscription
 		unsubscribe();
@@ -150,6 +159,8 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 
 	protected static String ODH_MONITORING_CRD_NAME = "monitorings.services.platform.opendatahub.io";
 
+	protected static String ODH_AUTH_CRD_NAME = "auths.services.platform.opendatahub.io";
+
 	/**
 	 * Generic CRD client which is used by client builders default implementation to build the CRDs client
 	 *
@@ -173,10 +184,15 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 	protected abstract HasMetadataOperationsImpl<Monitoring, MonitoringList> monitoringCustomResourcesClient(
 			CustomResourceDefinitionContext crdc);
 
+	// auths.services.platform.opendatahub.io
+	protected abstract HasMetadataOperationsImpl<Auth, AuthList> authCustomResourcesClient(
+			CustomResourceDefinitionContext crdc);
+
 	private static NonNamespaceOperation<DataScienceCluster, DataScienceClusterList, Resource<DataScienceCluster>> ODH_DATA_SCIENCE_CLUSTER_CLIENT;
 	private static NonNamespaceOperation<DSCInitialization, DSCInitializationList, Resource<DSCInitialization>> ODH_DSC_INITIALIZATION_CLIENT;
 	private static NonNamespaceOperation<FeatureTracker, FeatureTrackerList, Resource<FeatureTracker>> ODH_FEATURE_TRACKER_CLIENT;
 	private static NonNamespaceOperation<Monitoring, MonitoringList, Resource<Monitoring>> ODH_MONITORING_CLIENT;
+	private static NonNamespaceOperation<Auth, AuthList, Resource<Auth>> ODH_AUTH_CLIENT;
 
 	/**
 	 * Get a client capable of working with {@link OpenDataHubOperatorProvisioner#ODH_DATA_SCIENCE_CLUSTER_CLIENT} custom resource.
@@ -250,6 +266,24 @@ public abstract class OpenDataHubOperatorProvisioner<C extends NamespacedKuberne
 			ODH_MONITORING_CLIENT = monitoringCustomResourcesClient(CustomResourceDefinitionContext.fromCrd(crd));
 		}
 		return ODH_MONITORING_CLIENT;
+	}
+
+	/**
+	 * Get a client capable of working with {@link OpenDataHubOperatorProvisioner#ODH_AUTH_CLIENT} custom resource.
+	 *
+	 * @return client for operations with {@link OpenDataHubOperatorProvisioner#ODH_AUTH_CLIENT} custom resource
+	 */
+	public NonNamespaceOperation<Auth, AuthList, Resource<Auth>> authClient() {
+		if (ODH_AUTH_CLIENT == null) {
+			CustomResourceDefinition crd = customResourceDefinitionsClient()
+					.withName(ODH_AUTH_CRD_NAME).get();
+			if (crd == null) {
+				throw new RuntimeException(String.format("[%s] custom resource is not provided by [%s] operator.",
+						ODH_AUTH_CRD_NAME, OPERATOR_ID));
+			}
+			ODH_AUTH_CLIENT = authCustomResourcesClient(CustomResourceDefinitionContext.fromCrd(crd));
+		}
+		return ODH_AUTH_CLIENT;
 	}
 
 	/**

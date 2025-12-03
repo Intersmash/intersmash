@@ -17,6 +17,7 @@ package org.jboss.intersmash.provision.openshift;
 
 import org.jboss.intersmash.application.operator.OpenShiftAIOperatorApplication;
 import org.jboss.intersmash.provision.operator.OpenShiftAIOperatorProvisioner;
+import org.jboss.intersmash.provision.operator.model.rhoai.AuthList;
 import org.jboss.intersmash.provision.operator.model.rhoai.DSCInitializationList;
 import org.jboss.intersmash.provision.operator.model.rhoai.DataScienceClusterList;
 import org.jboss.intersmash.provision.operator.model.rhoai.FeatureTrackerList;
@@ -24,6 +25,7 @@ import org.jboss.intersmash.provision.operator.model.rhoai.MonitoringList;
 import org.jboss.intersmash.rhoai.datasciencecluster.v1.DataScienceCluster;
 import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitialization;
 import org.jboss.intersmash.rhoai.features.v1.FeatureTracker;
+import org.jboss.intersmash.rhoai.platform.services.v1alpha1.Auth;
 import org.jboss.intersmash.rhoai.platform.services.v1alpha1.Monitoring;
 
 import cz.xtf.core.openshift.OpenShifts;
@@ -117,5 +119,10 @@ public class OpenShiftAIOpenShiftOperatorProvisioner
 	protected HasMetadataOperationsImpl<Monitoring, MonitoringList> monitoringCustomResourcesClient(
 			CustomResourceDefinitionContext crdc) {
 		return OpenShifts.admin().newHasMetadataOperation(crdc, Monitoring.class, MonitoringList.class);
+	}
+
+	@Override
+	protected HasMetadataOperationsImpl<Auth, AuthList> authCustomResourcesClient(CustomResourceDefinitionContext crdc) {
+		return OpenShifts.admin().newHasMetadataOperation(crdc, Auth.class, AuthList.class);
 	}
 }
