@@ -55,6 +55,7 @@ import lombok.extern.slf4j.Slf4j;
 @AiTest
 public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreationCapable {
 	private static final OpenShiftAIOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner();
+	private static final String DEFAULT_DSCI = "default-dsci";
 
 	private static OpenShiftAIOpenShiftOperatorProvisioner initializeOperatorProvisioner() {
 		OpenShiftAIOpenShiftOperatorProvisioner operatorProvisioner = new OpenShiftAIOpenShiftOperatorProvisioner(
@@ -159,8 +160,7 @@ public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreat
 			Assertions.assertNotNull(createdDataScienceCluster);
 			// the DataScienceCluster spec gets populated on creation, so we just check that it is not null
 			Assertions.assertNotNull(createdDataScienceCluster.getSpec());
-			Assertions.assertNotNull(operatorProvisioner.dataScienceCluster().get().getSpec());
-			// the Monitoring spec gets populated on creation, so we verify 1st level resources individually
+			// Always 1 DSCI
 			final DSCInitialization createdDscInitialization = operatorProvisioner.dscInitializationClient()
 					.list().getItems().get(0);
 			Assertions.assertNotNull(createdDscInitialization);
@@ -169,6 +169,11 @@ public class OpenShiftAIOpenShiftOperatorProvisionerTest implements ProjectCreat
 			boolean deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
 			if (!deleted) {
 				log.warn("Wasn't able to remove the 'DataScienceCluster' resource");
+			}
+			deletionDetails = operatorProvisioner.dscInitializationClient().withName(DEFAULT_DSCI).delete();
+			deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+			if (!deleted) {
+				log.warn("Wasn't able to remove the 'DSCInitialization' resources");
 			}
 		}
 	}

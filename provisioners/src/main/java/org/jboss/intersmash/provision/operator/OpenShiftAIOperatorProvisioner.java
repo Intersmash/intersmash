@@ -15,6 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jboss.intersmash.IntersmashConfig;
@@ -93,8 +94,20 @@ public abstract class OpenShiftAIOperatorProvisioner<C extends NamespacedKuberne
 	@Override
 	public void undeploy() {
 		// remove the CRs
-		List<StatusDetails> deletionDetails = dataScienceCluster().delete();
-		boolean deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+		List<StatusDetails> deletionDetails;
+		boolean deleted;
+		final String appName = getApplication().getName();
+
+		deletionDetails = dscInitializationClient().delete();
+		deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
+		if (!deleted) {
+			log.warn("Wasn't able to remove the 'DSCInitialization' resources created for '{}' instance!",
+					appName);
+		}
+		new SimpleWaiter(() -> dscInitializationClient().list().getItems().isEmpty()).level(Level.DEBUG).waitFor();
+
+		deletionDetails = dataScienceCluster().delete();
+		deleted = deletionDetails.stream().allMatch(d -> d.getCauses().isEmpty());
 		if (!deleted) {
 			log.warn("Wasn't able to remove the 'DataScienceCluster' resource");
 		}
