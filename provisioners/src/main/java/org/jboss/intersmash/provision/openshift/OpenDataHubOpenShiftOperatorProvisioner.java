@@ -17,6 +17,7 @@ package org.jboss.intersmash.provision.openshift;
 
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner;
+import org.jboss.intersmash.provision.operator.model.odh.AuthList;
 import org.jboss.intersmash.provision.operator.model.odh.DSCInitializationList;
 import org.jboss.intersmash.provision.operator.model.odh.DataScienceClusterList;
 import org.jboss.intersmash.provision.operator.model.odh.FeatureTrackerList;
@@ -34,6 +35,7 @@ import io.fabric8.openshift.client.NamespacedOpenShiftClient;
 import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
 import io.opendatahub.dscinitialization.v1.DSCInitialization;
 import io.opendatahub.features.v1.FeatureTracker;
+import io.opendatahub.platform.services.v1alpha1.Auth;
 import io.opendatahub.platform.services.v1alpha1.Monitoring;
 import lombok.NonNull;
 
@@ -117,5 +119,10 @@ public class OpenDataHubOpenShiftOperatorProvisioner
 	protected HasMetadataOperationsImpl<Monitoring, MonitoringList> monitoringCustomResourcesClient(
 			CustomResourceDefinitionContext crdc) {
 		return OpenShifts.admin().newHasMetadataOperation(crdc, Monitoring.class, MonitoringList.class);
+	}
+
+	@Override
+	protected HasMetadataOperationsImpl<Auth, AuthList> authCustomResourcesClient(CustomResourceDefinitionContext crdc) {
+		return OpenShifts.admin().newHasMetadataOperation(crdc, Auth.class, AuthList.class);
 	}
 }

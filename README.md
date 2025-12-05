@@ -164,6 +164,11 @@ mvn test -pl testsuite/ -Pts.execution-profile.community -Pts.openshift
 This is useful when running the testsuite against an OpenShift cluster, so that only OpenShift integration test will be
 executed, while Kubernetes ones will be skipped.
 
+* Run Open Data Hub/OpenShift AI integration tests:
+```shell
+mvn test -pl testsuite/ -Pts.ai 
+```
+
 ## Platforms
 
 Intersmash is designed to allow executions on different Kubernetes compliant platforms.
