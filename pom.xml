@@ -4,7 +4,7 @@
 
     <groupId>org.jboss.intersmash</groupId>
     <artifactId>intersmash-parent</artifactId>
-    <version>0.0.4.Beta4-SNAPSHOT</version>
+    <version>0.0.4.Final</version>
     <packaging>pom</packaging>
 
     <name>Intersmash Parent: Aggregator</name>
@@ -31,7 +31,7 @@
         <connection>scm:git:git://github.com/Intersmash/intersmash.git</connection>
         <developerConnection>scm:git:ssh://github.com:Intersmash/intersmash.git</developerConnection>
         <url>http://github.com/Intersmash/intersmash/tree/main</url>
-      <tag>HEAD</tag>
+      <tag>intersmash-0.0.4.Final</tag>
   </scm>
 
     <modules>

@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.intersmash.test</groupId>
         <artifactId>eap7-shared</artifactId>
-        <version>0.0.4.Beta4-SNAPSHOT</version>
+        <version>0.0.4.Final</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
