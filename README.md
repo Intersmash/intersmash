@@ -30,29 +30,29 @@ having their own release cadence - it _could_ happen that a service version is p
 
 Feel free to submit an issue in such a case, Intersmash welcomes community contributions to keep the tooling up to date.
 
-| Service                          | Supported version            | Notes                                                                                                  |
-|:---------------------------------|:-----------------------------|:-------------------------------------------------------------------------------------------------------|
-| ActiveMQ Artemis                 | 2.42.0                       | Or _default_ provided by the default ArkMQ Operator `stable` channel                                   |
-| Red Hat AMQ Broker               | 7.13.x                       | Or _latest_ in the `:7.13` tag image stream, see registry.redhat.io/amq7/amq-broker-rhel9              |
-|                                  |                              |                                                                                                        |
-| Infinispan                       | 15.2.6.Final                 | Or _default_ provided by the default Infinispan Operator `stable` channel                              |
-| Red Hat Data Grid                | 8.5.2.GA                     | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                               |
-|                                  |                              |                                                                                                        |
-| Kafka provided by Strimzi        | 4.0.0                        | Provided by the Strimzi Operator `stable` channel                                                      |
-| Streams for Apache Kafka         | 4.0.0                        | Or _default_, as provided by the Red Hat Streams for Apache Kafka Operator `stable` channel            |
-|                                  |                              |                                                                                                        |
-| Keycloak                         | 26.4.4                       | Or _default_, as provided by default by the Keycloak Operator `fast` channel                           |
-| Red Hat Build of keycloak (RHBK) | 26.4.2.redhat-00002          | Or _latest_ in the `:26.4` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                |
-| Red Hat SSO - **DEPRECATED**     | 7.6.z                        | The _latest_ in the `:7.6` tag image stream, see registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:7.6 |
-|                                  |                              |                                                                                                        |
-| WildFly                          | 32.0.0.Final                 |                                                                                                        |                                                      
-| Red Hat JBoss EAP 8              | JBoss EAP 8.0.x (and XP 5.x) |                                                                                                        |
-| Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z) |                                                                                                        |
-|                                  |                              |                                                                                                        |
-| Hyperfoil                        | 0.24.2                       | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                       | 
-|                                  |                              |                                                                                                        |
-| Open Data Hub                    | 2.31.0                       | Supports provisioning on OpenShift via the Operator                                                    |
-| OpenShift AI                     | 2.25.0                       | Supports provisioning on OpenShift via the Operator                                                    |
+| Service                          | Supported version                  | Notes                                                                                                  |
+|:---------------------------------|:-----------------------------------|:-------------------------------------------------------------------------------------------------------|
+| ActiveMQ Artemis                 | 2.42.0                             | Or _default_ provided by the default ArkMQ Operator `stable` channel                                   |
+| Red Hat AMQ Broker               | 7.13.x                             | Or _latest_ in the `:7.13` tag image stream, see registry.redhat.io/amq7/amq-broker-rhel9              |
+|                                  |                                    |                                                                                                        |
+| Infinispan                       | 15.2.6.Final                       | Or _default_ provided by the default Infinispan Operator `stable` channel                              |
+| Red Hat Data Grid                | 8.5.2.GA                           | Or _default_ provided by the Red Hat DataGrid Operator  `stable` channel                               |
+|                                  |                                    |                                                                                                        |
+| Kafka provided by Strimzi        | 4.0.0                              | Provided by the Strimzi Operator `stable` channel                                                      |
+| Streams for Apache Kafka         | 4.0.0                              | Or _default_, as provided by the Red Hat Streams for Apache Kafka Operator `stable` channel            |
+|                                  |                                    |                                                                                                        |
+| Keycloak                         | 26.4.4                             | Or _default_, as provided by default by the Keycloak Operator `fast` channel                           |
+| Red Hat Build of keycloak (RHBK) | 26.4.2.redhat-00002                | Or _latest_ in the `:26.4` tag image stream, see registry.redhat.io/rhbk/keycloak-rhel9                |
+| Red Hat SSO - **DEPRECATED**     | 7.6.z                              | The _latest_ in the `:7.6` tag image stream, see registry.redhat.io/rh-sso-7/sso76-openshift-rhel8:7.6 |
+|                                  |                                    |                                                                                                        |
+| WildFly                          | 32.0.0.Final                       |                                                                                                        |                                                      
+| Red Hat JBoss EAP 8              | JBoss EAP 8.x (and XP 5.z, XP 6.x) |                                                                                                        |
+| Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z)       |                                                                                                        |
+|                                  |                                    |                                                                                                        |
+| Hyperfoil                        | 0.24.2                             | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                       | 
+|                                  |                                    |                                                                                                        |
+| Open Data Hub                    | 2.31.0                             | Supports provisioning on OpenShift via the Operator                                                    |
+| OpenShift AI                     | 2.25.0                             | Supports provisioning on OpenShift via the Operator                                                    |
 
 Since multiple deliverables can be bound to a given service version, e.g.: container images, operator CRs, or Helm Charts,
 more information can be found in [the provisioners' documentation](./provisioners/README.md), or in the resources there linked.
