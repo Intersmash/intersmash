@@ -98,7 +98,7 @@
             SystemUtils#IS_Z_OS
         -->
         <version.org.apache.commons.commons-lang3>3.11</version.org.apache.commons.commons-lang3>
-        <version.com.squareup.okhttp3>3.12.12</version.com.squareup.okhttp3>
+        <version.com.squareup.okhttp3>4.10.0.redhat-00002</version.com.squareup.okhttp3>
         <version.io.swagger.core.v3>2.2.1</version.io.swagger.core.v3>
         <version.com.squareup.okhttp>2.7.5</version.com.squareup.okhttp>
         <!-- Hyperfoil -->
