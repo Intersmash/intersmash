@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.jboss.intersmash</groupId>
         <artifactId>intersmash-parent</artifactId>
-        <version>0.0.4.Final</version>
+        <version>0.0.5.Beta1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
