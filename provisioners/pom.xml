@@ -232,13 +232,93 @@
                 <artifactId>java-generator-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>default-crd-generation</id>
+                        <id>default-crd-generation-broker_activemqartemis</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <target>target/generated-sources</target>
-                            <source>src/main/resources/crds/default</source>
+                            <source>src/main/resources/crds/default/broker_activemqartemis</source>
+                            <!--
+                                This is needed to force the Java generator from CRD to stick with the original names
+                                for enums, and avoid to uppercase them, since this could generate duplicate names,
+                                as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                             -->
+                            <enumUppercase>false</enumUppercase>
+                            <!--
+                                The following is required in order to generate Sundrio and Lombok annotations
+                            -->
+                            <extraAnnotations>true</extraAnnotations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-crd-generation-infinispan</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <target>target/generated-sources</target>
+                            <source>src/main/resources/crds/default/infinispan</source>
+                            <!--
+                                This is needed to force the Java generator from CRD to stick with the original names
+                                for enums, and avoid to uppercase them, since this could generate duplicate names,
+                                as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                             -->
+                            <enumUppercase>false</enumUppercase>
+                            <!--
+                                The following is required in order to generate Sundrio and Lombok annotations
+                            -->
+                            <extraAnnotations>true</extraAnnotations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-crd-generation-keycloak</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <target>target/generated-sources</target>
+                            <source>src/main/resources/crds/default/keycloak</source>
+                            <!--
+                                This is needed to force the Java generator from CRD to stick with the original names
+                                for enums, and avoid to uppercase them, since this could generate duplicate names,
+                                as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                             -->
+                            <enumUppercase>false</enumUppercase>
+                            <!--
+                                The following is required in order to generate Sundrio and Lombok annotations
+                            -->
+                            <extraAnnotations>true</extraAnnotations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-crd-generation-opendatahub</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <target>target/generated-sources</target>
+                            <source>src/main/resources/crds/default/opendatahub</source>
+                            <!--
+                                This is needed to force the Java generator from CRD to stick with the original names
+                                for enums, and avoid to uppercase them, since this could generate duplicate names,
+                                as in https://github.com/infinispan/infinispan-operator/blob/2.3.4.Final/config/crd/bases/infinispan.org_infinispans.yaml#L1473-L1477
+                             -->
+                            <enumUppercase>false</enumUppercase>
+                            <!--
+                                The following is required in order to generate Sundrio and Lombok annotations
+                            -->
+                            <extraAnnotations>true</extraAnnotations>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-crd-generation-wildfly</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <target>target/generated-sources</target>
+                            <source>src/main/resources/crds/default/wildfly</source>
                             <!--
                                 This is needed to force the Java generator from CRD to stick with the original names
                                 for enums, and avoid to uppercase them, since this could generate duplicate names,
