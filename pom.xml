@@ -97,7 +97,7 @@
             This is needed now since XTF is using 3.11 and instead maven-aether-provider pulls 3.4 which is missing
             SystemUtils#IS_Z_OS
         -->
-        <version.org.apache.commons.commons-lang3>3.11</version.org.apache.commons.commons-lang3>
+        <version.org.apache.commons.commons-lang3>3.18.0.redhat-00002</version.org.apache.commons.commons-lang3>
         <version.com.squareup.okhttp3>3.12.12</version.com.squareup.okhttp3>
         <version.io.swagger.core.v3>2.2.1</version.io.swagger.core.v3>
         <version.com.squareup.okhttp>2.7.5</version.com.squareup.okhttp>
