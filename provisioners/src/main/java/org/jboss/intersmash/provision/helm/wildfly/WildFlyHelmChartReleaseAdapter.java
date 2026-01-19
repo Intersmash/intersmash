@@ -91,7 +91,8 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((deploymentEnvironmentVariables != null) && !deploymentEnvironmentVariables.isEmpty()) {
 			deploymentEnvironmentVariables.entrySet().stream()
-					.map(e -> adaptee.getDeploy().getEnv().add(new Env__1().withName(e.getKey()).withValue(e.getValue())));
+					.map(e -> adaptee.getDeploy().getEnv().add(new Env__1().withName(e.getKey()).withValue(e.getValue())))
+					.collect(Collectors.toList());
 		}
 	}
 
@@ -135,7 +136,8 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((buildEnvironmentVariables != null) && !buildEnvironmentVariables.isEmpty()) {
 			buildEnvironmentVariables.entrySet().stream()
-					.map(e -> adaptee.getBuild().getEnv().add(new Env().withName(e.getKey()).withValue(e.getValue())));
+					.map(e -> adaptee.getBuild().getEnv().add(new Env().withName(e.getKey()).withValue(e.getValue())))
+					.collect(Collectors.toList());
 		}
 	}
 
