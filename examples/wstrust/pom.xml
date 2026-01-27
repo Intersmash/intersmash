@@ -29,7 +29,7 @@
          <version.jakarta.jakartaee-api>10.0.0</version.jakarta.jakartaee-api>
 
          <version.jbossws-cxf>7.0.0.Final</version.jbossws-cxf>
-         <version.org.apache.cxf>4.0.2</version.org.apache.cxf>
+         <version.org.apache.cxf>4.0.4</version.org.apache.cxf>
          <version.org.glassfish.jaxb>4.0.4</version.org.glassfish.jaxb>
          <version.jaxb-api>2.4.0-b180830.0359</version.jaxb-api>
 
