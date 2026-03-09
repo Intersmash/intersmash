@@ -28,7 +28,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Setup Minikube
-        uses: manusa/actions-setup-minikube@v2.14.0
+        uses: manusa/actions-setup-minikube@v2.16.1
         with:
           driver: docker
           minikube version: 'v1.32.0'
