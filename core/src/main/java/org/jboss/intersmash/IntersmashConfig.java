@@ -112,6 +112,7 @@ public class IntersmashConfig {
 	private static final String BOOTABLE_JAR_IMAGE_URL = "intersmash.bootable.jar.image";
 
 	// WILDFLY
+	private static final String WILDFLY_IMAGE_JDK = "intersmash.wildfly.image.jdk";
 	private static final String WILDFLY_IMAGE_URL = "intersmash.wildfly.image";
 	private static final String WILDFLY_RUNTIME_IMAGE_URL = "intersmash.wildfly.runtime.image";
 	private static final String WILDFLY_HELM_CHARTS_REPO = "intersmash.wildfly.helm.charts.repo";
@@ -282,6 +283,10 @@ public class IntersmashConfig {
 
 	public static String bootableJarImageURL() {
 		return XTFConfig.get(BOOTABLE_JAR_IMAGE_URL);
+	}
+
+	public static String wildflyImageJdk() {
+		return XTFConfig.get(WILDFLY_IMAGE_JDK, "17");
 	}
 
 	public static String wildflyImageURL() {

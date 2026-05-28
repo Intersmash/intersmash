@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ClusterVersionBasedKubernetesClientBinaryPathResolver implements KubernetesClientBinaryPathResolver {
-	private static final String KUBERNETES_CLIENT_BINARY_DOWNLOAD_BASE_URL = "https://dl.k8s.io/release/";
+	private static final String KUBERNETES_CLIENT_BINARY_DOWNLOAD_BASE_URL = "https://dl.k8s.io/release";
 	public static final int BINARY_DOWNLOAD_CONNECTION_TIMEOUT = 20_000;
 	public static final int BINARY_DOWNLOAD_READ_TIMEOUT = 300_000;
 

@@ -154,7 +154,43 @@
 
     <profiles>
         <profile>
-            <!-- Configuration settings for testing EAP 8.1 (same as EAP 8.0 ATM) - TODO: update as EAP 8.1 deliverables are GA -->
+            <!-- Configuration settings for testing EAP 8.2 (same as EAP 8.1 ATM) - TODO: update as soon as EAP 8.2 deliverables are GA -->
+            <id>ts.eap-stream.82</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap82</intersmash.deployments.wildfly.build.stream>
+                <!-- WildFly/EAP 8 Maven Plugin coordinates -->
+                <wildfly-maven-plugin.groupId>org.jboss.eap.plugins</wildfly-maven-plugin.groupId>
+                <wildfly-maven-plugin.artifactId>eap-maven-plugin</wildfly-maven-plugin.artifactId>
+                <wildfly-maven-plugin.version>2.0.0.Final-redhat-00009</wildfly-maven-plugin.version>
+                <!-- Default WildFly/EAP 8 `ee` BOMs version is set here and can be overridden for pulling the right BOM -->
+                <bom.wildfly-ee.groupId>org.jboss.bom</bom.wildfly-ee.groupId>
+                <bom.wildfly-ee.artifactId>jboss-eap-ee</bom.wildfly-ee.artifactId>
+                <bom.wildfly-ee.version>8.1.0.SP1-redhat-00003</bom.wildfly-ee.version>
+                <!--
+                    EAP8 feature packs and channel:
+
+                        - EAP = org.jboss.eap:wildfly-ee-galleon-pack (only EE specs included)
+                        - EAP XP = org.jboss.eap:wildfly-galleon-pack (EE specs as well as MP specs)
+                        - WF = org.wildfly:wildfly-galleon-pack (EE specs as well as MP specs)
+
+                    Note 1: WF builds have both `wildfly-galleon-pack` and `wildfly-ee-galleon-pack`
+                    Note 2: leave the feature-packs location to non-existing location, this proves parameters are passed correctly to the builder image
+                -->
+                <wildfly.feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.1.0.GA-redhat-00017</wildfly.feature-pack.location>
+                <wildfly.ee-feature-pack.location>org.jboss.eap:wildfly-ee-galleon-pack:8.1.0.GA-redhat-00017</wildfly.ee-feature-pack.location>
+                <wildfly.cloud-feature-pack.location>org.jboss.eap.cloud:eap-cloud-galleon-pack:2.0.0.Final-redhat-00011</wildfly.cloud-feature-pack.location>
+                <!-- EAP 8 Channel coordinates -->
+                <wildfly.ee-channel.groupId>org.jboss.eap.channels</wildfly.ee-channel.groupId>
+                <wildfly.ee-channel.artifactId>eap-8.1</wildfly.ee-channel.artifactId>
+                <wildfly.ee-channel.version>1.0.1.GA-redhat-00005</wildfly.ee-channel.version>
+            </properties>
+        </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP 8.1 -->
             <id>ts.eap-stream.81</id>
             <properties>
                 <!--

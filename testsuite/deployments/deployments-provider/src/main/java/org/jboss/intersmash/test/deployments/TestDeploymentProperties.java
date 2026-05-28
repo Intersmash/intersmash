@@ -33,6 +33,7 @@ public class TestDeploymentProperties {
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_COMMUNITY = "community";
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_80 = "eap80";
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81 = "eap81";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_82 = "eap82";
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5 = "eapxp5";
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6 = "eapxp6";
 
@@ -85,6 +86,10 @@ public class TestDeploymentProperties {
 		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81.equals(getWildflyDeploymentsBuildStream());
 	}
 
+	public static Boolean isEap82DeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_82.equals(getWildflyDeploymentsBuildStream());
+	}
+
 	public static Boolean isEapXpDeploymentsBuildProfileEnabled() {
 		return WILDFLY_DEPLOYMENTS_BUILD_PROFILE_VALUE_EAP_XP.equals(getWildflyDeploymentsBuildProfile());
 	}
@@ -101,6 +106,7 @@ public class TestDeploymentProperties {
 		switch (deploymentStream) {
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_80:
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81:
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_82:
 				return "eap";
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5:
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6:
@@ -116,6 +122,8 @@ public class TestDeploymentProperties {
 				return "80";
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_81:
 				return "81";
+			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_82:
+				return "82";
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5:
 				return "xp5";
 			case TestDeploymentProperties.WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6:
