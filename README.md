@@ -47,7 +47,7 @@ Feel free to submit an issue in such a case, Intersmash welcomes community contr
 |                                  |                                    |                                                                                                        |
 | WildFly                          | 32.0.0.Final                       |                                                                                                        |                                                      
 | Red Hat JBoss EAP 8              | JBoss EAP 8.x (and XP 5.z, XP 6.x) |                                                                                                        |
-| Red Hat JBoss EAP 7              | JBoss EAP 7.4.z (and XP 4.z)       |                                                                                                        |
+| Red Hat JBoss EAP 7              | JBoss EAP 7.4.z                    |                                                                                                        |
 |                                  |                                    |                                                                                                        |
 | Hyperfoil                        | 0.24.2                             | Supports provisioning via the Operator, both on **Kubernetes** and **OpenShift**                       | 
 |                                  |                                    |                                                                                                        |
@@ -134,20 +134,20 @@ artifacts, which is done by enabling the `ts.wildfly.target-distribution.eap` or
 mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap
 ```
 
-Regarding EAP _minor_ version, Intersmash supports provisioning both EAP 8.0 and EAP 8.1, and the deployments used by the
-Intersmash testsuite can be built on related artifacts and feature packs by enabling either the `ts.eap-stream.80`,
-or the `ts.eap-stream.81` profile, e.g.:
+Regarding EAP _minor_ version, Intersmash supports provisioning JBoss EAP 8.0, 8.1 and 8.2, and the deployments used by 
+the Intersmash testsuite can be built on related artifacts and feature packs by enabling either the `ts.eap-stream.80`,
+the `ts.eap-stream.81` profile, or the `ts.eap-stream.82` profile, e.g.:
 
 ```shell
-mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap -Pts.eap-stream.80
+mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eap -Pts.eap-stream.82
 ```
 
-Regarding EAP XP _major_ version, Intersmash supports provisioning both XP 5 and XP 6, and the deployments used by the 
+Regarding JBoss EAP XP _major_ version, Intersmash supports provisioning both XP 5 and XP 6, and the deployments used by the 
 Intersmash testsuite can be built on related artifacts and feature packs by enabling either the `ts.eapxp-stream.xp5`, 
 or the `ts.eapxp-stream.xp6` profile, e.g.:
 
 ```shell
-mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eapxp -Pts.eapxp-stream.xp5
+mvn test -pl testsuite/ -Pts.execution-profile.prod -Pts.wildfly.target-distribution.eapxp -Pts.eapxp-stream.xp6
 ```
 
 * Run Kubernetes integration tests:
