@@ -113,6 +113,17 @@
             </properties>
         </profile>
         <profile>
+            <!-- Configuration settings for testing EAP 8.2 -->
+            <id>ts.eap-stream.82</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eap82</intersmash.deployments.wildfly.build.stream>
+            </properties>
+        </profile>
+        <profile>
             <!-- Configuration settings for testing EAP XP 5 -->
             <id>ts.eapxp-stream.xp5</id>
             <properties>
