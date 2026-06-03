@@ -13,7 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.intersmash.provision.helm.wildfly;
+package org.jboss.intersmash.provision.helm.wildfly.eap82;
+
+import com.google.common.base.Strings;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeMount;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
+import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Build;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Deploy;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Env;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Env__1;
+import org.jboss.intersmash.model.helm.charts.values.eap82.HelmEap82Release;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Jdk21;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Jdk25;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Route;
+import org.jboss.intersmash.model.helm.charts.values.eap82.S2i;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Tls;
+import org.jboss.intersmash.model.helm.charts.values.eap82.Tls__1;
+import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.Image;
+import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -23,51 +44,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.BootableJar;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Build;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Deploy;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Env;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Env__1;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Ingress;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Route;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.S2i;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls__1;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls__2;
-import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
-import org.jboss.intersmash.provision.helm.Image;
-
-import com.google.common.base.Strings;
-
-import io.fabric8.kubernetes.api.model.Volume;
-import io.fabric8.kubernetes.api.model.VolumeMount;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
-
 /**
- * An adapter that implements a valid WildFly {@link HelmChartRelease} by exposing an internal instance of
- * {@link HelmWildflyRelease} to store a WildFly Helm Charts release data and to represent a values file which can be serialized
+ * An adapter that implements a valid EAP 8 {@link HelmChartRelease} by exposing an internal instance of
+ * {@link HelmEap81Release} to store an EAP 8 Helm Charts release data and to represent a values file which can be serialized
  * as an output for {@link HelmChartRelease#toValuesFile()}
  *
  * This adapter is compliant with the contract which is required by the
  * {@link org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner} logic, i.e. to
  * implement {@link HelmChartRelease}, and allows for us to leverage a generated
- * {@link WildFlyHelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
- *
- * Of course the generated APIs can also be used programmatically.
+ * {@link Eap82HelmChartReleaseAdapter#adaptee}, i.e. in terms of UX, provide native release YAML definitions.
  */
 @Slf4j
-public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmWildflyRelease>
-		implements HelmChartRelease, WildflyHelmChartRelease<WildFlyHelmChartReleaseAdapter> {
+public class Eap82HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap82Release>
+		implements HelmChartRelease, WildflyHelmChartRelease<Eap82HelmChartReleaseAdapter> {
 
-	public WildFlyHelmChartReleaseAdapter(@NonNull HelmWildflyRelease release) {
+	public Eap82HelmChartReleaseAdapter(@NonNull HelmEap82Release release) {
 		super(release, new ArrayList<>());
 		initDefaultReplicas(release);
 	}
 
-	public WildFlyHelmChartReleaseAdapter(@NonNull HelmWildflyRelease release, List<Path> additionalValuesFiles) {
+	public Eap82HelmChartReleaseAdapter(@NonNull HelmEap82Release release, List<Path> additionalValuesFiles) {
 		super(release, additionalValuesFiles);
 		initDefaultReplicas(release);
 	}
@@ -93,20 +89,19 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((deploymentEnvironmentVariables != null) && !deploymentEnvironmentVariables.isEmpty()) {
 			deploymentEnvironmentVariables.entrySet().stream()
-					.map(e -> adaptee.getDeploy().getEnv().add(new Env__1().withName(e.getKey()).withValue(e.getValue())))
-					.collect(Collectors.toList());
+					.forEach(e -> adaptee.getDeploy().getEnv().add(new Env__1().withName(e.getKey()).withValue(e.getValue())));
 		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withDeploymentEnvironmentVariables(
+	public Eap82HelmChartReleaseAdapter withDeploymentEnvironmentVariables(
 			Map<String, String> deploymentEnvironmentVariables) {
 		this.setDeploymentEnvironmentVariables(deploymentEnvironmentVariables);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withDeploymentEnvironmentVariable(String key, String value) {
+	public Eap82HelmChartReleaseAdapter withDeploymentEnvironmentVariable(String key, String value) {
 		if (adaptee.getDeploy() == null) {
 			adaptee.setDeploy(new Deploy());
 		}
@@ -138,20 +133,18 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((buildEnvironmentVariables != null) && !buildEnvironmentVariables.isEmpty()) {
 			buildEnvironmentVariables.entrySet().stream()
-					.map(e -> adaptee.getBuild().getEnv().add(new Env().withName(e.getKey()).withValue(e.getValue())))
-					.collect(Collectors.toList());
+					.forEach(e -> adaptee.getBuild().getEnv().add(new Env().withName(e.getKey()).withValue(e.getValue())));
 		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables) {
+	public Eap82HelmChartReleaseAdapter withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables) {
 		this.setBuildEnvironmentVariables(buildEnvironmentVariables);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withBuildEnvironmentVariable(String key, String value) {
-
+	public Eap82HelmChartReleaseAdapter withBuildEnvironmentVariable(String key, String value) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -186,13 +179,13 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withInjectedImages(List<Image> injectedImages) {
+	public Eap82HelmChartReleaseAdapter withInjectedImages(List<Image> injectedImages) {
 		this.setInjectedImages(injectedImages);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withInjectedImage(Image injectedImage) {
+	public Eap82HelmChartReleaseAdapter withInjectedImage(Image injectedImage) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -224,20 +217,18 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		}
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((volumes != null) && !volumes.isEmpty()) {
-			volumes.stream()
-					.map(v -> adaptee.getDeploy().getVolumes().add(v))
-					.collect(Collectors.toList());
+			volumes.stream().forEach(v -> adaptee.getDeploy().getVolumes().add(v));
 		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withVolumes(List<Volume> volumes) {
+	public Eap82HelmChartReleaseAdapter withVolumes(List<Volume> volumes) {
 		this.setVolumes(volumes);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withVolume(Volume volume) {
+	public Eap82HelmChartReleaseAdapter withVolume(Volume volume) {
 		if (adaptee.getDeploy() == null) {
 			adaptee.setDeploy(new Deploy());
 		}
@@ -276,25 +267,24 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
 		if ((volumeMounts != null) && !volumeMounts.isEmpty()) {
 			volumeMounts.stream()
-					.map(v -> adaptee.getDeploy().getVolumeMounts().add(
-							new org.jboss.intersmash.model.helm.charts.values.wildfly.VolumeMount()
+					.forEach(v -> adaptee.getDeploy().getVolumeMounts().add(
+							new org.jboss.intersmash.model.helm.charts.values.eap82.VolumeMount()
 									.withName(v.getName())
 									.withMountPath(v.getMountPath())
 									.withMountPropagation(v.getMountPropagation())
 									.withReadOnly(v.getReadOnly())
-									.withSubPath(v.getSubPath())))
-					.collect(Collectors.toList());
+									.withSubPath(v.getSubPath())));
 		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withVolumeMounts(List<VolumeMount> volumeMounts) {
+	public Eap82HelmChartReleaseAdapter withVolumeMounts(List<VolumeMount> volumeMounts) {
 		this.setVolumeMounts(volumeMounts);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withVolumeMount(VolumeMount volumeMount) {
+	public Eap82HelmChartReleaseAdapter withVolumeMount(VolumeMount volumeMount) {
 		if (adaptee.getDeploy() == null) {
 			adaptee.setDeploy(new Deploy());
 		}
@@ -302,28 +292,12 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 			adaptee.getDeploy().setVolumeMounts(new ArrayList<>());
 		}
 		adaptee.getDeploy().getVolumeMounts().add(
-				new org.jboss.intersmash.model.helm.charts.values.wildfly.VolumeMount()
+				new org.jboss.intersmash.model.helm.charts.values.eap82.VolumeMount()
 						.withName(volumeMount.getName())
 						.withMountPath(volumeMount.getMountPath())
 						.withMountPropagation(volumeMount.getMountPropagation())
 						.withReadOnly(volumeMount.getReadOnly())
 						.withSubPath(volumeMount.getSubPath()));
-		return this;
-	}
-
-	public Ingress getIngress() {
-		return adaptee.getDeploy() == null ? null : adaptee.getDeploy().getIngress();
-	}
-
-	public void setIngress(Ingress ingress) {
-		if (adaptee.getDeploy() == null) {
-			adaptee.setDeploy(new Deploy());
-		}
-		adaptee.getDeploy().setIngress(ingress);
-	}
-
-	public WildFlyHelmChartReleaseAdapter withIngress(Ingress ingress) {
-		setIngress(ingress);
 		return this;
 	}
 
@@ -345,7 +319,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withRouteHost(String routeHost) {
+	public Eap82HelmChartReleaseAdapter withRouteHost(String routeHost) {
 		this.setRouteHost(routeHost);
 		return this;
 	}
@@ -367,13 +341,13 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 			adaptee.getDeploy().setRoute(new Route());
 		}
 		if (adaptee.getDeploy().getRoute().getTls() == null) {
-			adaptee.getDeploy().getRoute().setTls(new Tls__1());
+			adaptee.getDeploy().getRoute().setTls(new Tls());
 		}
 		adaptee.getDeploy().getRoute().getTls().setEnabled(routeTLSEnabled);
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withRouteTLSEnabled(boolean routeTLSEnabled) {
+	public Eap82HelmChartReleaseAdapter withRouteTLSEnabled(boolean routeTLSEnabled) {
 		this.setRouteTLSEnabled(routeTLSEnabled);
 		return this;
 	}
@@ -391,13 +365,13 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 			adaptee.setDeploy(new Deploy());
 		}
 		if (adaptee.getDeploy().getTls() == null) {
-			adaptee.getDeploy().setTls(new Tls__2());
+			adaptee.getDeploy().setTls(new Tls__1());
 		}
 		adaptee.getDeploy().getTls().setEnabled(tlsEnabled);
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withTlsEnabled(boolean tlsEnabled) {
+	public Eap82HelmChartReleaseAdapter withTlsEnabled(boolean tlsEnabled) {
 		this.setTlsEnabled(tlsEnabled);
 		return this;
 	}
@@ -428,13 +402,13 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks) {
+	public Eap82HelmChartReleaseAdapter withS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks) {
 		this.setS2iFeaturePacks(s2iFeaturePacks);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iFeaturePacks(String s2iFeaturePacks) {
+	public Eap82HelmChartReleaseAdapter withS2iFeaturePacks(String s2iFeaturePacks) {
 		LinkedHashSet s2iFeaturePacksSet = new LinkedHashSet<>(
 				Arrays.stream(s2iFeaturePacks.split(",")).collect(Collectors.toList()));
 		this.setS2iFeaturePacks(s2iFeaturePacksSet);
@@ -442,7 +416,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iFeaturePack(String s2iFeaturePack) {
+	public Eap82HelmChartReleaseAdapter withS2iFeaturePack(String s2iFeaturePack) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -465,7 +439,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		if (adaptee.getBuild() != null && adaptee.getBuild().getS2i() != null
 				&& !Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getGalleonLayers())) {
 			Arrays.stream(adaptee.getBuild().getS2i().getGalleonLayers().split(","))
-					.forEach(fp -> result.add(fp));
+					.forEach(gl -> result.add(gl));
 		}
 		return result;
 	}
@@ -485,13 +459,13 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers) {
+	public Eap82HelmChartReleaseAdapter withS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers) {
 		this.setS2iGalleonLayers(s2iGalleonLayers);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iGalleonLayers(String s2iGalleonLayers) {
+	public Eap82HelmChartReleaseAdapter withS2iGalleonLayers(String s2iGalleonLayers) {
 		LinkedHashSet s2iGalleonLayersSet = new LinkedHashSet<>(
 				Arrays.stream(s2iGalleonLayers.split(",")).collect(Collectors.toList()));
 		this.setS2iGalleonLayers(s2iGalleonLayersSet);
@@ -499,7 +473,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iGalleonLayer(String s2iGalleonLayer) {
+	public Eap82HelmChartReleaseAdapter withS2iGalleonLayer(String s2iGalleonLayer) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -518,42 +492,57 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Override
 	public LinkedHashSet<String> getS2iChannels() {
-		// no channels definition for WIldFly Helm Charts
-		return new LinkedHashSet<>();
+		LinkedHashSet result = new LinkedHashSet();
+		if (adaptee.getBuild() != null && adaptee.getBuild().getS2i() != null
+				&& !Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getChannels())) {
+			Arrays.stream(adaptee.getBuild().getS2i().getChannels().split(","))
+					.forEach(ch -> result.add(ch));
+		}
+		return result;
 	}
 
 	@Override
 	public void setS2iChannels(LinkedHashSet<String> s2iChannels) {
-		log.warn(
-				"Setting s2i build channels on a WildFly release has no effect since WildFly Helm Charts don't support channels");
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		if (adaptee.getBuild().getS2i() == null) {
+			adaptee.getBuild().setS2i(new S2i());
+		}
+		// let's check just here, so there's a way to clear, i.e. by passing an empty or null list
+		if ((s2iChannels != null) && !s2iChannels.isEmpty()) {
+			adaptee.getBuild().getS2i().setChannels(s2iChannels.stream().collect(Collectors.joining(",")));
+		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iChannels(LinkedHashSet<String> s2iChannels) {
+	public Eap82HelmChartReleaseAdapter withS2iChannels(LinkedHashSet<String> s2iChannels) {
 		this.setS2iChannels(s2iChannels);
 		return this;
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withS2iChannel(String s2iChannel) {
-		log.warn(
-				"Setting s2i build channels on a WildFly release has no effect since WildFly Helm Charts don't support channels");
+	public Eap82HelmChartReleaseAdapter withS2iChannel(String s2iChannel) {
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		if (adaptee.getBuild().getS2i() == null) {
+			adaptee.getBuild().setS2i(new S2i());
+		}
+		final List<String> channels = new ArrayList<>();
+		if (!Strings.isNullOrEmpty(adaptee.getBuild().getS2i().getChannels())) {
+			channels.addAll(Arrays.stream(adaptee.getBuild().getS2i().getChannels().split(","))
+					.collect(Collectors.toList()));
+		}
+		channels.add(s2iChannel);
+		adaptee.getBuild().getS2i().setChannels(channels.stream().collect(Collectors.joining(",")));
 		return this;
 	}
 
 	@Override
 	public BuildMode getBuildMode() {
-		if (adaptee.getBuild() == null || adaptee.getBuild().getMode() == null) {
-			return null;
-		}
-		switch (adaptee.getBuild().getMode()) {
-			case S_2_I:
-				return BuildMode.S2I;
-			case BOOTABLE_JAR:
-				return BuildMode.BOOTABLE_JAR;
-			default:
-				return null;
-		}
+		// EAP 8 value files has no bootable JAR definition, since Bootable JAR is only supported on EAP XP
+		return BuildMode.S2I;
 	}
 
 	@Override
@@ -564,40 +553,33 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		switch (buildMode) {
 			case S2I:
 				adaptee.getBuild().setMode(Build.Mode.S_2_I);
-				break;
 			case BOOTABLE_JAR:
-				adaptee.getBuild().setMode(Build.Mode.BOOTABLE_JAR);
-				break;
+				log.warn("EAP 8 does not support bootable JAR build mode!");
 			default:
-				log.warn("Unrecognized build mode option, not doing anything.");
+				adaptee.getBuild().setMode(null);
 		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withBuildMode(BuildMode buildMode) {
+	public Eap82HelmChartReleaseAdapter withBuildMode(BuildMode buildMode) {
 		this.setBuildMode(buildMode);
 		return this;
 	}
 
 	@Override
 	public String getBootableJarBuilderImage() {
-		return adaptee.getBuild() == null ? ""
-				: adaptee.getBuild().getBootableJar() == null ? "" : adaptee.getBuild().getBootableJar().getBuilderImage();
+		// no Bootable JAR image is supported by EAP 8 Helm Charts
+		return "";
 	}
 
 	@Override
 	public void setBootableJarBuilderImage(String bootableJarBuilderImage) {
-		if (adaptee.getBuild() == null) {
-			adaptee.setBuild(new Build());
-		}
-		if (adaptee.getBuild().getBootableJar() == null) {
-			adaptee.getBuild().setBootableJar(new BootableJar());
-		}
-		adaptee.getBuild().getBootableJar().setBuilderImage(bootableJarBuilderImage);
+		log.warn(
+				"Setting a Bootable JAR image on an EAP 8 release has no effect since EAP 8 does not support the Bootable JAR build type");
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withBootableJarBuilderImage(String bootableJarBuilderImage) {
+	public Eap82HelmChartReleaseAdapter withBootableJarBuilderImage(String bootableJarBuilderImage) {
 		this.setBootableJarBuilderImage(bootableJarBuilderImage);
 		return this;
 	}
@@ -616,7 +598,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withSourceRepositoryUrl(String sourceRepositoryUrl) {
+	public Eap82HelmChartReleaseAdapter withSourceRepositoryUrl(String sourceRepositoryUrl) {
 		this.setSourceRepositoryUrl(sourceRepositoryUrl);
 		return this;
 	}
@@ -635,7 +617,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withSourceRepositoryRef(String sourceRepositoryRef) {
+	public Eap82HelmChartReleaseAdapter withSourceRepositoryRef(String sourceRepositoryRef) {
 		this.setSourceRepositoryRef(sourceRepositoryRef);
 		return this;
 	}
@@ -654,7 +636,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withContextDir(String contextDir) {
+	public Eap82HelmChartReleaseAdapter withContextDir(String contextDir) {
 		this.setContextDir(contextDir);
 		return this;
 	}
@@ -673,7 +655,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withReplicas(Integer replicas) {
+	public Eap82HelmChartReleaseAdapter withReplicas(Integer replicas) {
 		this.setReplicas(replicas);
 		return this;
 	}
@@ -692,7 +674,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withBuildEnabled(boolean buildEnabled) {
+	public Eap82HelmChartReleaseAdapter withBuildEnabled(boolean buildEnabled) {
 		this.setBuildEnabled(buildEnabled);
 		return this;
 	}
@@ -711,7 +693,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withDeployEnabled(boolean deployEnabled) {
+	public Eap82HelmChartReleaseAdapter withDeployEnabled(boolean deployEnabled) {
 		this.setDeployEnabled(deployEnabled);
 		return this;
 	}
@@ -719,9 +701,7 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
 	public String getJdk17BuilderImage() {
-		// WilFly Helm Charts do not differentiate between JDKs
-		final JdkImage image = getJdkBuilderImage();
-		return image == null ? "" : image.getImage();
+		return getJdkBuilderImage().getImage();
 	}
 
 	@Deprecated(forRemoval = true, since = "0.0.5")
@@ -732,17 +712,15 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
-	public WildFlyHelmChartReleaseAdapter withJdk17BuilderImage(String jdk17BuilderImage) {
-		this.setJdkBuilderImage(new JdkImage(jdk17BuilderImage, JdkImage.Version.JDK_17));
+	public Eap82HelmChartReleaseAdapter withJdk17BuilderImage(String jdk17BuilderImage) {
+		setJdkBuilderImage(new JdkImage(jdk17BuilderImage, JdkImage.Version.JDK_17));
 		return this;
 	}
 
 	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
 	public String getJdk17RuntimeImage() {
-		// WilFly Helm Charts do not differentiate between JDKs
-		final JdkImage image = getJdkRuntimeImage();
-		return image == null ? "" : image.getImage();
+		return getJdkRuntimeImage().getImage();
 	}
 
 	@Deprecated(forRemoval = true, since = "0.0.5")
@@ -753,18 +731,26 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 
 	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
-	public WildFlyHelmChartReleaseAdapter withJdk17RuntimeImage(String jdk17RuntimeImage) {
-		this.setJdkRuntimeImage(new JdkImage(jdk17RuntimeImage, JdkImage.Version.JDK_17));
+	public Eap82HelmChartReleaseAdapter withJdk17RuntimeImage(String jdk17RuntimeImage) {
+		setJdkRuntimeImage(new JdkImage(jdk17RuntimeImage, JdkImage.Version.JDK_17));
 		return this;
 	}
 
 	@Override
 	public JdkImage getJdkBuilderImage() {
-		// WilFly Helm Charts do not differentiate between JDKs, set JDK 17 by default - not used internally
 		if (adaptee.getBuild() == null) {
 			return null;
-		} else {
-			return new JdkImage(adaptee.getBuild().getS2i().getBuilderImage(), JdkImage.Version.JDK_17);
+		}
+		else {
+			switch (adaptee.getBuild().getS2i().getJdk()) {
+				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getBuilderImage(),
+						JdkImage.Version.JDK_21);
+				case _25: return new JdkImage(adaptee.getBuild().getS2i().getJdk25().getBuilderImage(),
+						JdkImage.Version.JDK_25);
+				default:
+					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.2.x Helm Charts images: " +
+							adaptee.getBuild().getS2i().getJdk().value());
+			}
 		}
 	}
 
@@ -776,23 +762,49 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		if (adaptee.getBuild().getS2i() == null) {
 			adaptee.getBuild().setS2i(new S2i());
 		}
-		// WilFly Helm Charts do not differentiate between JDKs
-		adaptee.getBuild().getS2i().setBuilderImage(jdkBuilderImage.getImage());
+
+		switch (jdkBuilderImage.getVersion()) {
+			case JDK_21:
+				if (adaptee.getBuild().getS2i().getJdk21() == null) {
+					adaptee.getBuild().getS2i().setJdk21(new Jdk21());
+				}
+				adaptee.getBuild().getS2i().getJdk21().setBuilderImage(jdkBuilderImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._21);
+				break;
+			case JDK_25:
+				if (adaptee.getBuild().getS2i().getJdk25() == null) {
+					adaptee.getBuild().getS2i().setJdk25(new Jdk25());
+				}
+				adaptee.getBuild().getS2i().getJdk25().setBuilderImage(jdkBuilderImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._25);
+				break;
+			default:
+				throw new IllegalArgumentException("Not a valid JDK version for EAP 8.2.x Helm Charts images: " +
+						jdkBuilderImage.getVersion());
+		}
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withJdkBuilderImage(JdkImage jdkBuilderImage) {
-		this.setJdkBuilderImage(jdkBuilderImage);
+	public Eap82HelmChartReleaseAdapter withJdkBuilderImage(JdkImage jdkBuilderImage) {
+		setJdkBuilderImage(jdkBuilderImage);
 		return this;
 	}
 
 	@Override
 	public JdkImage getJdkRuntimeImage() {
-		// WilFly Helm Charts do not differentiate between JDKs, set JDK 17 by default - not used internally
 		if (adaptee.getBuild() == null) {
 			return null;
-		} else {
-			return new JdkImage(adaptee.getBuild().getS2i().getRuntimeImage(), JdkImage.Version.JDK_17);
+		}
+		else {
+			switch (adaptee.getBuild().getS2i().getJdk()) {
+				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getRuntimeImage(),
+						JdkImage.Version.JDK_21);
+				case _25: return new JdkImage(adaptee.getBuild().getS2i().getJdk25().getRuntimeImage(),
+						JdkImage.Version.JDK_25);
+				default:
+					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.2.x Helm Charts images: " +
+							adaptee.getBuild().getS2i().getJdk().value());
+			}
 		}
 	}
 
@@ -804,23 +816,42 @@ public class WildFlyHelmChartReleaseAdapter extends HelmChartReleaseAdapter<Helm
 		if (adaptee.getBuild().getS2i() == null) {
 			adaptee.getBuild().setS2i(new S2i());
 		}
-		// WilFly Helm Charts do not differentiate between JDKs
-		adaptee.getBuild().getS2i().setRuntimeImage(jdkRuntimeImage.getImage());
+
+		switch (jdkRuntimeImage.getVersion()) {
+			case JDK_21:
+				if (adaptee.getBuild().getS2i().getJdk21() == null) {
+					adaptee.getBuild().getS2i().setJdk21(new Jdk21());
+				}
+				adaptee.getBuild().getS2i().getJdk21().setRuntimeImage(jdkRuntimeImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._21);
+				break;
+			case JDK_25:
+				if (adaptee.getBuild().getS2i().getJdk25() == null) {
+					adaptee.getBuild().getS2i().setJdk25(new Jdk25());
+				}
+				adaptee.getBuild().getS2i().getJdk25().setRuntimeImage(jdkRuntimeImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._25);
+				break;
+			default:
+				throw new IllegalArgumentException("Not a valid JDK version for EAP 8.2.x Helm Charts images: " +
+						jdkRuntimeImage.getVersion());
+		}
 
 	}
 
 	@Override
-	public WildFlyHelmChartReleaseAdapter withJdkRuntimeImage(JdkImage jdkRuntimeImage) {
-		this.setJdkRuntimeImage(jdkRuntimeImage);
+	public Eap82HelmChartReleaseAdapter withJdkRuntimeImage(JdkImage jdkRuntimeImage) {
+		setJdkRuntimeImage(jdkRuntimeImage);
 		return this;
 	}
 
-	private void initDefaultReplicas(HelmWildflyRelease release) {
+	private HelmEap82Release initDefaultReplicas(HelmEap82Release release) {
 		if (release.getDeploy() == null) {
 			release = release.withDeploy(new Deploy());
 		}
 		if (release.getDeploy().getReplicas() == null) {
 			release.getDeploy().setReplicas(1);
 		}
+		return release;
 	}
 }

@@ -30,6 +30,7 @@ import org.jboss.intersmash.model.helm.charts.values.eap8.Env;
 import org.jboss.intersmash.model.helm.charts.values.eap8.Env__1;
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.eap8.Jdk17;
+import org.jboss.intersmash.model.helm.charts.values.eap8.Jdk21;
 import org.jboss.intersmash.model.helm.charts.values.eap8.Route;
 import org.jboss.intersmash.model.helm.charts.values.eap8.S2i;
 import org.jboss.intersmash.model.helm.charts.values.eap8.Tls;
@@ -57,7 +58,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap8Release>
-		implements HelmChartRelease, WildflyHelmChartRelease {
+		implements HelmChartRelease, WildflyHelmChartRelease<Eap8HelmChartReleaseAdapter> {
 
 	public Eap8HelmChartReleaseAdapter(@NonNull HelmEap8Release release) {
 		super(release, new ArrayList<>());
@@ -95,14 +96,14 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withDeploymentEnvironmentVariables(
+	public Eap8HelmChartReleaseAdapter withDeploymentEnvironmentVariables(
 			Map<String, String> deploymentEnvironmentVariables) {
 		this.setDeploymentEnvironmentVariables(deploymentEnvironmentVariables);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withDeploymentEnvironmentVariable(String key, String value) {
+	public Eap8HelmChartReleaseAdapter withDeploymentEnvironmentVariable(String key, String value) {
 		if (adaptee.getDeploy() == null) {
 			adaptee.setDeploy(new Deploy());
 		}
@@ -139,13 +140,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables) {
+	public Eap8HelmChartReleaseAdapter withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables) {
 		this.setBuildEnvironmentVariables(buildEnvironmentVariables);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withBuildEnvironmentVariable(String key, String value) {
+	public Eap8HelmChartReleaseAdapter withBuildEnvironmentVariable(String key, String value) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -180,13 +181,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withInjectedImages(List<Image> injectedImages) {
+	public Eap8HelmChartReleaseAdapter withInjectedImages(List<Image> injectedImages) {
 		this.setInjectedImages(injectedImages);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withInjectedImage(Image injectedImage) {
+	public Eap8HelmChartReleaseAdapter withInjectedImage(Image injectedImage) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -223,13 +224,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withVolumes(List<Volume> volumes) {
+	public Eap8HelmChartReleaseAdapter withVolumes(List<Volume> volumes) {
 		this.setVolumes(volumes);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withVolume(Volume volume) {
+	public Eap8HelmChartReleaseAdapter withVolume(Volume volume) {
 		if (adaptee.getDeploy() == null) {
 			adaptee.setDeploy(new Deploy());
 		}
@@ -279,13 +280,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withVolumeMounts(List<VolumeMount> volumeMounts) {
+	public Eap8HelmChartReleaseAdapter withVolumeMounts(List<VolumeMount> volumeMounts) {
 		this.setVolumeMounts(volumeMounts);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withVolumeMount(VolumeMount volumeMount) {
+	public Eap8HelmChartReleaseAdapter withVolumeMount(VolumeMount volumeMount) {
 		if (adaptee.getDeploy() == null) {
 			adaptee.setDeploy(new Deploy());
 		}
@@ -320,7 +321,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withRouteHost(String routeHost) {
+	public Eap8HelmChartReleaseAdapter withRouteHost(String routeHost) {
 		this.setRouteHost(routeHost);
 		return this;
 	}
@@ -348,7 +349,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withRouteTLSEnabled(boolean routeTLSEnabled) {
+	public Eap8HelmChartReleaseAdapter withRouteTLSEnabled(boolean routeTLSEnabled) {
 		this.setRouteTLSEnabled(routeTLSEnabled);
 		return this;
 	}
@@ -372,7 +373,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withTlsEnabled(boolean tlsEnabled) {
+	public Eap8HelmChartReleaseAdapter withTlsEnabled(boolean tlsEnabled) {
 		this.setTlsEnabled(tlsEnabled);
 		return this;
 	}
@@ -403,13 +404,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks) {
+	public Eap8HelmChartReleaseAdapter withS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks) {
 		this.setS2iFeaturePacks(s2iFeaturePacks);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iFeaturePacks(String s2iFeaturePacks) {
+	public Eap8HelmChartReleaseAdapter withS2iFeaturePacks(String s2iFeaturePacks) {
 		LinkedHashSet s2iFeaturePacksSet = new LinkedHashSet<>(
 				Arrays.stream(s2iFeaturePacks.split(",")).collect(Collectors.toList()));
 		this.setS2iFeaturePacks(s2iFeaturePacksSet);
@@ -417,7 +418,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iFeaturePack(String s2iFeaturePack) {
+	public Eap8HelmChartReleaseAdapter withS2iFeaturePack(String s2iFeaturePack) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -460,13 +461,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers) {
+	public Eap8HelmChartReleaseAdapter withS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers) {
 		this.setS2iGalleonLayers(s2iGalleonLayers);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iGalleonLayers(String s2iGalleonLayers) {
+	public Eap8HelmChartReleaseAdapter withS2iGalleonLayers(String s2iGalleonLayers) {
 		LinkedHashSet s2iGalleonLayersSet = new LinkedHashSet<>(
 				Arrays.stream(s2iGalleonLayers.split(",")).collect(Collectors.toList()));
 		this.setS2iGalleonLayers(s2iGalleonLayersSet);
@@ -474,7 +475,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iGalleonLayer(String s2iGalleonLayer) {
+	public Eap8HelmChartReleaseAdapter withS2iGalleonLayer(String s2iGalleonLayer) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -517,13 +518,13 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iChannels(LinkedHashSet<String> s2iChannels) {
+	public Eap8HelmChartReleaseAdapter withS2iChannels(LinkedHashSet<String> s2iChannels) {
 		this.setS2iChannels(s2iChannels);
 		return this;
 	}
 
 	@Override
-	public WildflyHelmChartRelease withS2iChannel(String s2iChannel) {
+	public Eap8HelmChartReleaseAdapter withS2iChannel(String s2iChannel) {
 		if (adaptee.getBuild() == null) {
 			adaptee.setBuild(new Build());
 		}
@@ -562,7 +563,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withBuildMode(BuildMode buildMode) {
+	public Eap8HelmChartReleaseAdapter withBuildMode(BuildMode buildMode) {
 		this.setBuildMode(buildMode);
 		return this;
 	}
@@ -580,7 +581,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withBootableJarBuilderImage(String bootableJarBuilderImage) {
+	public Eap8HelmChartReleaseAdapter withBootableJarBuilderImage(String bootableJarBuilderImage) {
 		this.setBootableJarBuilderImage(bootableJarBuilderImage);
 		return this;
 	}
@@ -599,7 +600,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withSourceRepositoryUrl(String sourceRepositoryUrl) {
+	public Eap8HelmChartReleaseAdapter withSourceRepositoryUrl(String sourceRepositoryUrl) {
 		this.setSourceRepositoryUrl(sourceRepositoryUrl);
 		return this;
 	}
@@ -618,7 +619,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withSourceRepositoryRef(String sourceRepositoryRef) {
+	public Eap8HelmChartReleaseAdapter withSourceRepositoryRef(String sourceRepositoryRef) {
 		this.setSourceRepositoryRef(sourceRepositoryRef);
 		return this;
 	}
@@ -637,7 +638,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withContextDir(String contextDir) {
+	public Eap8HelmChartReleaseAdapter withContextDir(String contextDir) {
 		this.setContextDir(contextDir);
 		return this;
 	}
@@ -656,7 +657,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withReplicas(Integer replicas) {
+	public Eap8HelmChartReleaseAdapter withReplicas(Integer replicas) {
 		this.setReplicas(replicas);
 		return this;
 	}
@@ -675,7 +676,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withBuildEnabled(boolean buildEnabled) {
+	public Eap8HelmChartReleaseAdapter withBuildEnabled(boolean buildEnabled) {
 		this.setBuildEnabled(buildEnabled);
 		return this;
 	}
@@ -694,11 +695,12 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	}
 
 	@Override
-	public WildflyHelmChartRelease withDeployEnabled(boolean deployEnabled) {
+	public Eap8HelmChartReleaseAdapter withDeployEnabled(boolean deployEnabled) {
 		this.setDeployEnabled(deployEnabled);
 		return this;
 	}
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
 	public String getJdk17BuilderImage() {
 		return adaptee.getBuild() == null ? ""
@@ -706,6 +708,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 						: adaptee.getBuild().getS2i().getJdk17().getBuilderImage();
 	}
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
 	public void setJdk17BuilderImage(String jdk17BuilderImage) {
 		if (adaptee.getBuild() == null) {
@@ -721,12 +724,14 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 		adaptee.getBuild().getS2i().setJdk(S2i.Jdk._17);
 	}
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
-	public WildflyHelmChartRelease withJdk17BuilderImage(String jdk17BuilderImage) {
+	public Eap8HelmChartReleaseAdapter withJdk17BuilderImage(String jdk17BuilderImage) {
 		this.setJdk17BuilderImage(jdk17BuilderImage);
 		return this;
 	}
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
 	public String getJdk17RuntimeImage() {
 		return adaptee.getBuild() == null ? ""
@@ -734,6 +739,7 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 						: adaptee.getBuild().getS2i().getJdk17().getRuntimeImage();
 	}
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
 	public void setJdk17RuntimeImage(String jdk17RuntimeImage) {
 		if (adaptee.getBuild() == null) {
@@ -748,9 +754,118 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 		adaptee.getBuild().getS2i().getJdk17().setRuntimeImage(jdk17RuntimeImage);
 	}
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	@Override
-	public WildflyHelmChartRelease withJdk17RuntimeImage(String jdk17RuntimeImage) {
+	public Eap8HelmChartReleaseAdapter withJdk17RuntimeImage(String jdk17RuntimeImage) {
 		this.setJdk17RuntimeImage(jdk17RuntimeImage);
+		return this;
+	}
+
+	@Override
+	public JdkImage getJdkBuilderImage() {
+		if (adaptee.getBuild() == null) {
+			return null;
+		}
+		else {
+			switch (adaptee.getBuild().getS2i().getJdk()) {
+				case _17: return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getBuilderImage(),
+						JdkImage.Version.JDK_17);
+				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getBuilderImage(),
+						JdkImage.Version.JDK_21);
+				default:
+					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.0.x Helm Charts images: " +
+							adaptee.getBuild().getS2i().getJdk().value());
+			}
+		}
+	}
+
+	@Override
+	public void setJdkBuilderImage(JdkImage jdkBuilderImage) {
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		if (adaptee.getBuild().getS2i() == null) {
+			adaptee.getBuild().setS2i(new S2i());
+		}
+
+		switch (jdkBuilderImage.getVersion()) {
+			case JDK_17:
+				if (adaptee.getBuild().getS2i().getJdk17() == null) {
+					adaptee.getBuild().getS2i().setJdk17(new Jdk17());
+				}
+				adaptee.getBuild().getS2i().getJdk17().setBuilderImage(jdkBuilderImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._17);
+				break;
+			case JDK_21:
+				if (adaptee.getBuild().getS2i().getJdk21() == null) {
+					adaptee.getBuild().getS2i().setJdk21(new Jdk21());
+				}
+				adaptee.getBuild().getS2i().getJdk21().setBuilderImage(jdkBuilderImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._21);
+				break;
+			default:
+				throw new IllegalArgumentException("Not a valid JDK version for EAP 8.0.x Helm Charts images: " +
+						jdkBuilderImage.getVersion());
+		}
+	}
+
+	@Override
+	public Eap8HelmChartReleaseAdapter withJdkBuilderImage(JdkImage jdkBuilderImage) {
+		this.setJdkBuilderImage(jdkBuilderImage);
+		return this;
+	}
+
+	@Override
+	public JdkImage getJdkRuntimeImage() {
+		if (adaptee.getBuild() == null) {
+			return null;
+		}
+		else {
+			switch (adaptee.getBuild().getS2i().getJdk()) {
+				case _17: return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getRuntimeImage(),
+						JdkImage.Version.JDK_17);
+				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getRuntimeImage(),
+						JdkImage.Version.JDK_21);
+				default:
+					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.0.x Helm Charts images: " +
+							adaptee.getBuild().getS2i().getJdk().value());
+			}
+		}
+	}
+
+	@Override
+	public void setJdkRuntimeImage(JdkImage jdkRuntimeImage) {
+		if (adaptee.getBuild() == null) {
+			adaptee.setBuild(new Build());
+		}
+		if (adaptee.getBuild().getS2i() == null) {
+			adaptee.getBuild().setS2i(new S2i());
+		}
+
+		switch (jdkRuntimeImage.getVersion()) {
+			case JDK_17:
+				if (adaptee.getBuild().getS2i().getJdk17() == null) {
+					adaptee.getBuild().getS2i().setJdk17(new Jdk17());
+				}
+				adaptee.getBuild().getS2i().getJdk17().setRuntimeImage(jdkRuntimeImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._17);
+				break;
+			case JDK_21:
+				if (adaptee.getBuild().getS2i().getJdk21() == null) {
+					adaptee.getBuild().getS2i().setJdk21(new Jdk21());
+				}
+				adaptee.getBuild().getS2i().getJdk21().setRuntimeImage(jdkRuntimeImage.getImage());
+				adaptee.getBuild().getS2i().setJdk(S2i.Jdk._21);
+				break;
+			default:
+				throw new IllegalArgumentException("Not a valid JDK version for EAP 8.0.x Helm Charts images: " +
+						jdkRuntimeImage.getVersion());
+		}
+	}
+
+	@Override
+	public Eap8HelmChartReleaseAdapter withJdkRuntimeImage(JdkImage jdkRuntimeImage) {
+		this.setJdkRuntimeImage(jdkRuntimeImage);
 		return this;
 	}
 
