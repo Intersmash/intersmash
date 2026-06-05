@@ -288,6 +288,7 @@ public class IntersmashConfig {
 	public static String wildflyImageJdk() {
 		return XTFConfig.get(WILDFLY_IMAGE_JDK, "17");
 	}
+
 	public static String wildflyImageURL() {
 		return XTFConfig.get(WILDFLY_IMAGE_URL);
 	}

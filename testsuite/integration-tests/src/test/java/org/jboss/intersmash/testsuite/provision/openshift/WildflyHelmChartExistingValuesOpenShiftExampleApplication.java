@@ -65,8 +65,8 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 
 	private HelmChartRelease loadRelease() {
 		WildflyHelmChartRelease wildflyHelmChartRelease;
-		final WildflyHelmChartRelease.JdkImage.Version jdkVersion =
-				WildflyHelmChartRelease.JdkImage.Version.fromValue(IntersmashConfig.wildflyImageJdk());
+		final WildflyHelmChartRelease.JdkImage.Version jdkVersion = WildflyHelmChartRelease.JdkImage.Version
+				.fromValue(IntersmashConfig.wildflyImageJdk());
 		if (IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled()) {
 			HelmWildflyRelease helmRelease = HelmChartReleaseAdapter.<HelmWildflyRelease> fromValuesFile(
 					this.getClass().getResource("wildfly-helm-values.yaml"), HelmWildflyRelease.class);

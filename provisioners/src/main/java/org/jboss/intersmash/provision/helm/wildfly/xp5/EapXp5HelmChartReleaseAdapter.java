@@ -782,16 +782,15 @@ public class EapXp5HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmX
 	public JdkImage getJdkBuilderImage() {
 		if (adaptee.getBuild() == null) {
 			return null;
-		}
-		else {
-            if (Objects.requireNonNull(adaptee.getBuild().getS2i().getJdk()) == S2i.Jdk._17) {
-                return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getBuilderImage(),
-                        JdkImage.Version.JDK_17);
-            } else {
+		} else {
+			if (Objects.requireNonNull(adaptee.getBuild().getS2i().getJdk()) == S2i.Jdk._17) {
+				return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getBuilderImage(),
+						JdkImage.Version.JDK_17);
+			} else {
 				throw new IllegalArgumentException("Not a valid JDK version for EAP XP 5 Helm Charts images: " +
 						adaptee.getBuild().getS2i().getJdk().value());
 			}
-        }
+		}
 	}
 
 	@Override
@@ -803,17 +802,17 @@ public class EapXp5HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmX
 			adaptee.getBuild().setS2i(new S2i());
 		}
 
-        if (Objects.requireNonNull(jdkBuilderImage.getVersion()) == JdkImage.Version.JDK_17) {
-            if (adaptee.getBuild().getS2i().getJdk17() == null) {
-                adaptee.getBuild().getS2i().setJdk17(new Jdk17());
-            }
-            adaptee.getBuild().getS2i().getJdk17().setBuilderImage(jdkBuilderImage.getImage());
-            adaptee.getBuild().getS2i().setJdk(S2i.Jdk._17);
-        } else {
+		if (Objects.requireNonNull(jdkBuilderImage.getVersion()) == JdkImage.Version.JDK_17) {
+			if (adaptee.getBuild().getS2i().getJdk17() == null) {
+				adaptee.getBuild().getS2i().setJdk17(new Jdk17());
+			}
+			adaptee.getBuild().getS2i().getJdk17().setBuilderImage(jdkBuilderImage.getImage());
+			adaptee.getBuild().getS2i().setJdk(S2i.Jdk._17);
+		} else {
 			throw new IllegalArgumentException("Not a valid JDK version for EAP XP 5 Helm Charts images: " +
 					jdkBuilderImage.getVersion());
 		}
-    }
+	}
 
 	@Override
 	public EapXp5HelmChartReleaseAdapter withJdkBuilderImage(JdkImage jdkBuilderImage) {
@@ -825,8 +824,7 @@ public class EapXp5HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmX
 	public JdkImage getJdkRuntimeImage() {
 		if (adaptee.getBuild() == null) {
 			return null;
-		}
-		else {
+		} else {
 			if (Objects.requireNonNull(adaptee.getBuild().getS2i().getJdk()) == S2i.Jdk._17) {
 				return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getRuntimeImage(),
 						JdkImage.Version.JDK_17);

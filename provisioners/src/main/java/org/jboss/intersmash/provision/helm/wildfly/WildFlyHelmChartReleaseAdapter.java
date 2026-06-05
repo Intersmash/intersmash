@@ -33,7 +33,6 @@ import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Ingress;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Route;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.S2i;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls__1;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.Tls__2;
 import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
