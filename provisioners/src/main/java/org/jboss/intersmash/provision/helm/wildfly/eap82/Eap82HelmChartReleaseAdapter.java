@@ -15,11 +15,14 @@
  */
 package org.jboss.intersmash.provision.helm.wildfly.eap82;
 
-import com.google.common.base.Strings;
-import io.fabric8.kubernetes.api.model.Volume;
-import io.fabric8.kubernetes.api.model.VolumeMount;
-import lombok.NonNull;
-import lombok.extern.slf4j.Slf4j;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.model.helm.charts.values.eap82.Build;
 import org.jboss.intersmash.model.helm.charts.values.eap82.Deploy;
@@ -36,13 +39,12 @@ import org.jboss.intersmash.provision.helm.HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.Image;
 import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.common.base.Strings;
+
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeMount;
+import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * An adapter that implements a valid EAP 8 {@link HelmChartRelease} by exposing an internal instance of
@@ -740,13 +742,14 @@ public class Eap82HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEa
 	public JdkImage getJdkBuilderImage() {
 		if (adaptee.getBuild() == null) {
 			return null;
-		}
-		else {
+		} else {
 			switch (adaptee.getBuild().getS2i().getJdk()) {
-				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getBuilderImage(),
-						JdkImage.Version.JDK_21);
-				case _25: return new JdkImage(adaptee.getBuild().getS2i().getJdk25().getBuilderImage(),
-						JdkImage.Version.JDK_25);
+				case _21:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getBuilderImage(),
+							JdkImage.Version.JDK_21);
+				case _25:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk25().getBuilderImage(),
+							JdkImage.Version.JDK_25);
 				default:
 					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.2.x Helm Charts images: " +
 							adaptee.getBuild().getS2i().getJdk().value());
@@ -794,13 +797,14 @@ public class Eap82HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEa
 	public JdkImage getJdkRuntimeImage() {
 		if (adaptee.getBuild() == null) {
 			return null;
-		}
-		else {
+		} else {
 			switch (adaptee.getBuild().getS2i().getJdk()) {
-				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getRuntimeImage(),
-						JdkImage.Version.JDK_21);
-				case _25: return new JdkImage(adaptee.getBuild().getS2i().getJdk25().getRuntimeImage(),
-						JdkImage.Version.JDK_25);
+				case _21:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getRuntimeImage(),
+							JdkImage.Version.JDK_21);
+				case _25:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk25().getRuntimeImage(),
+							JdkImage.Version.JDK_25);
 				default:
 					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.2.x Helm Charts images: " +
 							adaptee.getBuild().getS2i().getJdk().value());

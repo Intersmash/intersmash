@@ -765,13 +765,14 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	public JdkImage getJdkBuilderImage() {
 		if (adaptee.getBuild() == null) {
 			return null;
-		}
-		else {
+		} else {
 			switch (adaptee.getBuild().getS2i().getJdk()) {
-				case _17: return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getBuilderImage(),
-						JdkImage.Version.JDK_17);
-				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getBuilderImage(),
-						JdkImage.Version.JDK_21);
+				case _17:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getBuilderImage(),
+							JdkImage.Version.JDK_17);
+				case _21:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getBuilderImage(),
+							JdkImage.Version.JDK_21);
 				default:
 					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.0.x Helm Charts images: " +
 							adaptee.getBuild().getS2i().getJdk().value());
@@ -819,13 +820,14 @@ public class Eap8HelmChartReleaseAdapter extends HelmChartReleaseAdapter<HelmEap
 	public JdkImage getJdkRuntimeImage() {
 		if (adaptee.getBuild() == null) {
 			return null;
-		}
-		else {
+		} else {
 			switch (adaptee.getBuild().getS2i().getJdk()) {
-				case _17: return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getRuntimeImage(),
-						JdkImage.Version.JDK_17);
-				case _21: return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getRuntimeImage(),
-						JdkImage.Version.JDK_21);
+				case _17:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk17().getRuntimeImage(),
+							JdkImage.Version.JDK_17);
+				case _21:
+					return new JdkImage(adaptee.getBuild().getS2i().getJdk21().getRuntimeImage(),
+							JdkImage.Version.JDK_21);
 				default:
 					throw new IllegalArgumentException("Not a valid JDK version for EAP 8.0.x Helm Charts images: " +
 							adaptee.getBuild().getS2i().getJdk().value());

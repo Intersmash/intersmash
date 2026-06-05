@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
-import org.jboss.intersmash.model.helm.charts.values.eap82.Output;
-import org.jboss.intersmash.model.helm.charts.values.wildfly.Ingress;
-import org.jboss.intersmash.model.helm.charts.values.xp5.S2i;
 import org.jboss.intersmash.provision.helm.Image;
 
 import io.fabric8.kubernetes.api.model.Volume;
@@ -251,7 +248,7 @@ public interface WildflyHelmChartRelease<R extends WildflyHelmChartRelease> exte
 			private final static Map<String, JdkImage.Version> CONSTANTS = new HashMap<>();
 
 			static {
-				for (JdkImage.Version c: values()) {
+				for (JdkImage.Version c : values()) {
 					CONSTANTS.put(c.value, c);
 				}
 			}

@@ -91,8 +91,8 @@ public class WildflyHelmChartOpenShiftExampleApplication
 									+ TestDeploymentProperties
 											.getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 		}
-		final WildflyHelmChartRelease.JdkImage.Version jdkVersion =
-				WildflyHelmChartRelease.JdkImage.Version.fromValue(IntersmashConfig.wildflyImageJdk());
+		final WildflyHelmChartRelease.JdkImage.Version jdkVersion = WildflyHelmChartRelease.JdkImage.Version
+				.fromValue(IntersmashConfig.wildflyImageJdk());
 		// ok, let's configure the release via the WildflyHelmChartRelease fluent(-ish) API,
 		// which offers a common reference for both WildFly and EAP (latest)
 		release
