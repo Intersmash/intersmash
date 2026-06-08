@@ -15,7 +15,7 @@
  */
 package io.hyperfoil.v1alpha2;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
-public class HyperfoilList extends CustomResourceList<Hyperfoil> {
+public class HyperfoilList extends DefaultKubernetesResourceList<Hyperfoil> {
 }

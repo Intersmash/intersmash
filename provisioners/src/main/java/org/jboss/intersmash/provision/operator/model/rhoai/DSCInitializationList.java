@@ -17,11 +17,11 @@ package org.jboss.intersmash.provision.operator.model.rhoai;
 
 import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitialization;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
 /**
  * Used by {@link org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner} client methods,
  * this class represents a concrete {@link java.util.List} of {@link DSCInitialization} instances.
  */
-public class DSCInitializationList extends CustomResourceList<DSCInitialization> {
+public class DSCInitializationList extends DefaultKubernetesResourceList<DSCInitialization> {
 }

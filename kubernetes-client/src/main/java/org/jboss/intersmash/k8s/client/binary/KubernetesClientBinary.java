@@ -25,7 +25,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
 import cz.xtf.core.openshift.CLIUtils;
-import io.fabric8.openshift.api.model.operatorhub.lifecyclemanager.v1.PackageManifest;
+import io.fabric8.openshift.api.model.operatorhub.packages.v1.PackageManifest;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
