@@ -15,12 +15,12 @@
  */
 package org.jboss.intersmash.provision.operator.model.odh;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 import io.opendatahub.platform.services.v1alpha1.Monitoring;
 
 /**
  * Used by {@link org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner} client methods,
  * this class represents a concrete {@link java.util.List} of {@link Monitoring} instances.
  */
-public class MonitoringList extends CustomResourceList<Monitoring> {
+public class MonitoringList extends DefaultKubernetesResourceList<Monitoring> {
 }

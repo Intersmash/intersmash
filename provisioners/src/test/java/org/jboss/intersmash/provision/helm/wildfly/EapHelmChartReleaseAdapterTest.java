@@ -36,7 +36,8 @@ import org.jboss.intersmash.provision.helm.wildfly.xp6.EapXp6HelmChartReleaseAda
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import cz.xtf.builder.builders.pod.SecretVolume;
+import io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.VolumeBuilder;
 import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
 
 /**
@@ -56,7 +57,6 @@ class EapHelmChartReleaseAdapterTest {
 		Eap8HelmChartReleaseAdapter concreteAdapter = new Eap8HelmChartReleaseAdapter(adaptee);
 		Eap8HelmChartReleaseAdapter eap8HelmChartRelease = concreteAdapter;
 
-		SecretVolume secretVolume = new SecretVolume("v1", "s1");
 		eap8HelmChartRelease
 				.withSourceRepositoryUrl("url")
 				.withSourceRepositoryRef("ref")
@@ -72,7 +72,12 @@ class EapHelmChartReleaseAdapterTest {
 				.withDeployEnabled(Boolean.FALSE)
 				.withReplicas(42)
 				.withRouteHost("route-host")
-				.withVolume(secretVolume.build())
+				.withVolume(new VolumeBuilder()
+						.withName("v1")
+						.withSecret(new SecretVolumeSourceBuilder()
+								.withSecretName("s1")
+								.build())
+						.build())
 				.withVolumeMount(new VolumeMountBuilder()
 						.withName("vm1")
 						.withMountPath("mp1")
@@ -150,7 +155,6 @@ class EapHelmChartReleaseAdapterTest {
 		Eap81HelmChartReleaseAdapter concreteAdapter = new Eap81HelmChartReleaseAdapter(adaptee);
 		Eap81HelmChartReleaseAdapter eap81HelmChartRelease = concreteAdapter;
 
-		SecretVolume secretVolume = new SecretVolume("v1", "s1");
 		eap81HelmChartRelease
 				.withSourceRepositoryUrl("url")
 				.withSourceRepositoryRef("ref")
@@ -166,7 +170,12 @@ class EapHelmChartReleaseAdapterTest {
 				.withDeployEnabled(Boolean.FALSE)
 				.withReplicas(42)
 				.withRouteHost("route-host")
-				.withVolume(secretVolume.build())
+				.withVolume(new VolumeBuilder()
+						.withName("v1")
+						.withSecret(new SecretVolumeSourceBuilder()
+								.withSecretName("s1")
+								.build())
+						.build())
 				.withVolumeMount(new VolumeMountBuilder()
 						.withName("vm1")
 						.withMountPath("mp1")
@@ -245,7 +254,6 @@ class EapHelmChartReleaseAdapterTest {
 		Eap82HelmChartReleaseAdapter concreteAdapter = new Eap82HelmChartReleaseAdapter(adaptee);
 		Eap82HelmChartReleaseAdapter eap82HelmChartRelease = concreteAdapter;
 
-		SecretVolume secretVolume = new SecretVolume("v1", "s1");
 		eap82HelmChartRelease
 				.withSourceRepositoryUrl("url")
 				.withSourceRepositoryRef("ref")
@@ -261,7 +269,12 @@ class EapHelmChartReleaseAdapterTest {
 				.withDeployEnabled(Boolean.FALSE)
 				.withReplicas(42)
 				.withRouteHost("route-host")
-				.withVolume(secretVolume.build())
+				.withVolume(new VolumeBuilder()
+						.withName("v1")
+						.withSecret(new SecretVolumeSourceBuilder()
+								.withSecretName("s1")
+								.build())
+						.build())
 				.withVolumeMount(new VolumeMountBuilder()
 						.withName("vm1")
 						.withMountPath("mp1")
@@ -340,7 +353,6 @@ class EapHelmChartReleaseAdapterTest {
 		WildFlyHelmChartReleaseAdapter concreteAdapter = new WildFlyHelmChartReleaseAdapter(adaptee);
 		WildFlyHelmChartReleaseAdapter wildflyHelmChartRelease = concreteAdapter;
 
-		SecretVolume secretVolume = new SecretVolume("v1", "s1");
 		Tls ingressTls = new Tls().withSecret("ingress-tls-secret");
 		Ingress ingress = new Ingress()
 				.withEnabled(true)
@@ -367,7 +379,12 @@ class EapHelmChartReleaseAdapterTest {
 				.withReplicas(42)
 				.withRouteHost("route-host")
 				.withIngress(ingress)
-				.withVolume(secretVolume.build())
+				.withVolume(new VolumeBuilder()
+						.withName("v1")
+						.withSecret(new SecretVolumeSourceBuilder()
+								.withSecretName("s1")
+								.build())
+						.build())
 				.withVolumeMount(new VolumeMountBuilder()
 						.withName("vm1")
 						.withMountPath("mp1")
@@ -462,7 +479,6 @@ class EapHelmChartReleaseAdapterTest {
 		EapXp5HelmChartReleaseAdapter concreteAdapter = new EapXp5HelmChartReleaseAdapter(adaptee);
 		EapXp5HelmChartReleaseAdapter eapXp5HelmChartRelease = concreteAdapter;
 
-		SecretVolume secretVolume = new SecretVolume("v1", "s1");
 		eapXp5HelmChartRelease
 				.withSourceRepositoryUrl("url")
 				.withSourceRepositoryRef("ref")
@@ -479,7 +495,12 @@ class EapHelmChartReleaseAdapterTest {
 				.withDeployEnabled(Boolean.FALSE)
 				.withReplicas(42)
 				.withRouteHost("route-host")
-				.withVolume(secretVolume.build())
+				.withVolume(new VolumeBuilder()
+						.withName("v1")
+						.withSecret(new SecretVolumeSourceBuilder()
+								.withSecretName("s1")
+								.build())
+						.build())
 				.withVolumeMount(new VolumeMountBuilder()
 						.withName("vm1")
 						.withMountPath("mp1")
@@ -579,7 +600,6 @@ class EapHelmChartReleaseAdapterTest {
 		EapXp6HelmChartReleaseAdapter concreteAdapter = new EapXp6HelmChartReleaseAdapter(adaptee);
 		EapXp6HelmChartReleaseAdapter eapXp6HelmChartRelease = concreteAdapter;
 
-		SecretVolume secretVolume = new SecretVolume("v1", "s1");
 		eapXp6HelmChartRelease
 				.withSourceRepositoryUrl("url")
 				.withSourceRepositoryRef("ref")
@@ -597,7 +617,12 @@ class EapHelmChartReleaseAdapterTest {
 				.withDeployEnabled(Boolean.FALSE)
 				.withReplicas(42)
 				.withRouteHost("route-host")
-				.withVolume(secretVolume.build())
+				.withVolume(new VolumeBuilder()
+						.withName("v1")
+						.withSecret(new SecretVolumeSourceBuilder()
+								.withSecretName("s1")
+								.build())
+						.build())
 				.withVolumeMount(new VolumeMountBuilder()
 						.withName("vm1")
 						.withMountPath("mp1")

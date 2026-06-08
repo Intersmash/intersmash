@@ -16,7 +16,7 @@
 package org.jboss.intersmash.provision.operator.model.activemq.broker;
 
 import io.amq.broker.v1beta1.ActiveMQArtemis;
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
-public class ActiveMQArtemisList extends CustomResourceList<ActiveMQArtemis> {
+public class ActiveMQArtemisList extends DefaultKubernetesResourceList<ActiveMQArtemis> {
 }
