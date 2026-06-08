@@ -17,7 +17,7 @@ package org.jboss.intersmash.provision.operator.model.infinispan.cache;
 
 import org.infinispan.v2alpha1.Cache;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
-public class CacheList extends CustomResourceList<Cache> {
+public class CacheList extends DefaultKubernetesResourceList<Cache> {
 }

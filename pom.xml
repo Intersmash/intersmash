@@ -48,7 +48,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
-        <xtf.version>0.37</xtf.version>
+        <xtf.version>1.0</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
 
@@ -60,8 +60,8 @@
         <version.org.slf4j>1.7.30</version.org.slf4j>
         <version.io.strimzi-api>0.48.0</version.io.strimzi-api>
         <version.com.fasterxml.jackson>2.19.2</version.com.fasterxml.jackson>
-        <version.io.fabric8>6.14.0</version.io.fabric8>
-        <version.openshift-client>6.14.0</version.openshift-client>
+        <version.io.fabric8>7.4.0</version.io.fabric8>
+        <version.openshift-client>7.4.0</version.openshift-client>
 
         <!--
             Version used for the activemq-artemis-operator;
@@ -396,11 +396,6 @@
                 <groupId>io.fabric8</groupId>
                 <artifactId>openshift-client</artifactId>
                 <version>${version.openshift-client}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.fabric8</groupId>
-                <artifactId>kubernetes-model</artifactId>
-                <version>${version.io.fabric8}</version>
             </dependency>
             <dependency>
                 <groupId>io.fabric8</groupId>

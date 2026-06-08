@@ -17,7 +17,7 @@ package org.jboss.intersmash.provision.operator.model.keycloak.backup;
 
 import org.keycloak.v1alpha1.KeycloakBackup;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
-public class KeycloakBackupList extends CustomResourceList<KeycloakBackup> {
+public class KeycloakBackupList extends DefaultKubernetesResourceList<KeycloakBackup> {
 }

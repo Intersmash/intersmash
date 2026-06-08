@@ -15,12 +15,12 @@
  */
 package org.jboss.intersmash.provision.operator.model.odh;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 import io.opendatahub.platform.services.v1alpha1.Auth;
 
 /**
  * Used by {@link org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner} client methods,
  * this class represents a concrete {@link java.util.List} of {@link Auth} instances.
  */
-public class AuthList extends CustomResourceList<Auth> {
+public class AuthList extends DefaultKubernetesResourceList<Auth> {
 }
