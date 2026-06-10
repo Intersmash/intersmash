@@ -15,13 +15,19 @@
  */
 package org.jboss.intersmash.provision.openshift;
 
+import java.util.List;
 import java.util.Map;
 
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.openshift.PostgreSQLImageOpenShiftApplication;
 
-import cz.xtf.builder.builders.ApplicationBuilder;
-import cz.xtf.builder.builders.pod.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ConfigMapKeySelectorBuilder;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.EnvVarBuilder;
+import io.fabric8.kubernetes.api.model.EnvVarSourceBuilder;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -53,9 +59,20 @@ public class PostgreSQLImageOpenShiftProvisioner extends DBImageOpenShiftProvisi
 
 	@Override
 	protected void configureContainer(ContainerBuilder containerBuilder) {
-		containerBuilder.addLivenessProbe().setInitialDelay(300).createTcpProbe("5432");
-		containerBuilder.addReadinessProbe().setInitialDelaySeconds(5).createExecProbe("/bin/sh", "-i", "-c",
-				"psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'");
+		containerBuilder
+				.withLivenessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(300)
+						.withNewTcpSocket()
+						.withPort(new IntOrString(5432))
+						.endTcpSocket()
+						.build())
+				.withReadinessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(5)
+						.withNewExec()
+						.withCommand("/bin/sh", "-i", "-c",
+								"psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'")
+						.endExec()
+						.build());
 	}
 
 	@Override
@@ -77,14 +94,26 @@ public class PostgreSQLImageOpenShiftProvisioner extends DBImageOpenShiftProvisi
 	}
 
 	@Override
-	public void customizeApplication(ApplicationBuilder appBuilder) {
+	public void customizeContainerEnvVars(List<EnvVar> envVars) {
 		// the application secret is used to configure the PostgreSql container env vars, such as POSTGRESQL_USER,
 		// POSTGRESQL_PASSWORD, POSTGRESQL_ADMIN_PASSWORD
-		appBuilder.deploymentConfig().podTemplate().container().configFromConfigMap(
-				getApplication().getApplicationSecretName(),
-				(String t) -> t.replace("-", "_").toUpperCase(),
+		// These env vars reference keys from a ConfigMap (the "application secret")
+		String configMapName = getApplication().getApplicationSecretName();
+		for (String key : new String[] {
 				PostgreSQLImageOpenShiftApplication.POSTGRESQL_USER_KEY,
 				PostgreSQLImageOpenShiftApplication.POSTGRESQL_PASSWORD_KEY,
-				PostgreSQLImageOpenShiftApplication.POSTGRESQL_ADMIN_PASSWORD_KEY);
+				PostgreSQLImageOpenShiftApplication.POSTGRESQL_ADMIN_PASSWORD_KEY }) {
+			// The XTF code applied a name mapping: t.replace("-", "_").toUpperCase()
+			String envVarName = key.replace("-", "_").toUpperCase();
+			envVars.add(new EnvVarBuilder()
+					.withName(envVarName)
+					.withValueFrom(new EnvVarSourceBuilder()
+							.withConfigMapKeyRef(new ConfigMapKeySelectorBuilder()
+									.withName(configMapName)
+									.withKey(key)
+									.build())
+							.build())
+					.build());
+		}
 	}
 }

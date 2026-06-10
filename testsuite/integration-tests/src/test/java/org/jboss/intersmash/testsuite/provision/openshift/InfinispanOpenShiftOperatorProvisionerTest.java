@@ -16,6 +16,7 @@
 package org.jboss.intersmash.testsuite.provision.openshift;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -29,12 +30,17 @@ import org.infinispan.v1.infinispanspec.ServiceBuilder;
 import org.infinispan.v2alpha1.Cache;
 import org.infinispan.v2alpha1.CacheBuilder;
 import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.InfinispanOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -42,12 +48,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
 
-import cz.xtf.builder.builders.SecretBuilder;
-import cz.xtf.builder.builders.secret.SecretType;
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Secret;
 import lombok.extern.slf4j.Slf4j;
@@ -64,8 +64,11 @@ public class InfinispanOpenShiftOperatorProvisionerTest implements ProjectCreati
 	static final String TEST_SECRET_USERNAME = "developer";
 	static final String TEST_SECRET_PASSWORD = "developer";
 	static final String TEST_SECRET_NAME = "test-secret";
-	static final Secret TEST_SECRET = new SecretBuilder(TEST_SECRET_NAME)
-			.setType(SecretType.OPAQUE).addData(TEST_SECRET_USERNAME, TEST_SECRET_PASSWORD.getBytes()).build();
+	static final Secret TEST_SECRET = new io.fabric8.kubernetes.api.model.SecretBuilder()
+			.withNewMetadata().withName(TEST_SECRET_NAME).endMetadata()
+			.withType("Opaque")
+			.withData(Map.of(TEST_SECRET_USERNAME, Base64.getEncoder().encodeToString(TEST_SECRET_PASSWORD.getBytes())))
+			.build();
 	// Be aware that since we're using the static mock application, not all provisioner methods will work as expected!
 	private static final InfinispanOpenShiftOperatorProvisioner INFINISPAN_OPERATOR_PROVISIONER = initializeOperatorProvisioner();
 
@@ -111,7 +114,7 @@ public class InfinispanOpenShiftOperatorProvisionerTest implements ProjectCreati
 		matchLabels.put("app", "datagrid");
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		INFINISPAN_OPERATOR_PROVISIONER.unsubscribe();
@@ -119,7 +122,7 @@ public class InfinispanOpenShiftOperatorProvisionerTest implements ProjectCreati
 
 	@AfterAll
 	public static void removeOperatorGroup() {
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		INFINISPAN_OPERATOR_PROVISIONER.dismiss();
 	}
 

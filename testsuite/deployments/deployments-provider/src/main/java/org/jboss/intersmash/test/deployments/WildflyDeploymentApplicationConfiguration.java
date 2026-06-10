@@ -15,9 +15,9 @@
  */
 package org.jboss.intersmash.test.deployments;
 
-import com.google.common.base.Strings;
+import org.jboss.intersmash.tools.config.IntersmashProperties;
 
-import cz.xtf.core.config.XTFConfig;
+import com.google.common.base.Strings;
 
 /**
  * Defines the contract for WILDFLY application services that expose configuration which should be taken into account
@@ -40,55 +40,55 @@ public interface WildflyDeploymentApplicationConfiguration {
 	String MAVEN_MIRROR_URL = "maven-mirror.url";
 
 	default String wildflyMavenPluginGroupId() {
-		return XTFConfig.get(WILDFLY_MAVEN_PLUGIN_GROUPID);
+		return IntersmashProperties.get(WILDFLY_MAVEN_PLUGIN_GROUPID);
 	}
 
 	default String wildflyMavenPluginArtifactId() {
-		return XTFConfig.get(WILDFLY_MAVEN_PLUGIN_ARTIFACTID);
+		return IntersmashProperties.get(WILDFLY_MAVEN_PLUGIN_ARTIFACTID);
 	}
 
 	default String wildflyMavenPluginVersion() {
-		return XTFConfig.get(WILDFLY_MAVEN_PLUGIN_VERSION);
+		return IntersmashProperties.get(WILDFLY_MAVEN_PLUGIN_VERSION);
 	}
 
 	default String eeFeaturePackLocation() {
-		return XTFConfig.get(WILDFLY_EE_FEATURE_PACK_LOCATION);
+		return IntersmashProperties.get(WILDFLY_EE_FEATURE_PACK_LOCATION);
 	}
 
 	default String featurePackLocation() {
-		return XTFConfig.get(WILDFLY_FEATURE_PACK_LOCATION);
+		return IntersmashProperties.get(WILDFLY_FEATURE_PACK_LOCATION);
 	}
 
 	default String cloudFeaturePackLocation() {
-		return XTFConfig.get(WILDFLY_CLOUD_FEATURE_PACK_LOCATION);
+		return IntersmashProperties.get(WILDFLY_CLOUD_FEATURE_PACK_LOCATION);
 	}
 
 	default String datasourcesFeaturePackLocation() {
-		return XTFConfig.get(WILDFLY_DATASOURCES_FEATURE_PACK_LOCATION);
+		return IntersmashProperties.get(WILDFLY_DATASOURCES_FEATURE_PACK_LOCATION);
 	}
 
 	default String eeChannelGroupId() {
-		return XTFConfig.get(WILDFLY_EE_CHANNEL_GROUPID);
+		return IntersmashProperties.get(WILDFLY_EE_CHANNEL_GROUPID);
 	}
 
 	default String eeChannelArtifactId() {
-		return XTFConfig.get(WILDFLY_EE_CHANNEL_ARTIFACTID);
+		return IntersmashProperties.get(WILDFLY_EE_CHANNEL_ARTIFACTID);
 	}
 
 	default String eeChannelVersion() {
-		return XTFConfig.get(WILDFLY_EE_CHANNEL_VERSION);
+		return IntersmashProperties.get(WILDFLY_EE_CHANNEL_VERSION);
 	}
 
 	default String bomsEeServerVersion() {
-		return XTFConfig.get(WILDFLY_BOMS_EE_SERVER_VERSION);
+		return IntersmashProperties.get(WILDFLY_BOMS_EE_SERVER_VERSION);
 	}
 
 	default String getMavenMirrorUrl() {
-		return XTFConfig.get(MAVEN_MIRROR_URL);
+		return IntersmashProperties.get(MAVEN_MIRROR_URL);
 	}
 
 	default String keycloakSamlAdapterFeaturePackVersion() {
-		return XTFConfig.get(WILDFLY_KEYCLOAK_SAML_ADAPTER_FEATURE_PACK_VERSION);
+		return IntersmashProperties.get(WILDFLY_KEYCLOAK_SAML_ADAPTER_FEATURE_PACK_VERSION);
 	}
 
 	/**

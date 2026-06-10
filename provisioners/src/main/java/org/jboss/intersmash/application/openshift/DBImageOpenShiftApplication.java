@@ -18,7 +18,7 @@ package org.jboss.intersmash.application.openshift;
 import java.util.Collections;
 import java.util.List;
 
-import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
+import io.fabric8.kubernetes.api.model.Volume;
 
 /**
  * This interface is not supposed to be implemented by user Applications. See the "Mapping of implemented provisioners"
@@ -31,7 +31,15 @@ public interface DBImageOpenShiftApplication extends OpenShiftApplication {
 
 	String getDbName();
 
-	default List<PersistentVolumeClaim> getPersistentVolumeClaims() {
+	/**
+	 * Returns a list of {@link Volume} instances representing persistent volume claims needed by the DB application.
+	 * Each Volume should be constructed with a PersistentVolumeClaimVolumeSource, e.g.:
+	 * <pre>
+	 * new VolumeBuilder().withName("my-vol").withNewPersistentVolumeClaim().withClaimName("my-pvc").endPersistentVolumeClaim().build()
+	 * </pre>
+	 * @return A list of Volumes backed by PVCs
+	 */
+	default List<Volume> getPersistentVolumeClaims() {
 		return Collections.emptyList();
 	}
 }

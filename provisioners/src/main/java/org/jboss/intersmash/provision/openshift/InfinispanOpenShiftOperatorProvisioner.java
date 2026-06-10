@@ -28,14 +28,13 @@ import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
 import org.jboss.intersmash.provision.operator.InfinispanOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.model.infinispan.cache.CacheList;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanList;
+import org.jboss.intersmash.tools.client.OpenShifts;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
 import io.fabric8.kubernetes.api.model.apps.StatefulSet;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -56,7 +55,7 @@ public class InfinispanOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
+	public NamespacedOpenShiftClient client() {
 		return OpenShiftProvisioner.super.client();
 	}
 

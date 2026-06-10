@@ -21,6 +21,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -49,11 +50,13 @@ import org.jboss.intersmash.application.operator.InfinispanOperatorApplication;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
 import org.jboss.intersmash.application.operator.OpenShiftAIOperatorApplication;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanBuilder;
 import org.jboss.intersmash.test.deployments.DeploymentsProvider;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
 import org.jboss.intersmash.test.deployments.WildflyDeploymentApplicationConfiguration;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
@@ -64,10 +67,6 @@ import org.keycloak.k8s.v2alpha1.keycloakspec.HostnameBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.HttpBuilder;
 import org.keycloak.k8s.v2alpha1.keycloakspec.IngressBuilder;
 
-import cz.xtf.builder.builders.SecretBuilder;
-import cz.xtf.builder.builders.secret.SecretType;
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -84,8 +83,11 @@ public class OpenShiftProvisionerTestBase {
 	static final String TEST_SECRET_FOO = "foo";
 	static final String TEST_SECRET_BAR = "bar";
 
-	static final Secret TEST_SECRET = new SecretBuilder("test-secret")
-			.setType(SecretType.OPAQUE).addData(TEST_SECRET_FOO, TEST_SECRET_BAR.getBytes()).build();
+	static final Secret TEST_SECRET = new io.fabric8.kubernetes.api.model.SecretBuilder()
+			.withNewMetadata().withName("test-secret").endMetadata()
+			.withType("Opaque")
+			.withData(Map.of(TEST_SECRET_FOO, Base64.getEncoder().encodeToString(TEST_SECRET_BAR.getBytes())))
+			.build();
 
 	static final String WILDFLY_TEST_PROPERTY = "test-property";
 
@@ -126,17 +128,23 @@ public class OpenShiftProvisionerTestBase {
 
 			@Override
 			public List<Secret> getSecrets() {
-				SecretBuilder sb;
 				try (InputStream is = getClass().getClassLoader().getResourceAsStream("certs/jgroups.jceks")) {
-					sb = new SecretBuilder(getName() + "-secret")
-							.addData(keystore.getFileName().toString(), keystore)
-							.addData(jceksFileName, is)
-							.addData(truststore.getFileName().toString(), truststore);
+					Map<String, String> data = new HashMap<>();
+					data.put(keystore.getFileName().toString(),
+							Base64.getEncoder().encodeToString(java.nio.file.Files.readAllBytes(keystore)));
+					data.put(jceksFileName,
+							Base64.getEncoder().encodeToString(is.readAllBytes()));
+					data.put(truststore.getFileName().toString(),
+							Base64.getEncoder().encodeToString(java.nio.file.Files.readAllBytes(truststore)));
+					Secret secret = new io.fabric8.kubernetes.api.model.SecretBuilder()
+							.withNewMetadata().withName(getName() + "-secret").endMetadata()
+							.withType("Opaque")
+							.withData(data)
+							.build();
+					return Collections.singletonList(secret);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
-
-				return Collections.singletonList(sb.build());
 			}
 
 			@Override

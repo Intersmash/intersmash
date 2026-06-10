@@ -28,7 +28,6 @@ import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -57,7 +56,7 @@ public class HyperfoilKubernetesOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedKubernetesClient> client() {
+	public NamespacedKubernetesClient client() {
 		return KubernetesProvisioner.super.client();
 	}
 

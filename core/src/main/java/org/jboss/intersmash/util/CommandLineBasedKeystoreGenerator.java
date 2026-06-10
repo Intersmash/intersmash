@@ -24,7 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import cz.xtf.core.config.OpenShiftConfig;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 

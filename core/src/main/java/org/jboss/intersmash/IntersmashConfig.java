@@ -18,8 +18,8 @@ package org.jboss.intersmash;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cz.xtf.core.config.XTFConfig;
-import cz.xtf.core.openshift.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.config.IntersmashProperties;
 
 public class IntersmashConfig {
 	private static final String SKIP_DEPLOY = "intersmash.skip.deploy";
@@ -142,11 +142,11 @@ public class IntersmashConfig {
 	private static final String PGSQL_IMAGE_URL = "intersmash.postgresql.image";
 
 	public static boolean skipDeploy() {
-		return XTFConfig.get(SKIP_DEPLOY, "false").equals("true");
+		return IntersmashProperties.get(SKIP_DEPLOY, "false").equals("true");
 	}
 
 	public static boolean skipUndeploy() {
-		return skipDeploy() || XTFConfig.get(SKIP_UNDEPLOY, "false").equals("true");
+		return skipDeploy() || IntersmashProperties.get(SKIP_UNDEPLOY, "false").equals("true");
 	}
 
 	public static String[] getKnownCatalogSources() {
@@ -154,155 +154,155 @@ public class IntersmashConfig {
 	}
 
 	public static String defaultOperatorCatalogSourceName() {
-		return XTFConfig.get(OLM_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
+		return IntersmashProperties.get(OLM_OPERATOR_CATALOG_SOURCE_NAME, DEFAULT_OPERATOR_CATALOG_SOURCE_NAME);
 	}
 
 	public static String defaultOperatorCatalogSourceNamespace() {
-		return XTFConfig.get(OLM_OPERATOR_CATALOG_SOURCE_NAMESPACE, DEFAULT_OPERATOR_CATALOG_SOURCE_NAMESPACE);
+		return IntersmashProperties.get(OLM_OPERATOR_CATALOG_SOURCE_NAMESPACE, DEFAULT_OPERATOR_CATALOG_SOURCE_NAMESPACE);
 	}
 
 	public static String infinispanOperatorCatalogSource() {
-		return XTFConfig.get(INFINISPAN_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(INFINISPAN_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String infinispanOperatorIndexImage() {
-		return XTFConfig.get(INFINISPAN_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(INFINISPAN_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String infinispanOperatorChannel() {
-		return XTFConfig.get(INFINISPAN_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(INFINISPAN_OPERATOR_CHANNEL);
 	}
 
 	public static String infinispanOperatorPackageManifest() {
-		return XTFConfig.get(INFINISPAN_OPERATOR_PACKAGE_MANIFEST, DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(INFINISPAN_OPERATOR_PACKAGE_MANIFEST, DEFAULT_INFINISPAN_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String infinispanOperatorVersion() {
-		return XTFConfig.get(INFINISPAN_OPERATOR_VERSION);
+		return IntersmashProperties.get(INFINISPAN_OPERATOR_VERSION);
 	}
 
 	public static String rhSsoOperatorCatalogSource() {
-		return XTFConfig.get(RHSSO_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(RHSSO_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String rhSsoOperatorIndexImage() {
-		return XTFConfig.get(RHSSO_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(RHSSO_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String rhSsoOperatorChannel() {
-		return XTFConfig.get(RHSSO_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(RHSSO_OPERATOR_CHANNEL);
 	}
 
 	public static String rhSsoOperatorPackageManifest() {
-		return XTFConfig.get(RHSSO_OPERATOR_PACKAGE_MANIFEST, PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(RHSSO_OPERATOR_PACKAGE_MANIFEST, PRODUCT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String rhSsoOperatorVersion() {
-		return XTFConfig.get(RHSSO_OPERATOR_VERSION, "7.6.11-opr-003");
+		return IntersmashProperties.get(RHSSO_OPERATOR_VERSION, "7.6.11-opr-003");
 	}
 
 	public static String wildflyOperatorCatalogSource() {
-		return XTFConfig.get(WILDFLY_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(WILDFLY_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String wildflyOperatorIndexImage() {
-		return XTFConfig.get(WILDFLY_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(WILDFLY_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String wildflyOperatorChannel() {
-		return XTFConfig.get(WILDFLY_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(WILDFLY_OPERATOR_CHANNEL);
 	}
 
 	public static String wildflyOperatorPackageManifest() {
-		return XTFConfig.get(WILDFLY_OPERATOR_PACKAGE_MANIFEST, DEFAULT_WILDFLY_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(WILDFLY_OPERATOR_PACKAGE_MANIFEST, DEFAULT_WILDFLY_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String wildflyOperatorVersion() {
-		return XTFConfig.get(WILDFLY_OPERATOR_VERSION);
+		return IntersmashProperties.get(WILDFLY_OPERATOR_VERSION);
 	}
 
 	public static String kafkaOperatorCatalogSource() {
-		return XTFConfig.get(KAFKA_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(KAFKA_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String kafkaOperatorIndexImage() {
-		return XTFConfig.get(KAFKA_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(KAFKA_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String kafkaOperatorChannel() {
-		return XTFConfig.get(KAFKA_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(KAFKA_OPERATOR_CHANNEL);
 	}
 
 	public static String kafkaOperatorPackageManifest() {
-		return XTFConfig.get(KAFKA_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KAFKA_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(KAFKA_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KAFKA_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String kafkaOperatorVersion() {
-		return XTFConfig.get(KAFKA_OPERATOR_VERSION);
+		return IntersmashProperties.get(KAFKA_OPERATOR_VERSION);
 	}
 
 	public static String activeMQOperatorCatalogSource() {
-		return XTFConfig.get(ACTIVEMQ_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(ACTIVEMQ_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String activeMQOperatorIndexImage() {
-		return XTFConfig.get(ACTIVEMQ_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(ACTIVEMQ_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String activeMQOperatorChannel() {
-		return XTFConfig.get(ACTIVEMQ_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(ACTIVEMQ_OPERATOR_CHANNEL);
 	}
 
 	public static String activeMQOperatorPackageManifest() {
-		return XTFConfig.get(ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST, DEFAULT_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST, DEFAULT_ACTIVEMQ_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String activeMQOperatorVersion() {
-		return XTFConfig.get(ACTIVEMQ_OPERATOR_VERSION);
+		return IntersmashProperties.get(ACTIVEMQ_OPERATOR_VERSION);
 	}
 
 	public static String hyperfoilOperatorCatalogSource() {
-		return XTFConfig.get(HYPERFOIL_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(HYPERFOIL_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String hyperfoilOperatorIndexImage() {
-		return XTFConfig.get(HYPERFOIL_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(HYPERFOIL_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String hyperfoilOperatorChannel() {
-		return XTFConfig.get(HYPERFOIL_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(HYPERFOIL_OPERATOR_CHANNEL);
 	}
 
 	public static String hyperfoilOperatorPackageManifest() {
-		return XTFConfig.get(HYPERFOIL_OPERATOR_PACKAGE_MANIFEST, DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(HYPERFOIL_OPERATOR_PACKAGE_MANIFEST, DEFAULT_HYPERFOIL_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String hyperfoilOperatorVersion() {
-		return XTFConfig.get(HYPERFOIL_OPERATOR_VERSION);
+		return IntersmashProperties.get(HYPERFOIL_OPERATOR_VERSION);
 	}
 
 	public static String bootableJarImageURL() {
-		return XTFConfig.get(BOOTABLE_JAR_IMAGE_URL);
+		return IntersmashProperties.get(BOOTABLE_JAR_IMAGE_URL);
 	}
 
 	public static String wildflyImageJdk() {
-		return XTFConfig.get(WILDFLY_IMAGE_JDK, "21");
+		return IntersmashProperties.get(WILDFLY_IMAGE_JDK, "21");
 	}
 
 	public static String wildflyImageURL() {
-		return XTFConfig.get(WILDFLY_IMAGE_URL);
+		return IntersmashProperties.get(WILDFLY_IMAGE_URL);
 	}
 
 	public static String wildflyRuntimeImageURL() {
-		return XTFConfig.get(WILDFLY_RUNTIME_IMAGE_URL);
+		return IntersmashProperties.get(WILDFLY_RUNTIME_IMAGE_URL);
 	}
 
 	public static String eap7ImageURL() {
-		return XTFConfig.get(EAP7_IMAGE_URL);
+		return IntersmashProperties.get(EAP7_IMAGE_URL);
 	}
 
 	public static String eap7RuntimeImageUrl() {
-		return XTFConfig.get(EAP7_RUNTIME_IMAGE_URL);
+		return IntersmashProperties.get(EAP7_RUNTIME_IMAGE_URL);
 	}
 
 	public static String eap7ProductCode() {
@@ -317,11 +317,11 @@ public class IntersmashConfig {
 	}
 
 	public static String eap7Templates() {
-		return XTFConfig.get(EAP7_TEMPLATES_BASE_URL) + XTFConfig.get(EAP7_TEMPLATES_PATH);
+		return IntersmashProperties.get(EAP7_TEMPLATES_BASE_URL) + IntersmashProperties.get(EAP7_TEMPLATES_PATH);
 	}
 
 	public static String eap7ImageStreams() {
-		return XTFConfig.get(EAP7_TEMPLATES_BASE_URL);
+		return IntersmashProperties.get(EAP7_TEMPLATES_BASE_URL);
 	}
 
 	public static String getProductCode(final String image) {
@@ -343,11 +343,11 @@ public class IntersmashConfig {
 	}
 
 	public static String getMysqlImage() {
-		return XTFConfig.get(MYSQL_IMAGE_URL);
+		return IntersmashProperties.get(MYSQL_IMAGE_URL);
 	}
 
 	public static String infinispanImageURL() {
-		return XTFConfig.get(INFINISPAN_IMAGE_URL);
+		return IntersmashProperties.get(INFINISPAN_IMAGE_URL);
 	}
 
 	public static String infinispanProductCode() {
@@ -355,11 +355,11 @@ public class IntersmashConfig {
 	}
 
 	public static String rhSsoImageURL() {
-		return XTFConfig.get(RHSSO_IMAGE_URL);
+		return IntersmashProperties.get(RHSSO_IMAGE_URL);
 	}
 
 	public static String keycloakImageURL() {
-		return XTFConfig.get(KEYCLOAK_IMAGE_URL);
+		return IntersmashProperties.get(KEYCLOAK_IMAGE_URL);
 	}
 
 	public static String rhSsoProductCode() {
@@ -367,19 +367,19 @@ public class IntersmashConfig {
 	}
 
 	public static String rhSsoTemplates() {
-		return XTFConfig.get(RHSSO_TEMPLATES);
+		return IntersmashProperties.get(RHSSO_TEMPLATES);
 	}
 
 	public static String activeMQImageUrl() {
-		return XTFConfig.get(ACTIVEMQ_IMAGE_URL);
+		return IntersmashProperties.get(ACTIVEMQ_IMAGE_URL);
 	}
 
 	public static String activeMQInitImageUrl() {
-		return XTFConfig.get(ACTIVEMQ_INIT_IMAGE_URL);
+		return IntersmashProperties.get(ACTIVEMQ_INIT_IMAGE_URL);
 	}
 
 	public static String getPostgreSQLImage() {
-		return XTFConfig.get(PGSQL_IMAGE_URL);
+		return IntersmashProperties.get(PGSQL_IMAGE_URL);
 	}
 
 	public static String rhSsoImageName() {
@@ -387,7 +387,7 @@ public class IntersmashConfig {
 	}
 
 	public static String scriptDebug() {
-		return XTFConfig.get(SCRIPT_DEBUG);
+		return IntersmashProperties.get(SCRIPT_DEBUG);
 	}
 
 	private static String getImageName(String image) {
@@ -418,7 +418,7 @@ public class IntersmashConfig {
 	 * @return intersmash-deployments git repository url
 	 */
 	public static String deploymentsRepositoryUrl() {
-		return XTFConfig.get(DEPLOYMENTS_REPOSITORY_URL, IntersmashDeploymentsGitHelper.repositoryUrl());
+		return IntersmashProperties.get(DEPLOYMENTS_REPOSITORY_URL, IntersmashDeploymentsGitHelper.repositoryUrl());
 	}
 
 	/**
@@ -429,39 +429,39 @@ public class IntersmashConfig {
 	 * @return deployments git repository ref
 	 */
 	public static String deploymentsRepositoryRef() {
-		return XTFConfig.get(DEPLOYMENTS_REPOSITORY_REF, IntersmashDeploymentsGitHelper.repositoryReference());
+		return IntersmashProperties.get(DEPLOYMENTS_REPOSITORY_REF, IntersmashDeploymentsGitHelper.repositoryReference());
 	}
 
 	public static String getWildflyHelmChartsName() {
-		return XTFConfig.get(WILDFLY_HELM_CHARTS_NAME);
+		return IntersmashProperties.get(WILDFLY_HELM_CHARTS_NAME);
 	}
 
 	public static String getWildflyHelmChartsRepo() {
-		return XTFConfig.get(WILDFLY_HELM_CHARTS_REPO);
+		return IntersmashProperties.get(WILDFLY_HELM_CHARTS_REPO);
 	}
 
 	public static String getWildflyHelmChartsBranch() {
-		return XTFConfig.get(WILDFLY_HELM_CHARTS_BRANCH);
+		return IntersmashProperties.get(WILDFLY_HELM_CHARTS_BRANCH);
 	}
 
 	public static String keycloakOperatorCatalogSource() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(KEYCLOAK_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	public static String keycloakOperatorIndexImage() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(KEYCLOAK_OPERATOR_INDEX_IMAGE);
 	}
 
 	public static String keycloakOperatorChannel() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(KEYCLOAK_OPERATOR_CHANNEL);
 	}
 
 	public static String keycloakOperatorPackageManifest() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(KEYCLOAK_OPERATOR_PACKAGE_MANIFEST, DEFAULT_KEYCLOAK_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String keycloakOperatorVersion() {
-		return XTFConfig.get(KEYCLOAK_OPERATOR_VERSION);
+		return IntersmashProperties.get(KEYCLOAK_OPERATOR_VERSION);
 	}
 
 	/**
@@ -471,7 +471,7 @@ public class IntersmashConfig {
 	 * i.e. the value of {@code intersmash.olm.operators.catalog_source} property.
 	 */
 	public static String openDataHubOperatorCatalogSource() {
-		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(OPEN_DATA_HUB_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	/**
@@ -480,7 +480,7 @@ public class IntersmashConfig {
 	 * @return The value for the {@code intersmash.odh.operators.index_image} property, representing a custom index image.
 	 */
 	public static String openDataHubOperatorIndexImage() {
-		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(OPEN_DATA_HUB_OPERATOR_INDEX_IMAGE);
 	}
 
 	/**
@@ -490,7 +490,7 @@ public class IntersmashConfig {
 	 * channel is used.
 	 */
 	public static String openDataHubOperatorChannel() {
-		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(OPEN_DATA_HUB_OPERATOR_CHANNEL);
 	}
 
 	/**
@@ -500,7 +500,8 @@ public class IntersmashConfig {
 	 * that should be used for this operator, i.e. {@code opendatahub-operator} property.
 	 */
 	public static String openDataHubOperatorPackageManifest() {
-		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST,
+				DEFAULT_OPEN_DATA_HUB_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	/**
@@ -510,7 +511,7 @@ public class IntersmashConfig {
 	 * that should be used for this operator, i.e. {@code opendatahub-operator} property.
 	 */
 	public static String openDataHubOperatorVersion() {
-		return XTFConfig.get(OPEN_DATA_HUB_OPERATOR_VERSION);
+		return IntersmashProperties.get(OPEN_DATA_HUB_OPERATOR_VERSION);
 	}
 
 	/**
@@ -520,7 +521,7 @@ public class IntersmashConfig {
 	 * i.e. the value of {@code intersmash.olm.operators.catalog_source} property.
 	 */
 	public static String openShiftAIOperatorCatalogSource() {
-		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
+		return IntersmashProperties.get(OPENSHIFT_AI_OPERATOR_CATALOG_SOURCE_NAME, defaultOperatorCatalogSourceName());
 	}
 
 	/**
@@ -529,7 +530,7 @@ public class IntersmashConfig {
 	 * @return The value for the {@code intersmash.rhods.operators.index_image} property, representing a custom index image.
 	 */
 	public static String openShiftAIOperatorIndexImage() {
-		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_INDEX_IMAGE);
+		return IntersmashProperties.get(OPENSHIFT_AI_OPERATOR_INDEX_IMAGE);
 	}
 
 	/**
@@ -539,7 +540,7 @@ public class IntersmashConfig {
 	 * channel is used.
 	 */
 	public static String openShiftAIOperatorChannel() {
-		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_CHANNEL);
+		return IntersmashProperties.get(OPENSHIFT_AI_OPERATOR_CHANNEL);
 	}
 
 	/**
@@ -549,10 +550,10 @@ public class IntersmashConfig {
 	 * that should be used for this operator, i.e. {@code rhods-operator} property.
 	 */
 	public static String openShiftAIOperatorPackageManifest() {
-		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST);
+		return IntersmashProperties.get(OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST, DEFAULT_OPENSHIFT_AI_OPERATOR_PACKAGE_MANIFEST);
 	}
 
 	public static String openShiftAIOperatorVersion() {
-		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_VERSION);
+		return IntersmashProperties.get(OPENSHIFT_AI_OPERATOR_VERSION);
 	}
 }

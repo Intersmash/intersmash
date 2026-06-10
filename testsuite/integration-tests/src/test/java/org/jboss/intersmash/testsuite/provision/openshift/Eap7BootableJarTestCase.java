@@ -17,20 +17,19 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.provision.openshift.BootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.junit5.categories.wildfly.RequiresBootableJarDistribution;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.config.IntersmashProperties;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import cz.xtf.core.bm.BuildManagers;
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
 @NotForCommunityExecutionProfile
@@ -59,7 +58,10 @@ public class Eap7BootableJarTestCase implements ProjectCreationCapable {
 	public void verifyOpenShiftConfiguration() {
 		// environmentVariables
 		Assertions
-				.assertThat(BuildManagers.get().openShift().getBuildConfig(application.getName()).getSpec().getStrategy()
+				.assertThat(OpenShifts
+						.master(IntersmashProperties.get("intersmash.bm.namespace",
+								IntersmashProperties.get("xtf.bm.namespace")))
+						.getBuildConfig(application.getName()).getSpec().getStrategy()
 						.getSourceStrategy().getEnv())
 				.as("Environment variable test").contains(OpenShiftProvisionerTestBase.TEST_ENV_VAR);
 	}

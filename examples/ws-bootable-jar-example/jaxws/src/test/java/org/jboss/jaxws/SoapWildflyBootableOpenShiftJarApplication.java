@@ -27,8 +27,9 @@ import org.jboss.intersmash.application.input.BinarySource;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
 import org.jboss.intersmash.util.maven.ArtifactProvider;
 
-import cz.xtf.builder.builders.SecretBuilder;
-import cz.xtf.builder.builders.secret.SecretType;
+import java.util.Base64;
+import java.util.Map;
+
 import io.fabric8.kubernetes.api.model.EnvVar;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Secret;
@@ -43,8 +44,11 @@ public class SoapWildflyBootableOpenShiftJarApplication implements BootableJarOp
 	static final EnvVar TEST_ENV_VAR = new EnvVarBuilder().withName("test-evn-key").withValue("test-evn-value").build();
 	static final String TEST_SECRET_FOO = "foo";
 	static final String TEST_SECRET_BAR = "bar";
-	static final Secret TEST_SECRET = new SecretBuilder("test-secret")
-			.setType(SecretType.OPAQUE).addData(TEST_SECRET_FOO, TEST_SECRET_BAR.getBytes()).build();
+	static final Secret TEST_SECRET = new io.fabric8.kubernetes.api.model.SecretBuilder()
+			.withNewMetadata().withName("test-secret").endMetadata()
+			.withType("Opaque")
+			.withData(Map.of(TEST_SECRET_FOO, Base64.getEncoder().encodeToString(TEST_SECRET_BAR.getBytes())))
+			.build();
 
 	@Override
 	public BinarySource getBuildInput() {

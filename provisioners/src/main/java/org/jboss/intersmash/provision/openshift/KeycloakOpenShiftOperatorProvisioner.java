@@ -23,15 +23,14 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.provision.operator.KeycloakOperatorProvisioner;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakOperatorKeycloakList;
 import org.keycloak.k8s.v2alpha1.KeycloakOperatorRealmImportList;
 import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -53,7 +52,7 @@ public class KeycloakOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
+	public NamespacedOpenShiftClient client() {
 		return OpenShiftProvisioner.super.client();
 	}
 

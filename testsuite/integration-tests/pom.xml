@@ -68,13 +68,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>junit5</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>builder</artifactId>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-tools</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -97,7 +92,7 @@
                 <configuration combine.children="append">
                     <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                     <systemPropertyVariables>
-                        <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                        <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -134,7 +129,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -164,7 +159,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -202,7 +197,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -223,7 +218,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -244,7 +239,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -265,7 +260,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>
@@ -286,7 +281,7 @@
                         <configuration combine.children="append">
                             <excludedGroups>${intersmash.test.excludedGroups.by.execution-profile},${intersmash.test.excludedGroups.by.wildfly-target-distribution},${intersmash.test.excludedGroups.by.target-platform}</excludedGroups>
                             <systemPropertyVariables>
-                                <xtf.global_test_properties.path>${global-test-properties-file}</xtf.global_test_properties.path>
+                                <intersmash.global_test_properties.path>${global-test-properties-file}</intersmash.global_test_properties.path>
                             </systemPropertyVariables>
                         </configuration>
                     </plugin>

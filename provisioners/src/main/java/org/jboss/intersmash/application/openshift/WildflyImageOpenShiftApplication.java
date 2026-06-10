@@ -26,9 +26,9 @@ import org.jboss.intersmash.application.input.BuildInput;
 import org.jboss.intersmash.application.input.BuildInputBuilder;
 import org.jboss.intersmash.application.input.GitSourceBuilder;
 
-import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
-import cz.xtf.builder.builders.pod.VolumeMount;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeMount;
 
 /**
  * End user Application interface which presents a Wildfly image application on
@@ -47,9 +47,11 @@ public interface WildflyImageOpenShiftApplication extends WildflyOpenShiftApplic
 
 	/**
 	 * Setup mount points to WILDFLY pod and persistent volume claims to be created.
+	 * Each key is a {@link Volume} backed by a PersistentVolumeClaimVolumeSource,
+	 * and the values are the {@link VolumeMount}s for that volume.
 	 * @return A {@link Map} instance storing PVCs needed by the WILDFLY application service
 	 */
-	default Map<PersistentVolumeClaim, Set<VolumeMount>> getPersistentVolumeClaimMounts() {
+	default Map<Volume, Set<VolumeMount>> getPersistentVolumeClaimMounts() {
 		return Collections.emptyMap();
 	}
 

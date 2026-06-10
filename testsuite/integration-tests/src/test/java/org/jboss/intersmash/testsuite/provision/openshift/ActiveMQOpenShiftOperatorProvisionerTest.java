@@ -20,7 +20,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jboss.intersmash.application.operator.ActiveMQOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.ActiveMQOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.model.activemq.address.ActiveMQArtemisAddressBuilder;
@@ -28,16 +31,14 @@ import org.jboss.intersmash.provision.operator.model.activemq.broker.ActiveMQArt
 import org.jboss.intersmash.provision.operator.model.activemq.broker.spec.DeploymentPlanBuilder;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.amq.broker.v1beta1.ActiveMQArtemis;
 import io.amq.broker.v1beta1.ActiveMQArtemisAddress;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
@@ -82,7 +83,7 @@ public class ActiveMQOpenShiftOperatorProvisionerTest implements ProjectCreation
 		activeMQOperatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		activeMQOperatorProvisioner.unsubscribe();
@@ -92,7 +93,7 @@ public class ActiveMQOpenShiftOperatorProvisionerTest implements ProjectCreation
 
 	@AfterAll
 	public static void removeOperatorGroup() {
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		activeMQOperatorProvisioner.dismiss();
 	}
 

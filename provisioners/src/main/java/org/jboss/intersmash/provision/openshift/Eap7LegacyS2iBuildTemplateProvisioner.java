@@ -17,14 +17,14 @@ package org.jboss.intersmash.provision.openshift;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.jboss.intersmash.application.openshift.Eap7LegacyS2iBuildTemplateApplication;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.BuildConfig;
@@ -56,7 +56,7 @@ public class Eap7LegacyS2iBuildTemplateProvisioner implements OpenShiftProvision
 
 	@Override
 	public void deploy() {
-		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+		ffCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 				application.getName());
 
 		if (application.getParameters().getOrDefault("APPLICATION_IMAGE", "null") != application.getName()) {

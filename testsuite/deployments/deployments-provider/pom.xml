@@ -48,8 +48,8 @@
             <artifactId>maven-settings-builder</artifactId>
         </dependency>
         <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>core</artifactId>
+            <groupId>org.jboss.intersmash</groupId>
+            <artifactId>intersmash-tools</artifactId>
         </dependency>
 
         <dependency>

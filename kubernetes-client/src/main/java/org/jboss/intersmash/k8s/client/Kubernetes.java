@@ -31,16 +31,16 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jboss.intersmash.k8s.KubernetesConfig;
+import org.jboss.intersmash.k8s.crd.CustomResourceDefinitionContextProvider;
+import org.jboss.intersmash.tools.config.WaitingConfig;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.Waiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
 
-import cz.xtf.core.config.WaitingConfig;
-import cz.xtf.core.openshift.crd.CustomResourceDefinitionContextProvider;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.Waiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.builder.Visitor;
 import io.fabric8.kubernetes.api.model.*;
 import io.fabric8.kubernetes.api.model.rbac.RoleBinding;
@@ -135,7 +135,7 @@ public class Kubernetes extends DefaultKubernetesClient {
 	}
 
 	public void setupPullSecret(String secret) {
-		setupPullSecret("xtf-pull-secret", secret);
+		setupPullSecret("intersmash-pull-secret", secret);
 	}
 
 	/**
@@ -283,9 +283,9 @@ public class Kubernetes extends DefaultKubernetesClient {
 				// TODO - check
 				genericKubernetesResources(crdContextProvider.getContext())
 						.inNamespace(getNamespace()).delete();
-				log.debug("DELETE :: " + crdContextProvider.getContext().getName() + " instances");
+				log.debug("DELETE :: " + crdContextProvider.getContext().getPlural() + " instances");
 			} catch (KubernetesClientException kce) {
-				log.debug(crdContextProvider.getContext().getName() + " might not be installed on the cluster.", kce);
+				log.debug(crdContextProvider.getContext().getPlural() + " might not be installed on the cluster.", kce);
 			}
 		}
 

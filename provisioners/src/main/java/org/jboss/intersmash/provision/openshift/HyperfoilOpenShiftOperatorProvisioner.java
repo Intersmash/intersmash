@@ -17,17 +17,16 @@ package org.jboss.intersmash.provision.openshift;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.Objects;
 
 import org.jboss.intersmash.application.operator.HyperfoilOperatorApplication;
 import org.jboss.intersmash.provision.operator.HyperfoilOperatorProvisioner;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -58,7 +57,7 @@ public class HyperfoilOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
+	public NamespacedOpenShiftClient client() {
 		return OpenShiftProvisioner.super.client();
 	}
 
@@ -75,7 +74,7 @@ public class HyperfoilOpenShiftOperatorProvisioner
 	@Override
 	protected FailFastCheck getFailFastCheck() {
 		if (ffCheck == null) {
-			ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+			ffCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 					getApplication().getName());
 		}
 		return ffCheck;

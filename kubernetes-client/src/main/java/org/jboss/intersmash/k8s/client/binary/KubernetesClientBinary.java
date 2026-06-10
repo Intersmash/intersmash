@@ -20,11 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.jboss.intersmash.tools.cli.CLIUtils;
 
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 
-import cz.xtf.core.openshift.CLIUtils;
 import io.fabric8.openshift.api.model.operatorhub.packages.v1.PackageManifest;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CatalogSource;
 import lombok.Getter;

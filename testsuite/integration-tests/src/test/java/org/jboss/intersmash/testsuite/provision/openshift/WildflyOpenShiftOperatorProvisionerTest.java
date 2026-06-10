@@ -18,7 +18,10 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import java.io.IOException;
 
 import org.jboss.intersmash.application.operator.WildflyOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.WildflyOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.OperatorProvisioner;
@@ -34,9 +37,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.wildfly.v1alpha1.WildFlyServer;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 
 @CleanBeforeAll
@@ -80,7 +80,7 @@ public class WildflyOpenShiftOperatorProvisionerTest implements ProjectCreationC
 		WILDFLY_OPERATOR_PROVISIONER.configure();
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		WILDFLY_OPERATOR_PROVISIONER.unsubscribe();
@@ -88,7 +88,7 @@ public class WildflyOpenShiftOperatorProvisionerTest implements ProjectCreationC
 
 	@AfterAll
 	public static void removeOperatorGroup() {
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		WILDFLY_OPERATOR_PROVISIONER.dismiss();
 	}
 

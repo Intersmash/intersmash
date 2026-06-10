@@ -29,19 +29,18 @@ import org.jboss.intersmash.application.operator.OperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.k8s.Scalable;
 import org.jboss.intersmash.provision.olm.Subscription;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
 import io.fabric8.kubernetes.api.model.ContainerStatus;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.openshift.api.model.operatorhub.packages.v1.PackageChannel;
 import io.fabric8.openshift.api.model.operatorhub.packages.v1.PackageManifest;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CRDDescription;
@@ -84,7 +83,7 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 		this.packageManifestName = packageManifestName;
 	}
 
-	protected abstract NamespacedKubernetesClientAdapter<C> client();
+	protected abstract C client();
 
 	public List<Pod> getPods() {
 		return this.client().pods().inNamespace(this.client().getNamespace()).list().getItems();

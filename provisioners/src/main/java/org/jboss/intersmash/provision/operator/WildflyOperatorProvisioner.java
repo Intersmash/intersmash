@@ -26,12 +26,12 @@ import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.WildflyOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.operator.model.wildfly.WildFlyServerList;
+import org.jboss.intersmash.tools.http.HttpsUtils;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.slf4j.event.Level;
 import org.wildfly.v1alpha1.WildFlyServer;
 import org.wildfly.v1alpha1.wildflyserverstatus.Pods;
 
-import cz.xtf.core.http.Https;
-import cz.xtf.core.waiting.SimpleWaiter;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
@@ -129,7 +129,7 @@ public abstract class WildflyOperatorProvisioner<C extends NamespacedKubernetesC
 				.waitFor();
 		if (getApplication().getWildflyServer().getSpec().getReplicas() > 0) {
 			new SimpleWaiter(
-					() -> Https.getCode(getURL().toExternalForm()) != 503)
+					() -> HttpsUtils.getCode(getURL().toExternalForm()) != 503)
 					.reason("Wait until the route is ready to serve.");
 		}
 	}
@@ -150,7 +150,7 @@ public abstract class WildflyOperatorProvisioner<C extends NamespacedKubernetesC
 		}
 		if (originalReplicas == 0 && replicas > 0) {
 			new SimpleWaiter(
-					() -> Https.getCode(getURL().toExternalForm()) != 503)
+					() -> HttpsUtils.getCode(getURL().toExternalForm()) != 503)
 					.reason("Wait until the route is ready to serve.");
 		}
 	}

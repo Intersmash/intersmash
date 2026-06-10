@@ -16,8 +16,7 @@
 package org.jboss.intersmash.application.openshift;
 
 import org.jboss.intersmash.application.Application;
-
-import cz.xtf.core.openshift.OpenShifts;
+import org.jboss.intersmash.tools.client.OpenShifts;
 
 /**
  * Interface representing the Application on OpenShift Container Platform.

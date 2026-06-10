@@ -22,11 +22,10 @@ import org.jboss.intersmash.provision.operator.model.odh.DSCInitializationList;
 import org.jboss.intersmash.provision.operator.model.odh.DataScienceClusterList;
 import org.jboss.intersmash.provision.operator.model.odh.FeatureTrackerList;
 import org.jboss.intersmash.provision.operator.model.odh.MonitoringList;
+import org.jboss.intersmash.tools.client.OpenShifts;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -62,8 +61,8 @@ public class OpenDataHubOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
-		return OpenShifts.admin();
+	public NamespacedOpenShiftClient client() {
+		return OpenShifts.admin().getClient();
 	}
 
 	@Override

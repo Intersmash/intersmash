@@ -33,6 +33,9 @@ import org.jboss.intersmash.provision.operator.model.keycloak.client.KeycloakCli
 import org.jboss.intersmash.provision.operator.model.keycloak.keycloak.KeycloakList;
 import org.jboss.intersmash.provision.operator.model.keycloak.realm.KeycloakRealmList;
 import org.jboss.intersmash.provision.operator.model.keycloak.user.KeycloakUserList;
+import org.jboss.intersmash.tools.http.HttpsUtils;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.keycloak.v1alpha1.Keycloak;
 import org.keycloak.v1alpha1.KeycloakBackup;
 import org.keycloak.v1alpha1.KeycloakClient;
@@ -40,10 +43,6 @@ import org.keycloak.v1alpha1.KeycloakRealm;
 import org.keycloak.v1alpha1.KeycloakUser;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.http.Https;
-import cz.xtf.core.openshift.helpers.ResourceParsers;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
@@ -133,7 +132,7 @@ public abstract class RhSsoOperatorProvisioner<C extends NamespacedKubernetesCli
 		URL externalUrl = getURL();
 		if ((getApplication().getKeycloak().getSpec().getInstances() > 0) && (externalUrl != null)) {
 			new SimpleWaiter(
-					() -> Https.getCode(getURL().toExternalForm()) != 503)
+					() -> HttpsUtils.getCode(getURL().toExternalForm()) != 503)
 					.reason("Wait until the route is ready to serve.");
 		}
 	}
@@ -156,7 +155,9 @@ public abstract class RhSsoOperatorProvisioner<C extends NamespacedKubernetesCli
 										&& pod.getMetadata().getLabels().entrySet().containsAll(
 												this.client().services().withName("keycloak-postgresql").get().getSpec()
 														.getSelector().entrySet())
-										&& ResourceParsers.isPodReady(pod))
+										&& pod.getStatus().getContainerStatuses().size() > 0
+										&& pod.getStatus().getContainerStatuses().stream()
+												.allMatch(cs -> Boolean.TRUE.equals(cs.getReady())))
 						.count() > 0).level(Level.DEBUG).waitFor();
 			}
 			// 4. wait for >= 1 pods with label controller-revision-hash=keycloak-d86bb6ddc
@@ -235,7 +236,7 @@ public abstract class RhSsoOperatorProvisioner<C extends NamespacedKubernetesCli
 		// check that route is up
 		if (originalReplicas == 0 && replicas > 0) {
 			new SimpleWaiter(
-					() -> Https.getCode(getURL().toExternalForm()) != 503)
+					() -> HttpsUtils.getCode(getURL().toExternalForm()) != 503)
 					.reason("Wait until the route is ready to serve.");
 		}
 	}

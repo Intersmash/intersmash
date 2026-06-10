@@ -22,10 +22,10 @@ import org.jboss.intersmash.annotations.ServiceUrl;
 import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
 import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.junit.jupiter.api.Test;
 
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.openshift.OpenShifts;
 import io.restassured.RestAssured;
 import lombok.extern.slf4j.Slf4j;
 

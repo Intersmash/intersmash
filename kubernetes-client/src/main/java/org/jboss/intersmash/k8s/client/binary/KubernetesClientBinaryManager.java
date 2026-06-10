@@ -120,7 +120,7 @@ public class KubernetesClientBinaryManager {
 		}
 	}
 
-	// TODO: this code is duplicated from OpenShifts.getHomeDir
+	// TODO: this code is duplicated from Kuberneteses.getHomeDir
 	// it should be revised together with token management
 	// https://github.com/xtf-cz/xtf/issues/464
 	private static String getHomeDir() {

@@ -24,7 +24,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.intersmash.application.operator.RhSsoOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.RhSsoOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.RhSsoOperatorProvisioner;
@@ -43,6 +46,9 @@ import org.jboss.intersmash.provision.operator.model.keycloak.user.spec.Keycloak
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -60,11 +66,6 @@ import org.keycloak.v1alpha1.keycloakuserspec.User;
 import org.keycloak.v1alpha1.keycloakuserspec.user.Credentials;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
@@ -119,7 +120,7 @@ public class RhSsoOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		matchLabels.put("app", "sso");
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		KEYCLOAK_OPERATOR_PROVISIONER.unsubscribe();
@@ -127,7 +128,7 @@ public class RhSsoOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 
 	@AfterAll
 	public static void removeOperatorGroup() {
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		KEYCLOAK_OPERATOR_PROVISIONER.dismiss();
 	}
 

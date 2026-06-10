@@ -28,12 +28,16 @@ import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.application.operator.RhSsoOperatorApplication;
 import org.jboss.intersmash.application.operator.WildflyOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.*;
 import org.jboss.intersmash.provision.operator.OperatorProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -41,9 +45,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mockito;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.Pod;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,7 +81,7 @@ public class OperatorSubscriptionTestCase {
 	public static void createOperatorGroup() throws IOException {
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 	}
 

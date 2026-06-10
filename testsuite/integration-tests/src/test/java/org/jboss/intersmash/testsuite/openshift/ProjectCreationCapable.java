@@ -15,9 +15,8 @@
  */
 package org.jboss.intersmash.testsuite.openshift;
 
+import org.jboss.intersmash.k8s.junit5.ProjectCreator;
 import org.junit.jupiter.api.extension.ExtendWith;
-
-import cz.xtf.junit5.listeners.ProjectCreator;
 
 @ExtendWith(ProjectCreator.class)
 public interface ProjectCreationCapable {

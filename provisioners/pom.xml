@@ -55,22 +55,6 @@
             <artifactId>junit-jupiter-params</artifactId>
         </dependency>
         <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>builder</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>http-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cz.xtf</groupId>
-            <artifactId>junit5</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.jboss.intersmash</groupId>
             <artifactId>intersmash-kubernetes-client</artifactId>
         </dependency>
@@ -208,16 +192,13 @@
 
     <build>
         <plugins>
-            <!--
-                We want for tests to be executed by Surefire, but we also add an XTF system property to the inherited
-                configuration for Intersmash provisioners.
-            -->
-            <plugin>
+                <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration combine.children="append">
+                    <argLine>-Dnet.bytebuddy.experimental=true</argLine>
                     <systemProperties>
-                        <xtf.record.dir>${logDirectory}</xtf.record.dir>
+                        <intersmash.record.dir>${logDirectory}</intersmash.record.dir>
                     </systemProperties>
                 </configuration>
             </plugin>

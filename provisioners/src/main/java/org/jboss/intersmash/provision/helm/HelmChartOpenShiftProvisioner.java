@@ -30,16 +30,16 @@ import java.util.stream.Stream;
 import org.jboss.intersmash.application.openshift.helm.HelmChartOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.application.openshift.helm.SerializableHelmChartRelease;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.helm.HelmBinary;
+import org.jboss.intersmash.tools.helm.HelmClients;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.jboss.intersmash.util.git.GitProject;
 import org.jboss.intersmash.util.git.GitUtil;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.helm.HelmBinary;
-import cz.xtf.core.helm.HelmClients;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.Pod;
 import lombok.NonNull;
 
@@ -145,7 +145,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 		arguments.addAll(Arrays.asList(getHelmChartValuesFilesArguments(application)));
 		arguments.addAll(getSetOverrideArguments(application));
 		arguments.addAll(Arrays.asList(
-				"--kubeconfig", OpenShifts.adminBinary().getOcConfigPath(),
+				"--kubeconfig", OpenShiftBinaries.adminBinary().getConfigPath(),
 				// since we deploy from cloned charts repository, we need to set the "--dependency-update"
 				// flag to fetch any non-local dependencies that chart requires
 				// in order to prevent any issues with the helm chart
@@ -160,7 +160,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 		arguments.addAll(Arrays.asList(getHelmChartValuesFilesArguments(application)));
 		arguments.addAll(getSetOverrideArguments(application));
 		arguments.addAll(Arrays.asList(
-				"--kubeconfig", OpenShifts.adminBinary().getOcConfigPath(),
+				"--kubeconfig", OpenShiftBinaries.adminBinary().getConfigPath(),
 				// since we deploy from cloned charts repository, we need to set the "--dependency-update"
 				// flag to fetch any non-local dependencies that chart requires
 				// in order to prevent any issues with the helm chart
@@ -169,7 +169,7 @@ public abstract class HelmChartOpenShiftProvisioner<A extends HelmChartOpenShift
 	}
 
 	private static String[] getHelmChartUninstallArguments(final String releaseName) {
-		return Stream.of("uninstall", releaseName, "--kubeconfig", OpenShifts.adminBinary().getOcConfigPath())
+		return Stream.of("uninstall", releaseName, "--kubeconfig", OpenShiftBinaries.adminBinary().getConfigPath())
 				.collect(Collectors.toList()).stream().toArray(String[]::new);
 	}
 

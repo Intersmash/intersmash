@@ -19,23 +19,23 @@ import java.io.IOException;
 import java.util.stream.Stream;
 
 import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.KafkaOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.KafkaOperatorProvisioner;
 import org.jboss.intersmash.testsuite.IntersmashTestsuiteProperties;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.config.IntersmashProperties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.config.XTFConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
 import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
 import lombok.extern.slf4j.Slf4j;
@@ -78,7 +78,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		operatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		operatorProvisioner.unsubscribe();
@@ -88,7 +88,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 	private void removeOperatorGroup(final KafkaOpenShiftOperatorProvisioner operatorProvisioner) {
 		// clean any leftovers
 		operatorProvisioner.unsubscribe();
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		operatorProvisioner.dismiss();
 	}
 
@@ -103,7 +103,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		// set the desired channel
 		systemProperties.set("intersmash.kafka.operators.channel", desiredChannel);
 		// reload XTF configuration to take the desired channel into account...
-		XTFConfig.loadConfig();
+		IntersmashProperties.loadConfig();
 		final KafkaOpenShiftOperatorProvisioner operatorProvisioner = initializeOperatorProvisioner(kafkaOperatorApplication);
 		createOperatorGroup(operatorProvisioner);
 		try {

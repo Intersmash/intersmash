@@ -15,15 +15,15 @@
  */
 package org.jboss.intersmash.application.openshift;
 
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
 import org.jboss.intersmash.application.k8s.HasSecrets;
 import org.jboss.intersmash.provision.openshift.PostgreSQLImageOpenShiftProvisioner;
 
-import cz.xtf.builder.builders.SecretBuilder;
-import cz.xtf.builder.builders.secret.SecretType;
 import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.SecretBuilder;
 
 /**
  * End user Application interface which presents PostgreSQL image application on OpenShift Container Platform.
@@ -68,11 +68,15 @@ public interface PostgreSQLImageOpenShiftApplication extends DBImageOpenShiftApp
 
 	@Override
 	default List<Secret> getSecrets() {
-		return Collections.singletonList(new SecretBuilder(getApplicationSecretName())
-				.setType(SecretType.OPAQUE).addData(POSTGRESQL_USER_KEY, getUser().getBytes())
-				.addData(POSTGRESQL_PASSWORD_KEY, getPassword().getBytes())
-				.addData(POSTGRESQL_ADMIN_PASSWORD_KEY,
-						getAdminPassword().getBytes())
+		return Collections.singletonList(new SecretBuilder()
+				.withNewMetadata().withName(getApplicationSecretName()).endMetadata()
+				.withType("Opaque")
+				.addToData(POSTGRESQL_USER_KEY,
+						Base64.getEncoder().encodeToString(getUser().getBytes()))
+				.addToData(POSTGRESQL_PASSWORD_KEY,
+						Base64.getEncoder().encodeToString(getPassword().getBytes()))
+				.addToData(POSTGRESQL_ADMIN_PASSWORD_KEY,
+						Base64.getEncoder().encodeToString(getAdminPassword().getBytes()))
 				.build());
 	}
 }

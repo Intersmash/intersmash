@@ -19,11 +19,16 @@ import java.io.IOException;
 import java.util.List;
 
 import org.jboss.intersmash.application.operator.OpenDataHubOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -31,10 +36,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.StatusDetails;
 import io.opendatahub.datasciencecluster.v1.DataScienceCluster;
@@ -117,7 +118,7 @@ public class OpenDataHubOpenShiftOperatorProvisionerTest implements ProjectCreat
 		operatorProvisioner.configure();
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		operatorProvisioner.unsubscribe();
@@ -128,7 +129,7 @@ public class OpenDataHubOpenShiftOperatorProvisionerTest implements ProjectCreat
 	public static void removeOperatorGroup() {
 		// clean any leftovers
 		operatorProvisioner.unsubscribe();
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		operatorProvisioner.dismiss();
 	}
 

@@ -24,11 +24,10 @@ import java.util.function.BooleanSupplier;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.intersmash.k8s.KubernetesConfig;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.junit.jupiter.engine.descriptor.MethodBasedTestDescriptor;
 import org.junit.platform.engine.TestDescriptor;
 
-import cz.xtf.core.context.TestCaseContext;
-import cz.xtf.core.waiting.SimpleWaiter;
 import io.fabric8.kubernetes.api.builder.Visitor;
 import io.fabric8.kubernetes.api.model.Namespace;
 import io.fabric8.kubernetes.api.model.NamespaceBuilder;

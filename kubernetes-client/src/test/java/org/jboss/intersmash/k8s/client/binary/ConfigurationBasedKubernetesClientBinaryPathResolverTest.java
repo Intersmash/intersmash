@@ -15,13 +15,13 @@
  */
 package org.jboss.intersmash.k8s.client.binary;
 
+import org.jboss.intersmash.tools.config.IntersmashProperties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.google.common.base.Strings;
 
-import cz.xtf.core.config.XTFConfig;
 import uk.org.webcompere.systemstubs.jupiter.SystemStub;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 import uk.org.webcompere.systemstubs.properties.SystemProperties;
@@ -38,7 +38,7 @@ public class ConfigurationBasedKubernetesClientBinaryPathResolverTest {
 		final String currentBinaryPath = System.getProperty("intersmash.kubernetes.binary.path");
 		final String testedBinaryPath = "/tmp";
 		systemProperties.set("intersmash.kubernetes.binary.path", testedBinaryPath);
-		XTFConfig.loadConfig();
+		IntersmashProperties.loadConfig();
 		try {
 			Assertions.assertEquals(testedBinaryPath, resolver.resolve());
 		} finally {

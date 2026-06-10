@@ -20,10 +20,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.List;
 
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.slf4j.LoggerFactory;
 
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.openshift.api.model.ImageStream;
 import io.fabric8.openshift.api.model.Template;
 

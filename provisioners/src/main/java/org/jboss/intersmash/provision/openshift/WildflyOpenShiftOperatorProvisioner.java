@@ -16,14 +16,14 @@
 package org.jboss.intersmash.provision.openshift;
 
 import org.jboss.intersmash.application.operator.WildflyOperatorApplication;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.operator.WildflyOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.model.wildfly.WildFlyServerList;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.wildfly.v1alpha1.WildFlyServer;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -42,13 +42,13 @@ public class WildflyOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
+	public NamespacedOpenShiftClient client() {
 		return OpenShiftProvisioner.super.client();
 	}
 
 	@Override
 	public String execute(String... args) {
-		return OpenShifts.adminBinary().execute(args);
+		return OpenShiftBinaries.adminBinary().execute(args);
 	}
 
 	@Override

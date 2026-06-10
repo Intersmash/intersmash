@@ -25,10 +25,10 @@ import org.jboss.intersmash.provision.operator.model.odh.DSCInitializationList;
 import org.jboss.intersmash.provision.operator.model.odh.DataScienceClusterList;
 import org.jboss.intersmash.provision.operator.model.odh.FeatureTrackerList;
 import org.jboss.intersmash.provision.operator.model.odh.MonitoringList;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.StatusDetails;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;

@@ -30,10 +30,10 @@ import org.jboss.intersmash.rhoai.dscinitialization.v1.DSCInitialization;
 import org.jboss.intersmash.rhoai.features.v1.FeatureTracker;
 import org.jboss.intersmash.rhoai.platform.services.v1alpha1.Auth;
 import org.jboss.intersmash.rhoai.platform.services.v1alpha1.Monitoring;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.StatusDetails;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;

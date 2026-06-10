@@ -20,10 +20,11 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import cz.xtf.core.http.Https;
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.Waiter;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.http.HttpsUtils;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.Waiter;
+
 import io.fabric8.kubernetes.api.model.EndpointPort;
 import io.fabric8.kubernetes.api.model.EndpointSubset;
 import io.fabric8.kubernetes.api.model.Endpoints;
@@ -71,7 +72,7 @@ public class WaitersUtil {
 
 	public static Waiter routeIsUp(String routeURL) {
 		return new SimpleWaiter(
-				() -> Https.getCode(routeURL) != 503)
+				() -> HttpsUtils.getCode(routeURL) != 503)
 				.reason("Wait until the route is ready to serve.");
 	}
 }

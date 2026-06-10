@@ -17,7 +17,8 @@ package org.jboss.intersmash.provision.util.k8s.log.collect;
 
 import java.util.List;
 
-import cz.xtf.core.waiting.WaiterException;
+import org.jboss.intersmash.tools.waiting.WaiterException;
+
 import lombok.Getter;
 
 /**

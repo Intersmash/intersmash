@@ -23,12 +23,12 @@ import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.k8s.HasPods;
 import org.jboss.intersmash.application.operator.HyperfoilOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
+import org.jboss.intersmash.tools.http.HttpsException;
+import org.jboss.intersmash.tools.http.HttpsUtils;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.http.Https;
-import cz.xtf.core.http.HttpsException;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
@@ -145,7 +145,7 @@ public abstract class HyperfoilOperatorProvisioner<C extends NamespacedKubernete
 
 	private boolean routeIsReadyAndUp() {
 		try {
-			return Https.getCode(getURL().toExternalForm()) == HttpStatus.SC_OK;
+			return HttpsUtils.getCode(getURL().toExternalForm()) == HttpStatus.SC_OK;
 		} catch (HttpsException ex) {
 			// we need to tolerate connection refused while the service nodeport networking is set up,
 			// rather than just checking response code, which simpleWaiter

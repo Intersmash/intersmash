@@ -19,13 +19,12 @@ import org.jboss.intersmash.application.operator.ActiveMQOperatorApplication;
 import org.jboss.intersmash.provision.operator.ActiveMQOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.model.activemq.address.ActiveMQArtemisAddressList;
 import org.jboss.intersmash.provision.operator.model.activemq.broker.ActiveMQArtemisList;
+import org.jboss.intersmash.tools.client.OpenShifts;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.amq.broker.v1beta1.ActiveMQArtemis;
 import io.amq.broker.v1beta1.ActiveMQArtemisAddress;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -47,7 +46,7 @@ public class ActiveMQOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
+	public NamespacedOpenShiftClient client() {
 		return OpenShiftProvisioner.super.client();
 	}
 

@@ -18,11 +18,12 @@ package org.jboss.intersmash.provision.helm.wildfly;
 import org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.provision.helm.HelmChartOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WaitersUtil;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.image.Image;
-import cz.xtf.core.openshift.OpenShifts;
+import io.fabric8.openshift.api.model.ImageStreamBuilder;
+import io.fabric8.openshift.api.model.TagReferenceBuilder;
 import lombok.NonNull;
 
 /**
@@ -57,11 +58,33 @@ public class WildflyHelmChartOpenShiftProvisioner extends HelmChartOpenShiftProv
 	@Override
 	public void postUndeploy() {
 		OpenShifts.master().deleteImageStream(
-				Image.from(this.getApplication().getRuntimeImage()).getImageStream(computeRuntimeImageStreamName(),
-						RUNTIME_IMAGE_STREAM_TAG));
+				new ImageStreamBuilder()
+						.withNewMetadata().withName(computeRuntimeImageStreamName())
+						.addToAnnotations("openshift.io/image.insecureRepository", "true")
+						.endMetadata()
+						.withNewSpec()
+						.withTags(new TagReferenceBuilder()
+								.withName(RUNTIME_IMAGE_STREAM_TAG)
+								.withNewImportPolicy().withInsecure(true).endImportPolicy()
+								.withNewFrom().withKind("DockerImage")
+								.withName(this.getApplication().getRuntimeImage()).endFrom()
+								.build())
+						.endSpec()
+						.build());
 		OpenShifts.master().deleteImageStream(
-				Image.from(this.getApplication().getBuilderImage()).getImageStream(computeBuilderImageStreamName(),
-						BUILDER_IMAGE_STREAM_TAG));
+				new ImageStreamBuilder()
+						.withNewMetadata().withName(computeBuilderImageStreamName())
+						.addToAnnotations("openshift.io/image.insecureRepository", "true")
+						.endMetadata()
+						.withNewSpec()
+						.withTags(new TagReferenceBuilder()
+								.withName(BUILDER_IMAGE_STREAM_TAG)
+								.withNewImportPolicy().withInsecure(true).endImportPolicy()
+								.withNewFrom().withKind("DockerImage")
+								.withName(this.getApplication().getBuilderImage()).endFrom()
+								.build())
+						.endSpec()
+						.build());
 		super.postUndeploy();
 	}
 

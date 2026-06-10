@@ -29,7 +29,6 @@ import org.jboss.intersmash.provision.Provisioner;
 
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 
 /**
  * Provisioner that is supposed to deploy an application on Kubernetes.
@@ -38,7 +37,7 @@ public interface KubernetesProvisioner<T extends Application> extends Provisione
 
 	Kubernetes kubernetes = Kuberneteses.master();
 
-	default NamespacedKubernetesClientAdapter<NamespacedKubernetesClient> client() {
+	default NamespacedKubernetesClient client() {
 		return kubernetes;
 	}
 

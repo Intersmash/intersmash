@@ -23,16 +23,16 @@ import org.jboss.intersmash.application.Application;
 import org.jboss.intersmash.application.k8s.HasConfigMaps;
 import org.jboss.intersmash.application.k8s.HasPods;
 import org.jboss.intersmash.application.k8s.HasSecrets;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.k8s.Scalable;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShifts;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.openshift.client.NamespacedOpenShiftClient;
@@ -46,16 +46,16 @@ public interface OpenShiftProvisioner<T extends Application> extends Provisioner
 
 	OpenShift openShift = OpenShifts.master();
 
-	default NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
-		return openShift;
+	default NamespacedOpenShiftClient client() {
+		return openShift.getClient();
 	}
 
 	default String execute(String... args) {
-		return OpenShifts.adminBinary().execute(args);
+		return OpenShiftBinaries.adminBinary().execute(args);
 	}
 
 	default String executeInNamespace(final String namespace, String... args) {
-		return OpenShifts.adminBinary(namespace).execute(args);
+		return OpenShiftBinaries.adminBinary(namespace).execute(args);
 	}
 
 	@Override

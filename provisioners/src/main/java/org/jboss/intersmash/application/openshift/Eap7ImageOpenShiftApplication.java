@@ -26,9 +26,9 @@ import org.jboss.intersmash.application.input.BuildInputBuilder;
 import org.jboss.intersmash.application.input.GitSourceBuilder;
 import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 
-import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
-import cz.xtf.builder.builders.pod.VolumeMount;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeMount;
 
 /**
  * End user Application descriptor interface which presents a AP 7.z (i.e. Jakarta EE 8 based WildFly) application on
@@ -53,9 +53,11 @@ public interface Eap7ImageOpenShiftApplication extends WildflyOpenShiftApplicati
 
 	/**
 	 * Setup mount points to EAP 7 pod and persistent volume claims to be created.
+	 * Each key is a {@link Volume} backed by a PersistentVolumeClaimVolumeSource,
+	 * and the values are the {@link VolumeMount}s for that volume.
 	 * @return A {@link Map} instance storing PVCs needed by the EAP 7 application service
 	 */
-	default Map<PersistentVolumeClaim, Set<VolumeMount>> getPersistentVolumeClaimMounts() {
+	default Map<Volume, Set<VolumeMount>> getPersistentVolumeClaimMounts() {
 		return Collections.emptyMap();
 	}
 

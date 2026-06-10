@@ -17,7 +17,9 @@ package org.jboss.intersmash.provision.openshift;
 
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
 
-import cz.xtf.builder.builders.ApplicationBuilder;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import lombok.NonNull;
 
 public class WildflyBootableJarImageOpenShiftProvisioner extends BootableJarImageOpenShiftProvisioner {
@@ -26,14 +28,23 @@ public class WildflyBootableJarImageOpenShiftProvisioner extends BootableJarImag
 	}
 
 	@Override
-	protected void configureAppBuilder(ApplicationBuilder applicationBuilder) {
-		applicationBuilder.deploymentConfig().podTemplate().container().addLivenessProbe()
-				.setInitialDelay(45)
-				.setFailureThreshold(6)
-				.createHttpProbe("/health/live", "9990");
-		applicationBuilder.deploymentConfig().podTemplate().container().addReadinessProbe()
-				.setInitialDelaySeconds(10)
-				.setFailureThreshold(6)
-				.createHttpProbe("/health/ready", "9990");
+	protected void configureAppBuilder(ContainerBuilder containerBuilder) {
+		containerBuilder
+				.withLivenessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(45)
+						.withFailureThreshold(6)
+						.withNewHttpGet()
+						.withPath("/health/live")
+						.withPort(new IntOrString(9990))
+						.endHttpGet()
+						.build())
+				.withReadinessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(10)
+						.withFailureThreshold(6)
+						.withNewHttpGet()
+						.withPath("/health/ready")
+						.withPort(new IntOrString(9990))
+						.endHttpGet()
+						.build());
 	}
 }

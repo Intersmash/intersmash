@@ -19,7 +19,10 @@ import java.io.IOException;
 
 import org.jboss.intersmash.application.openshift.OpenShiftApplication;
 import org.jboss.intersmash.application.operator.HyperfoilOperatorApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.junit5.IntersmashExtension;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.HyperfoilOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.operator.hyperfoil.client.v05.invoker.ApiException;
@@ -27,6 +30,7 @@ import org.jboss.intersmash.testsuite.junit5.categories.NotForProductizedExecuti
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
 import org.jboss.intersmash.testsuite.provision.operator.HyperfoilOperatorProvisionerTests;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -35,9 +39,6 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.hyperfoil.v1alpha2.Hyperfoil;
 import io.hyperfoil.v1alpha2.HyperfoilBuilder;
 
@@ -73,7 +74,7 @@ public class HyperfoilOpenShiftOperatorProvisionerTest implements ProjectCreatio
 		PROVISIONER.configure();
 		IntersmashExtension.operatorCleanup(false, true);
 		// create operator group - this should be done by InteropExtension
-		OpenShifts.adminBinary().execute("apply", "-f",
+		OpenShiftBinaries.adminBinary().execute("apply", "-f",
 				new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		// clean any leftovers
 		PROVISIONER.unsubscribe();
@@ -81,7 +82,7 @@ public class HyperfoilOpenShiftOperatorProvisionerTest implements ProjectCreatio
 
 	@AfterAll
 	public static void removeOperatorGroup() {
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		// there might be leftovers in case of failures
 		OpenShifts.admin().pods().withLabel("role", "controller").delete();
 		OpenShifts.admin().pods().withLabel("role", "agent").delete();

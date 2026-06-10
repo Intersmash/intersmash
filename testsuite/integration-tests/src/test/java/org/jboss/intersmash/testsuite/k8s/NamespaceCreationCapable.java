@@ -15,9 +15,9 @@
  */
 package org.jboss.intersmash.testsuite.k8s;
 
-import org.jboss.intersmash.k8s.junit5.KubernetesNamespaceCreator;
+import org.jboss.intersmash.k8s.junit5.ProjectCreator;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-@ExtendWith(KubernetesNamespaceCreator.class)
+@ExtendWith(ProjectCreator.class)
 public interface NamespaceCreationCapable {
 }

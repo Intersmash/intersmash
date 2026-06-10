@@ -21,19 +21,19 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.SoftAssertions;
 import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.provision.openshift.Eap7ImageOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.client.PodShell;
+import org.jboss.intersmash.tools.client.PodShellOutput;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.openshift.PodShell;
-import cz.xtf.core.openshift.PodShellOutput;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 import io.fabric8.kubernetes.api.model.Service;
 import io.fabric8.openshift.api.model.GitBuildSource;
 

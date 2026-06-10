@@ -23,10 +23,10 @@ import org.jboss.intersmash.application.operator.ActiveMQOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.operator.model.activemq.address.ActiveMQArtemisAddressList;
 import org.jboss.intersmash.provision.operator.model.activemq.broker.ActiveMQArtemisList;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.amq.broker.v1beta1.ActiveMQArtemis;
 import io.amq.broker.v1beta1.ActiveMQArtemisAddress;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;

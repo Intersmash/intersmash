@@ -17,10 +17,12 @@ package org.jboss.intersmash.util.openshift;
 
 import java.util.concurrent.TimeUnit;
 
-import cz.xtf.core.image.Image;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+
+import io.fabric8.openshift.api.model.ImageStreamBuilder;
 import io.fabric8.openshift.api.model.ImageStreamTag;
+import io.fabric8.openshift.api.model.TagReferenceBuilder;
 
 /**
  * The OpenShift Container Platform utilities related to WILDFLY services.
@@ -51,8 +53,20 @@ public class WildflyOpenShiftUtils {
 		return createImageStream(imageUrl, "wildfly-runtime-openshift", "latest");
 	}
 
-	public static ImageStreamTag createImageStream(String image, String name, String tag) {
-		OpenShifts.master().createImageStream(Image.from(image).getImageStream(name, tag));
+	public static ImageStreamTag createImageStream(String imageUrl, String name, String tag) {
+		OpenShifts.master().createImageStream(
+				new ImageStreamBuilder()
+						.withNewMetadata().withName(name)
+						.addToAnnotations("openshift.io/image.insecureRepository", "true")
+						.endMetadata()
+						.withNewSpec()
+						.withTags(new TagReferenceBuilder()
+								.withName(tag)
+								.withNewImportPolicy().withInsecure(true).endImportPolicy()
+								.withNewFrom().withKind("DockerImage").withName(imageUrl).endFrom()
+								.build())
+						.endSpec()
+						.build());
 		new SimpleWaiter(() -> OpenShifts.master().getImageStreamTag(name, tag) != null, TimeUnit.SECONDS, 10,
 				String.format("Waiting for %s:%s image stream tag to be created", name, tag)).waitFor();
 		return OpenShifts.master().getImageStreamTag(name, tag);

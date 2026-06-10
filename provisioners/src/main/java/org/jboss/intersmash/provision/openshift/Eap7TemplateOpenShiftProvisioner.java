@@ -15,6 +15,7 @@
  */
 package org.jboss.intersmash.provision.openshift;
 
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +26,14 @@ import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.openshift.Eap7TemplateOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.WildflyOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.template.Eap7Template;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.openshift.template.Eap7TemplateProvisioner;
 import org.jboss.intersmash.provision.openshift.template.OpenShiftTemplate;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
@@ -108,7 +108,7 @@ public class Eap7TemplateOpenShiftProvisioner
 
 	private void deployTemplate() {
 		// create/update image stream
-		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+		ffCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 				application.getName());
 		Eap7TemplateProvisioner templateProvisioner = new Eap7TemplateProvisioner();
 		deployedImageStreams = templateProvisioner.deployImageStreams();
@@ -195,7 +195,7 @@ public class Eap7TemplateOpenShiftProvisioner
 			openShift.createConfigMap(cfMap);
 			// TODO make it JAVA https://access.redhat.com/documentation/en-us/red_hat_jboss_enterprise_application_platform/7.3/html-single/getting_started_with_jboss_eap_for_openshift_container_platform/index#custom_scripts
 
-			String output = OpenShifts.masterBinary().execute("set", "volume", "dc/" + eapApplication.getName(),
+			String output = OpenShiftBinaries.masterBinary().execute("set", "volume", "dc/" + eapApplication.getName(),
 					"--add", "--name=jboss-cli", "-m", "/opt/eap/extensions", "-t", "configmap", "--configmap-name=jboss-cli",
 					"--default-mode=0755");
 			// output is null in case of failure, see ERROR logs

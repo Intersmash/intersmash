@@ -17,7 +17,7 @@ package org.jboss.intersmash.provision.openshift;
 
 import java.util.Map;
 
-import cz.xtf.core.openshift.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShift;
 
 /**
  * Helper class that leverages the XTF library {@link OpenShift} APIs in methods that can be used to control the

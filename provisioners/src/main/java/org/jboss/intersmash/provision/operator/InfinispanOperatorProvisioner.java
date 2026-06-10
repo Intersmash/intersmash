@@ -28,9 +28,9 @@ import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.operator.model.infinispan.cache.CacheList;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.InfinispanList;
 import org.jboss.intersmash.provision.operator.model.infinispan.infinispan.spec.InfinispanConditionBuilder;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.waiting.SimpleWaiter;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Service;

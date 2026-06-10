@@ -17,17 +17,16 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 
 import org.assertj.core.api.Assertions;
 import org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplication;
+import org.jboss.intersmash.junit5.CleanBeforeAll;
 import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeAll;
 
 @CleanBeforeAll
 @NotForCommunityExecutionProfile

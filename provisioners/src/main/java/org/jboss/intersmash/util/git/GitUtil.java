@@ -33,7 +33,6 @@ import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cz.xtf.core.waiting.Waiters;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -90,7 +89,12 @@ public final class GitUtil {
 				} catch (Exception e) {
 					log.error("Cloning git repo failed. Retry " + i, e);
 				}
-				Waiters.sleep(TimeUnit.SECONDS, RETRY_INTERVAL);
+				try {
+					TimeUnit.SECONDS.sleep(RETRY_INTERVAL);
+				} catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
+					throw new RuntimeException("Interrupted while waiting to retry git clone", ie);
+				}
 			}
 			Assertions.assertThat(git).as("Unable to clone the repo").isNotNull();
 

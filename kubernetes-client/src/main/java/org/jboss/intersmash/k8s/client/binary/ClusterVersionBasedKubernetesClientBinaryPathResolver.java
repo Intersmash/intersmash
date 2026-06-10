@@ -28,10 +28,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.jboss.intersmash.k8s.KubernetesConfig;
 import org.jboss.intersmash.k8s.client.Kuberneteses;
+import org.jboss.intersmash.tools.http.HttpsUtils;
 
 import com.google.common.base.Strings;
 
-import cz.xtf.core.http.Https;
 import io.fabric8.kubernetes.client.VersionInfo;
 import lombok.extern.slf4j.Slf4j;
 
@@ -100,7 +100,8 @@ public class ClusterVersionBasedKubernetesClientBinaryPathResolver implements Ku
 	private void downloadKubernetesClient(final VersionInfo clusterVersionInfo, final Path binaryPath) {
 		final String url = getBinaryUrlBasedOnKubernetesVersion(clusterVersionInfo);
 		try {
-			Https.copyHttpsURLToFile(url, binaryPath.toFile(), BINARY_DOWNLOAD_CONNECTION_TIMEOUT,
+			Files.createDirectories(binaryPath.getParent());
+			HttpsUtils.copyHttpsURLToFile(url, binaryPath.toFile(), BINARY_DOWNLOAD_CONNECTION_TIMEOUT,
 					BINARY_DOWNLOAD_READ_TIMEOUT);
 		} catch (IOException ioe) {
 			throw new IllegalStateException("Failed to download the kubectl binary from " + url, ioe);

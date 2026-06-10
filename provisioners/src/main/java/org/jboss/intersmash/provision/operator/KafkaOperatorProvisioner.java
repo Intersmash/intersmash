@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KafkaOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.StatusDetails;

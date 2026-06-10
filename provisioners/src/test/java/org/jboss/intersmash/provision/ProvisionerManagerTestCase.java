@@ -40,6 +40,7 @@ import org.jboss.intersmash.provision.openshift.RhSsoTemplateOpenShiftProvisione
 import org.jboss.intersmash.provision.openshift.WildflyBootableJarImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyImageOpenShiftProvisioner;
 import org.jboss.intersmash.provision.openshift.WildflyOpenShiftOperatorProvisioner;
+import org.jboss.intersmash.tools.config.IntersmashProperties;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -47,6 +48,13 @@ import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.stubbing.OngoingStubbing;
 
 public class ProvisionerManagerTestCase {
+	static {
+		if (System.getProperty("intersmash.openshift.namespace") == null) {
+			System.setProperty("intersmash.openshift.namespace", "test-namespace");
+		}
+		IntersmashProperties.loadConfig();
+	}
+
 	enum SupportedApplication {
 		ActiveMqOperatorApplication(
 				getApplicationMock(org.jboss.intersmash.application.operator.ActiveMQOperatorApplication.class),

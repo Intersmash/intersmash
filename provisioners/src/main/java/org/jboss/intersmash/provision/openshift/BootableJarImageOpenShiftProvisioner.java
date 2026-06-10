@@ -16,9 +16,12 @@
 package org.jboss.intersmash.provision.openshift;
 
 import java.io.File;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -26,21 +29,31 @@ import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.input.BinarySource;
 import org.jboss.intersmash.application.input.BuildInput;
 import org.jboss.intersmash.application.openshift.BootableJarOpenShiftApplication;
+import org.jboss.intersmash.tools.build.BinaryBuild;
+import org.jboss.intersmash.tools.build.BinaryBuildFromFile;
+import org.jboss.intersmash.tools.build.BinarySourceBuild;
+import org.jboss.intersmash.tools.build.BuildManagers;
+import org.jboss.intersmash.tools.build.ManagedBuildReference;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.builder.builders.ApplicationBuilder;
-import cz.xtf.builder.builders.route.TransportProtocol;
-import cz.xtf.core.bm.BinaryBuild;
-import cz.xtf.core.bm.BinaryBuildFromFile;
-import cz.xtf.core.bm.BinarySourceBuild;
-import cz.xtf.core.bm.BuildManagers;
-import cz.xtf.core.bm.ManagedBuildReference;
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.HasMetadata;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServicePortBuilder;
+import io.fabric8.kubernetes.api.model.VolumeBuilder;
+import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
+import io.fabric8.openshift.api.model.DeploymentTriggerPolicyBuilder;
+import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.api.model.RouteBuilder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -58,7 +71,12 @@ public abstract class BootableJarImageOpenShiftProvisioner
 		this.bootableApplication = bootableApplication;
 	}
 
-	protected void configureAppBuilder(ApplicationBuilder applicationBuilder) {
+	/**
+	 * Hook for subclasses to configure the container (e.g., add probes).
+	 *
+	 * @param containerBuilder the Fabric8 ContainerBuilder to configure
+	 */
+	protected void configureAppBuilder(ContainerBuilder containerBuilder) {
 	}
 
 	@Override
@@ -121,47 +139,33 @@ public abstract class BootableJarImageOpenShiftProvisioner
 		}
 	}
 
-	private ApplicationBuilder getAppBuilder() {
+	/**
+	 * Holds the resolved build information.
+	 */
+	private static class BuildResult {
+		String containerImageName;
+		String containerImageNamespace;
+	}
+
+	private BuildResult resolveBuild() {
 		BuildInput buildInput = bootableApplication.getBuildInput();
 		Objects.requireNonNull(buildInput);
 
+		BuildResult result = new BuildResult();
+
 		if (BinarySource.class.isAssignableFrom(buildInput.getClass())) {
 			BinarySource binarySource = (BinarySource) buildInput;
-			log.debug("Create application builder from artifact (path: {}).", binarySource.getArchive().toString());
+			log.debug("Create application from artifact (path: {}).", binarySource.getArchive().toString());
 			List<EnvVar> environmentVariables = new ArrayList<>(bootableApplication.getEnvVars());
 			File archiveFile = binarySource.getArchive().toFile();
 			BinaryBuild bootableJarBuild;
 			if (archiveFile.isDirectory()) {
-				/*
-					This scenario is probably unusable and should be pruned: bootable Jar workflow doesn't envision a
-					builder image to compile the maven project: the project compilation is supposed to happen outside
-					openshift; multiple deployments might have role here: TODO: TO BE INVESTIGATED
-				 */
 				bootableJarBuild = new BinarySourceBuild(
 						IntersmashConfig.bootableJarImageURL(),
 						binarySource.getArchive(),
 						environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
 						bootableApplication.getName());
 			} else if (archiveFile.isFile()) {
-				/*
-				  S2I Binary build which takes as input a bootable Jar;
-				
-				  This kind of build corresponds to the following workflow:
-				
-						oc new-build --name=wildfly-build-from-bootable-jar \
-							--labels=intersmash.app=wildfly-test-app \
-							--binary=true \
-							--strategy=source \
-							--env=ADMIN_USERNAME=admin \
-							--env=ADMIN_PASSWORD=pass.1234 \
-							--image=registry.redhat.io/ubi8/openjdk-11
-				
-						oc start-build wildfly-build-from-bootable-jar \
-							--from-file=bootable-openshift.jar \
-							--follow
-				
-						oc new-app wildfly-build-from-bootable-jar
-				 */
 				bootableJarBuild = new BinaryBuildFromFile(
 						IntersmashConfig.bootableJarImageURL(),
 						binarySource.getArchive(),
@@ -175,59 +179,149 @@ public abstract class BootableJarImageOpenShiftProvisioner
 			ManagedBuildReference reference = BuildManagers.get().deploy(bootableJarBuild);
 			BuildManagers.get().hasBuildCompleted(bootableJarBuild).waitFor();
 
-			ApplicationBuilder appBuilder = ApplicationBuilder.fromManagedBuild(
-					bootableApplication.getName(),
-					reference,
-					Collections.singletonMap(APP_LABEL_KEY, bootableApplication.getName()));
-			// Add any configured secrets
-			for (Secret secret : bootableApplication.getSecrets()) {
-				appBuilder.deploymentConfig().podTemplate()
-						.addSecretVolume(secret.getMetadata().getName(), secret.getMetadata().getName())
-						.container()
-						.addVolumeMount(secret.getMetadata().getName(), "/etc/secrets", false);
-			}
-			return appBuilder;
+			result.containerImageName = reference.getStreamName();
+			result.containerImageNamespace = reference.getNamespace();
 		} else {
 			throw new RuntimeException("Application artifact path or git reference has to be specified");
 		}
-		//		when s2i is supported
-		//		else if (GitSource.class.isAssignableFrom(buildInput.getClass())) {
-		//			GitSource gitSource = (GitSource) buildInput;
-		//			log.debug("Create application builder from git reference (repo: {}, ref: {}).",
-		//					gitSource.getUri(), gitSource.getRef());
-		//			ApplicationBuilder appBuilder = ApplicationBuilder.fromS2IBuild(bootableApplication.getName(),
-		//					IntersmashConfig.bootableJarImageURL(),
-		//					gitSource.getUri(),
-		//					Collections.singletonMap(APP_LABEL_KEY, bootableApplication.getName()));
-		//
-		//			appBuilder.buildConfig().onConfigurationChange().gitRef(gitSource.getRef());
-		//
-		//			bootableApplication.getEnvironmentVariables().entrySet().stream()
-		//					.forEach(entry -> appBuilder.buildConfig().sti().addEnvVariable(entry.getKey(), entry.getValue()));
-		//			return appBuilder;
-		//		}
-		//
 
+		return result;
 	}
 
 	private void deployImage() {
-		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+		ffCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 				bootableApplication.getName());
-		ApplicationBuilder appBuilder = getAppBuilder();
-		appBuilder.service()
-				.port("8080-tcp", 8080, 8080, TransportProtocol.TCP);
 
-		appBuilder.route().targetPort(8080);
+		BuildResult buildResult = resolveBuild();
+		String name = bootableApplication.getName();
+		Map<String, String> labels = new HashMap<>();
+		labels.put(APP_LABEL_KEY, name);
+		labels.put("name", name);
 
-		// env vars
-		appBuilder.deploymentConfig().podTemplate().container()
-				.envVars(
-						bootableApplication.getEnvVars().stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)));
+		// Collect all resources
+		List<HasMetadata> resources = new ArrayList<>();
 
-		configureAppBuilder(appBuilder);
+		// ---- Build the Container ----
+		List<EnvVar> envVars = bootableApplication.getEnvVars().stream()
+				.map(ev -> new EnvVar(ev.getName(), ev.getValue(), null))
+				.collect(Collectors.toCollection(ArrayList::new));
 
-		appBuilder.buildApplication(openShift).deploy();
-		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(appBuilder.getName()).level(Level.DEBUG).waitFor();
+		// Volumes and volume mounts
+		List<io.fabric8.kubernetes.api.model.Volume> volumes = new ArrayList<>();
+		List<io.fabric8.kubernetes.api.model.VolumeMount> volumeMounts = new ArrayList<>();
+
+		// Secret volumes
+		for (Secret secret : bootableApplication.getSecrets()) {
+			String secretName = secret.getMetadata().getName();
+			volumes.add(new VolumeBuilder()
+					.withName(secretName)
+					.withSecret(new SecretVolumeSourceBuilder()
+							.withSecretName(secretName)
+							.build())
+					.build());
+			volumeMounts.add(new VolumeMountBuilder()
+					.withName(secretName)
+					.withMountPath("/etc/secrets")
+					.withReadOnly(false)
+					.build());
+		}
+
+		ContainerBuilder containerBuilder = new ContainerBuilder()
+				.withName(name)
+				.withImage(buildResult.containerImageName)
+				.withImagePullPolicy("Always")
+				.withPorts(new ContainerPortBuilder().withContainerPort(8080).build())
+				.withEnv(envVars)
+				.withVolumeMounts(volumeMounts);
+
+		// Let subclasses configure probes
+		configureAppBuilder(containerBuilder);
+
+		// ---- Build DeploymentConfig ----
+		List<io.fabric8.openshift.api.model.DeploymentTriggerPolicy> dcTriggers = new ArrayList<>();
+		dcTriggers.add(new DeploymentTriggerPolicyBuilder()
+				.withType("ConfigChange")
+				.build());
+
+		io.fabric8.kubernetes.api.model.ObjectReferenceBuilder imageRef = new io.fabric8.kubernetes.api.model.ObjectReferenceBuilder()
+				.withKind("ImageStreamTag")
+				.withName(buildResult.containerImageName + ":latest");
+		if (buildResult.containerImageNamespace != null) {
+			imageRef.withNamespace(buildResult.containerImageNamespace);
+		}
+		dcTriggers.add(new DeploymentTriggerPolicyBuilder()
+				.withType("ImageChange")
+				.withNewImageChangeParams()
+				.withAutomatic(true)
+				.withContainerNames(name)
+				.withFrom(imageRef.build())
+				.endImageChangeParams()
+				.build());
+
+		DeploymentConfig dc = new DeploymentConfigBuilder()
+				.withNewMetadata()
+				.withName(name)
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withReplicas(1)
+				.withSelector(Collections.singletonMap("name", name))
+				.withTriggers(dcTriggers)
+				.withNewStrategy().withType("Recreate").endStrategy()
+				.withNewTemplate()
+				.withNewMetadata()
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withDnsPolicy("ClusterFirst")
+				.withRestartPolicy("Always")
+				.withContainers(containerBuilder.build())
+				.withVolumes(volumes)
+				.endSpec()
+				.endTemplate()
+				.endSpec()
+				.build();
+
+		resources.add(dc);
+
+		// ---- Service ----
+		resources.add(new ServiceBuilder()
+				.withNewMetadata()
+				.withName(name)
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withSelector(Collections.singletonMap("deploymentconfig", name))
+				.withPorts(new ServicePortBuilder()
+						.withName("8080-tcp")
+						.withPort(8080)
+						.withNewTargetPort(8080)
+						.withProtocol("TCP")
+						.build())
+				.withSessionAffinity("None")
+				.endSpec()
+				.build());
+
+		// ---- Route ----
+		Route route = new RouteBuilder()
+				.withNewMetadata()
+				.withName(name)
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withNewTo()
+				.withKind("Service")
+				.withName(name)
+				.endTo()
+				.withNewPort()
+				.withNewTargetPort(8080)
+				.endPort()
+				.endSpec()
+				.build();
+		resources.add(route);
+
+		openShift.createResources(resources);
+		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(name).level(Level.DEBUG).waitFor();
 		// 1 by default
 		waitForReplicas(1);
 	}

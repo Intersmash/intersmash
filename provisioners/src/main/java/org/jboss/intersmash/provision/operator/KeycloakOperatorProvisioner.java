@@ -28,6 +28,9 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
+import org.jboss.intersmash.tools.http.HttpsUtils;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.keycloak.k8s.v2alpha1.Keycloak;
 import org.keycloak.k8s.v2alpha1.KeycloakOperatorKeycloakList;
@@ -36,9 +39,6 @@ import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
 import org.keycloak.k8s.v2alpha1.keycloakspec.Http;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.http.Https;
-import cz.xtf.core.waiting.SimpleWaiter;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.DeletionPropagation;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
@@ -146,7 +146,7 @@ public abstract class KeycloakOperatorProvisioner<C extends NamespacedKubernetes
 		URL externalUrl = getURL();
 		if ((getApplication().getKeycloak().getSpec().getInstances() > 0) && (externalUrl != null)) {
 			new SimpleWaiter(
-					() -> Https.getCode(getURL().toExternalForm()) != 503)
+					() -> HttpsUtils.getCode(getURL().toExternalForm()) != 503)
 					.reason("Wait until the route is ready to serve.");
 		}
 	}
@@ -273,7 +273,7 @@ public abstract class KeycloakOperatorProvisioner<C extends NamespacedKubernetes
 		// check that route is up
 		if (originalReplicas == 0 && replicas > 0) {
 			new SimpleWaiter(
-					() -> Https.getCode(getURL().toExternalForm()) != 503)
+					() -> HttpsUtils.getCode(getURL().toExternalForm()) != 503)
 					.reason("Wait until the route is ready to serve.");
 		}
 	}

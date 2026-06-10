@@ -17,11 +17,11 @@ package org.jboss.intersmash.provision.openshift;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,13 +31,13 @@ import org.jboss.intersmash.application.openshift.RhSsoTemplateOpenShiftApplicat
 import org.jboss.intersmash.provision.openshift.template.OpenShiftTemplate;
 import org.jboss.intersmash.provision.openshift.template.OpenShiftTemplateProvisioner;
 import org.jboss.intersmash.provision.openshift.template.RhSsoTemplateProvisioner;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.http.HttpsUtils;
+import org.jboss.intersmash.tools.waiting.SimpleWaiter;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.jboss.intersmash.util.keycloak.KeycloakAdminClient;
 import org.slf4j.event.Level;
 
-import cz.xtf.client.Http;
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.EnvVarBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.DeploymentConfig;
@@ -95,7 +95,7 @@ public class RhSsoTemplateOpenShiftProvisioner implements OpenShiftProvisioner<R
 	}
 
 	private void deployTemplate() {
-		FailFastCheck failFastCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+		FailFastCheck failFastCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 				rhSsoApplication.getName());
 		OpenShiftTemplateProvisioner templateProvisioner = new RhSsoTemplateProvisioner();
 		deployedImageStreams = templateProvisioner.deployImageStreams();
@@ -113,17 +113,16 @@ public class RhSsoTemplateOpenShiftProvisioner implements OpenShiftProvisioner<R
 					rhSsoApplication.getTemplate().getLabel()));
 		}
 		String url = "https://" + route.getSpec().getHost() + "/auth/";
-		try {
-			Http.get(url)
-					.trustAll()
-					.waiters()
-					.ok()
-					.failFast(failFastCheck)
-					.level(Level.DEBUG)
-					.waitFor();
-		} catch (MalformedURLException e) {
-			throw new RuntimeException(String.format("RH-SSO secure host name url \"%s\" is malformed", url), e);
-		}
+		new SimpleWaiter(() -> {
+			try {
+				return HttpsUtils.getCode(url) == 200;
+			} catch (Exception e) {
+				return false;
+			}
+		}, "Waiting for " + url + " to return 200")
+				.failFast(failFastCheck)
+				.level(Level.DEBUG)
+				.waitFor();
 	}
 
 	private void postDeploy(RhSsoTemplateOpenShiftApplication rhSsoApplication) {

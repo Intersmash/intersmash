@@ -18,6 +18,9 @@ package org.jboss.intersmash.testsuite.provision.openshift;
 import java.io.IOException;
 import java.util.stream.Stream;
 
+import org.jboss.intersmash.junit5.CleanBeforeEach;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
 import org.jboss.intersmash.provision.openshift.OpenDataHubOpenShiftOperatorProvisioner;
 import org.jboss.intersmash.provision.openshift.OpenShiftAIOpenShiftOperatorProvisioner;
@@ -25,14 +28,12 @@ import org.jboss.intersmash.provision.openshift.OpenShiftProvisioner;
 import org.jboss.intersmash.provision.operator.OperatorProvisioner;
 import org.jboss.intersmash.testsuite.junit5.categories.AiTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
+import org.jboss.intersmash.tools.client.OpenShift;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShift;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.junit5.annotations.CleanBeforeEach;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -79,7 +80,8 @@ public class AiProvisionerCleanupTestCase implements ProjectCreationCapable {
 			Assertions.assertNotNull(openShift.configMaps().withName("no-delete").get());
 			openShift.configMaps().withName("no-delete").delete();
 			// this resource isn't automatically deleted on undeploy
-			OpenShifts.adminBinary().execute("label", "configmap", "odh-trusted-ca-bundle", OpenShift.KEEP_LABEL + "=true");
+			OpenShiftBinaries.adminBinary().execute("label", "configmap", "odh-trusted-ca-bundle",
+					OpenShift.KEEP_LABEL + "=true");
 			openShift.waiters().isProjectClean().waitFor();
 		} finally {
 			evalOperatorTeardown(provisioner);
@@ -97,7 +99,7 @@ public class AiProvisionerCleanupTestCase implements ProjectCreationCapable {
 			operatorCleanup();
 			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
 					new OperatorGroup(OpenShiftConfig.namespace()).getMetadata().getName());
-			OpenShifts.adminBinary().execute("apply", "-f",
+			OpenShiftBinaries.adminBinary().execute("apply", "-f",
 					new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		}
 	}
@@ -107,8 +109,8 @@ public class AiProvisionerCleanupTestCase implements ProjectCreationCapable {
 	 * <p>
 	 */
 	public static void operatorCleanup() {
-		OpenShifts.adminBinary().execute("delete", "subscription", "--all");
-		OpenShifts.adminBinary().execute("delete", "csvs", "--all");
-		OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "subscription", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "csvs", "--all");
+		OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 	}
 }

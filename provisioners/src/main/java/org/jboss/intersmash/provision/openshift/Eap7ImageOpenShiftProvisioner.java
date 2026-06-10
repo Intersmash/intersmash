@@ -15,6 +15,7 @@
  */
 package org.jboss.intersmash.provision.openshift;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,22 +31,40 @@ import org.jboss.intersmash.application.input.BinarySource;
 import org.jboss.intersmash.application.input.BuildInput;
 import org.jboss.intersmash.application.input.GitSource;
 import org.jboss.intersmash.application.openshift.Eap7ImageOpenShiftApplication;
+import org.jboss.intersmash.tools.build.BinaryBuildFromFile;
+import org.jboss.intersmash.tools.build.BuildManagers;
+import org.jboss.intersmash.tools.build.ManagedBuildReference;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.builder.builders.ApplicationBuilder;
-import cz.xtf.builder.builders.PVCBuilder;
-import cz.xtf.builder.builders.pod.PersistentVolumeClaim;
-import cz.xtf.builder.builders.pod.VolumeMount;
-import cz.xtf.builder.builders.route.TransportProtocol;
-import cz.xtf.core.bm.BinaryBuildFromFile;
-import cz.xtf.core.bm.BuildManagers;
-import cz.xtf.core.bm.ManagedBuildReference;
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
+import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
+import io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerPortBuilder;
 import io.fabric8.kubernetes.api.model.EnvVar;
+import io.fabric8.kubernetes.api.model.HasMetadata;
+import io.fabric8.kubernetes.api.model.PersistentVolumeClaimBuilder;
 import io.fabric8.kubernetes.api.model.Pod;
+import io.fabric8.kubernetes.api.model.ProbeBuilder;
+import io.fabric8.kubernetes.api.model.Quantity;
 import io.fabric8.kubernetes.api.model.Secret;
+import io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder;
+import io.fabric8.kubernetes.api.model.ServiceBuilder;
+import io.fabric8.kubernetes.api.model.ServicePortBuilder;
+import io.fabric8.kubernetes.api.model.Volume;
+import io.fabric8.kubernetes.api.model.VolumeBuilder;
+import io.fabric8.kubernetes.api.model.VolumeMount;
+import io.fabric8.kubernetes.api.model.VolumeMountBuilder;
+import io.fabric8.openshift.api.model.BuildConfig;
+import io.fabric8.openshift.api.model.BuildTriggerPolicyBuilder;
+import io.fabric8.openshift.api.model.DeploymentConfig;
+import io.fabric8.openshift.api.model.DeploymentConfigBuilder;
+import io.fabric8.openshift.api.model.DeploymentTriggerPolicyBuilder;
+import io.fabric8.openshift.api.model.ImageStream;
+import io.fabric8.openshift.api.model.ImageStreamBuilder;
+import io.fabric8.openshift.api.model.Route;
+import io.fabric8.openshift.api.model.RouteBuilder;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 
@@ -108,20 +127,28 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 		}
 	}
 
-	private ApplicationBuilder getAppBuilder() {
+	/**
+	 * Holds the collected resources and configuration from the build input resolution.
+	 */
+	private static class AppResources {
+		String containerImageName;
+		String containerImageNamespace;
+		boolean imageChangeTrigger;
+		BuildConfig buildConfig;
+		ImageStream imageStream;
+	}
+
+	private AppResources resolveAppResources() {
 		BuildInput buildInput = application.getBuildInput();
 		Objects.requireNonNull(buildInput);
 
+		AppResources res = new AppResources();
+
 		if (BinarySource.class.isAssignableFrom(buildInput.getClass())) {
 			BinarySource binarySource = (BinarySource) buildInput;
-			log.debug("Create application builder from artifact (path: {}).", binarySource.getArchive().toString());
+			log.debug("Create application from artifact (path: {}).", binarySource.getArchive().toString());
 
 			List<EnvVar> environmentVariables = new ArrayList<>(application.getEnvVars());
-			// *** WAR, JAR, EAR ***
-			// Binary build that expect a file on path that shall be uploaded as {@code ROOT.(suffix)}. {@code suffix} is war, jar,...
-			// It is extracted from filename.
-			// builder.withNewStrategy().withType("Source").withNewSourceStrategy().withEnv(env).withForcePull(true).withNewFrom()
-			//                .withKind("DockerImage").withName(builderImage).endFrom().endSourceStrategy().endStrategy();
 			BinaryBuildFromFile build = new BinaryBuildFromFile(
 					IntersmashConfig.eap7ImageURL(),
 					binarySource.getArchive(),
@@ -130,188 +157,373 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 			ManagedBuildReference reference = BuildManagers.get().deploy(build);
 			BuildManagers.get().hasBuildCompleted(build).level(Level.DEBUG).waitFor();
 
-			return ApplicationBuilder.fromManagedBuild(application.getName(), reference,
-					Collections.singletonMap(APP_LABEL_KEY, application.getName()));
+			res.containerImageName = reference.getStreamName();
+			res.containerImageNamespace = reference.getNamespace();
+			res.imageChangeTrigger = true;
 		} else if (GitSource.class.isAssignableFrom(buildInput.getClass())) {
 			GitSource gitSource = (GitSource) buildInput;
-			log.debug("Create application builder from git reference (repo: {}, ref: {}).",
+			log.debug("Create application from git reference (repo: {}, ref: {}).",
 					gitSource.getUri(), gitSource.getRef());
-			ApplicationBuilder appBuilder = ApplicationBuilder.fromS2IBuild(application.getName(),
-					IntersmashConfig.eap7ImageURL(),
-					gitSource.getUri(),
-					Collections.singletonMap(APP_LABEL_KEY, application.getName()));
 
-			appBuilder.buildConfig().onConfigurationChange().gitRef(gitSource.getRef());
-			if (!Strings.isNullOrEmpty(gitSource.getContextDir()))
-				appBuilder.buildConfig().onConfigurationChange().gitContextDir(gitSource.getContextDir());
+			String name = application.getName();
+			Map<String, String> labels = Collections.singletonMap(APP_LABEL_KEY, name);
 
+			// Create ImageStream
+			res.imageStream = new ImageStreamBuilder()
+					.withNewMetadata()
+					.withName(name)
+					.withLabels(labels)
+					.endMetadata()
+					.build();
+
+			// Collect build env vars from the application
+			List<EnvVar> buildEnvVarList = new ArrayList<>();
 			application.getEnvVars().stream()
-					.forEach(entry -> appBuilder.buildConfig().sti().addEnvVariable(entry.getName(), entry.getValue()));
-			return appBuilder;
+					.forEach(entry -> buildEnvVarList.add(new EnvVar(entry.getName(), entry.getValue(), null)));
+
+			// Build the source object separately
+			io.fabric8.openshift.api.model.BuildSourceBuilder sourceBuilder = new io.fabric8.openshift.api.model.BuildSourceBuilder()
+					.withType("Git")
+					.withNewGit()
+					.withUri(gitSource.getUri())
+					.withRef(gitSource.getRef())
+					.endGit();
+
+			if (!Strings.isNullOrEmpty(gitSource.getContextDir())) {
+				sourceBuilder.withContextDir(gitSource.getContextDir());
+			}
+
+			// Create BuildConfig with git source, S2I strategy
+			io.fabric8.openshift.api.model.BuildConfigBuilder bcBuilder = new io.fabric8.openshift.api.model.BuildConfigBuilder()
+					.withNewMetadata()
+					.withName(name)
+					.withLabels(labels)
+					.endMetadata()
+					.withNewSpec()
+					.addToTriggers(new BuildTriggerPolicyBuilder()
+							.withType("Generic")
+							.withNewGeneric().withAllowEnv(true).withSecret("secret101").endGeneric()
+							.build())
+					.addToTriggers(new BuildTriggerPolicyBuilder()
+							.withType("ConfigChange")
+							.build())
+					.withSource(sourceBuilder.build())
+					.withNewStrategy()
+					.withType("Source")
+					.withNewSourceStrategy()
+					.withForcePull(true)
+					.withNewFrom()
+					.withKind("DockerImage")
+					.withName(IntersmashConfig.eap7ImageURL())
+					.endFrom()
+					.withEnv(buildEnvVarList)
+					.endSourceStrategy()
+					.endStrategy()
+					.withNewOutput()
+					.withNewTo()
+					.withKind("ImageStreamTag")
+					.withName(name + ":latest")
+					.endTo()
+					.endOutput()
+					.endSpec();
+
+			res.buildConfig = bcBuilder.build();
+			res.containerImageName = name;
+			res.containerImageNamespace = null;
+			res.imageChangeTrigger = true;
 		} else {
 			throw new RuntimeException("Application artifact path or git reference has to be specified");
 		}
+		return res;
 	}
 
 	private void deployImage() {
-		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+		ffCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 				application.getName());
-		ApplicationBuilder appBuilder = getAppBuilder();
-		appBuilder.service()
-				.port("8080-tcp", 8080, 8080, TransportProtocol.TCP);
 
+		AppResources appRes = resolveAppResources();
+		String name = application.getName();
 		final String serverHomeDirectory = "eap";
-		appBuilder.deploymentConfig().podTemplate().container()
-				.addLivenessProbe()
-				.setInitialDelay(60)
-				.createExecProbe("/bin/bash", "-c", String.format("/opt/%s/bin/livenessProbe.sh", serverHomeDirectory));
+		Map<String, String> labels = new HashMap<>();
+		labels.put(APP_LABEL_KEY, name);
+		labels.put("name", name);
 
-		appBuilder.deploymentConfig().podTemplate().container()
-				.addReadinessProbe()
-				.createExecProbe("/bin/bash", "-c", String.format("/opt/%s/bin/readinessProbe.sh", serverHomeDirectory));
+		// Collect all resources
+		List<HasMetadata> resources = new ArrayList<>();
 
-		// setup the ping service for clustering using DNS_PING
+		// Add ImageStream and BuildConfig if present (git-based builds)
+		if (appRes.imageStream != null) {
+			resources.add(appRes.imageStream);
+		}
+		if (appRes.buildConfig != null) {
+			resources.add(appRes.buildConfig);
+		}
+
+		// ---- Build the Container ----
+		List<EnvVar> envVars = new ArrayList<>(
+				application.getEnvVars().stream()
+						.map(ev -> new EnvVar(ev.getName(), ev.getValue(), null))
+						.collect(Collectors.toList()));
+
+		ContainerBuilder containerBuilder = new ContainerBuilder()
+				.withName(name)
+				.withImage(appRes.containerImageName)
+				.withImagePullPolicy("Always")
+				.withPorts(new ContainerPortBuilder().withContainerPort(8080).build())
+				.withLivenessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(60)
+						.withNewExec()
+						.withCommand("/bin/bash", "-c",
+								String.format("/opt/%s/bin/livenessProbe.sh", serverHomeDirectory))
+						.endExec()
+						.build())
+				.withReadinessProbe(new ProbeBuilder()
+						.withNewExec()
+						.withCommand("/bin/bash", "-c",
+								String.format("/opt/%s/bin/readinessProbe.sh", serverHomeDirectory))
+						.endExec()
+						.build());
+
+		// ---- Volumes ----
+		List<io.fabric8.kubernetes.api.model.Volume> volumes = new ArrayList<>();
+		List<io.fabric8.kubernetes.api.model.VolumeMount> volumeMounts = new ArrayList<>();
+
+		// ---- Clustering via DNS_PING ----
+		List<io.fabric8.kubernetes.api.model.Service> services = new ArrayList<>();
+
+		// Main service
+		services.add(new ServiceBuilder()
+				.withNewMetadata()
+				.withName(name)
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withSelector(Collections.singletonMap("deploymentconfig", name))
+				.withPorts(new ServicePortBuilder()
+						.withName("8080-tcp")
+						.withPort(8080)
+						.withNewTargetPort(8080)
+						.withProtocol("TCP")
+						.build())
+				.withSessionAffinity("None")
+				.endSpec()
+				.build());
+
 		if (application.getPingServiceName() != null) {
 			String pingServiceName = application.getPingServiceName();
 			int pingServicePort = 8888;
-			appBuilder.service(application.getPingServiceName())
-					.addAnnotation("service.alpha.kubernetes.io/tolerate-unready-endpoints", "true")
-					.headless()
-					.port("ping", pingServicePort, pingServicePort, TransportProtocol.TCP);
-			Map<String, String> pingServiceEnv = new HashMap<>();
-			pingServiceEnv.put("JGROUPS_PING_PROTOCOL", "dns.DNS_PING");
-			pingServiceEnv.put("OPENSHIFT_DNS_PING_SERVICE_NAME", pingServiceName);
-			pingServiceEnv.put("OPENSHIFT_DNS_PING_SERVICE_PORT", String.valueOf(pingServicePort));
-			appBuilder.deploymentConfig().podTemplate().container().envVars(Collections.unmodifiableMap(pingServiceEnv));
+
+			services.add(new ServiceBuilder()
+					.withNewMetadata()
+					.withName(pingServiceName)
+					.withLabels(labels)
+					.addToAnnotations("service.alpha.kubernetes.io/tolerate-unready-endpoints", "true")
+					.endMetadata()
+					.withNewSpec()
+					.withClusterIP("None")
+					.withSelector(Collections.singletonMap("deploymentconfig", name))
+					.withPorts(new ServicePortBuilder()
+							.withName("ping")
+							.withPort(pingServicePort)
+							.withNewTargetPort(pingServicePort)
+							.withProtocol("TCP")
+							.build())
+					.withSessionAffinity("None")
+					.endSpec()
+					.build());
+
+			envVars.add(new EnvVar("JGROUPS_PING_PROTOCOL", "dns.DNS_PING", null));
+			envVars.add(new EnvVar("OPENSHIFT_DNS_PING_SERVICE_NAME", pingServiceName, null));
+			envVars.add(new EnvVar("OPENSHIFT_DNS_PING_SERVICE_PORT", String.valueOf(pingServicePort), null));
 		}
 
-		// create ConfigMap for postconfigure CLI commands (resource only, volume added below)
+		// ---- CLI script as ConfigMap ----
 		if (!application.getCliScript().isEmpty()) {
 			String postconfigure = "#!/usr/bin/env bash\n"
 					+ "echo \"Executing postconfigure.sh\"\n"
 					+ "$JBOSS_HOME/bin/jboss-cli.sh --file=$JBOSS_HOME/extensions/configure.cli\n";
-			appBuilder.configMap("jboss-cli")
-					.configEntry("postconfigure.sh", postconfigure)
-					.configEntry("configure.cli", String.join("\n", application.getCliScript()));
+
+			Map<String, String> configMapData = new HashMap<>();
+			configMapData.put("postconfigure.sh", postconfigure);
+			configMapData.put("configure.cli", String.join("\n", application.getCliScript()));
+
+			resources.add(new ConfigMapBuilder()
+					.withNewMetadata()
+					.withName("jboss-cli")
+					.withLabels(labels)
+					.endMetadata()
+					.withData(configMapData)
+					.build());
+
+			volumes.add(new VolumeBuilder()
+					.withName("jboss-cli")
+					.withConfigMap(new ConfigMapVolumeSourceBuilder()
+							.withName("jboss-cli")
+							.withDefaultMode(0755)
+							.build())
+					.build());
+
+			volumeMounts.add(new VolumeMountBuilder()
+					.withName("jboss-cli")
+					.withMountPath(String.format("/opt/%s/extensions", serverHomeDirectory))
+					.withReadOnly(false)
+					.build());
 		}
 
-		appBuilder.route().targetPort(8080);
+		// ---- Secret volumes ----
+		for (Secret secret : application.getSecrets()) {
+			String secretName = secret.getMetadata().getName();
+			volumes.add(new VolumeBuilder()
+					.withName(secretName)
+					.withSecret(new SecretVolumeSourceBuilder()
+							.withSecretName(secretName)
+							.build())
+					.build());
+			volumeMounts.add(new VolumeMountBuilder()
+					.withName(secretName)
+					.withMountPath("/etc/secrets")
+					.withReadOnly(false)
+					.build());
+		}
 
-		// env vars
-		appBuilder.deploymentConfig().podTemplate().container()
-				.envVars(application.getEnvVars().stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)));
-
-		// enable script debugging
+		// ---- Script debugging ----
 		if (application.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals("SCRIPT_DEBUG")))) {
-			if (IntersmashConfig.scriptDebug() != null)
-				addEnvVariable(appBuilder, SCRIPT_DEBUG, IntersmashConfig.scriptDebug(), true,
-						!BinarySource.class.isAssignableFrom(application.getBuildInput().getClass()));
-		}
-
-		// create persistent volume claims on the cluster before deploying
-		if (!application.getPersistentVolumeClaimMounts().isEmpty()) {
-			application.getPersistentVolumeClaimMounts().forEach((pvc, vms) -> openShift.createPersistentVolumeClaim(
-					new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build()));
-		}
-
-		appBuilder.buildApplication(openShift).deploy();
-
-		// Add all volumes and mounts using Fabric8 API directly
-		// (XTF's Volume builders are incompatible with the Fabric8 7.x fluent API at runtime)
-		boolean needsDcUpdate = !application.getCliScript().isEmpty()
-				|| !application.getSecrets().isEmpty()
-				|| !application.getPersistentVolumeClaimMounts().isEmpty();
-
-		if (needsDcUpdate) {
-			io.fabric8.openshift.api.model.DeploymentConfig dc = openShift.deploymentConfigs()
-					.withName(application.getName()).get();
-			io.fabric8.kubernetes.api.model.PodSpec podSpec = dc.getSpec().getTemplate().getSpec();
-
-			List<io.fabric8.kubernetes.api.model.Volume> volumes = podSpec.getVolumes();
-			if (volumes == null) {
-				volumes = new ArrayList<>();
-				podSpec.setVolumes(volumes);
-			}
-			io.fabric8.kubernetes.api.model.Container container = podSpec.getContainers().get(0);
-			List<io.fabric8.kubernetes.api.model.VolumeMount> mounts = container.getVolumeMounts();
-			if (mounts == null) {
-				mounts = new ArrayList<>();
-				container.setVolumeMounts(mounts);
-			}
-
-			// ConfigMap volume for CLI commands
-			if (!application.getCliScript().isEmpty()) {
-				final String extensionPath = String.format("/opt/%s/extensions", serverHomeDirectory);
-				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
-						.withName("jboss-cli")
-						.withConfigMap(new io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder()
-								.withName("jboss-cli")
-								.withDefaultMode(Integer.parseInt("0755", 8))
-								.build())
-						.build());
-				mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
-						.withName("jboss-cli")
-						.withMountPath(extensionPath)
-						.withReadOnly(false)
-						.build());
-			}
-
-			// Secret volumes
-			for (Secret secret : application.getSecrets()) {
-				String secretName = secret.getMetadata().getName();
-				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
-						.withName(secretName)
-						.withSecret(new io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder()
-								.withSecretName(secretName)
-								.build())
-						.build());
-				mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
-						.withName(secretName)
-						.withMountPath("/etc/secrets")
-						.withReadOnly(false)
-						.build());
-			}
-
-			// PVC volumes
-			for (Map.Entry<PersistentVolumeClaim, Set<VolumeMount>> entry : application.getPersistentVolumeClaimMounts()
-					.entrySet()) {
-				PersistentVolumeClaim pvc = entry.getKey();
-				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
-						.withName(pvc.getName())
-						.withPersistentVolumeClaim(
-								new io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder()
-										.withClaimName(pvc.getClaimName())
-										.build())
-						.build());
-				for (VolumeMount vm : entry.getValue()) {
-					mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
-							.withName(pvc.getName())
-							.withMountPath(vm.getMountPath())
-							.withReadOnly(vm.isReadOnly())
-							.withSubPath(vm.getSubPath())
-							.build());
+			if (IntersmashConfig.scriptDebug() != null) {
+				envVars.add(new EnvVar(SCRIPT_DEBUG, IntersmashConfig.scriptDebug(), null));
+				if (!BinarySource.class.isAssignableFrom(application.getBuildInput().getClass())
+						&& appRes.buildConfig != null) {
+					addEnvToBuildConfig(appRes, SCRIPT_DEBUG, IntersmashConfig.scriptDebug());
 				}
 			}
-
-			openShift.deploymentConfigs().withName(application.getName()).replace(dc);
 		}
 
-		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(application.getName()).level(Level.DEBUG).waitFor();
+		// ---- PVC mounts ----
+		if (!application.getPersistentVolumeClaimMounts().isEmpty()) {
+			application.getPersistentVolumeClaimMounts().entrySet().stream()
+					.forEach(entry -> {
+						Volume pvc = entry.getKey();
+						String volumeName = pvc.getName();
+						String claimName = pvc.getPersistentVolumeClaim().getClaimName();
+						Set<VolumeMount> vms = entry.getValue();
+
+						volumes.add(new VolumeBuilder()
+								.withName(volumeName)
+								.withNewPersistentVolumeClaim(claimName, false)
+								.build());
+
+						vms.forEach(vm -> volumeMounts.add(new VolumeMountBuilder()
+								.withName(volumeName)
+								.withMountPath(vm.getMountPath())
+								.withReadOnly(vm.getReadOnly())
+								.withSubPath(vm.getSubPath())
+								.build()));
+
+						openShift.createPersistentVolumeClaim(
+								new PersistentVolumeClaimBuilder()
+										.withNewMetadata().withName(claimName).endMetadata()
+										.withNewSpec()
+										.withAccessModes("ReadWriteMany")
+										.withNewResources()
+										.addToRequests("storage", new Quantity("100Mi"))
+										.endResources()
+										.endSpec()
+										.build());
+					});
+		}
+
+		// Set env vars and volume mounts on container
+		containerBuilder.withEnv(envVars);
+		containerBuilder.withVolumeMounts(volumeMounts);
+
+		// ---- Build DeploymentConfig ----
+		List<io.fabric8.openshift.api.model.DeploymentTriggerPolicy> dcTriggers = new ArrayList<>();
+		dcTriggers.add(new DeploymentTriggerPolicyBuilder()
+				.withType("ConfigChange")
+				.build());
+		if (appRes.imageChangeTrigger) {
+			io.fabric8.kubernetes.api.model.ObjectReferenceBuilder imageRef = new io.fabric8.kubernetes.api.model.ObjectReferenceBuilder()
+					.withKind("ImageStreamTag")
+					.withName(appRes.containerImageName + ":latest");
+			if (appRes.containerImageNamespace != null) {
+				imageRef.withNamespace(appRes.containerImageNamespace);
+			}
+			dcTriggers.add(new DeploymentTriggerPolicyBuilder()
+					.withType("ImageChange")
+					.withNewImageChangeParams()
+					.withAutomatic(true)
+					.withContainerNames(name)
+					.withFrom(imageRef.build())
+					.endImageChangeParams()
+					.build());
+		}
+
+		DeploymentConfig dc = new DeploymentConfigBuilder()
+				.withNewMetadata()
+				.withName(name)
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withReplicas(1)
+				.withSelector(Collections.singletonMap("name", name))
+				.withTriggers(dcTriggers)
+				.withNewStrategy().withType("Recreate").endStrategy()
+				.withNewTemplate()
+				.withNewMetadata()
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withDnsPolicy("ClusterFirst")
+				.withRestartPolicy("Always")
+				.withContainers(containerBuilder.build())
+				.withVolumes(volumes)
+				.endSpec()
+				.endTemplate()
+				.endSpec()
+				.build();
+
+		resources.add(dc);
+
+		// ---- Route ----
+		Route route = new RouteBuilder()
+				.withNewMetadata()
+				.withName(name)
+				.withLabels(labels)
+				.endMetadata()
+				.withNewSpec()
+				.withNewTo()
+				.withKind("Service")
+				.withName(name)
+				.endTo()
+				.withNewPort()
+				.withNewTargetPort(8080)
+				.endPort()
+				.endSpec()
+				.build();
+		resources.add(route);
+
+		// Add services
+		resources.addAll(services);
+
+		openShift.createResources(resources);
+		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(name).level(Level.DEBUG).waitFor();
 		// 1 by default
 		waitForReplicas(1);
 	}
 
-	private void addEnvVariable(ApplicationBuilder appBuilder, final String key, final String value) {
-		addEnvVariable(appBuilder, key, value, true, true);
-	}
-
-	private void addEnvVariable(ApplicationBuilder appBuilder, final String key, final String value, final boolean addToDC,
-			final boolean addToBuild) {
-		if (addToDC) {
-			appBuilder.deploymentConfig().podTemplate().container().envVar(key, value);
-		}
-		if (addToBuild) {
-			appBuilder.buildConfig().sti().addEnvVariable(key, value);
+	/**
+	 * Adds an env var to the build config's source strategy env list.
+	 */
+	private void addEnvToBuildConfig(AppResources appRes, String key, String value) {
+		if (appRes.buildConfig != null
+				&& appRes.buildConfig.getSpec() != null
+				&& appRes.buildConfig.getSpec().getStrategy() != null
+				&& appRes.buildConfig.getSpec().getStrategy().getSourceStrategy() != null) {
+			List<EnvVar> env = appRes.buildConfig.getSpec().getStrategy().getSourceStrategy().getEnv();
+			if (env == null) {
+				env = new ArrayList<>();
+				appRes.buildConfig.getSpec().getStrategy().getSourceStrategy().setEnv(env);
+			}
+			env.add(new EnvVar(key, value, null));
 		}
 	}
 

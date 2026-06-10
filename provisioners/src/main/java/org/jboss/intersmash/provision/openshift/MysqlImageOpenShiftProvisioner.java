@@ -18,7 +18,9 @@ package org.jboss.intersmash.provision.openshift;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.openshift.MysqlImageOpenShiftApplication;
 
-import cz.xtf.builder.builders.pod.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.ContainerBuilder;
+import io.fabric8.kubernetes.api.model.IntOrString;
+import io.fabric8.kubernetes.api.model.ProbeBuilder;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -50,8 +52,19 @@ public class MysqlImageOpenShiftProvisioner extends DBImageOpenShiftProvisioner<
 
 	@Override
 	protected void configureContainer(ContainerBuilder containerBuilder) {
-		containerBuilder.addLivenessProbe().setInitialDelay(30).createTcpProbe("3306");
-		containerBuilder.addReadinessProbe().setInitialDelaySeconds(5).createExecProbe("/bin/sh", "-i", "-c",
-				"MYSQL_PWD=\"$MYSQL_PASSWORD\" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE -e 'SELECT 1'");
+		containerBuilder
+				.withLivenessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(30)
+						.withNewTcpSocket()
+						.withPort(new IntOrString(3306))
+						.endTcpSocket()
+						.build())
+				.withReadinessProbe(new ProbeBuilder()
+						.withInitialDelaySeconds(5)
+						.withNewExec()
+						.withCommand("/bin/sh", "-i", "-c",
+								"MYSQL_PWD=\"$MYSQL_PASSWORD\" mysql -h 127.0.0.1 -u $MYSQL_USER -D $MYSQL_DATABASE -e 'SELECT 1'")
+						.endExec()
+						.build());
 	}
 }

@@ -27,9 +27,10 @@ import java.util.Objects;
 import org.jboss.intersmash.application.auto.AutoProvisioningExecutionException;
 import org.jboss.intersmash.application.openshift.AutoProvisioningOpenShiftApplication;
 import org.jboss.intersmash.application.openshift.OpenShiftApplication;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.client.OpenShifts;
 
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.openshift.api.model.Route;
 import lombok.extern.slf4j.Slf4j;
 
@@ -70,7 +71,7 @@ public class AutoProvisioningHelloOpenShiftApplication implements AutoProvisioni
 		}
 		try {
 			// on @Deploy, we'll provision the app pod as per the JSON definition in HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION
-			OpenShifts.masterBinary().execute(
+			OpenShiftBinaries.masterBinary().execute(
 					"apply", "-f", HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION);
 		} finally {
 			try {
@@ -85,10 +86,10 @@ public class AutoProvisioningHelloOpenShiftApplication implements AutoProvisioni
 		OpenShiftWaiters.get(OpenShifts.master(), () -> false).areExactlyNPodsReady(
 				1, "app", getName()).waitFor();
 		// then create a service for the hello-openshift app
-		OpenShifts.masterBinary().execute(
+		OpenShiftBinaries.masterBinary().execute(
 				"apply", "-f", HELLO_OPENSHIFT_SERVICE_DEFINITION);
 		// and let's expose the service through a route so that it is available externally
-		OpenShifts.masterBinary().execute(
+		OpenShiftBinaries.masterBinary().execute(
 				"apply", "-f", HELLO_OPENSHIFT_ROUTE_DEFINITION);
 	}
 
@@ -104,7 +105,7 @@ public class AutoProvisioningHelloOpenShiftApplication implements AutoProvisioni
 		}
 		try {
 			// on scale we'll update the Pod resource definition in order to set the number of replicas
-			OpenShifts.masterBinary().execute(
+			OpenShiftBinaries.masterBinary().execute(
 					"apply", "-f", HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION);
 		} finally {
 			try {
@@ -126,15 +127,15 @@ public class AutoProvisioningHelloOpenShiftApplication implements AutoProvisioni
 	@Override
 	public void undeploy() throws AutoProvisioningExecutionException {
 		// on undeploy we're removing the application external route...
-		OpenShifts.masterBinary().execute(
+		OpenShiftBinaries.masterBinary().execute(
 				"delete", "-f", HELLO_OPENSHIFT_ROUTE_DEFINITION);
 		// ... its service
-		OpenShifts.masterBinary().execute(
+		OpenShiftBinaries.masterBinary().execute(
 				"delete", "-f", HELLO_OPENSHIFT_SERVICE_DEFINITION);
 		// ... then gracefully stop (scale down to 0)
 		scale(0, true);
 		// ... and finally remove the deployment
-		OpenShifts.masterBinary().execute(
+		OpenShiftBinaries.masterBinary().execute(
 				"delete", "-f", HELLO_OPENSHIFT_DEPLOYMENT_DEFINITION);
 	}
 

@@ -26,16 +26,15 @@ import org.jboss.intersmash.provision.operator.model.keycloak.client.KeycloakCli
 import org.jboss.intersmash.provision.operator.model.keycloak.keycloak.KeycloakList;
 import org.jboss.intersmash.provision.operator.model.keycloak.realm.KeycloakRealmList;
 import org.jboss.intersmash.provision.operator.model.keycloak.user.KeycloakUserList;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.keycloak.v1alpha1.Keycloak;
 import org.keycloak.v1alpha1.KeycloakBackup;
 import org.keycloak.v1alpha1.KeycloakClient;
 import org.keycloak.v1alpha1.KeycloakRealm;
 import org.keycloak.v1alpha1.KeycloakUser;
 
-import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList;
-import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
 import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
 import io.fabric8.kubernetes.client.dsl.Resource;
 import io.fabric8.kubernetes.client.dsl.base.CustomResourceDefinitionContext;
@@ -58,7 +57,7 @@ public class RhSsoOpenShiftOperatorProvisioner
 	}
 
 	@Override
-	public NamespacedKubernetesClientAdapter<NamespacedOpenShiftClient> client() {
+	public NamespacedOpenShiftClient client() {
 		return OpenShiftProvisioner.super.client();
 	}
 

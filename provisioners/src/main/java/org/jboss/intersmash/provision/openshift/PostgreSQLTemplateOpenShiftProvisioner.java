@@ -15,18 +15,18 @@
  */
 package org.jboss.intersmash.provision.openshift;
 
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.jboss.intersmash.application.openshift.PostgreSQLTemplateOpenShiftApplication;
 import org.jboss.intersmash.provision.openshift.template.OpenShiftTemplate;
+import org.jboss.intersmash.tools.client.OpenShiftWaiters;
+import org.jboss.intersmash.tools.client.OpenShifts;
+import org.jboss.intersmash.tools.waiting.failfast.FailFastCheck;
 import org.slf4j.event.Level;
 
-import cz.xtf.core.event.helpers.EventHelper;
-import cz.xtf.core.openshift.OpenShiftWaiters;
-import cz.xtf.core.openshift.OpenShifts;
-import cz.xtf.core.waiting.failfast.FailFastCheck;
 import io.fabric8.kubernetes.api.model.KubernetesList;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.openshift.api.model.Template;
@@ -56,7 +56,7 @@ public class PostgreSQLTemplateOpenShiftProvisioner implements OpenShiftProvisio
 
 	@Override
 	public void deploy() {
-		ffCheck = FailFastUtils.getFailFastCheck(EventHelper.timeOfLastEventBMOrTestNamespaceOrEpoch(),
+		ffCheck = FailFastUtils.getFailFastCheck(ZonedDateTime.now(),
 				postgreSQLApplication.getName());
 
 		Map<String, String> parameters = new HashMap<>(postgreSQLApplication.getParameters());

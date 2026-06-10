@@ -29,10 +29,13 @@ import org.jboss.intersmash.annotations.ServiceProvisioner;
 import org.jboss.intersmash.annotations.ServiceUrl;
 import org.jboss.intersmash.application.Application;
 import org.jboss.intersmash.k8s.KubernetesConfig;
+import org.jboss.intersmash.k8s.OpenShiftConfig;
 import org.jboss.intersmash.k8s.client.Kuberneteses;
+import org.jboss.intersmash.k8s.client.OpenShiftBinaries;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.provision.ProvisionerManager;
 import org.jboss.intersmash.provision.olm.OperatorGroup;
+import org.jboss.intersmash.tools.client.OpenShifts;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -41,8 +44,6 @@ import org.junit.platform.commons.support.AnnotationSupport;
 import org.opentest4j.AssertionFailedError;
 import org.opentest4j.TestAbortedException;
 
-import cz.xtf.core.config.OpenShiftConfig;
-import cz.xtf.core.openshift.OpenShifts;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -127,14 +128,14 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 	}
 
 	private void deployApplication(Provisioner provisioner) {
-		log.info("Deploying ", provisioner.getApplication().getClass().getName());
+		log.info("Deploying {}", provisioner.getApplication().getClass().getName());
 		provisioner.configure();
 		provisioner.preDeploy();
 		provisioner.deploy();
 	}
 
 	private void undeployApplication(Provisioner provisioner) {
-		log.info("Undeploying ", provisioner.getApplication().getClass().getName());
+		log.info("Undeploying {}", provisioner.getApplication().getClass().getName());
 		provisioner.undeploy();
 		provisioner.postUndeploy();
 		provisioner.dismiss();
@@ -219,14 +220,14 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 		if (IntersmashExtensionHelper.isIntersmashTargetingKubernetes(extensionContext)) {
 			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
 					new OperatorGroup(KubernetesConfig.namespace()).getMetadata().getName());
-			OpenShifts.adminBinary().execute("apply", "-f",
+			OpenShiftBinaries.adminBinary().execute("apply", "-f",
 					new OperatorGroup(KubernetesConfig.namespace()).save().getAbsolutePath());
 		}
 		if (IntersmashExtensionHelper.isIntersmashTargetingOpenShift(extensionContext)
 				&& !IntersmashConfig.isOcp3x(OpenShifts.admin())) {
 			log.debug("Deploy operatorgroup [{}] to enable operators subscription into tested namespace",
 					new OperatorGroup(OpenShiftConfig.namespace()).getMetadata().getName());
-			OpenShifts.adminBinary().execute("apply", "-f",
+			OpenShiftBinaries.adminBinary().execute("apply", "-f",
 					new OperatorGroup(OpenShiftConfig.namespace()).save().getAbsolutePath());
 		}
 	}
@@ -242,9 +243,9 @@ public class IntersmashExtension implements BeforeAllCallback, AfterAllCallback,
 			Kuberneteses.adminBinary().execute("delete", "operatorgroup", "--all");
 		}
 		if (cleanupOpenShift) {
-			OpenShifts.adminBinary().execute("delete", "subscription", "--all");
-			OpenShifts.adminBinary().execute("delete", "csvs", "--all");
-			OpenShifts.adminBinary().execute("delete", "operatorgroup", "--all");
+			OpenShiftBinaries.adminBinary().execute("delete", "subscription", "--all");
+			OpenShiftBinaries.adminBinary().execute("delete", "csvs", "--all");
+			OpenShiftBinaries.adminBinary().execute("delete", "operatorgroup", "--all");
 		}
 	}
 }
