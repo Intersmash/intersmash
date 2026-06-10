@@ -30,7 +30,6 @@ import org.jboss.intersmash.testsuite.k8s.NamespaceCreationCapable;
 import org.jboss.intersmash.testsuite.provision.operator.HyperfoilOperatorProvisionerTests;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -39,7 +38,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.hyperfoil.v1alpha2.Hyperfoil;
 import io.hyperfoil.v1alpha2.HyperfoilBuilder;
 
-@Disabled("suspended because fails on PRs testing")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @KubernetesTest
 public class HyperfoilKubernetesOperatorProvisionerTest implements NamespaceCreationCapable {

@@ -10,15 +10,24 @@ jobs:
   simple-build:
     if: '! github.event.pull_request.draft'
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        java-version: ['17', '21']
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: ${{ matrix.java-version }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Build with Maven
-        run:  mvn -version ; mvn clean install -U -B -DskipTests ; mvn test -B -pl testsuite/deployments/deployments-provider,kubernetes-client,core,provisioners -am
+      - name: Display environment info
+        run: |
+          mvn -version
+          java -version
+      - name: Build repository
+        run: mvn clean install -T 1C -U -B -DskipTests -Daether.dependencyCollector.impl=bf
+      - name: Run smoke tests
+        run: mvn test -B -pl testsuite/deployments/deployments-provider,kubernetes-client,core,provisioners

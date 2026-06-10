@@ -22,7 +22,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: 'maven'
-      - name: Pre-fetch required dependencies
-        run: mvn clean install --batch-mode -pl style-config -am -DskipTests
       - name: Check source code formatting, file headers, etc.
-        run: mvn spotless:check --batch-mode
+        run: mvn -T 1C spotless:check --batch-mode -Daether.dependencyCollector.impl=bf

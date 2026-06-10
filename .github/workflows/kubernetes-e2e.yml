@@ -17,13 +17,14 @@ concurrency:
 
 jobs:
   minikube:
-    name: K8S
+    name: "K8S Integration tests on K8S: ${{ matrix.kubernetes }} with JDK: ${{ matrix.java-version }}"
     runs-on: ubuntu-latest
     if: github.repository == 'Intersmash/intersmash'
     strategy:
       fail-fast: false
       matrix:
-        kubernetes: [v1.33.1]
+        kubernetes: [v1.35.2]
+        java-version: ['17','21']
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -32,7 +33,7 @@ jobs:
         with:
           driver: docker
           minikube version: 'v1.38.1'
-          kubernetes version: 'v1.35.2'
+          kubernetes version: ${{ matrix.kubernetes }}
           github token: ${{ secrets.GITHUB_TOKEN }}
           start args: "--memory='4gb' --cpus='2'"
       - name: Install operator-sdk
@@ -47,20 +48,23 @@ jobs:
           curl -LO ${OPERATOR_SDK_DL_URL}/operator-sdk_${OS}_${ARCH}
           chmod +x operator-sdk_${OS}_${ARCH} && sudo mv operator-sdk_${OS}_${ARCH} /usr/local/bin/operator-sdk
           operator-sdk olm install
-      - name: Set up JDK 17
+      - name: Mirror hyperfoil kube-rbac-proxy image needed by Hyperfoil
+        run: minikube ssh "docker pull registry.k8s.io/kubebuilder/kube-rbac-proxy:v0.15.0 && docker tag registry.k8s.io/kubebuilder/kube-rbac-proxy:v0.15.0 gcr.io/kubebuilder/kube-rbac-proxy:v0.15.0"
+      - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v5
         with:
-          java-version: '17'
+          java-version: ${{ matrix.java-version }}
           distribution: 'temurin'
           cache: 'maven'
-      - name: Install and Run Integration Tests
+      - name: Prepare local Maven repository
         run: |
           set -x
-          #
           mkdir local-repo
-          # pre-fetch dependencies
-          mvn clean install -pl kubernetes-client,core,provisioners,testsuite,testsuite/deployments,testsuite/deployments/deployments-provider -am --batch-mode -Dmaven.repo.local=./local-repo -DskipTests
-          # run K8s integration tests 
+          set +x
+      - name: Pre-fetch dependencies
+        run: mvn clean install -T 1C -pl kubernetes-client,core,provisioners,testsuite,testsuite/deployments,testsuite/deployments/deployments-provider -am --batch-mode -Dmaven.repo.local=./local-repo -DskipTests -Daether.dependencyCollector.impl=bf
+      - name: Run Integration Tests
+        run: |
           mvn test -e --batch-mode -fae -Dmaven.repo.local=./local-repo -pl testsuite/integration-tests -Pts.k8s \
           -Dintersmash.kubernetes.url=https://$(minikube ip):8443 \
           -Dintersmash.kubernetes.route_domain=$(minikube ip) \
