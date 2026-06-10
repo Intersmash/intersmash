@@ -85,12 +85,9 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 
 		configureContainer(builder.podTemplate().container());
 
+		// create persistent volume claims on the cluster before deploying
 		if (dbApplication.getPersistentVolumeClaims() != null && !dbApplication.getPersistentVolumeClaims().isEmpty()) {
 			PersistentVolumeClaim pvc = dbApplication.getPersistentVolumeClaims().get(0);
-			builder.podTemplate().addPersistenVolumeClaim(
-					pvc.getName(),
-					pvc.getClaimName());
-			builder.podTemplate().container().addVolumeMount(pvc.getName(), getMountpath(), false);
 			openShift.createPersistentVolumeClaim(
 					new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build());
 		}
@@ -102,6 +99,39 @@ public abstract class DBImageOpenShiftProvisioner<T extends DBImageOpenShiftAppl
 		customizeApplication(appBuilder);
 
 		appBuilder.buildApplication(openShift).deploy();
+
+		// mount persistent volumes into pod using Fabric8 API directly
+		// (bypasses XTF's Volume builder which has a compatibility issue with Fabric8 7.x)
+		if (dbApplication.getPersistentVolumeClaims() != null && !dbApplication.getPersistentVolumeClaims().isEmpty()) {
+			PersistentVolumeClaim pvc = dbApplication.getPersistentVolumeClaims().get(0);
+			io.fabric8.openshift.api.model.DeploymentConfig dc = openShift.deploymentConfigs()
+					.withName(dbApplication.getName()).get();
+			io.fabric8.kubernetes.api.model.PodSpec podSpec = dc.getSpec().getTemplate().getSpec();
+
+			java.util.List<io.fabric8.kubernetes.api.model.Volume> volumes = podSpec.getVolumes();
+			if (volumes == null) {
+				volumes = new java.util.ArrayList<>();
+				podSpec.setVolumes(volumes);
+			}
+			volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+					.withName(pvc.getName())
+					.withNewPersistentVolumeClaim(pvc.getClaimName(), false)
+					.build());
+
+			io.fabric8.kubernetes.api.model.Container container = podSpec.getContainers().get(0);
+			java.util.List<io.fabric8.kubernetes.api.model.VolumeMount> mounts = container.getVolumeMounts();
+			if (mounts == null) {
+				mounts = new java.util.ArrayList<>();
+				container.setVolumeMounts(mounts);
+			}
+			mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+					.withName(pvc.getName())
+					.withMountPath(getMountpath())
+					.withReadOnly(false)
+					.build());
+
+			openShift.deploymentConfigs().withName(dbApplication.getName()).replace(dc);
+		}
 
 		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(appBuilder.getName()).waitFor();
 	}

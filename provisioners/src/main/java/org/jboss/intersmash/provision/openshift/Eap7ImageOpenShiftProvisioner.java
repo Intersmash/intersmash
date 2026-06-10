@@ -185,7 +185,7 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 			appBuilder.deploymentConfig().podTemplate().container().envVars(Collections.unmodifiableMap(pingServiceEnv));
 		}
 
-		// mount postconfigure CLI commands
+		// create ConfigMap for postconfigure CLI commands (resource only, volume added below)
 		if (!application.getCliScript().isEmpty()) {
 			String postconfigure = "#!/usr/bin/env bash\n"
 					+ "echo \"Executing postconfigure.sh\"\n"
@@ -193,20 +193,6 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 			appBuilder.configMap("jboss-cli")
 					.configEntry("postconfigure.sh", postconfigure)
 					.configEntry("configure.cli", String.join("\n", application.getCliScript()));
-
-			appBuilder.deploymentConfig()
-					.podTemplate()
-					.addConfigMapVolume("jboss-cli", "jboss-cli", "0755")
-					.container()
-					.addVolumeMount("jboss-cli", String.format("/opt/%s/extensions", serverHomeDirectory), false);
-		}
-
-		// mount secrets to /etc/secrets
-		for (Secret secret : application.getSecrets()) {
-			appBuilder.deploymentConfig().podTemplate()
-					.addSecretVolume(secret.getMetadata().getName(), secret.getMetadata().getName())
-					.container()
-					.addVolumeMount(secret.getMetadata().getName(), "/etc/secrets", false);
 		}
 
 		appBuilder.route().targetPort(8080);
@@ -222,22 +208,94 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 						!BinarySource.class.isAssignableFrom(application.getBuildInput().getClass()));
 		}
 
-		// mount persistent volumes into pod
+		// create persistent volume claims on the cluster before deploying
 		if (!application.getPersistentVolumeClaimMounts().isEmpty()) {
-			application.getPersistentVolumeClaimMounts().entrySet().stream()
-					.forEach(entry -> {
-						PersistentVolumeClaim pvc = entry.getKey();
-						Set<VolumeMount> vms = entry.getValue();
-						appBuilder.deploymentConfig().podTemplate().addPersistenVolumeClaim(pvc.getName(),
-								pvc.getClaimName());
-						vms.forEach(vm -> appBuilder.deploymentConfig().podTemplate().container().addVolumeMount(pvc.getName(),
-								vm.getMountPath(), vm.isReadOnly(), vm.getSubPath()));
-						openShift.createPersistentVolumeClaim(
-								new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build());
-					});
+			application.getPersistentVolumeClaimMounts().forEach((pvc, vms) -> openShift.createPersistentVolumeClaim(
+					new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build()));
 		}
 
 		appBuilder.buildApplication(openShift).deploy();
+
+		// Add all volumes and mounts using Fabric8 API directly
+		// (XTF's Volume builders are incompatible with the Fabric8 7.x fluent API at runtime)
+		boolean needsDcUpdate = !application.getCliScript().isEmpty()
+				|| !application.getSecrets().isEmpty()
+				|| !application.getPersistentVolumeClaimMounts().isEmpty();
+
+		if (needsDcUpdate) {
+			io.fabric8.openshift.api.model.DeploymentConfig dc = openShift.deploymentConfigs()
+					.withName(application.getName()).get();
+			io.fabric8.kubernetes.api.model.PodSpec podSpec = dc.getSpec().getTemplate().getSpec();
+
+			List<io.fabric8.kubernetes.api.model.Volume> volumes = podSpec.getVolumes();
+			if (volumes == null) {
+				volumes = new ArrayList<>();
+				podSpec.setVolumes(volumes);
+			}
+			io.fabric8.kubernetes.api.model.Container container = podSpec.getContainers().get(0);
+			List<io.fabric8.kubernetes.api.model.VolumeMount> mounts = container.getVolumeMounts();
+			if (mounts == null) {
+				mounts = new ArrayList<>();
+				container.setVolumeMounts(mounts);
+			}
+
+			// ConfigMap volume for CLI commands
+			if (!application.getCliScript().isEmpty()) {
+				final String extensionPath = String.format("/opt/%s/extensions", serverHomeDirectory);
+				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+						.withName("jboss-cli")
+						.withConfigMap(new io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder()
+								.withName("jboss-cli")
+								.withDefaultMode(Integer.parseInt("0755", 8))
+								.build())
+						.build());
+				mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+						.withName("jboss-cli")
+						.withMountPath(extensionPath)
+						.withReadOnly(false)
+						.build());
+			}
+
+			// Secret volumes
+			for (Secret secret : application.getSecrets()) {
+				String secretName = secret.getMetadata().getName();
+				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+						.withName(secretName)
+						.withSecret(new io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder()
+								.withSecretName(secretName)
+								.build())
+						.build());
+				mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+						.withName(secretName)
+						.withMountPath("/etc/secrets")
+						.withReadOnly(false)
+						.build());
+			}
+
+			// PVC volumes
+			for (Map.Entry<PersistentVolumeClaim, Set<VolumeMount>> entry : application.getPersistentVolumeClaimMounts()
+					.entrySet()) {
+				PersistentVolumeClaim pvc = entry.getKey();
+				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+						.withName(pvc.getName())
+						.withPersistentVolumeClaim(
+								new io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder()
+										.withClaimName(pvc.getClaimName())
+										.build())
+						.build());
+				for (VolumeMount vm : entry.getValue()) {
+					mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+							.withName(pvc.getName())
+							.withMountPath(vm.getMountPath())
+							.withReadOnly(vm.isReadOnly())
+							.withSubPath(vm.getSubPath())
+							.build());
+				}
+			}
+
+			openShift.deploymentConfigs().withName(application.getName()).replace(dc);
+		}
+
 		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(application.getName()).level(Level.DEBUG).waitFor();
 		// 1 by default
 		waitForReplicas(1);
