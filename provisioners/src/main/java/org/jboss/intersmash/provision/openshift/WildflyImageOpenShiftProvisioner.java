@@ -284,7 +284,7 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 			appBuilder.deploymentConfig().podTemplate().container().envVars(Collections.unmodifiableMap(pingServiceEnv));
 		}
 
-		// mount postconfigure CLI commands
+		// create ConfigMap for postconfigure CLI commands (resource only, volume added below)
 		if (!wildflyApplication.getCliScript().isEmpty()) {
 			final String extensionPath = "/opt/server/extensions";
 			final String scriptName = "configure.cli";
@@ -292,25 +292,10 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 			appBuilder.configMap("jboss-cli")
 					.configEntry(scriptName, String.join("\n", wildflyApplication.getCliScript()));
 
-			appBuilder.deploymentConfig()
-					.podTemplate()
-					.addConfigMapVolume("jboss-cli", "jboss-cli", "0755")
-					.container()
-					.addVolumeMount("jboss-cli", extensionPath, false);
-
 			if (wildflyApplication.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals(CLI_LAUNCH_SCRIPT)))) {
-				// Application doesn't provide necessary env variable value to the extension script, so let's define it here.
 				addEnvVariable(appBuilder, CLI_LAUNCH_SCRIPT, extensionPath + "/" + scriptName, true,
 						!BinarySource.class.isAssignableFrom(wildflyApplication.getBuildInput().getClass()));
 			}
-		}
-
-		// mount secrets to /etc/secrets
-		for (Secret secret : wildflyApplication.getSecrets()) {
-			appBuilder.deploymentConfig().podTemplate()
-					.addSecretVolume(secret.getMetadata().getName(), secret.getMetadata().getName())
-					.container()
-					.addVolumeMount(secret.getMetadata().getName(), "/etc/secrets", false);
 		}
 
 		appBuilder.route().targetPort(8080);
@@ -326,22 +311,94 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 						!BinarySource.class.isAssignableFrom(wildflyApplication.getBuildInput().getClass()));
 		}
 
-		// mount persistent volumes into pod
+		// create persistent volume claims on the cluster before deploying
 		if (!wildflyApplication.getPersistentVolumeClaimMounts().isEmpty()) {
-			wildflyApplication.getPersistentVolumeClaimMounts().entrySet().stream()
-					.forEach(entry -> {
-						PersistentVolumeClaim pvc = entry.getKey();
-						Set<VolumeMount> vms = entry.getValue();
-						appBuilder.deploymentConfig().podTemplate().addPersistenVolumeClaim(pvc.getName(),
-								pvc.getClaimName());
-						vms.forEach(vm -> appBuilder.deploymentConfig().podTemplate().container().addVolumeMount(pvc.getName(),
-								vm.getMountPath(), vm.isReadOnly(), vm.getSubPath()));
-						openShift.createPersistentVolumeClaim(
-								new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build());
-					});
+			wildflyApplication.getPersistentVolumeClaimMounts().forEach((pvc, vms) -> openShift.createPersistentVolumeClaim(
+					new PVCBuilder(pvc.getClaimName()).accessRWX().storageSize("100Mi").build()));
 		}
 
 		appBuilder.buildApplication(openShift).deploy();
+
+		// Add all volumes and mounts using Fabric8 API directly
+		// (XTF's Volume builders are incompatible with the Fabric8 7.x fluent API at runtime)
+		boolean needsDcUpdate = !wildflyApplication.getCliScript().isEmpty()
+				|| !wildflyApplication.getSecrets().isEmpty()
+				|| !wildflyApplication.getPersistentVolumeClaimMounts().isEmpty();
+
+		if (needsDcUpdate) {
+			io.fabric8.openshift.api.model.DeploymentConfig dc = openShift.deploymentConfigs()
+					.withName(wildflyApplication.getName()).get();
+			io.fabric8.kubernetes.api.model.PodSpec podSpec = dc.getSpec().getTemplate().getSpec();
+
+			List<io.fabric8.kubernetes.api.model.Volume> volumes = podSpec.getVolumes();
+			if (volumes == null) {
+				volumes = new ArrayList<>();
+				podSpec.setVolumes(volumes);
+			}
+			io.fabric8.kubernetes.api.model.Container container = podSpec.getContainers().get(0);
+			List<io.fabric8.kubernetes.api.model.VolumeMount> mounts = container.getVolumeMounts();
+			if (mounts == null) {
+				mounts = new ArrayList<>();
+				container.setVolumeMounts(mounts);
+			}
+
+			// ConfigMap volume for CLI commands
+			if (!wildflyApplication.getCliScript().isEmpty()) {
+				final String extensionPath = "/opt/server/extensions";
+				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+						.withName("jboss-cli")
+						.withConfigMap(new io.fabric8.kubernetes.api.model.ConfigMapVolumeSourceBuilder()
+								.withName("jboss-cli")
+								.withDefaultMode(Integer.parseInt("0755", 8))
+								.build())
+						.build());
+				mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+						.withName("jboss-cli")
+						.withMountPath(extensionPath)
+						.withReadOnly(false)
+						.build());
+			}
+
+			// Secret volumes
+			for (Secret secret : wildflyApplication.getSecrets()) {
+				String secretName = secret.getMetadata().getName();
+				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+						.withName(secretName)
+						.withSecret(new io.fabric8.kubernetes.api.model.SecretVolumeSourceBuilder()
+								.withSecretName(secretName)
+								.build())
+						.build());
+				mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+						.withName(secretName)
+						.withMountPath("/etc/secrets")
+						.withReadOnly(false)
+						.build());
+			}
+
+			// PVC volumes
+			for (Map.Entry<PersistentVolumeClaim, Set<VolumeMount>> entry : wildflyApplication.getPersistentVolumeClaimMounts()
+					.entrySet()) {
+				PersistentVolumeClaim pvc = entry.getKey();
+				volumes.add(new io.fabric8.kubernetes.api.model.VolumeBuilder()
+						.withName(pvc.getName())
+						.withPersistentVolumeClaim(
+								new io.fabric8.kubernetes.api.model.PersistentVolumeClaimVolumeSourceBuilder()
+										.withClaimName(pvc.getClaimName())
+										.build())
+						.build());
+				for (VolumeMount vm : entry.getValue()) {
+					mounts.add(new io.fabric8.kubernetes.api.model.VolumeMountBuilder()
+							.withName(pvc.getName())
+							.withMountPath(vm.getMountPath())
+							.withReadOnly(vm.isReadOnly())
+							.withSubPath(vm.getSubPath())
+							.build());
+				}
+			}
+
+			openShift.deploymentConfigs().withName(wildflyApplication.getName()).replace(dc);
+		}
+
 		OpenShiftWaiters.get(openShift, ffCheck).isDcReady(wildflyApplication.getName()).level(Level.DEBUG).waitFor();
 		// 1 by default
 		waitForReplicas(1);
