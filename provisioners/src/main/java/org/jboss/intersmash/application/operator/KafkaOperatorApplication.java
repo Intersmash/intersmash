@@ -16,11 +16,16 @@
 package org.jboss.intersmash.application.operator;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.intersmash.provision.operator.KafkaOperatorProvisioner;
 
+import io.strimzi.api.kafka.model.kafka.EphemeralStorageBuilder;
+import io.strimzi.api.kafka.model.kafka.KRaftMetadataStorage;
 import io.strimzi.api.kafka.model.kafka.Kafka;
 import io.strimzi.api.kafka.model.nodepool.KafkaNodePool;
+import io.strimzi.api.kafka.model.nodepool.KafkaNodePoolBuilder;
+import io.strimzi.api.kafka.model.nodepool.ProcessRoles;
 import io.strimzi.api.kafka.model.topic.KafkaTopic;
 import io.strimzi.api.kafka.model.user.KafkaUser;
 
@@ -35,12 +40,12 @@ import io.strimzi.api.kafka.model.user.KafkaUser;
  */
 public interface KafkaOperatorApplication extends OperatorApplication {
 
-	String KAFKA_VERSION = "4.0.0";
+	String KAFKA_VERSION = "4.2.0";
 	/**
 	 * The {@code metadata.version} property is only relevant to Kafka versions that support KRaft,
 	 * and we set the default to be aligned with {@link KafkaOperatorApplication#KAFKA_VERSION}.
 	 */
-	String METADATA_VERSION = "4.0.-IV3";
+	String METADATA_VERSION = "4.2-IV1";
 	int KAFKA_INSTANCE_NUM = 3;
 	int TOPIC_RECONCILIATION_INTERVAL_SECONDS = 90;
 	long USER_RECONCILIATION_INTERVAL_SECONDS = 120L;
@@ -90,11 +95,50 @@ public interface KafkaOperatorApplication extends OperatorApplication {
 	List<KafkaUser> getUsers();
 
 	/**
-	 * Provides list of {@link KafkaNodePool> definitions for runing Strimzi/Streams for Apache Kafka in KRaft mode.
+	 * Provides list of {@link KafkaNodePool} definitions for running Strimzi/Streams for Apache Kafka in KRaft mode.
+	 * <p>
+	 *     When KRaft mode is enabled, at least one node pool with the {@code controller} role and one with the
+	 *     {@code broker} role must exist.
+	 *     The default implementation creates a controller and a broker node pool with ephemeral storage,
+	 *     using {@link #KAFKA_INSTANCE_NUM} replicas.<br>
+	 *     Note: Kafka is KRaft-only starting with version 4.0. As a result, Streams for
+	 *           Apache Kafka 2.9 was the last version that supported Kafka clusters using ZooKeeper.
+	 * </p>
 	 *
-	 * @return list of {@link KafkaNodePool> instances
+	 * @return list of {@link KafkaNodePool} instances
 	 */
-	List<KafkaNodePool> getNodePools();
+	default List<KafkaNodePool> getNodePools() {
+		final String clusterName = getKafka().getMetadata().getName();
+		final KafkaNodePool controller = new KafkaNodePoolBuilder()
+				.withNewMetadata()
+				.withName(clusterName + "-controller")
+				.withLabels(Map.of(STRIMZI_IO_KAFKA_LABEL_CLUSTER, clusterName))
+				.endMetadata()
+				.withNewSpec()
+				.withReplicas(KAFKA_INSTANCE_NUM)
+				.withRoles(ProcessRoles.CONTROLLER)
+				.withStorage(new EphemeralStorageBuilder()
+						.withId(0)
+						.withKraftMetadata(KRaftMetadataStorage.SHARED)
+						.build())
+				.endSpec()
+				.build();
+		final KafkaNodePool broker = new KafkaNodePoolBuilder()
+				.withNewMetadata()
+				.withName(clusterName + "-broker")
+				.withLabels(Map.of(STRIMZI_IO_KAFKA_LABEL_CLUSTER, clusterName))
+				.endMetadata()
+				.withNewSpec()
+				.withReplicas(KAFKA_INSTANCE_NUM)
+				.withRoles(ProcessRoles.BROKER)
+				.withStorage(new EphemeralStorageBuilder()
+						.withId(0)
+						.withKraftMetadata(KRaftMetadataStorage.SHARED)
+						.build())
+				.endSpec()
+				.build();
+		return List.of(controller, broker);
+	}
 
 	// TODO will be implemented on demand:
 	//	List<KafkaConnect> getKafkaConnects();
