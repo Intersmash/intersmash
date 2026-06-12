@@ -45,8 +45,8 @@ import io.strimzi.api.kafka.model.user.acl.AclRuleBuilder;
  */
 public class KafkaZookeperEphemeralOpenShiftOperatorApplication implements KafkaOperatorApplication, OpenShiftApplication {
 	static final String NAME = "kafka-test";
-	private static final String KAFKA_VERSION = "3.9.0";
-	private static final String INTER_BROKER_PROTOCOL_VERSION = "3.9";
+	private static final String KAFKA_VERSION = "4.2.0";
+	private static final String INTER_BROKER_PROTOCOL_VERSION = "4.2";
 	private static final int KAFKA_INSTANCE_NUM = KafkaOperatorApplication.KAFKA_INSTANCE_NUM;
 	private static final int TOPIC_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.TOPIC_RECONCILIATION_INTERVAL_SECONDS;
 	private static final long USER_RECONCILIATION_INTERVAL_SECONDS = KafkaOperatorApplication.USER_RECONCILIATION_INTERVAL_SECONDS;
@@ -167,11 +167,6 @@ public class KafkaZookeperEphemeralOpenShiftOperatorApplication implements Kafka
 		}
 
 		return users;
-	}
-
-	@Override
-	public List<KafkaNodePool> getNodePools() {
-		return List.of();
 	}
 
 	@Override

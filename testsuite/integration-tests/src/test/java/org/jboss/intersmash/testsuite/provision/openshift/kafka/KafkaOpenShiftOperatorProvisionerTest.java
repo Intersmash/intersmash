@@ -66,7 +66,7 @@ public class KafkaOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 				Arguments.of(new KafkaKRaftEphemeralOpenShiftOperatorApplication(), "stable"),
 				Arguments.of(new KafkaZookeperEphemeralOpenShiftOperatorApplication(),
 						IntersmashTestsuiteProperties.isCommunityTestExecutionProfileEnabled() ? "strimzi-0.45.x"
-								: "amq-streams-2.9.x"));
+								: "amq-streams-3.2.x"));
 	}
 
 	private KafkaOpenShiftOperatorProvisioner initializeOperatorProvisioner(
