@@ -145,5 +145,46 @@
                 <intersmash.deployments.wildfly.build.stream>eapxp6</intersmash.deployments.wildfly.build.stream>
             </properties>
         </profile>
+        <profile>
+            <!-- Configuration settings for testing EAP XP 7 -->
+            <id>ts.eapxp-stream.xp7</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp7</intersmash.deployments.wildfly.build.stream>
+            </properties>
+        </profile>
+        <profile>
+            <id>jboss-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>gpg-sign</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>
