@@ -175,9 +175,15 @@ spec:
                       - alias
                       type: object
                     type: array
+                  browserFlow:
+                    description: Browser authentication flow
+                    type: string
                   bruteForceProtected:
                     description: Brute Force Detection
                     type: boolean
+                  clientAuthenticationFlow:
+                    description: Client authentication flow
+                    type: string
                   clientScopeMappings:
                     additionalProperties:
                       items:
@@ -831,6 +837,11 @@ spec:
                       - clientId
                       type: object
                     type: array
+                  defaultDefaultClientScopes:
+                    description: Default client scopes to add to all new clients
+                    items:
+                      type: string
+                    type: array
                   defaultLocale:
                     description: Default Locale
                     type: string
@@ -881,11 +892,17 @@ spec:
                     required:
                     - name
                     type: object
+                  directGrantFlow:
+                    description: Direct Grant authentication flow
+                    type: string
                   displayName:
                     description: Realm display name.
                     type: string
                   displayNameHtml:
                     description: Realm HTML display name.
+                    type: string
+                  dockerAuthenticationFlow:
+                    description: Docker Authentication flow
                     type: string
                   duplicateEmailsAllowed:
                     description: Duplicate emails
@@ -919,6 +936,27 @@ spec:
                     type: integer
                   id:
                     type: string
+                  identityProviderMappers:
+                    description: A set of Identity Provider Mappers.
+                    items:
+                      properties:
+                        config:
+                          additionalProperties:
+                            type: string
+                          description: Identity Provider Mapper config.
+                          type: object
+                        id:
+                          type: string
+                        identityProviderAlias:
+                          description: Identity Provider Alias.
+                          type: string
+                        identityProviderMapper:
+                          description: Identity Provider Mapper.
+                          type: string
+                        name:
+                          type: string
+                      type: object
+                    type: array
                   identityProviders:
                     description: A set of Identity Providers.
                     items:
@@ -985,6 +1023,33 @@ spec:
                     description: Minimum Quick Login Wait
                     format: int32
                     type: integer
+                  otpPolicyAlgorithm:
+                    description: OTP Policy Algorithm
+                    type: string
+                  otpPolicyDigits:
+                    description: OTP Policy Digits
+                    format: int32
+                    type: integer
+                  otpPolicyInitialCounter:
+                    description: OTP Policy Initial Counter
+                    format: int32
+                    type: integer
+                  otpPolicyLookAheadWindow:
+                    description: OTP Policy Look Ahead Window
+                    format: int32
+                    type: integer
+                  otpPolicyPeriod:
+                    description: OTP Policy Period
+                    format: int32
+                    type: integer
+                  otpPolicyType:
+                    description: OTP Policy Type
+                    type: string
+                  otpSupportedApplications:
+                    description: OTP Supported Applications
+                    items:
+                      type: string
+                    type: array
                   passwordPolicy:
                     description: Realm Password Policy
                     type: string
@@ -1004,9 +1069,15 @@ spec:
                   registrationEmailAsUsername:
                     description: Email as username
                     type: boolean
+                  registrationFlow:
+                    description: Registration flow
+                    type: string
                   rememberMe:
                     description: Remember me
                     type: boolean
+                  resetCredentialsFlow:
+                    description: Reset Credentials authentication flow
+                    type: string
                   resetPasswordAllowed:
                     description: Forgot password
                     type: boolean
@@ -1180,6 +1251,9 @@ spec:
                     items:
                       description: https://www.keycloak.org/docs-api/10.0/rest-api/index.html#_userfederationproviderrepresentation
                       properties:
+                        changedSyncPeriod:
+                          format: int32
+                          type: integer
                         config:
                           additionalProperties:
                             type: string
