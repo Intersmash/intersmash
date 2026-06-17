@@ -146,6 +146,17 @@
             </properties>
         </profile>
         <profile>
+            <!-- Configuration settings for testing EAP XP 6 -->
+            <id>ts.eapxp-stream.xp7</id>
+            <properties>
+                <!--
+                    When this profile is active, the following property is set to have it available at runtime,
+                    see TestDeploymentProperties
+                -->
+                <intersmash.deployments.wildfly.build.stream>eapxp7</intersmash.deployments.wildfly.build.stream>
+            </properties>
+        </profile>
+        <profile>
             <id>jboss-release</id>
             <build>
                 <plugins>

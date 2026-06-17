@@ -63,6 +63,9 @@ public class WildflyHelmChartOpenShiftExampleApplication
 				release = loadRelease(new EapXp5HelmChartReleaseAdapter(new HelmXp5Release()));
 			} else if (TestDeploymentProperties.isEapXp6DeploymentsBuildStreamEnabled()) {
 				release = loadRelease(new EapXp6HelmChartReleaseAdapter(new HelmXp6Release()));
+			} else if (TestDeploymentProperties.isEapXp7DeploymentsBuildStreamEnabled()) {
+				//TODO: replace with proper mapping if any will ever arrive, otherwise delete this comment
+				release = loadRelease(new Eap82HelmChartReleaseAdapter(new HelmEap82Release()));
 			} else
 				throw new IllegalStateException(String.format("Not a valid WildFly deployments stream! (%s)",
 						TestDeploymentProperties.getWildflyDeploymentsBuildStream()));
