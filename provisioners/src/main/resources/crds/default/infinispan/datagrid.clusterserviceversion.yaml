@@ -1,0 +1,1203 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: |-
+      [
+        {
+          "apiVersion": "infinispan.org/v1",
+          "kind": "Infinispan",
+          "metadata": {
+            "name": "example-infinispan"
+          },
+          "spec": {
+            "replicas": 1
+          }
+        },
+        {
+          "apiVersion": "infinispan.org/v2alpha1",
+          "kind": "Backup",
+          "metadata": {
+            "name": "example-backup"
+          },
+          "spec": {
+            "cluster": "example-infinispan",
+            "container": {
+              "cpu": "1000m",
+              "extraJvmOpts": "-Djava.property=me",
+              "memory": "1Gi"
+            }
+          }
+        },
+        {
+          "apiVersion": "infinispan.org/v2alpha1",
+          "kind": "Batch",
+          "metadata": {
+            "name": "example-batch-inline"
+          },
+          "spec": {
+            "cluster": "example-infinispan",
+            "config": "create counter --concurrency-level=1 --initial-value=5 --storage=VOLATILE --type=weak batch-counter\n"
+          }
+        },
+        {
+          "apiVersion": "infinispan.org/v2alpha1",
+          "kind": "Cache",
+          "metadata": {
+            "name": "example-cache"
+          },
+          "spec": {
+            "clusterName": "example-infinispan",
+            "name": "mycache",
+            "template": "\u003cdistributed-cache /\u003e"
+          }
+        },
+        {
+          "apiVersion": "infinispan.org/v2alpha1",
+          "kind": "Restore",
+          "metadata": {
+            "name": "example-restore"
+          },
+          "spec": {
+            "cluster": "example-infinispan",
+            "container": {
+              "cpu": "1000m",
+              "extraJvmOpts": "-Djava.property=me",
+              "memory": "1Gi"
+            }
+          }
+        }
+      ]
+    capabilities: Deep Insights
+    categories: Database
+    certified: "false"
+    containerImage: registry.redhat.io/datagrid/datagrid-8-rhel9-operator@sha256:1e83ddeb0ed1ae4abc219774cda6706e2082b07368aa280de36f9c18b8860eee
+    createdAt: 2026-05-21T07:14:25 UTC
+    description: Create and manage Red Hat Data Grid clusters.
+    features.operators.openshift.io/disconnected: "true"
+    features.operators.openshift.io/fips-compliant: "true"
+    features.operators.openshift.io/proxy-aware: "false"
+    features.operators.openshift.io/tls-profiles: "false"
+    features.operators.openshift.io/token-auth-aws: "false"
+    features.operators.openshift.io/token-auth-azure: "false"
+    features.operators.openshift.io/token-auth-gcp: "false"
+    olm.skipRange: '>=8.5.14 <8.6.3'
+    operators.openshift.io/valid-subscription: '["Red Hat Data Grid", "Red Hat Runtimes", "Red Hat Integration", "Red Hat Process Automation"]'
+    operators.operatorframework.io/builder: operator-sdk-v1.24.1
+    operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
+    repository: https://github.com/infinispan/infinispan-operator
+    support: Red Hat
+  labels:
+    operatorframework.io/arch.amd64: supported
+    operatorframework.io/arch.arm64: supported
+    operatorframework.io/arch.ppc64le: supported
+    operatorframework.io/arch.s390x: supported
+  name: datagrid-operator.v8.6.3
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: Backup is the Schema for the backups API
+      displayName: Backup
+      kind: Backup
+      name: backups.infinispan.org
+      specDescriptors:
+      - description: Infinispan cluster name
+        displayName: Cluster Name
+        path: cluster
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:infinispan.org:v1:Infinispan
+      - description: Names the storage class object for persistent volume claims.
+        displayName: Storage Class Name
+        path: volume.storageClassName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+      statusDescriptors:
+      - description: Current phase of the backup operation
+        displayName: Phase
+        path: phase
+      - description: The name of the created PersistentVolumeClaim used to store the backup
+        displayName: Persistent Volume Claim
+        path: pvc
+      - description: Reason indicates the reason for any backup related failures.
+        displayName: Reason
+        path: reason
+      version: v2alpha1
+    - description: Batch is the Schema for the batches API
+      displayName: Batch
+      kind: Batch
+      name: batches.infinispan.org
+      specDescriptors:
+      - description: Infinispan cluster name
+        displayName: Cluster Name
+        path: cluster
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:infinispan.org:v1:Infinispan
+      - description: Batch string to be executed
+        displayName: Config Command
+        path: config
+      - description: Name of the ConfigMap containing the batch and resource files to be executed
+        displayName: ConfigMap Name
+        path: configMap
+      - description: Specify resource requirements per container
+        displayName: Container Spec
+        path: container
+      statusDescriptors:
+      - description: The UUID of the Infinispan instance that the Batch is associated with
+        displayName: Cluster UUID
+        path: clusterUID
+      - description: Current phase of the batch operation
+        displayName: Phase
+        path: phase
+      - description: The reason for any batch related failures
+        displayName: Reason
+        path: reason
+      version: v2alpha1
+    - description: Cache is the Schema for the caches API
+      displayName: Cache
+      kind: Cache
+      name: caches.infinispan.org
+      specDescriptors:
+      - description: The secret that contains user credentials.
+        displayName: Authentication Secret
+        path: adminAuth.secretName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Infinispan cluster name
+        displayName: Cluster Name
+        path: clusterName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:infinispan.org:v1:Infinispan
+      - description: How updates to Cache CR template should be applied on the Infinispan server
+        displayName: Update Strategy
+        path: updates.strategy
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:recreate
+        - urn:alm:descriptor:com.tectonic.ui:select:retain
+      version: v2alpha1
+    - description: Infinispan is the Schema for the infinispans API
+      displayName: Infinispan Cluster
+      kind: Infinispan
+      name: infinispans.infinispan.org
+      specDescriptors:
+      - description: If true, a dedicated pod is used to ensure that all config resources created on the Infinispan server have a matching CR resource
+        displayName: Toggle Config Listener
+        path: configListener.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: The logging level to be used by the ConfigListener pod
+        displayName: Logging Level
+        path: configListener.logging.level
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:debug
+        - urn:alm:descriptor:com.tectonic.ui:select:info
+        - urn:alm:descriptor:com.tectonic.ui:select:error
+      - description: The Persistent Volume Claim that holds custom libraries
+        displayName: Persistent Volume Claim Name
+        path: dependencies.volumeClaimName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:PersistentVolumeClaim
+      - description: The network hostname for your Infinispan cluster
+        displayName: Route Hostname
+        path: expose.host
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:expose.type:Route
+      - description: If true, a JMX endpoint is exposed on the admin service
+        displayName: Toggle Jmx
+        path: jmx.enabled
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: The number of nodes in the Infinispan cluster.
+        displayName: Replicas
+        path: replicas
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podCount
+      - description: A secret that contains CredentialStore alias and password combinations
+        displayName: CredentialStore Secret
+        path: security.credentialStoreSecretName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: Enable or disable user authentication
+        displayName: Toggle Authentication
+        path: security.endpointAuthentication
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: The secret that contains TLS certificates
+        displayName: Encryption Secret
+        path: security.endpointEncryption.certSecretName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:security.endpointEncryption.type:Secret
+      - description: A service that provides TLS certificates
+        displayName: Encryption Service
+        path: security.endpointEncryption.certServiceName
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:text
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:security.endpointEncryption.type:Service
+      - description: Disable or modify endpoint encryption.
+        displayName: Configure Encryption
+        path: security.endpointEncryption.type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:Service
+        - urn:alm:descriptor:com.tectonic.ui:select:Secret
+        - urn:alm:descriptor:com.tectonic.ui:select:None
+      - description: The secret that contains user credentials.
+        displayName: Authentication Secret
+        path: security.endpointSecretName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:security.endpointAuthentication:true
+      - description: Enable/disable container ephemeral storage
+        displayName: Container Ephemeral Storage
+        path: service.container.ephemeralStorage
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:booleanSwitch
+      - description: The amount of storage for the persistent volume claim.
+        displayName: Storage Size
+        path: service.container.storage
+        x-descriptors:
+        - urn:alm:descriptor:text
+      - description: The storage class object for persistent volume claims
+        displayName: Storage Class Name
+        path: service.container.storageClassName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:StorageClass
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service.container.ephemeralStorage:false
+      - description: Cache replication factor, or number of copies for each entry.
+        displayName: Number of Owners
+        path: service.replicationFactor
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:number
+      - description: Deprecated and to be removed on subsequent release. Use .URL with infinispan+xsite schema instead.
+        displayName: Node Port
+        path: service.sites.locations[0].port
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:number
+        - urn:alm:descriptor:com.tectonic.ui:fieldDependency:service.sites.local.expose.type:NodePort
+      - description: The access secret that allows backups to a remote site
+        displayName: Backup Location Secret
+        path: service.sites.locations[0].secretName
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:Secret
+      - description: The service type
+        displayName: Service Type
+        path: service.type
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:select:Cache
+        - urn:alm:descriptor:com.tectonic.ui:select:DataGrid
+      statusDescriptors:
+      - description: Infinispan Console URL
+        displayName: Infinispan Console URL
+        path: consoleUrl
+        x-descriptors:
+        - urn:alm:descriptor:org.w3:link
+      - description: The Operand status
+        displayName: Operand Status
+        path: operand
+      - description: The Operator status
+        displayName: Operator Status
+        path: operator
+      - description: The Pod's currently in the cluster
+        displayName: Pod Status
+        path: podStatus
+        x-descriptors:
+        - urn:alm:descriptor:com.tectonic.ui:podStatuses
+      version: v1
+    - description: Restore is the Schema for the restores API
+      displayName: Restore
+      kind: Restore
+      name: restores.infinispan.org
+      specDescriptors:
+      - description: The Infinispan Backup to restore
+        displayName: Backup Name
+        path: backup
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:infinispan.org:v2alpha1:Backup
+      - description: Infinispan cluster name
+        displayName: Cluster Name
+        path: cluster
+        x-descriptors:
+        - urn:alm:descriptor:io.kubernetes:infinispan.org:v1:Infinispan
+      statusDescriptors:
+      - description: Current phase of the restore operation
+        displayName: Phase
+        path: phase
+      - description: Reason indicates the reason for any restore related failures.
+        displayName: Reason
+        path: reason
+      version: v2alpha1
+  description: |
+    Red Hat Data Grid is a distributed, in-memory data store built from tried and trusted open-source technology.
+
+    ### Data Grid
+    * **Schemaless structure:** Store objects in key/value pairs.
+    * **Grid storage:** Distribute and replicate data across clusters.
+    * **Elasticity:** Scale to meet workload demands without service disruption.
+    * **Polyglot access:** Read, write, and query from multiple client languages with different endpoints.
+    * **Continuous availability:** Create a fault-tolerant caching service that guarantees business continuity.
+
+    ### Operator capabilities
+    * Built-in intelligence to automate Data Grid cluster deployment.
+    * Infinispan CR for service configuration.
+    * Cross site configuration and management.
+    * Deployment of Grafana and Prometheus resources.
+    * Cache CR for fully configurable caches.
+    * Batch CR for scripting bulk resource creation.
+    * REST and Hot Rod endpoints available at port `11222`.
+    * Default application user: `developer`. Infinispan Operator generates credentials in an authentication secret at startup.
+    * Data Grid pods request 1Gi of memory and 1Gi of ReadWriteOnce persistent storage. Data Grid Operator lets you adjust resource allocation to suit your requirements.
+  displayName: Data Grid
+  icon:
+  - base64data: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6I2Q3MWUwMDt9LmNscy0ye2ZpbGw6I2MyMWEwMDt9LmNscy0ze2ZpbGw6I2VhZWFlYTt9LmNscy00e2ZpbGw6I2ZmZjt9LmNscy01e2ZpbGw6I2I3YjdiNzt9PC9zdHlsZT48L2RlZnM+PHRpdGxlPnByb2R1Y3RpY29uc18xMDE3X1JHQl9EYXRhR3JpZCBmaW5hbCBjb2xvcjwvdGl0bGU+PGcgaWQ9IkxheWVyXzEiIGRhdGEtbmFtZT0iTGF5ZXIgMSI+PGNpcmNsZSBjbGFzcz0iY2xzLTEiIGN4PSI1MCIgY3k9IjUwIiByPSI1MCIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTIwLjcxIDUwKSByb3RhdGUoLTQ1KSIvPjxwYXRoIGNsYXNzPSJjbHMtMiIgZD0iTTg1LjM2LDE0LjY0QTUwLDUwLDAsMCwxLDE0LjY0LDg1LjM2WiIvPjxwYXRoIGNsYXNzPSJjbHMtMyIgZD0iTTc0LjUzLDU2Ljc1QzU0LjI2LDU2LDUzLjgzLDc2LjUxLDMyLjgsNzQuMzgsMjIsNzMuMjksMTQsNjEuOSwxNi4xNyw1NC41OGw2LTE4LjU4Yy0uOTQsOC42LDEyLjM0LDIyLjU2LDIzLjExLDIzLjY1LDEyLjUyLDEuMjcsMTUuNTctNC4yOCwyOS4yLTIuOSIvPjxwYXRoIGNsYXNzPSJjbHMtNCIgZD0iTTgwLjQ3LDM5LjIxQzY5LjQ3LDM4LjEsNjEuNzksNDkuMzQsNTQsNTkuNDJjNi4zNS0xLjA2LDEwLjY3LTMuNjYsMjAuNS0yLjY3aC4wNmM0Ljc2LjQ4LDQuOTUsMy41Nyw0LjczLDVsNi40Ni0xOEM4Niw0Mi4yOSw4NSwzOS42Nyw4MC40NywzOS4yMVoiLz48cGF0aCBjbGFzcz0iY2xzLTUiIGQ9Ik03NC41OSw1Ni43NmgtLjA4YTIyLjM5LDIyLjM5LDAsMCwwLTE0LjM2LDQuMTYsMTcuNjEsMTcuNjEsMCwwLDAsMTAuMyw1YzMuNTIuMzYsNy43OS0xLjY4LDguODctNC4yMkM3OS41NCw2MC4zMiw3OS4zNSw1Ny4yNCw3NC41OSw1Ni43NloiLz48cGF0aCBjbGFzcz0iY2xzLTUiIGQ9Ik02OC41LDQzLjA2QzYwLjY4LDM2Ljg1LDU3LjA3LDI1LDQzLjIsMjMuNjEsMjguODUsMjIuMTYsMjMuNzksMzEuNSwyMi4yOCwzNS42N2wtLjA3LjMzYy0uMjYsMi40LjU5LDUuMjMsMi4xOCw4LjA3LDMuMjEtMS43MSw3LjU3LTIuNTcsMTMuNi0yLDguMi44MywxMi44Myw4LjE5LDE4LjE0LDE0LjUzQzYwLjA2LDUxLjUzLDY0LDQ2LjQzLDY4LjUsNDMuMDZaIi8+PC9nPjwvc3ZnPg==
+    mediatype: image/svg+xml
+  install:
+    spec:
+      clusterPermissions:
+      - rules:
+        - apiGroups:
+          - ""
+          resources:
+          - nodes
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - apiextensions.k8s.io
+          resources:
+          - customresourcedefinitions
+          - customresourcedefinitions/status
+          verbs:
+          - get
+          - list
+          - watch
+        - apiGroups:
+          - storage.k8s.io
+          resources:
+          - storageclasses
+          verbs:
+          - get
+          - list
+          - watch
+        serviceAccountName: infinispan-operator-controller-manager
+      deployments:
+      - label:
+          app.kubernetes.io/name: infinispan-operator
+          control-plane: controller-manager
+        name: infinispan-operator-controller-manager
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app.kubernetes.io/name: infinispan-operator
+              control-plane: controller-manager
+          strategy: {}
+          template:
+            metadata:
+              labels:
+                app.kubernetes.io/name: infinispan-operator
+                control-plane: controller-manager
+            spec:
+              containers:
+              - args:
+                - operator
+                - --leader-elect
+                env:
+                - name: WATCH_NAMESPACE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['olm.targetNamespaces']
+                - name: INFINISPAN_OPERAND_VERSIONS
+                  value: |-
+                    [{
+                      "downstream-version": "8.4.0-1",
+                      "upstream-version": "14.0.0",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_0_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.0-2",
+                      "upstream-version": "14.0.0",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_0_2}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.1-1",
+                      "upstream-version": "14.0.6",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_1_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.1-2",
+                      "upstream-version": "14.0.6",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_1_2}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.1-3",
+                      "upstream-version": "14.0.6",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_1_3}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.2-1",
+                      "upstream-version": "14.0.9",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_2_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.3-1",
+                      "upstream-version": "14.0.11",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_3_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.3-2",
+                      "upstream-version": "14.0.11",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_3_2}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.4-1",
+                      "upstream-version": "14.0.17",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_4_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.5-1",
+                      "upstream-version": "14.0.17",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_5_1}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.5-2",
+                      "upstream-version": "14.0.17",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_5_2}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.6-1",
+                      "upstream-version": "14.0.21",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_6_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.6-2",
+                      "upstream-version": "14.0.21",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_6_2}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.7-1",
+                      "upstream-version": "14.0.27",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_7_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.8-1",
+                      "upstream-version": "14.0.27",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_8_1}",
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.4.8-2",
+                      "upstream-version": "14.0.27",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_4_8_2}",
+                      "cve": true,
+                      "deprecated": true
+                    },{
+                      "downstream-version": "8.5.0-1",
+                      "upstream-version": "15.0.5",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_0_1}"
+                    },{
+                      "downstream-version": "8.5.0-2",
+                      "upstream-version": "15.0.5",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_0_2}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.0-3",
+                      "upstream-version": "15.0.5",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_0_3}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.1-1",
+                      "upstream-version": "15.0.8",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_1_1}"
+                    },{
+                      "downstream-version": "8.5.2-1",
+                      "upstream-version": "15.0.11",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_2_1}"
+                    },{
+                      "downstream-version": "8.5.2-2",
+                      "upstream-version": "15.0.11",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_2_2}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.3-1",
+                      "upstream-version": "15.0.14",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_3_1}"
+                    },{
+                      "downstream-version": "8.5.3-2",
+                      "upstream-version": "15.0.14",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_3_2}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.4-1",
+                      "upstream-version": "15.0.16",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_4_1}"
+                    },{
+                      "downstream-version": "8.5.4-2",
+                      "upstream-version": "15.0.16",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_4_2}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.4-3",
+                      "upstream-version": "15.0.16",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_4_3}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.5-1",
+                      "upstream-version": "15.0.19",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_5_1}"
+                    },{
+                      "downstream-version": "8.5.5-2",
+                      "upstream-version": "15.0.19",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_5_2}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.5-3",
+                      "upstream-version": "15.0.19",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_5_3}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.5.5-4",
+                      "upstream-version": "15.0.19",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_5_5_4}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.6.0-1",
+                      "upstream-version": "16.0.8",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_6_0_1}"
+                    },{
+                      "downstream-version": "8.6.0-2",
+                      "upstream-version": "16.0.8",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_6_0_2}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.6.0-3",
+                      "upstream-version": "16.0.8",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_6_0_3}",
+                      "cve": true
+                    },{
+                      "downstream-version": "8.6.1-1",
+                      "upstream-version": "16.0.12",
+                      "image": "${RELATED_IMAGE_OPENJDK_8_6_1_1}"
+                    }]
+                - name: RELATED_IMAGE_OPENJDK_8_4_0_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:532dca6facb584c1261c0480c499af9f857c70dc390e0d46e46afec2561468af
+                - name: RELATED_IMAGE_OPENJDK_8_4_0_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:bf7760520f5bea151a531d538d525c4591c47166995aefb4d77fef138de11544
+                - name: RELATED_IMAGE_OPENJDK_8_4_1_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:ae852e4679978725bb7d24c1bdfe25b40bd883130ed04a36d4fca49dbea024ef
+                - name: RELATED_IMAGE_OPENJDK_8_4_1_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:24cf79efa89bbfa495665b1711a27531b7ab0813695a89b2c38c96c2e792eb24
+                - name: RELATED_IMAGE_OPENJDK_8_4_1_3
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:985193caf9bc3698c4d85aeedd1cfea09bccda881636d67885387b2a83c65ebd
+                - name: RELATED_IMAGE_OPENJDK_8_4_2_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:9d9e466b7c367d0406406550c74bc790aa68f3f875ea4f652eb28f2e25a05458
+                - name: RELATED_IMAGE_OPENJDK_8_4_3_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:424b30dccd773f69c079b35a42e8c3e339246c5d490e14e3fcfb8bd8144a9160
+                - name: RELATED_IMAGE_OPENJDK_8_4_3_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:554b831a0803d55a4e3b7022011b5a5f6d2b4b65009065a9b28bc8e55fc3ad46
+                - name: RELATED_IMAGE_OPENJDK_8_4_4_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:9223b4b5c1c866a91033dac40f30a4caae0f6946cdb64935a3fdfffdb9ede660
+                - name: RELATED_IMAGE_OPENJDK_8_4_5_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:bcb040bf640691568a93a4c71c8072c37ffb76b4296ade83186f279862b7f197
+                - name: RELATED_IMAGE_OPENJDK_8_4_5_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:d522a20ca6909bd464f85967d8b86fe42b83f773478a80785f9a85a0cb87dfed
+                - name: RELATED_IMAGE_OPENJDK_8_4_6_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:78a6bed6fcb6962e5689b92806789b72a66db21b7c607b392a573c98593f2c09
+                - name: RELATED_IMAGE_OPENJDK_8_4_6_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:4dbe1b7a1a36990c0a31d5a66f3cc4ca2954c9e1ec3b87431113a4111530277d
+                - name: RELATED_IMAGE_OPENJDK_8_4_7_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:54bc26a0fddc160a4e0d1a813aec78abb3c9cb77db5039b74c23de759faa67f5
+                - name: RELATED_IMAGE_OPENJDK_8_4_8_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:b56269cb849afca34e7f82cc8e01a44bb32af6126f24db28019a58e556d4cb3c
+                - name: RELATED_IMAGE_OPENJDK_8_4_8_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:c15d4fd827f554291c14851f187947f4109c0e20257fa2f1e141b32669569358
+                - name: RELATED_IMAGE_OPENJDK_8_5_0_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:f59ae21773dfc207454a709ac5f7aad2be6a6a20ac88da26c379edeed54537b8
+                - name: RELATED_IMAGE_OPENJDK_8_5_0_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:5656cd188d054551489d45be996266d03e3faa8814b8bfc0f360cf0dceb83cbe
+                - name: RELATED_IMAGE_OPENJDK_8_5_0_3
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:48cf13e71953cea6f62354289f0d8ece7a8a481ee0bb2c76eb9352d438db9ca3
+                - name: RELATED_IMAGE_OPENJDK_8_5_1_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:c25e3152d6a6b6d5cd86d311bf567e594b9948440785209cd8d7986076a5a10d
+                - name: RELATED_IMAGE_OPENJDK_8_5_2_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:11bfe5c8109d26164cff428232b2001ab8df464f14a382661b936543336e2960
+                - name: RELATED_IMAGE_OPENJDK_8_5_2_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:ad4f91f984b4b898012963d52e6ebcd166ec03e76e26eba3191ecb87f51fb18d
+                - name: RELATED_IMAGE_OPENJDK_8_5_3_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:9bc0b730570ab55fbeca83075949f4caa96ed5c37637420a59cd4a7db01ea840
+                - name: RELATED_IMAGE_OPENJDK_8_5_3_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:0d368459c98c5788dd55d2add5b4b7d438b9a8c814ea8aee2222ea956699cbb6
+                - name: RELATED_IMAGE_OPENJDK_8_5_4_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:879f3dcc24ffe795472779f777d955666ba4041c17e717d5e165cd7f12d7955a
+                - name: RELATED_IMAGE_OPENJDK_8_5_4_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:6e1766784b684561666134d41dca5331b80d50e63695fe7b1a1d6d4cdb73f0bd
+                - name: RELATED_IMAGE_OPENJDK_8_5_4_3
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:4b9bf39d2ff14bcfbd4628a399093703d87a2b2b9c8e74c3d7cfdff4b5167fa4
+                - name: RELATED_IMAGE_OPENJDK_8_5_5_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:a711c50e489995fb60e5dec23ce286360743feda5066e4a0861d448aa4f2e903
+                - name: RELATED_IMAGE_OPENJDK_8_5_5_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:6b78aaf15558c0522d22ba3003244203e6d39e6fe737c3075e30de8763218358
+                - name: RELATED_IMAGE_OPENJDK_8_5_5_3
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:1d5525d2d575dcc9d90da57afeb5fb310edc28d97d7ba55290db6bd152a34a95
+                - name: RELATED_IMAGE_OPENJDK_8_5_5_4
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:a951127edfb7b3014750434971f131ece4a149f47d79a1b6012f620db758c4ec
+                - name: RELATED_IMAGE_OPENJDK_8_6_0_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:001265497717a6a61466210f59eebe434ad25feffdf8b3cdf31131f9aab39258
+                - name: RELATED_IMAGE_OPENJDK_8_6_0_2
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:a757b6612a55e5ea7f0a3b75873093c15439ff711e611a65d425272d12bb2c29
+                - name: RELATED_IMAGE_OPENJDK_8_6_0_3
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:2ea02066e2476c864f9baedfc5ff0d9cbf24790ffb00b41ef09e6482f70ed2d9
+                - name: RELATED_IMAGE_OPENJDK_8_6_1_1
+                  value: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:e284075f6c101dd81aa7cdb8adfda973dfb494d7afee21816bc965f7c5af14c0
+                - name: INFINISPAN_OPERATOR_POD_TARGET_LABELS
+                  value: |
+                    {"rht.comp": "Data_Grid", "rht.subcomp_t": "application", "rht.comp_ver": "8.6.1", "rht.prod_name": "Red_Hat_Runtimes", "rht.prod_ver": "2026-Q2"}
+                - name: POD_NAME
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.name
+                - name: CONFIG_LISTENER_IMAGE
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: metadata.annotations['containerImage']
+                image: registry.redhat.io/datagrid/datagrid-8-rhel9-operator@sha256:1e83ddeb0ed1ae4abc219774cda6706e2082b07368aa280de36f9c18b8860eee
+                imagePullPolicy: Always
+                livenessProbe:
+                  httpGet:
+                    path: /healthz
+                    port: 8081
+                  initialDelaySeconds: 15
+                  periodSeconds: 20
+                name: manager
+                ports:
+                - containerPort: 9443
+                  name: webhook-server
+                  protocol: TCP
+                readinessProbe:
+                  httpGet:
+                    path: /readyz
+                    port: 8081
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                resources: {}
+              serviceAccountName: infinispan-operator-controller-manager
+      permissions:
+      - rules:
+        - apiGroups:
+          - ""
+          - coordination.k8s.io
+          resources:
+          - configmaps
+          - leases
+          verbs:
+          - get
+          - list
+          - watch
+          - create
+          - update
+          - patch
+          - delete
+        - apiGroups:
+          - ""
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        - apiGroups:
+          - ""
+          resources:
+          - configmaps
+          - endpoints
+          - persistentvolumeclaims
+          - pods
+          - secrets
+          - services
+          - services/finalizers
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - ""
+          resources:
+          - pods/exec
+          verbs:
+          - create
+        - apiGroups:
+          - ""
+          resources:
+          - pods/log
+          verbs:
+          - get
+        - apiGroups:
+          - ""
+          resources:
+          - serviceaccounts
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - ""
+          - events.k8s.io
+          resources:
+          - events
+          verbs:
+          - create
+          - patch
+        - apiGroups:
+          - apps
+          resources:
+          - deployments
+          - deployments/finalizers
+          - statefulsets
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - apps
+          resources:
+          - replicasets
+          verbs:
+          - get
+        - apiGroups:
+          - batch
+          resources:
+          - jobs
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - infinispan.org
+          resources:
+          - backups
+          - backups/finalizers
+          - backups/status
+          - batches
+          - batches/finalizers
+          - batches/status
+          - infinispans
+          - infinispans/finalizers
+          - infinispans/status
+          - restores
+          - restores/finalizers
+          - restores/status
+          verbs:
+          - create
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - infinispan.org
+          resources:
+          - caches
+          - caches/finalizers
+          - caches/status
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - patch
+          - update
+          - watch
+        - apiGroups:
+          - integreatly.org
+          resources:
+          - grafanadashboards
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - monitoring.coreos.com
+          resources:
+          - servicemonitors
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - networking.k8s.io
+          resources:
+          - customresourcedefinitions
+          - customresourcedefinitions/status
+          verbs:
+          - get
+          - list
+        - apiGroups:
+          - networking.k8s.io
+          resources:
+          - ingresses
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - rbac.authorization.k8s.io
+          resources:
+          - rolebindings
+          - roles
+          verbs:
+          - create
+          - delete
+          - get
+          - list
+          - update
+          - watch
+        - apiGroups:
+          - route.openshift.io
+          resources:
+          - routes
+          - routes/custom-host
+          verbs:
+          - create
+          - delete
+          - deletecollection
+          - get
+          - list
+          - update
+          - watch
+        serviceAccountName: infinispan-operator-controller-manager
+    strategy: deployment
+  installModes:
+  - supported: true
+    type: OwnNamespace
+  - supported: true
+    type: SingleNamespace
+  - supported: true
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - infinispan
+  - key value
+  - database
+  - datagrid
+  - open source
+  labels:
+    operated-by: infinispan-operator
+  links:
+  - name: Release information
+    url: https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.6/html/data_grid_operator_8.6_release_notes/
+  - name: Documentation
+    url: https://access.redhat.com/documentation/en-us/red_hat_data_grid/8.6
+  - name: Operator source code
+    url: https://github.com/infinispan/infinispan-operator
+  - name: Product page
+    url: https://www.redhat.com/en/technologies/jboss-middleware/data-grid
+  maintainers:
+  - email: customerservice@redhat.com
+    name: Red Hat
+  maturity: alpha
+  minKubeVersion: 1.24.0
+  provider:
+    name: Red Hat
+  replaces: datagrid-operator.v8.6.2
+  selector:
+    matchLabels:
+      operated-by: infinispan-operator
+  version: 8.6.3
+  webhookdefinitions:
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: mbackup.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - backups
+    sideEffects: None
+    targetPort: 9443
+    type: MutatingAdmissionWebhook
+    webhookPath: /mutate-infinispan-org-v2alpha1-backup
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: mcache.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - caches
+    sideEffects: None
+    targetPort: 9443
+    type: MutatingAdmissionWebhook
+    webhookPath: /mutate-infinispan-org-v2alpha1-cache
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: minfinispan.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - infinispans
+    sideEffects: None
+    targetPort: 9443
+    type: MutatingAdmissionWebhook
+    webhookPath: /mutate-infinispan-org-v1-infinispan
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: mrestore.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - restores
+    sideEffects: None
+    targetPort: 9443
+    type: MutatingAdmissionWebhook
+    webhookPath: /mutate-infinispan-org-v2alpha1-restore
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: vbackup.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - backups
+    sideEffects: None
+    targetPort: 9443
+    type: ValidatingAdmissionWebhook
+    webhookPath: /validate-infinispan-org-v2alpha1-backup
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: vbatch.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - batches
+    sideEffects: None
+    targetPort: 9443
+    type: ValidatingAdmissionWebhook
+    webhookPath: /validate-infinispan-org-v2alpha1-batch
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: vcache.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - caches
+    sideEffects: None
+    targetPort: 9443
+    type: ValidatingAdmissionWebhook
+    webhookPath: /validate-infinispan-org-v2alpha1-cache
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: vinfinispan.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - infinispans
+    sideEffects: None
+    targetPort: 9443
+    type: ValidatingAdmissionWebhook
+    webhookPath: /validate-infinispan-org-v1-infinispan
+  - admissionReviewVersions:
+    - v1
+    - v1beta1
+    containerPort: 443
+    deploymentName: infinispan-operator-controller-manager
+    failurePolicy: Fail
+    generateName: vrestore.kb.io
+    rules:
+    - apiGroups:
+      - infinispan.org
+      apiVersions:
+      - v2alpha1
+      operations:
+      - CREATE
+      - UPDATE
+      resources:
+      - restores
+    sideEffects: None
+    targetPort: 9443
+    type: ValidatingAdmissionWebhook
+    webhookPath: /validate-infinispan-org-v2alpha1-restore
+  relatedImages:
+  - name: datagrid-8-rhel9-operator-1e83ddeb0ed1ae4abc219774cda6706e2082b07368aa280de36f9c18b8860eee-annotation
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9-operator@sha256:1e83ddeb0ed1ae4abc219774cda6706e2082b07368aa280de36f9c18b8860eee
+  - name: manager
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9-operator@sha256:1e83ddeb0ed1ae4abc219774cda6706e2082b07368aa280de36f9c18b8860eee
+  - name: openjdk_8_4_0_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:532dca6facb584c1261c0480c499af9f857c70dc390e0d46e46afec2561468af
+  - name: openjdk_8_4_0_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:bf7760520f5bea151a531d538d525c4591c47166995aefb4d77fef138de11544
+  - name: openjdk_8_4_1_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:ae852e4679978725bb7d24c1bdfe25b40bd883130ed04a36d4fca49dbea024ef
+  - name: openjdk_8_4_1_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:24cf79efa89bbfa495665b1711a27531b7ab0813695a89b2c38c96c2e792eb24
+  - name: openjdk_8_4_1_3
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:985193caf9bc3698c4d85aeedd1cfea09bccda881636d67885387b2a83c65ebd
+  - name: openjdk_8_4_2_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:9d9e466b7c367d0406406550c74bc790aa68f3f875ea4f652eb28f2e25a05458
+  - name: openjdk_8_4_3_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:424b30dccd773f69c079b35a42e8c3e339246c5d490e14e3fcfb8bd8144a9160
+  - name: openjdk_8_4_3_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:554b831a0803d55a4e3b7022011b5a5f6d2b4b65009065a9b28bc8e55fc3ad46
+  - name: openjdk_8_4_4_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:9223b4b5c1c866a91033dac40f30a4caae0f6946cdb64935a3fdfffdb9ede660
+  - name: openjdk_8_4_5_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:bcb040bf640691568a93a4c71c8072c37ffb76b4296ade83186f279862b7f197
+  - name: openjdk_8_4_5_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:d522a20ca6909bd464f85967d8b86fe42b83f773478a80785f9a85a0cb87dfed
+  - name: openjdk_8_4_6_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:78a6bed6fcb6962e5689b92806789b72a66db21b7c607b392a573c98593f2c09
+  - name: openjdk_8_4_6_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:4dbe1b7a1a36990c0a31d5a66f3cc4ca2954c9e1ec3b87431113a4111530277d
+  - name: openjdk_8_4_7_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:54bc26a0fddc160a4e0d1a813aec78abb3c9cb77db5039b74c23de759faa67f5
+  - name: openjdk_8_4_8_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:b56269cb849afca34e7f82cc8e01a44bb32af6126f24db28019a58e556d4cb3c
+  - name: openjdk_8_4_8_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel8@sha256:c15d4fd827f554291c14851f187947f4109c0e20257fa2f1e141b32669569358
+  - name: openjdk_8_5_0_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:f59ae21773dfc207454a709ac5f7aad2be6a6a20ac88da26c379edeed54537b8
+  - name: openjdk_8_5_0_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:5656cd188d054551489d45be996266d03e3faa8814b8bfc0f360cf0dceb83cbe
+  - name: openjdk_8_5_0_3
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:48cf13e71953cea6f62354289f0d8ece7a8a481ee0bb2c76eb9352d438db9ca3
+  - name: openjdk_8_5_1_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:c25e3152d6a6b6d5cd86d311bf567e594b9948440785209cd8d7986076a5a10d
+  - name: openjdk_8_5_2_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:11bfe5c8109d26164cff428232b2001ab8df464f14a382661b936543336e2960
+  - name: openjdk_8_5_2_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:ad4f91f984b4b898012963d52e6ebcd166ec03e76e26eba3191ecb87f51fb18d
+  - name: openjdk_8_5_3_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:9bc0b730570ab55fbeca83075949f4caa96ed5c37637420a59cd4a7db01ea840
+  - name: openjdk_8_5_3_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:0d368459c98c5788dd55d2add5b4b7d438b9a8c814ea8aee2222ea956699cbb6
+  - name: openjdk_8_5_4_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:879f3dcc24ffe795472779f777d955666ba4041c17e717d5e165cd7f12d7955a
+  - name: openjdk_8_5_4_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:6e1766784b684561666134d41dca5331b80d50e63695fe7b1a1d6d4cdb73f0bd
+  - name: openjdk_8_5_4_3
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:4b9bf39d2ff14bcfbd4628a399093703d87a2b2b9c8e74c3d7cfdff4b5167fa4
+  - name: openjdk_8_5_5_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:a711c50e489995fb60e5dec23ce286360743feda5066e4a0861d448aa4f2e903
+  - name: openjdk_8_5_5_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:6b78aaf15558c0522d22ba3003244203e6d39e6fe737c3075e30de8763218358
+  - name: openjdk_8_5_5_3
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:1d5525d2d575dcc9d90da57afeb5fb310edc28d97d7ba55290db6bd152a34a95
+  - name: openjdk_8_5_5_4
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:a951127edfb7b3014750434971f131ece4a149f47d79a1b6012f620db758c4ec
+  - name: openjdk_8_6_0_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:001265497717a6a61466210f59eebe434ad25feffdf8b3cdf31131f9aab39258
+  - name: openjdk_8_6_0_2
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:a757b6612a55e5ea7f0a3b75873093c15439ff711e611a65d425272d12bb2c29
+  - name: openjdk_8_6_0_3
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:2ea02066e2476c864f9baedfc5ff0d9cbf24790ffb00b41ef09e6482f70ed2d9
+  - name: openjdk_8_6_1_1
+    image: registry.redhat.io/datagrid/datagrid-8-rhel9@sha256:e284075f6c101dd81aa7cdb8adfda973dfb494d7afee21816bc965f7c5af14c0

@@ -29,11 +29,11 @@ import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.provision.Provisioner;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
-import org.keycloak.k8s.v2alpha1.Keycloak;
-import org.keycloak.k8s.v2alpha1.KeycloakOperatorKeycloakList;
-import org.keycloak.k8s.v2alpha1.KeycloakOperatorRealmImportList;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
-import org.keycloak.k8s.v2alpha1.keycloakspec.Http;
+import org.keycloak.k8s.v2beta1.Keycloak;
+import org.keycloak.k8s.v2beta1.KeycloakOperatorKeycloakList;
+import org.keycloak.k8s.v2beta1.KeycloakOperatorRealmImportList;
+import org.keycloak.k8s.v2beta1.KeycloakRealmImport;
+import org.keycloak.k8s.v2beta1.keycloakspec.Http;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.http.Https;

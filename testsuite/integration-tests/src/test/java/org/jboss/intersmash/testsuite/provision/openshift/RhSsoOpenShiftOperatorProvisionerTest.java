@@ -40,6 +40,16 @@ import org.jboss.intersmash.provision.operator.model.keycloak.realm.spec.Redirec
 import org.jboss.intersmash.provision.operator.model.keycloak.user.KeycloakUserBuilder;
 import org.jboss.intersmash.provision.operator.model.keycloak.user.spec.KeycloakAPIUserBuilder;
 import org.jboss.intersmash.provision.operator.model.keycloak.user.spec.KeycloakCredentialBuilder;
+import org.jboss.intersmash.rhsso.v1alpha1.Keycloak;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakBackup;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakClient;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakRealm;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakUser;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakclientspec.Client;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakclientspec.RealmSelector;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.InstanceSelector;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.User;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.user.Credentials;
 import org.jboss.intersmash.testsuite.junit5.categories.NotForCommunityExecutionProfile;
 import org.jboss.intersmash.testsuite.junit5.categories.OpenShiftTest;
 import org.jboss.intersmash.testsuite.openshift.ProjectCreationCapable;
@@ -48,16 +58,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.keycloak.v1alpha1.Keycloak;
-import org.keycloak.v1alpha1.KeycloakBackup;
-import org.keycloak.v1alpha1.KeycloakClient;
-import org.keycloak.v1alpha1.KeycloakRealm;
-import org.keycloak.v1alpha1.KeycloakUser;
-import org.keycloak.v1alpha1.keycloakclientspec.Client;
-import org.keycloak.v1alpha1.keycloakclientspec.RealmSelector;
-import org.keycloak.v1alpha1.keycloakrealmspec.InstanceSelector;
-import org.keycloak.v1alpha1.keycloakuserspec.User;
-import org.keycloak.v1alpha1.keycloakuserspec.user.Credentials;
 import org.slf4j.event.Level;
 
 import cz.xtf.core.config.OpenShiftConfig;
@@ -549,7 +549,7 @@ public class RhSsoOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-realm-user";
-			org.keycloak.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.keycloak.v1alpha1.keycloakuserspec.RealmSelector();
+			org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.RealmSelector();
 			realmSelector.setMatchLabels(matchLabels);
 			User user = new User();
 			user.setUsername("realm_user");
@@ -584,7 +584,7 @@ public class RhSsoOpenShiftOperatorProvisionerTest implements ProjectCreationCap
 		KEYCLOAK_OPERATOR_PROVISIONER.subscribe();
 		try {
 			name = "example-realm-user-with-creds";
-			org.keycloak.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.keycloak.v1alpha1.keycloakuserspec.RealmSelector();
+			org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.RealmSelector realmSelector = new org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.RealmSelector();
 			Credentials credentials = new Credentials();
 			credentials.setType("password");
 			credentials.setValue("12345");

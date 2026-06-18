@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.realm.spec;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.authenticationflows.AuthenticationExecutions;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.authenticationflows.AuthenticationExecutions;
 
 public final class KeycloakAPIAuthenticationExecutionBuilder {
 	private String authenticator;

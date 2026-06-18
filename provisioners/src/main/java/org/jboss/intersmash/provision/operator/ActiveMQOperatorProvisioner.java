@@ -16,6 +16,7 @@
 package org.jboss.intersmash.provision.operator;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.jboss.intersmash.IntersmashConfig;
@@ -147,21 +148,18 @@ public abstract class ActiveMQOperatorProvisioner<C extends NamespacedKubernetes
 		tmpBroker.getSpec().getDeploymentPlan().setSize(replicas);
 		activeMQArtemis().replace(tmpBroker);
 		if (wait) {
-			new SimpleWaiter(() -> getLabeledPods(tmpBroker.getKind(),
-					tmpBroker.getMetadata().getName())
-					.size() == replicas)
-					.level(Level.DEBUG)
-					.waitFor();
-			/*
-			 * The following wait condition has been suppressed temporarily since:
-			 * 1. doesn't allow for the AMQ Broker CR `.podStatus` to be checked
-			 * 2. the condition above waits already for the expected (i.e. representing ActiveMQArtemis CRs) number of CR
-			 * pods to be ready
-			 */
-			//			new SimpleWaiter(() -> activeMQArtemis().get().getStatus().getPodStatus().getReady().size() == replicas)
-			//					.failFast(ffCheck)
-			//					.level(Level.DEBUG)
-			//					.waitFor();
+			if (replicas == 0) {
+				new SimpleWaiter(() -> {
+					var stopped = activeMQArtemis().get().getStatus().getPodStatus().getStopped();
+					return Objects.nonNull(stopped) && !stopped.isEmpty();
+				}).level(Level.DEBUG).waitFor();
+			} else {
+				new SimpleWaiter(() -> {
+					var ready = activeMQArtemis().get().getStatus().getPodStatus().getReady();
+					return Objects.nonNull(ready) && ready.size() == replicas;
+				}).level(Level.DEBUG).waitFor();
+			}
+
 		}
 	}
 

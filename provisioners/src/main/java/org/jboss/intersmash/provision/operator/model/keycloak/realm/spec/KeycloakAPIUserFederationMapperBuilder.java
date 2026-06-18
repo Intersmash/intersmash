@@ -18,7 +18,7 @@ package org.jboss.intersmash.provision.operator.model.keycloak.realm.spec;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.UserFederationMappers;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.UserFederationMappers;
 
 public final class KeycloakAPIUserFederationMapperBuilder {
 	private Map<String, String> config;

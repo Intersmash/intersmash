@@ -19,8 +19,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.jboss.intersmash.provision.operator.KeycloakOperatorProvisioner;
-import org.keycloak.k8s.v2alpha1.Keycloak;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
+import org.keycloak.k8s.v2beta1.Keycloak;
+import org.keycloak.k8s.v2beta1.KeycloakRealmImport;
 
 /**
  * End user Application interface which presents Keycloak operator application on OpenShift Container Platform.

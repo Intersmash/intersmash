@@ -18,11 +18,11 @@ package org.jboss.intersmash.application.operator;
 import java.util.Collections;
 import java.util.List;
 
-import org.keycloak.v1alpha1.Keycloak;
-import org.keycloak.v1alpha1.KeycloakBackup;
-import org.keycloak.v1alpha1.KeycloakClient;
-import org.keycloak.v1alpha1.KeycloakRealm;
-import org.keycloak.v1alpha1.KeycloakUser;
+import org.jboss.intersmash.rhsso.v1alpha1.Keycloak;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakBackup;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakClient;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakRealm;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakUser;
 
 /**
  * End user Application interface which presents Keycloak operator application on OpenShift Container Platform.
