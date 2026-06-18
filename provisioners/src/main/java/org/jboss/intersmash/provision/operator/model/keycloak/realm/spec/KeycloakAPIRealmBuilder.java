@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.Realm;
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.Clients;
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.IdentityProviders;
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.Users;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.Realm;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.Clients;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.IdentityProviders;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.Users;
 
 public final class KeycloakAPIRealmBuilder {
 	private String id;

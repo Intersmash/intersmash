@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.keycloak.k8s.v2alpha1;
+package org.keycloak.k8s.v2beta1;
 
 import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
 public class KeycloakOperatorRealmImportList
-		extends DefaultKubernetesResourceList<org.keycloak.k8s.v2alpha1.KeycloakRealmImport> {
+		extends DefaultKubernetesResourceList<org.keycloak.k8s.v2beta1.KeycloakRealmImport> {
 }

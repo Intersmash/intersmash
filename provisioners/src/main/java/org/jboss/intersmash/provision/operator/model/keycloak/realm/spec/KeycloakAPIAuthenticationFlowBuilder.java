@@ -18,8 +18,8 @@ package org.jboss.intersmash.provision.operator.model.keycloak.realm.spec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.AuthenticationFlows;
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.authenticationflows.AuthenticationExecutions;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.AuthenticationFlows;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.authenticationflows.AuthenticationExecutions;
 
 public final class KeycloakAPIAuthenticationFlowBuilder {
 	private String alias;

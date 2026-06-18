@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.ClientScopes;
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.clientscopes.ProtocolMappers;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.ClientScopes;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.clientscopes.ProtocolMappers;
 
 public final class KeycloakClientScopeBuilder {
 	private Map<String, String> attributes;

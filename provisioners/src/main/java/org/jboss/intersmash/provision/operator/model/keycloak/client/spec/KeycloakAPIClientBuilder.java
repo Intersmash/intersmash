@@ -20,8 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.Clients;
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.clients.ProtocolMappers;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.Clients;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.clients.ProtocolMappers;
 
 /**
  * Keycloak Client REST object.

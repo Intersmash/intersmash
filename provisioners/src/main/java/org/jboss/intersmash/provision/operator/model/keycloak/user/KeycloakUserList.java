@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.user;
 
-import org.keycloak.v1alpha1.KeycloakUser;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakUser;
 
 import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 

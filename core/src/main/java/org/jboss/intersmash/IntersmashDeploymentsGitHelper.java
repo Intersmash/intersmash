@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -183,7 +184,8 @@ class IntersmashDeploymentsGitHelper {
 				throw new RuntimeException(String.format("Missing URI in git remote ref '%s'", remote));
 			}
 			// we expect a single URI
-			String[] pathTokens = remoteConfig.getURIs().get(0).getPath().split("/");
+			String[] pathTokens = Arrays.stream(remoteConfig.getURIs().get(0).getPath().split("/"))
+					.filter(Predicate.not(String::isEmpty)).toArray(String[]::new);
 			if (pathTokens.length != 2) {
 				throw new RuntimeException(String.format("Unexpected path '%s' in URI '%s' of git remote ref '%s'",
 						remoteConfig.getURIs().get(0).getPath(), remoteConfig.getURIs().get(0), remote));

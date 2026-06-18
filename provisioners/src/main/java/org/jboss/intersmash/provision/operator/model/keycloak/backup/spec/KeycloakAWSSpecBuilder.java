@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.backup.spec;
 
-import org.keycloak.v1alpha1.keycloakbackupspec.Aws;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakbackupspec.Aws;
 
 /**
  * If provided, an automatic database backup will be created on AWS S3 instead of

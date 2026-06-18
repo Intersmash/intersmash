@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.user.spec;
 
-import org.keycloak.v1alpha1.keycloakuserspec.user.FederatedIdentities;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.user.FederatedIdentities;
 
 public final class FederatedIdentityBuilder {
 	private String identityProvider;

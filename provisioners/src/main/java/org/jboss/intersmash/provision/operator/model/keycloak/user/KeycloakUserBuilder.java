@@ -17,10 +17,10 @@ package org.jboss.intersmash.provision.operator.model.keycloak.user;
 
 import java.util.Map;
 
-import org.keycloak.v1alpha1.KeycloakUser;
-import org.keycloak.v1alpha1.KeycloakUserSpec;
-import org.keycloak.v1alpha1.keycloakuserspec.RealmSelector;
-import org.keycloak.v1alpha1.keycloakuserspec.User;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakUser;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakUserSpec;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.RealmSelector;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakuserspec.User;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 

@@ -18,10 +18,10 @@ package org.jboss.intersmash.provision.operator.model.keycloak.keycloak.spec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.Experimental;
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Env;
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Volumes;
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.Experimental;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Env;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.Volumes;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
 
 /**
  * Experimental section
