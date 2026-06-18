@@ -2,7 +2,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.11.2
+    controller-gen.kubebuilder.io/version: v0.16.5
   name: activemqartemissecurities.broker.amq.io
 spec:
   group: broker.amq.io
@@ -16,30 +16,45 @@ spec:
   scope: Namespaced
   versions:
   - deprecated: true
-    deprecationWarning: The ActiveMQArtemisSecurity CRD is deprecated. Use the spec.brokerProperties attribute in the ActiveMQArtemis CR and -jaas-config extraMount to configure security instead
+    deprecationWarning: The ActiveMQArtemisSecurity CRD is deprecated. Use the spec.brokerProperties
+      attribute in the ActiveMQArtemis CR and -jaas-config extraMount to configure
+      security instead
     name: v1alpha1
     schema:
       openAPIV3Schema:
         description: Security configuration for the broker
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
           spec:
-            description: ActiveMQArtemisSecuritySpec defines the desired state of ActiveMQArtemisSecurity
+            description: ActiveMQArtemisSecuritySpec defines the desired state of
+              ActiveMQArtemisSecurity
             properties:
               applyToCrNames:
-                description: Apply this security config to the broker crs in the current namespace. A value of * or empty string means applying to all broker crs. Default apply to all broker crs
+                description: Apply this security config to the broker crs in the current
+                  namespace. A value of * or empty string means applying to all broker
+                  crs. Default apply to all broker crs
                 items:
                   type: string
                 type: array
               loginModules:
-                description: Specifies the login modules (deprecated in favour of ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
+                description: Specifies the login modules (deprecated in favour of
+                  ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
                 properties:
                   guestLoginModules:
                     description: Specifies the guest login modules
@@ -88,7 +103,8 @@ spec:
                               description: Client keystore password
                               type: string
                             confidentialPort:
-                              description: The confidential port used by the Keycloak server for secure connections over SSL/TLS
+                              description: The confidential port used by the Keycloak
+                                server for secure connections over SSL/TLS
                               format: int32
                               type: integer
                             connectionPoolSize:
@@ -113,7 +129,8 @@ spec:
                               items:
                                 properties:
                                   key:
-                                    description: The regular expression to match the Redirect URI
+                                    description: The regular expression to match the
+                                      Redirect URI
                                     type: string
                                   value:
                                     description: The replacement value
@@ -133,14 +150,17 @@ spec:
                               description: If to expose access token
                               type: boolean
                             ignoreOauthQueryParameter:
-                              description: Whether to turn off processing of the access_token query parameter for bearer token processing
+                              description: Whether to turn off processing of the access_token
+                                query parameter for bearer token processing
                               type: boolean
                             minTimeBetweenJwksRequests:
-                              description: Minimum interval between two requests to Keycloak to retrieve new public keys
+                              description: Minimum interval between two requests to
+                                Keycloak to retrieve new public keys
                               format: int64
                               type: integer
                             principalAttribute:
-                              description: OpenID Connect ID Token attribute to populate the UserPrincipal name with
+                              description: OpenID Connect ID Token attribute to populate
+                                the UserPrincipal name with
                               type: string
                             proxyUrl:
                               description: The proxy URL
@@ -149,7 +169,8 @@ spec:
                               description: If it is public client
                               type: boolean
                             publicKeyCacheTtl:
-                              description: Maximum interval between two requests to Keycloak to retrieve new public keys
+                              description: Maximum interval between two requests to
+                                Keycloak to retrieve new public keys
                               format: int64
                               type: integer
                             realm:
@@ -163,7 +184,8 @@ spec:
                               items:
                                 properties:
                                   key:
-                                    description: The regular expression to match the Redirect URI
+                                    description: The regular expression to match the
+                                      Redirect URI
                                     type: string
                                   value:
                                     description: The replacement value
@@ -190,7 +212,8 @@ spec:
                               description: Cookie path for a cookie store
                               type: string
                             tokenMinimumTimeToLive:
-                              description: Minimum time to refresh an active access token
+                              description: Minimum time to refresh an active access
+                                token
                               format: int64
                               type: integer
                             tokenStore:
@@ -203,17 +226,20 @@ spec:
                               description: Truststore password
                               type: string
                             turnOffChangeSessionIdOnLogin:
-                              description: If not to change session id on a successful login
+                              description: If not to change session id on a successful
+                                login
                               type: boolean
                             useResourceRoleMappings:
                               description: If to use resource role mappings
                               type: boolean
                             verifyTokenAudience:
-                              description: Verify whether the token contains this client name (resource) as an audience
+                              description: Verify whether the token contains this
+                                client name (resource) as an audience
                               type: boolean
                           type: object
                         moduleType:
-                          description: Type of KeycloakLoginModule directAccess or bearerToken
+                          description: Type of KeycloakLoginModule directAccess or
+                            bearerToken
                           type: string
                         name:
                           description: Name for KeycloakLoginModule
@@ -232,13 +258,16 @@ spec:
                           items:
                             properties:
                               name:
-                                description: User name to be defined in properties login module
+                                description: User name to be defined in properties
+                                  login module
                                 type: string
                               password:
-                                description: Password to be defined in properties login module
+                                description: Password to be defined in properties
+                                  login module
                                 type: string
                               roles:
-                                description: Roles to be defined in properties login module
+                                description: Roles to be defined in properties login
+                                  module
                                 items:
                                   type: string
                                 type: array
@@ -248,7 +277,8 @@ spec:
                     type: array
                 type: object
               securityDomains:
-                description: Specifies the security domains (deprecated in favour of ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
+                description: Specifies the security domains (deprecated in favour
+                  of ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
                 properties:
                   brokerDomain:
                     description: Specify the broker domain
@@ -448,25 +478,40 @@ spec:
             description: Specifies the security status modules
             properties:
               conditions:
-                description: Current state of the resource Conditions represent the latest available observations of an object's state
+                description: |-
+                  Current state of the resource
+                  Conditions represent the latest available observations of an object's state
                 items:
-                  description: "Condition contains details for one aspect of the current state of this API Resource. --- This struct is intended for direct use as an array at the field path .status.conditions.  For example, \n type FooStatus struct{ // Represents the observations of a foo's current state. // Known .status.conditions.type are: \"Available\", \"Progressing\", and \"Degraded\" // +patchMergeKey=type // +patchStrategy=merge // +listType=map // +listMapKey=type Conditions []metav1.Condition `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\" protobuf:\"bytes,1,rep,name=conditions\"` \n // other fields }"
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
                   properties:
                     lastTransitionTime:
-                      description: lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
                       format: date-time
                       type: string
                     message:
-                      description: message is a human readable message indicating details about the transition. This may be an empty string.
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
                       maxLength: 32768
                       type: string
                     observedGeneration:
-                      description: observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
                       format: int64
                       minimum: 0
                       type: integer
                     reason:
-                      description: reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
                       maxLength: 1024
                       minLength: 1
                       pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
@@ -479,7 +524,7 @@ spec:
                       - Unknown
                       type: string
                     type:
-                      description: type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
                       maxLength: 316
                       pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
                       type: string
@@ -498,30 +543,45 @@ spec:
     subresources:
       status: {}
   - deprecated: true
-    deprecationWarning: The ActiveMQArtemisSecurity CRD is deprecated. Use the spec.brokerProperties attribute in the ActiveMQArtemis CR and -jaas-config extraMount to configure security instead
+    deprecationWarning: The ActiveMQArtemisSecurity CRD is deprecated. Use the spec.brokerProperties
+      attribute in the ActiveMQArtemis CR and -jaas-config extraMount to configure
+      security instead
     name: v1beta1
     schema:
       openAPIV3Schema:
         description: Security configuration for the broker
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
           spec:
-            description: ActiveMQArtemisSecuritySpec defines the desired state of ActiveMQArtemisSecurity
+            description: ActiveMQArtemisSecuritySpec defines the desired state of
+              ActiveMQArtemisSecurity
             properties:
               applyToCrNames:
-                description: Apply this security config to the broker crs in the current namespace. A value of * or empty string means applying to all broker crs. Default apply to all broker crs
+                description: Apply this security config to the broker crs in the current
+                  namespace. A value of * or empty string means applying to all broker
+                  crs. Default apply to all broker crs
                 items:
                   type: string
                 type: array
               loginModules:
-                description: Specifies the login modules (deprecated in favour of ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
+                description: Specifies the login modules (deprecated in favour of
+                  ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
                 properties:
                   guestLoginModules:
                     description: Specifies the guest login modules
@@ -570,7 +630,8 @@ spec:
                               description: Client keystore password
                               type: string
                             confidentialPort:
-                              description: The confidential port used by the Keycloak server for secure connections over SSL/TLS
+                              description: The confidential port used by the Keycloak
+                                server for secure connections over SSL/TLS
                               format: int32
                               type: integer
                             connectionPoolSize:
@@ -595,7 +656,8 @@ spec:
                               items:
                                 properties:
                                   key:
-                                    description: The regular expression to match the Redirect URI
+                                    description: The regular expression to match the
+                                      Redirect URI
                                     type: string
                                   value:
                                     description: The replacement value
@@ -615,14 +677,17 @@ spec:
                               description: If to expose access token
                               type: boolean
                             ignoreOauthQueryParameter:
-                              description: Whether to turn off processing of the access_token query parameter for bearer token processing
+                              description: Whether to turn off processing of the access_token
+                                query parameter for bearer token processing
                               type: boolean
                             minTimeBetweenJwksRequests:
-                              description: Minimum interval between two requests to Keycloak to retrieve new public keys
+                              description: Minimum interval between two requests to
+                                Keycloak to retrieve new public keys
                               format: int64
                               type: integer
                             principalAttribute:
-                              description: OpenID Connect ID Token attribute to populate the UserPrincipal name with
+                              description: OpenID Connect ID Token attribute to populate
+                                the UserPrincipal name with
                               type: string
                             proxyUrl:
                               description: The proxy URL
@@ -631,7 +696,8 @@ spec:
                               description: If it is public client
                               type: boolean
                             publicKeyCacheTtl:
-                              description: Maximum interval between two requests to Keycloak to retrieve new public keys
+                              description: Maximum interval between two requests to
+                                Keycloak to retrieve new public keys
                               format: int64
                               type: integer
                             realm:
@@ -645,7 +711,8 @@ spec:
                               items:
                                 properties:
                                   key:
-                                    description: The regular expression to match the Redirect URI
+                                    description: The regular expression to match the
+                                      Redirect URI
                                     type: string
                                   value:
                                     description: The replacement value
@@ -672,7 +739,8 @@ spec:
                               description: Cookie path for a cookie store
                               type: string
                             tokenMinimumTimeToLive:
-                              description: Minimum time to refresh an active access token
+                              description: Minimum time to refresh an active access
+                                token
                               format: int64
                               type: integer
                             tokenStore:
@@ -685,17 +753,20 @@ spec:
                               description: Truststore password
                               type: string
                             turnOffChangeSessionIdOnLogin:
-                              description: If not to change session id on a successful login
+                              description: If not to change session id on a successful
+                                login
                               type: boolean
                             useResourceRoleMappings:
                               description: If to use resource role mappings
                               type: boolean
                             verifyTokenAudience:
-                              description: Verify whether the token contains this client name (resource) as an audience
+                              description: Verify whether the token contains this
+                                client name (resource) as an audience
                               type: boolean
                           type: object
                         moduleType:
-                          description: Type of KeycloakLoginModule directAccess or bearerToken
+                          description: Type of KeycloakLoginModule directAccess or
+                            bearerToken
                           type: string
                         name:
                           description: Name for KeycloakLoginModule
@@ -714,13 +785,16 @@ spec:
                           items:
                             properties:
                               name:
-                                description: User name to be defined in properties login module
+                                description: User name to be defined in properties
+                                  login module
                                 type: string
                               password:
-                                description: Password to be defined in properties login module
+                                description: Password to be defined in properties
+                                  login module
                                 type: string
                               roles:
-                                description: Roles to be defined in properties login module
+                                description: Roles to be defined in properties login
+                                  module
                                 items:
                                   type: string
                                 type: array
@@ -730,7 +804,8 @@ spec:
                     type: array
                 type: object
               securityDomains:
-                description: Specifies the security domains (deprecated in favour of ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
+                description: Specifies the security domains (deprecated in favour
+                  of ActiveMQArtemisSpec.DeploymentPlan.ExtraMounts.Secrets -jaas-config)
                 properties:
                   brokerDomain:
                     description: Specify the broker domain
@@ -936,25 +1011,40 @@ spec:
             description: Specifies the security status modules
             properties:
               conditions:
-                description: Current state of the resource Conditions represent the latest available observations of an object's state
+                description: |-
+                  Current state of the resource
+                  Conditions represent the latest available observations of an object's state
                 items:
-                  description: "Condition contains details for one aspect of the current state of this API Resource. --- This struct is intended for direct use as an array at the field path .status.conditions.  For example, \n type FooStatus struct{ // Represents the observations of a foo's current state. // Known .status.conditions.type are: \"Available\", \"Progressing\", and \"Degraded\" // +patchMergeKey=type // +patchStrategy=merge // +listType=map // +listMapKey=type Conditions []metav1.Condition `json:\"conditions,omitempty\" patchStrategy:\"merge\" patchMergeKey:\"type\" protobuf:\"bytes,1,rep,name=conditions\"` \n // other fields }"
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
                   properties:
                     lastTransitionTime:
-                      description: lastTransitionTime is the last time the condition transitioned from one status to another. This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
                       format: date-time
                       type: string
                     message:
-                      description: message is a human readable message indicating details about the transition. This may be an empty string.
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
                       maxLength: 32768
                       type: string
                     observedGeneration:
-                      description: observedGeneration represents the .metadata.generation that the condition was set based upon. For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date with respect to the current state of the instance.
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
                       format: int64
                       minimum: 0
                       type: integer
                     reason:
-                      description: reason contains a programmatic identifier indicating the reason for the condition's last transition. Producers of specific condition types may define expected values and meanings for this field, and whether the values are considered a guaranteed API. The value should be a CamelCase string. This field may not be empty.
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
                       maxLength: 1024
                       minLength: 1
                       pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
@@ -967,7 +1057,7 @@ spec:
                       - Unknown
                       type: string
                     type:
-                      description: type of condition in CamelCase or in foo.example.com/CamelCase. --- Many .condition.type values are consistent across resources like Available, but because arbitrary conditions can be useful (see .node.status.conditions), the ability to deconflict is important. The regex it matches is (dns1123SubdomainFmt/)?(qualifiedNameFmt)
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
                       maxLength: 316
                       pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
                       type: string
@@ -985,3 +1075,9 @@ spec:
     storage: true
     subresources:
       status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: null
+  storedVersions: null
