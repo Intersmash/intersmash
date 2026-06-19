@@ -299,6 +299,7 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 					.addVolumeMount("jboss-cli", extensionPath, false);
 
 			if (wildflyApplication.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals(CLI_LAUNCH_SCRIPT)))) {
+				// Application doesn't provide necessary env variable value to the extension script, so let's define it here.
 				addEnvVariable(appBuilder, CLI_LAUNCH_SCRIPT, extensionPath + "/" + scriptName, true,
 						!BinarySource.class.isAssignableFrom(wildflyApplication.getBuildInput().getClass()));
 			}
