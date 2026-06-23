@@ -17,7 +17,7 @@ package org.jboss.intersmash.provision.operator.model.infinispan.infinispan;
 
 import org.infinispan.v1.Infinispan;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
-public class InfinispanList extends CustomResourceList<Infinispan> {
+public class InfinispanList extends DefaultKubernetesResourceList<Infinispan> {
 }

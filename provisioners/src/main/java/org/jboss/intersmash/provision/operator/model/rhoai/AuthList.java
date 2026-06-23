@@ -17,11 +17,11 @@ package org.jboss.intersmash.provision.operator.model.rhoai;
 
 import org.jboss.intersmash.rhoai.platform.services.v1alpha1.Auth;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
 /**
  * Used by {@link org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner} client methods,
  * this class represents a concrete {@link java.util.List} of {@link Auth} instances.
  */
-public class AuthList extends CustomResourceList<Auth> {
+public class AuthList extends DefaultKubernetesResourceList<Auth> {
 }

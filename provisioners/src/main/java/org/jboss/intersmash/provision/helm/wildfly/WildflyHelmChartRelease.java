@@ -15,6 +15,7 @@
  */
 package org.jboss.intersmash.provision.helm.wildfly;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -30,153 +31,159 @@ import io.fabric8.kubernetes.api.model.VolumeMount;
  *
  * Can be used on the test side on order to accomplish dynamic configuration more easily.
  */
-public interface WildflyHelmChartRelease extends HelmChartRelease {
+public interface WildflyHelmChartRelease<R extends WildflyHelmChartRelease> extends HelmChartRelease {
 
 	Map<String, String> getDeploymentEnvironmentVariables();
 
 	void setDeploymentEnvironmentVariables(Map<String, String> deploymentEnvironmentVariables);
 
-	WildflyHelmChartRelease withDeploymentEnvironmentVariables(Map<String, String> deploymentEnvironmentVariables);
+	R withDeploymentEnvironmentVariables(Map<String, String> deploymentEnvironmentVariables);
 
-	WildflyHelmChartRelease withDeploymentEnvironmentVariable(String key, String value);
+	R withDeploymentEnvironmentVariable(String key, String value);
 
 	Map<String, String> getBuildEnvironmentVariables();
 
 	void setBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables);
 
-	WildflyHelmChartRelease withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables);
+	R withBuildEnvironmentVariables(Map<String, String> buildEnvironmentVariables);
 
-	WildflyHelmChartRelease withBuildEnvironmentVariable(String key, String value);
+	R withBuildEnvironmentVariable(String key, String value);
 
 	List<Image> getInjectedImages();
 
 	void setInjectedImages(List<Image> injectedImages);
 
-	WildflyHelmChartRelease withInjectedImages(List<Image> injectedImages);
+	R withInjectedImages(List<Image> injectedImages);
 
-	WildflyHelmChartRelease withInjectedImage(Image injectedImage);
+	R withInjectedImage(Image injectedImage);
 
 	List<Volume> getVolumes();
 
 	void setVolumes(List<Volume> volumes);
 
-	WildflyHelmChartRelease withVolumes(List<Volume> volumes);
+	R withVolumes(List<Volume> volumes);
 
-	WildflyHelmChartRelease withVolume(Volume volume);
+	R withVolume(Volume volume);
 
 	List<VolumeMount> getVolumeMounts();
 
 	void setVolumeMounts(List<VolumeMount> volumeMounts);
 
-	WildflyHelmChartRelease withVolumeMounts(List<VolumeMount> volumeMounts);
+	R withVolumeMounts(List<VolumeMount> volumeMounts);
 
-	WildflyHelmChartRelease withVolumeMount(VolumeMount volumeMount);
+	R withVolumeMount(VolumeMount volumeMount);
 
 	String getRouteHost();
 
 	void setRouteHost(String routeHost);
 
-	WildflyHelmChartRelease withRouteHost(String routeHost);
+	R withRouteHost(String routeHost);
 
 	boolean isRouteTLSEnabled();
 
 	void setRouteTLSEnabled(boolean routeTLSEnabled);
 
-	WildflyHelmChartRelease withRouteTLSEnabled(boolean routeTLSEnabled);
+	R withRouteTLSEnabled(boolean routeTLSEnabled);
 
 	boolean isTlsEnabled();
 
 	void setTlsEnabled(boolean tlsEnabled);
 
-	WildflyHelmChartRelease withTlsEnabled(boolean tlsEnabled);
+	R withTlsEnabled(boolean tlsEnabled);
 
 	LinkedHashSet<String> getS2iFeaturePacks();
 
 	void setS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks);
 
-	WildflyHelmChartRelease withS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks);
+	R withS2iFeaturePacks(LinkedHashSet<String> s2iFeaturePacks);
 
-	WildflyHelmChartRelease withS2iFeaturePacks(String s2iFeaturePacks);
+	R withS2iFeaturePacks(String s2iFeaturePacks);
 
-	WildflyHelmChartRelease withS2iFeaturePack(String s2iFeaturePack);
+	R withS2iFeaturePack(String s2iFeaturePack);
 
 	LinkedHashSet<String> getS2iGalleonLayers();
 
 	void setS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers);
 
-	WildflyHelmChartRelease withS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers);
+	R withS2iGalleonLayers(LinkedHashSet<String> s2iGalleonLayers);
 
-	WildflyHelmChartRelease withS2iGalleonLayers(String s2iGalleonLayers);
+	R withS2iGalleonLayers(String s2iGalleonLayers);
 
-	WildflyHelmChartRelease withS2iGalleonLayer(String s2iGalleonLayer);
+	R withS2iGalleonLayer(String s2iGalleonLayer);
 
 	LinkedHashSet<String> getS2iChannels();
 
 	void setS2iChannels(LinkedHashSet<String> s2iFeaturePacks);
 
-	WildflyHelmChartRelease withS2iChannels(LinkedHashSet<String> s2iChannels);
+	R withS2iChannels(LinkedHashSet<String> s2iChannels);
 
-	WildflyHelmChartRelease withS2iChannel(String s2iChannel);
+	R withS2iChannel(String s2iChannel);
 
 	BuildMode getBuildMode();
 
 	void setBuildMode(BuildMode buildMode);
 
-	WildflyHelmChartRelease withBuildMode(BuildMode buildMode);
+	R withBuildMode(BuildMode buildMode);
 
 	String getBootableJarBuilderImage();
 
 	void setBootableJarBuilderImage(String bootableJarBuilderImage);
 
-	WildflyHelmChartRelease withBootableJarBuilderImage(String bootableJarBuilderImage);
+	R withBootableJarBuilderImage(String bootableJarBuilderImage);
 
 	String getSourceRepositoryUrl();
 
 	void setSourceRepositoryUrl(String sourceRepositoryUrl);
 
-	WildflyHelmChartRelease withSourceRepositoryUrl(String sourceRepositoryUrl);
+	R withSourceRepositoryUrl(String sourceRepositoryUrl);
 
 	String getSourceRepositoryRef();
 
 	void setSourceRepositoryRef(String sourceRepositoryRef);
 
-	WildflyHelmChartRelease withSourceRepositoryRef(String sourceRepositoryRef);
+	R withSourceRepositoryRef(String sourceRepositoryRef);
 
 	String getContextDir();
 
 	void setContextDir(String contextDir);
 
-	WildflyHelmChartRelease withContextDir(String contextDir);
+	R withContextDir(String contextDir);
 
 	Integer getReplicas();
 
 	void setReplicas(Integer replicas);
 
-	WildflyHelmChartRelease withReplicas(Integer replicas);
+	R withReplicas(Integer replicas);
 
 	boolean isBuildEnabled();
 
 	void setBuildEnabled(boolean buildEnabled);
 
-	WildflyHelmChartRelease withBuildEnabled(boolean buildEnabled);
+	R withBuildEnabled(boolean buildEnabled);
 
 	boolean isDeployEnabled();
 
 	void setDeployEnabled(boolean deployEnabled);
 
-	WildflyHelmChartRelease withDeployEnabled(boolean deployEnabled);
+	R withDeployEnabled(boolean deployEnabled);
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	String getJdk17BuilderImage();
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	void setJdk17BuilderImage(String jdk17BuilderImage);
 
-	WildflyHelmChartRelease withJdk17BuilderImage(String jdk17BuilderImage);
+	@Deprecated(forRemoval = true, since = "0.0.5")
+	R withJdk17BuilderImage(String jdk17BuilderImage);
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	String getJdk17RuntimeImage();
 
+	@Deprecated(forRemoval = true, since = "0.0.5")
 	void setJdk17RuntimeImage(String jdk17RuntimeImage);
 
-	WildflyHelmChartRelease withJdk17RuntimeImage(String jdk17RuntimeImage);
+	@Deprecated(forRemoval = true, since = "0.0.5")
+	R withJdk17RuntimeImage(String jdk17RuntimeImage);
 
 	enum BuildMode {
 
@@ -191,6 +198,77 @@ public interface WildflyHelmChartRelease extends HelmChartRelease {
 
 		String getValue() {
 			return value;
+		}
+	}
+
+	JdkImage getJdkBuilderImage();
+
+	void setJdkBuilderImage(JdkImage jdkBuilderImage);
+
+	R withJdkBuilderImage(JdkImage jdkBuilderImage);
+
+	JdkImage getJdkRuntimeImage();
+
+	void setJdkRuntimeImage(JdkImage jdkRuntimeImage);
+
+	R withJdkRuntimeImage(JdkImage jdkRuntimeImage);
+
+	class JdkImage {
+		String image;
+		Version version;
+
+		public String getImage() {
+			return image;
+		}
+
+		public void setImage(String image) {
+			this.image = image;
+		}
+
+		public Version getVersion() {
+			return version;
+		}
+
+		public void setVersion(Version version) {
+			this.version = version;
+		}
+
+		public JdkImage(String image, Version version) {
+			this.image = image;
+			this.version = version;
+		}
+
+		public enum Version {
+			JDK_17("17"),
+			JDK_21("21"),
+			JDK_25("25");
+
+			private final String value;
+
+			private final static Map<String, JdkImage.Version> CONSTANTS = new HashMap<>();
+
+			static {
+				for (JdkImage.Version c : values()) {
+					CONSTANTS.put(c.value, c);
+				}
+			}
+
+			Version(String value) {
+				this.value = value;
+			}
+
+			String getValue() {
+				return value;
+			}
+
+			public static JdkImage.Version fromValue(String value) {
+				JdkImage.Version constant = CONSTANTS.get(value);
+				if (constant == null) {
+					throw new IllegalArgumentException(value);
+				} else {
+					return constant;
+				}
+			}
 		}
 	}
 }

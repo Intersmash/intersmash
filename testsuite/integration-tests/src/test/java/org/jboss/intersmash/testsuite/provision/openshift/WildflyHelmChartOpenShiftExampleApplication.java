@@ -26,6 +26,7 @@ import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.eap81.HelmEap81Release;
+import org.jboss.intersmash.model.helm.charts.values.eap82.HelmEap82Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.model.helm.charts.values.xp5.HelmXp5Release;
 import org.jboss.intersmash.model.helm.charts.values.xp6.HelmXp6Release;
@@ -33,6 +34,7 @@ import org.jboss.intersmash.provision.helm.wildfly.WildFlyHelmChartReleaseAdapte
 import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 import org.jboss.intersmash.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.eap81.Eap81HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.eap82.Eap82HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.xp5.EapXp5HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.xp6.EapXp6HelmChartReleaseAdapter;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
@@ -55,6 +57,8 @@ public class WildflyHelmChartOpenShiftExampleApplication
 				release = loadRelease(new Eap8HelmChartReleaseAdapter(new HelmEap8Release()));
 			} else if (TestDeploymentProperties.isEap81DeploymentsBuildStreamEnabled()) {
 				release = loadRelease(new Eap81HelmChartReleaseAdapter(new HelmEap81Release()));
+			} else if (TestDeploymentProperties.isEap82DeploymentsBuildStreamEnabled()) {
+				release = loadRelease(new Eap82HelmChartReleaseAdapter(new HelmEap82Release()));
 			} else if (TestDeploymentProperties.isEapXp5DeploymentsBuildStreamEnabled()) {
 				release = loadRelease(new EapXp5HelmChartReleaseAdapter(new HelmXp5Release()));
 			} else if (TestDeploymentProperties.isEapXp6DeploymentsBuildStreamEnabled()) {
@@ -87,6 +91,8 @@ public class WildflyHelmChartOpenShiftExampleApplication
 									+ TestDeploymentProperties
 											.getWildflyDeploymentVariantProfileNameFromStream(deploymentStream)));
 		}
+		final WildflyHelmChartRelease.JdkImage.Version jdkVersion = WildflyHelmChartRelease.JdkImage.Version
+				.fromValue(IntersmashConfig.wildflyImageJdk());
 		// ok, let's configure the release via the WildflyHelmChartRelease fluent(-ish) API,
 		// which offers a common reference for both WildFly and EAP (latest)
 		release
@@ -96,8 +102,10 @@ public class WildflyHelmChartOpenShiftExampleApplication
 				.withSourceRepositoryUrl(IntersmashConfig.deploymentsRepositoryUrl())
 				.withSourceRepositoryRef(IntersmashConfig.deploymentsRepositoryRef())
 				.withContextDir("testsuite/deployments/openshift-jakarta-sample-standalone")
-				.withJdk17BuilderImage(IntersmashConfig.wildflyImageURL())
-				.withJdk17RuntimeImage(IntersmashConfig.wildflyRuntimeImageURL())
+				.withJdkBuilderImage(new WildflyHelmChartRelease.JdkImage(IntersmashConfig.wildflyImageURL(),
+						jdkVersion))
+				.withJdkRuntimeImage(new WildflyHelmChartRelease.JdkImage(IntersmashConfig.wildflyRuntimeImageURL(),
+						jdkVersion))
 				.withBuildEnvironmentVariable("MAVEN_ARGS_APPEND", mavenAdditionalArgs);
 		List<String> channelDefinition = Arrays.asList(this.eeChannelGroupId(), this.eeChannelArtifactId(),
 				this.eeChannelVersion());

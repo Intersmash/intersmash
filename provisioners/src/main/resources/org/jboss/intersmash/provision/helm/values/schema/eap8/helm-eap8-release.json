@@ -234,7 +234,7 @@
                       "jdk": {
                         "description": "JDK Version of the EAP S2I images",
                         "type": "string",
-                        "enum": ["17"],
+                        "enum": ["17", "21"],
                         "default": "17"
                       },
                       "jdk17": {
@@ -248,6 +248,20 @@
                           "runtimeImage": {
                             "description": "EAP S2I Runtime image for JDK 17",
                             "type": "string"
+                          }
+                        }
+                      },
+                      "jdk21": {
+                          "description": "EAP S2I images for JDK 21",
+                          "type": "object",
+                          "properties": {
+                            "builderImage": {
+                              "description": "EAP S2I Builder image for JDK 21",
+                              "type": "string"
+                            },
+                            "runtimeImage": {
+                              "description": "EAP S2I Runtime image for JDK 21",
+                              "type": "string"
                             }
                           }
                         },
@@ -631,4 +645,3 @@
       }
   }
 }
-

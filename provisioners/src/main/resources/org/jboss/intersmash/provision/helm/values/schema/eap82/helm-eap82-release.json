@@ -28,7 +28,7 @@
               "mode": {
                   "description": "Which mode to use to build the application",
                   "type": "string",
-                  "enum": ["s2i"],
+                  "enum": ["s2i", "bootable-jar"],
                   "default": "s2i"
               },
               "uri": {
@@ -234,22 +234,8 @@
                       "jdk": {
                         "description": "JDK Version of the EAP S2I images",
                         "type": "string",
-                        "enum": ["17", "21"],
-                        "default": "17"
-                      },
-                      "jdk17": {
-                        "description": "EAP S2I images for JDK 17",
-                        "type": "object",
-                        "properties": {
-                          "builderImage": {
-                            "description": "EAP S2I Builder image for JDK 17",
-                            "type": "string"
-                          },
-                          "runtimeImage": {
-                            "description": "EAP S2I Runtime image for JDK 17",
-                            "type": "string"
-                          }
-                        }
+                        "enum": ["21", "25"],
+                        "default": "21"
                       },
                       "jdk21": {
                         "description": "EAP S2I images for JDK 21",
@@ -261,6 +247,20 @@
                           },
                           "runtimeImage": {
                             "description": "EAP S2I Runtime image for JDK 21",
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "jdk25": {
+                        "description": "EAP S2I images for JDK 25",
+                        "type": "object",
+                        "properties": {
+                          "builderImage": {
+                            "description": "EAP S2I Builder image for JDK 25",
+                            "type": "string"
+                          },
+                          "runtimeImage": {
+                            "description": "EAP S2I Runtime image for JDK 25",
                             "type": "string"
                           }
                         }
@@ -306,6 +306,16 @@
                         }
                       }
                   }
+              },
+              "bootableJar": {
+                "description": "Configuration specific to Bootable Jar Build (applicable only if build mode is set to bootable-jar)",
+                "type": ["object", "null"],
+                "properties": {
+                    "builderImage": {
+                        "description": "The JDK Builder image",
+                        "type": ["string", "null"]
+                    }
+                }
               }
           }
       },

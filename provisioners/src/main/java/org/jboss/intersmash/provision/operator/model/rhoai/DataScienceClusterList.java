@@ -17,11 +17,11 @@ package org.jboss.intersmash.provision.operator.model.rhoai;
 
 import org.jboss.intersmash.rhoai.datasciencecluster.v1.DataScienceCluster;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
 /**
  * Used by {@link org.jboss.intersmash.provision.operator.OpenDataHubOperatorProvisioner} client methods,
  * this class represents a concrete {@link java.util.List} of {@link DataScienceCluster} instances.
  */
-public class DataScienceClusterList extends CustomResourceList<DataScienceCluster> {
+public class DataScienceClusterList extends DefaultKubernetesResourceList<DataScienceCluster> {
 }

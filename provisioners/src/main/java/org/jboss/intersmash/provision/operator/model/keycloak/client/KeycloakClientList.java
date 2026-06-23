@@ -17,7 +17,7 @@ package org.jboss.intersmash.provision.operator.model.keycloak.client;
 
 import org.keycloak.v1alpha1.KeycloakClient;
 
-import io.fabric8.kubernetes.client.CustomResourceList;
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 
-public class KeycloakClientList extends CustomResourceList<KeycloakClient> {
+public class KeycloakClientList extends DefaultKubernetesResourceList<KeycloakClient> {
 }

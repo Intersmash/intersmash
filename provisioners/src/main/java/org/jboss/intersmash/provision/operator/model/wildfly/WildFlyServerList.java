@@ -22,8 +22,8 @@ import org.wildfly.v1alpha1.WildFlyServer;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import io.fabric8.kubernetes.api.model.DefaultKubernetesResourceList;
 import io.fabric8.kubernetes.api.model.ListMeta;
-import io.fabric8.kubernetes.client.CustomResourceList;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,7 +37,7 @@ import lombok.ToString;
 @Setter
 @EqualsAndHashCode
 @ToString
-public class WildFlyServerList extends CustomResourceList<WildFlyServer> {
+public class WildFlyServerList extends DefaultKubernetesResourceList<WildFlyServer> {
 
 	/**
 	 * Standard list’s metadata.

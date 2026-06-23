@@ -15,6 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -263,9 +264,9 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 		final Kafka applicationKafkaDefinition = application.getKafka();
 		if (application.isKRaftModeEnabled()) {
 			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
-			if (brokerNodePoolDefinitions.size() != 1) {
+			if (brokerNodePoolDefinitions.isEmpty()) {
 				throw new IllegalStateException(
-						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+						"No KafkaNodePool resources defined with the \"broker\" role exists!");
 			}
 			return brokerNodePoolDefinitions.get(0).getSpec().getReplicas();
 		}
@@ -283,9 +284,9 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 		final Kafka applicationKafkaDefinition = application.getKafka();
 		if (application.isKRaftModeEnabled()) {
 			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
-			if (brokerNodePoolDefinitions.size() != 1) {
+			if (brokerNodePoolDefinitions.isEmpty()) {
 				throw new IllegalStateException(
-						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+						"No KafkaNodePool resources defined with the \"broker\" role exists!!");
 			}
 			brokerNodePoolDefinitions.get(0).getSpec().setReplicas(configuredReplicas);
 		} else {
@@ -301,6 +302,9 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 	 */
 	private List<KafkaNodePool> getApplicationKafkaBrokerNodePools() {
 		final List<KafkaNodePool> applicationKafkaNodePoolDefinitions = getApplication().getNodePools();
+		if (applicationKafkaNodePoolDefinitions == null) {
+			return Collections.emptyList();
+		}
 		return applicationKafkaNodePoolDefinitions.stream()
 				.filter(np -> np.getSpec().getRoles().contains(ProcessRoles.BROKER))
 				.collect(Collectors.toList());
@@ -343,7 +347,7 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 			final boolean isKRaftModeEnabled = getApplication().isKRaftModeEnabled();
 			final List<KafkaNodePool> applicationKafkaNodePools = getApplication().getNodePools();
 			// When KRaft mode is enabled, first create KafkaNodePool resources
-			if (isKRaftModeEnabled) {
+			if (isKRaftModeEnabled && applicationKafkaNodePools != null) {
 				applicationKafkaNodePools.stream().forEach(np -> kafkaNodePoolResourceClient().resource(np).create());
 			}
 			// Create a Kafka cluster instance
@@ -429,9 +433,9 @@ public abstract class KafkaOperatorProvisioner<C extends NamespacedKubernetesCli
 		// Kafka CR or KafkaNodePool (broker) CR
 		if (application.isKRaftModeEnabled()) {
 			final List<KafkaNodePool> brokerNodePoolDefinitions = getApplicationKafkaBrokerNodePools();
-			if (brokerNodePoolDefinitions.size() != 1) {
+			if (brokerNodePoolDefinitions.isEmpty()) {
 				throw new IllegalStateException(
-						"Exactly one KafkaNodePool resources defined with the \"broker\" role must exist");
+						"No KafkaNodePool resources defined with the \"broker\" role exists!!!");
 			}
 			kafkaNodePoolResourceClient().resource(brokerNodePoolDefinitions.get(0)).update();
 		} else {
