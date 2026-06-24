@@ -47,3 +47,12 @@ infra/maven-cache/indy
 
 # Ansible
 *.retry
+
+# VSCode
+.vscode
+
+# Misc
+.java-version
+
+# Claude
+CLAUDE.md

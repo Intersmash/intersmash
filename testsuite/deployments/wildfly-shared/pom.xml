@@ -130,6 +130,11 @@
                                 <location>${wildfly.feature-pack.location}</location>
                             </feature-pack>
                         </feature-packs>
+                        <plugin-options>
+                            <!-- this flag is super necessary: otherwise wildfly-maven-plugin and
+                                 wildfly-jar-maven-plugin would collide  -->
+                            <jboss-fork-embedded>true</jboss-fork-embedded>
+                        </plugin-options>
                     </configuration>
                 </plugin>
             </plugins>

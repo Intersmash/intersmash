@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class ClusterVersionBasedKubernetesClientBinaryPathResolver implements KubernetesClientBinaryPathResolver {
-	private static final String KUBERNETES_CLIENT_BINARY_DOWNLOAD_BASE_URL = "https://dl.k8s.io/release";
+	private static final String KUBERNETES_CLIENT_BINARY_DOWNLOAD_BASE_URL = "https://dl.k8s.io";
 	public static final int BINARY_DOWNLOAD_CONNECTION_TIMEOUT = 20_000;
 	public static final int BINARY_DOWNLOAD_READ_TIMEOUT = 300_000;
 
@@ -92,6 +92,9 @@ public class ClusterVersionBasedKubernetesClientBinaryPathResolver implements Ku
 		String arch = "amd64";
 		if (SystemUtils.IS_OS_MAC) {
 			systemType = "darwin";
+			if (!"amd64".equals(SystemUtils.OS_ARCH)) {
+				arch = "arm64";
+			}
 		}
 		return String.format("%s/%s/bin/%s/%s/%s", KUBERNETES_CLIENT_BINARY_DOWNLOAD_BASE_URL, clusterVersion.getGitVersion(),
 				systemType, arch, BINARY_NAME);
