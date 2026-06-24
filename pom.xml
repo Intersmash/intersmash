@@ -453,7 +453,7 @@
                           <path>
                             <groupId>io.sundr</groupId>
                             <artifactId>builder-annotations</artifactId>
-                            <version>${version.sundr.builder-annotations}</version>
+                            <version>${version.sundrio.builder-annotations}</version>
                           </path>
                           <path>
                             <groupId>org.projectlombok</groupId>
