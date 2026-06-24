@@ -46,8 +46,8 @@
         <wildfly.xp-channel.artifactId />
         <wildfly.xp-channel.version />
 
-        <maven-war-plugin.version>3.3.2</maven-war-plugin.version>
-        <version.maven-deploy-plugin>3.0.0-M1</version.maven-deploy-plugin>
+        <maven-war-plugin.version>3.5.1</maven-war-plugin.version>
+        <version.maven-deploy-plugin>3.1.4</version.maven-deploy-plugin>
     </properties>
 
     <dependencyManagement>
