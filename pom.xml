@@ -11,6 +11,14 @@
     <description>Intersmash - Cloud-native tests with Java!</description>
     <url>http://github.com/Intersmash/intersmash</url>
 
+    <!-- Parent -->
+    <parent>
+        <groupId>org.jboss</groupId>
+        <artifactId>jboss-parent</artifactId>
+        <version>53</version>
+        <relativePath />
+    </parent>
+
     <licenses>
         <license>
             <name>The Apache License, Version 2.0</name>
