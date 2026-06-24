@@ -39,8 +39,8 @@
         <connection>scm:git:git://github.com/Intersmash/intersmash.git</connection>
         <developerConnection>scm:git:ssh://github.com:Intersmash/intersmash.git</developerConnection>
         <url>http://github.com/Intersmash/intersmash/tree/main</url>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>${nexus.staging.tag}</tag>
+    </scm>
 
     <modules>
         <module>kubernetes-client</module>
@@ -131,14 +131,10 @@
         <!-- maven-assembly-plugin -->
         <sourceReleaseAssemblyDescriptor>source-release</sourceReleaseAssemblyDescriptor>
 
-        <!-- TODO: Can be removed once we depend on JBoss parent -->
-        <!-- ***************** -->
-        <!-- Repository Deployment URLs -->
-        <!-- ***************** -->
-        <jboss.releases.repo.id>jbossqe-eap-releases-repository</jboss.releases.repo.id>
-        <jboss.releases.repo.url>https://repository.jboss.org/nexus/repository/jbossqe-eap/</jboss.releases.repo.url>
-        <jboss.snapshots.repo.id>jboss-snapshots-repository</jboss.snapshots.repo.id>
-        <jboss.snapshots.repo.url>https://repository.jboss.org/nexus/repository/snapshots/</jboss.snapshots.repo.url>
+        <!-- Repository Deployment Settings -->
+        <nexus.repository.staging>jbossqe-eap</nexus.repository.staging>
+        <nexus.repository.release>jbossqe-eap</nexus.repository.release>
+        <nexus.staging.tag>intersmash-${project.version}</nexus.staging.tag>
     </properties>
 
     <dependencyManagement>
