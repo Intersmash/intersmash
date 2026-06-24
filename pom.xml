@@ -51,6 +51,9 @@
     </modules>
 
     <properties>
+        <jdk.min.version>17</jdk.min.version>
+        <maven.compiler.release>17</maven.compiler.release>
+
         <xtf.version>1.0</xtf.version>
 
         <version.junit.jupiter>5.7.0</version.junit.jupiter>
