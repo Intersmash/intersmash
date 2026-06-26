@@ -16,7 +16,6 @@
         <!-- EAP 7 deployments must run on JDK 8 too -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Default EAP 7 version -->
         <jboss-eap7.version>7.4.20.GA</jboss-eap7.version>
         <jboss-eap7-xp.version>4.0.2.GA-7.4.20.GA</jboss-eap7-xp.version>
@@ -86,6 +85,16 @@
                 <configuration>
                     <skip>true</skip>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nxrm3-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>nexus-deploy</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

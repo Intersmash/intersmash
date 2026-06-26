@@ -19,33 +19,7 @@
         <module>deployments-provider</module>
     </modules>
 
-    <properties>
-        <version.maven-install-plugin>3.0.0-M1</version.maven-install-plugin>
-        <version.maven-war-plugin>3.3.2</version.maven-war-plugin>
-    </properties>
-
     <build>
-        <pluginManagement>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>${version.maven-install-plugin}</version>
-                </plugin>
-                <plugin>
-                    <!--
-                        At this level, the WAR plugin should only have basic configuration, e.g. don't fail in case
-                        the web.xml is missing. It is common config and useful for all deployments
-                     -->
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>${version.maven-war-plugin}</version>
-                    <configuration>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </pluginManagement>
         <plugins>
             <!--
                 We want for tests to be executed by Surefire (in case there will be any), but the inherited
@@ -57,33 +31,5 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>jboss-release</id>
-            <build>
-                <plugins>
-                    <!--
-                        The test-deployments POM must be published because is transitively pulled in by the build
-                    -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-deploy-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>gpg-sign</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
 </project>
