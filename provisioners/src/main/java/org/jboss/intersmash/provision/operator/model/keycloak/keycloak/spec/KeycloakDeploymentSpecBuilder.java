@@ -15,9 +15,9 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.keycloak.spec;
 
-import org.keycloak.v1alpha1.keycloakspec.KeycloakDeploymentSpec;
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.Experimental;
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.Resources;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.KeycloakDeploymentSpec;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.Experimental;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.Resources;
 
 /**
  * Resources (Requests and Limits) for KeycloakDeployment.

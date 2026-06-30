@@ -18,7 +18,7 @@ package org.jboss.intersmash.provision.operator.model.keycloak.client.spec;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.keycloak.v1alpha1.keycloakclientspec.client.ProtocolMappers;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakclientspec.client.ProtocolMappers;
 
 public final class KeycloakProtocolMapperBuilder {
 	private String id;

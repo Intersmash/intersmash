@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.keycloak.v1alpha1.Keycloak;
-import org.keycloak.v1alpha1.KeycloakSpec;
-import org.keycloak.v1alpha1.keycloakspec.ExternalAccess;
-import org.keycloak.v1alpha1.keycloakspec.ExternalDatabase;
-import org.keycloak.v1alpha1.keycloakspec.PodDisruptionBudget;
+import org.jboss.intersmash.rhsso.v1alpha1.Keycloak;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakSpec;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.ExternalAccess;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.ExternalDatabase;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.PodDisruptionBudget;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 
