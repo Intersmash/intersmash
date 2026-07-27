@@ -18,7 +18,7 @@ package org.jboss.intersmash.provision.operator.model.keycloak.keycloak.spec;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.items.Items;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.items.Items;
 
 public final class ConfigMapVolumeSpecBuilder {
 	private String name;
@@ -72,8 +72,8 @@ public final class ConfigMapVolumeSpecBuilder {
 		return this;
 	}
 
-	public org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items build() {
-		org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items configMapVolumeSpec = new org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items();
+	public org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items build() {
+		org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items configMapVolumeSpec = new org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items();
 		configMapVolumeSpec.setName(name);
 		configMapVolumeSpec.setMountPath(mountPath);
 		configMapVolumeSpec.setItems(items);

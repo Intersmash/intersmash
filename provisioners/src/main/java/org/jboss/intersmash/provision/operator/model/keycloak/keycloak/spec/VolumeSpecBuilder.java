@@ -17,7 +17,7 @@ package org.jboss.intersmash.provision.operator.model.keycloak.keycloak.spec;
 
 import java.util.List;
 
-import org.keycloak.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.keycloakdeploymentspec.experimental.volumes.Items;
 
 public final class VolumeSpecBuilder {
 	private List<String> configMap;

@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.keycloak.spec;
 
-import org.keycloak.v1alpha1.keycloakspec.ExternalDatabase;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakspec.ExternalDatabase;
 
 /**
  * 	Controls external database settings.

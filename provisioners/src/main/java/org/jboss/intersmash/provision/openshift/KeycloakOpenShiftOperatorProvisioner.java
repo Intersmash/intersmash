@@ -23,10 +23,10 @@ import org.assertj.core.util.Strings;
 import org.jboss.intersmash.IntersmashConfig;
 import org.jboss.intersmash.application.operator.KeycloakOperatorApplication;
 import org.jboss.intersmash.provision.operator.KeycloakOperatorProvisioner;
-import org.keycloak.k8s.v2alpha1.Keycloak;
-import org.keycloak.k8s.v2alpha1.KeycloakOperatorKeycloakList;
-import org.keycloak.k8s.v2alpha1.KeycloakOperatorRealmImportList;
-import org.keycloak.k8s.v2alpha1.KeycloakRealmImport;
+import org.keycloak.k8s.v2beta1.Keycloak;
+import org.keycloak.k8s.v2beta1.KeycloakOperatorKeycloakList;
+import org.keycloak.k8s.v2beta1.KeycloakOperatorRealmImportList;
+import org.keycloak.k8s.v2beta1.KeycloakRealmImport;
 
 import cz.xtf.core.openshift.OpenShifts;
 import io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition;

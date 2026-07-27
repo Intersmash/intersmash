@@ -17,9 +17,9 @@ package org.jboss.intersmash.provision.operator.model.keycloak.backup;
 
 import java.util.Map;
 
-import org.keycloak.v1alpha1.KeycloakBackup;
-import org.keycloak.v1alpha1.KeycloakBackupSpec;
-import org.keycloak.v1alpha1.keycloakbackupspec.Aws;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakBackup;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakBackupSpec;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakbackupspec.Aws;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 

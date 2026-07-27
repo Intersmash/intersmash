@@ -58,11 +58,11 @@ import org.jboss.intersmash.util.CommandLineBasedKeystoreGenerator;
 import org.jboss.intersmash.util.openshift.WildflyOpenShiftUtils;
 import org.jboss.intersmash.util.tls.CertificatesUtils;
 import org.jboss.intersmash.util.wildfly.Eap7CliScriptBuilder;
-import org.keycloak.k8s.v2alpha1.Keycloak;
-import org.keycloak.k8s.v2alpha1.KeycloakBuilder;
-import org.keycloak.k8s.v2alpha1.keycloakspec.HostnameBuilder;
-import org.keycloak.k8s.v2alpha1.keycloakspec.HttpBuilder;
-import org.keycloak.k8s.v2alpha1.keycloakspec.IngressBuilder;
+import org.keycloak.k8s.v2beta1.Keycloak;
+import org.keycloak.k8s.v2beta1.KeycloakBuilder;
+import org.keycloak.k8s.v2beta1.keycloakspec.HostnameBuilder;
+import org.keycloak.k8s.v2beta1.keycloakspec.HttpBuilder;
+import org.keycloak.k8s.v2beta1.keycloakspec.IngressBuilder;
 
 import cz.xtf.builder.builders.SecretBuilder;
 import cz.xtf.builder.builders.secret.SecretType;

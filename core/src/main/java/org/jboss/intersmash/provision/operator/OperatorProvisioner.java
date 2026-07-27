@@ -42,6 +42,7 @@ import io.fabric8.kubernetes.api.model.ContainerStatus;
 import io.fabric8.kubernetes.api.model.Pod;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClient;
 import io.fabric8.kubernetes.client.NamespacedKubernetesClientAdapter;
+import io.fabric8.openshift.api.model.operatorhub.packages.v1.ChannelEntry;
 import io.fabric8.openshift.api.model.operatorhub.packages.v1.PackageChannel;
 import io.fabric8.openshift.api.model.operatorhub.packages.v1.PackageManifest;
 import io.fabric8.openshift.api.model.operatorhub.v1alpha1.CRDDescription;
@@ -312,14 +313,14 @@ public abstract class OperatorProvisioner<A extends OperatorApplication, C exten
 				.orElseThrow(() -> new IllegalStateException(
 						String.format("Cannot find desired channel in PackageManifest (%s): %s", packageManifestName,
 								this.operatorChannel)));
-		List<Map<String, Object>> entries = (List<Map<String, Object>>) channel.getAdditionalProperties().get("entries");
+		List<ChannelEntry> entries = channel.getEntries();
 		final String version = getVersion();
 		if (version == null || version.isBlank()) {
 			return channel.getCurrentCSV();
 		}
 		return entries.stream()
-				.filter(v -> v.get("version").equals(version))
-				.map(e -> e.get("name").toString())
+				.filter(v -> v.getVersion().equals(version))
+				.map(e -> e.getName())
 				.findFirst()
 				.orElse(channel.getCurrentCSV());
 	}

@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.keycloak.v1alpha1.KeycloakRealm;
-import org.keycloak.v1alpha1.KeycloakRealmSpec;
-import org.keycloak.v1alpha1.keycloakrealmspec.InstanceSelector;
-import org.keycloak.v1alpha1.keycloakrealmspec.Realm;
-import org.keycloak.v1alpha1.keycloakrealmspec.RealmOverrides;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakRealm;
+import org.jboss.intersmash.rhsso.v1alpha1.KeycloakRealmSpec;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.InstanceSelector;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.Realm;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.RealmOverrides;
 
 import io.fabric8.kubernetes.api.model.ObjectMeta;
 

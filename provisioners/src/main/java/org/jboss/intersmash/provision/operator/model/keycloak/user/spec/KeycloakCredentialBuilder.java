@@ -15,7 +15,7 @@
  */
 package org.jboss.intersmash.provision.operator.model.keycloak.user.spec;
 
-import org.keycloak.v1alpha1.keycloakrealmspec.realm.users.Credentials;
+import org.jboss.intersmash.rhsso.v1alpha1.keycloakrealmspec.realm.users.Credentials;
 
 public final class KeycloakCredentialBuilder {
 	private String type;
