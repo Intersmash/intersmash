@@ -26,6 +26,7 @@ import org.jboss.intersmash.application.openshift.helm.HelmChartRelease;
 import org.jboss.intersmash.application.openshift.helm.WildflyHelmChartOpenShiftApplication;
 import org.jboss.intersmash.model.helm.charts.values.eap8.HelmEap8Release;
 import org.jboss.intersmash.model.helm.charts.values.eap81.HelmEap81Release;
+import org.jboss.intersmash.model.helm.charts.values.eap82.HelmEap82Release;
 import org.jboss.intersmash.model.helm.charts.values.wildfly.HelmWildflyRelease;
 import org.jboss.intersmash.model.helm.charts.values.xp5.HelmXp5Release;
 import org.jboss.intersmash.model.helm.charts.values.xp6.HelmXp6Release;
@@ -34,6 +35,7 @@ import org.jboss.intersmash.provision.helm.wildfly.WildFlyHelmChartReleaseAdapte
 import org.jboss.intersmash.provision.helm.wildfly.WildflyHelmChartRelease;
 import org.jboss.intersmash.provision.helm.wildfly.eap8.Eap8HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.eap81.Eap81HelmChartReleaseAdapter;
+import org.jboss.intersmash.provision.helm.wildfly.eap82.Eap82HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.xp5.EapXp5HelmChartReleaseAdapter;
 import org.jboss.intersmash.provision.helm.wildfly.xp6.EapXp6HelmChartReleaseAdapter;
 import org.jboss.intersmash.test.deployments.TestDeploymentProperties;
@@ -96,9 +98,9 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 								IntersmashConfig.wildflyRuntimeImageURL(), jdkVersion));
 			} // EAP 8.2
 			else if (TestDeploymentProperties.isEap81DeploymentsBuildStreamEnabled()) {
-				HelmEap81Release helmRelease = HelmChartReleaseAdapter.<HelmEap81Release> fromValuesFile(
-						this.getClass().getResource("eap81-helm-values.yaml"), HelmEap81Release.class);
-				wildflyHelmChartRelease = new Eap81HelmChartReleaseAdapter(helmRelease)
+				HelmEap82Release helmRelease = HelmChartReleaseAdapter.<HelmEap82Release> fromValuesFile(
+						this.getClass().getResource("eap82-helm-values.yaml"), HelmEap82Release.class);
+				wildflyHelmChartRelease = new Eap82HelmChartReleaseAdapter(helmRelease)
 						.withJdkBuilderImage(new WildflyHelmChartRelease.JdkImage(
 								IntersmashConfig.wildflyImageURL(), jdkVersion))
 						.withJdkRuntimeImage(new WildflyHelmChartRelease.JdkImage(
@@ -117,6 +119,16 @@ public class WildflyHelmChartExistingValuesOpenShiftExampleApplication
 				HelmXp6Release helmRelease = HelmChartReleaseAdapter.<HelmXp6Release> fromValuesFile(
 						this.getClass().getResource("xp6-helm-values.yaml"), HelmXp6Release.class);
 				wildflyHelmChartRelease = new EapXp6HelmChartReleaseAdapter(helmRelease)
+						.withJdkBuilderImage(new WildflyHelmChartRelease.JdkImage(
+								IntersmashConfig.wildflyImageURL(), jdkVersion))
+						.withJdkRuntimeImage(new WildflyHelmChartRelease.JdkImage(
+								IntersmashConfig.wildflyRuntimeImageURL(), jdkVersion));
+			} // EAP XP 7
+			else if (TestDeploymentProperties.isEapXp7DeploymentsBuildStreamEnabled()) {
+				//TODO: replace with proper mapping if any will ever arrive, otherwise delete this comment
+				HelmEap82Release helmRelease = HelmChartReleaseAdapter.<HelmEap82Release> fromValuesFile(
+						this.getClass().getResource("xp7-helm-values.yaml"), HelmEap82Release.class);
+				wildflyHelmChartRelease = new Eap82HelmChartReleaseAdapter(helmRelease)
 						.withJdkBuilderImage(new WildflyHelmChartRelease.JdkImage(
 								IntersmashConfig.wildflyImageURL(), jdkVersion))
 						.withJdkRuntimeImage(new WildflyHelmChartRelease.JdkImage(

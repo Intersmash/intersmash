@@ -1,0 +1,19 @@
+build:
+  enabled: true
+  mode: "s2i"
+  # uri and ref will be specified via Helm --set arguments
+  contextDir: "testsuite/deployments/openshift-jakarta-sample-standalone"
+  s2i:
+    kind: "DockerImage"
+    buildApplicationImage: true
+    # builderImage and runtimeImage will be specified via the WildFly Helm Chart application descriptor APIs
+deploy:
+  enabled: true
+  replicas: 1
+  env: []
+  envFrom: []
+  volumeMounts: []
+  volumes: []
+  initContainers: []
+  extraContainers: []
+  'imagePullSecrets:': []

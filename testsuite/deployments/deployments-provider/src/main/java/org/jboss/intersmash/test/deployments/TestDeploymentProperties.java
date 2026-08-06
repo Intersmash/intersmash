@@ -36,6 +36,7 @@ public class TestDeploymentProperties {
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_82 = "eap82";
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP5 = "eapxp5";
 	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6 = "eapxp6";
+	public static final String WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP7 = "eapxp7";
 
 	static {
 		properties = new Properties();
@@ -100,6 +101,10 @@ public class TestDeploymentProperties {
 
 	public static Boolean isEapXp6DeploymentsBuildStreamEnabled() {
 		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP6.equals(getWildflyDeploymentsBuildStream());
+	}
+
+	public static Boolean isEapXp7DeploymentsBuildStreamEnabled() {
+		return WILDFLY_DEPLOYMENTS_BUILD_STREAM_VALUE_EAP_XP7.equals(getWildflyDeploymentsBuildStream());
 	}
 
 	public static String getWildflyDeploymentVariantFromStream(final String deploymentStream) {
