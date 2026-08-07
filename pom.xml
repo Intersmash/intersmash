@@ -102,7 +102,7 @@
         <version.aether>1.1.0</version.aether>
         <version.maven>3.3.9</version.maven>
         <version.junit5.platform>1.7.0</version.junit5.platform>
-        <version.assertj-core>3.24.2</version.assertj-core>
+        <version.assertj-core>3.27.7</version.assertj-core>
         <!-- Repository Deployment Settings -->
         <nexus.repository.staging>jbossqe-eap</nexus.repository.staging>
         <nexus.repository.release>jbossqe-eap</nexus.repository.release>
