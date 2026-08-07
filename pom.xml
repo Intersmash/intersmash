@@ -77,7 +77,7 @@
 
         <version.shrinkwrap>1.2.6</version.shrinkwrap>
 
-        <version.org.eclipse.jgit>6.6.1.202309021850-r</version.org.eclipse.jgit>
+        <version.org.eclipse.jgit>6.10.1.202505221210-r</version.org.eclipse.jgit>
         <!--
             This is needed now since XTF is using 3.11 and instead maven-aether-provider pulls 3.4 which is missing
             SystemUtils#IS_Z_OS
