@@ -51,7 +51,7 @@ jobs:
       - name: Mirror hyperfoil kube-rbac-proxy image needed by Hyperfoil
         run: minikube ssh "docker pull registry.k8s.io/kubebuilder/kube-rbac-proxy:v0.15.0 && docker tag registry.k8s.io/kubebuilder/kube-rbac-proxy:v0.15.0 gcr.io/kubebuilder/kube-rbac-proxy:v0.15.0"
       - name: Set up JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v6
         with:
           java-version: ${{ matrix.java-version }}
           distribution: 'temurin'
