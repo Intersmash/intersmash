@@ -125,7 +125,7 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 			BinaryBuildFromFile build = new BinaryBuildFromFile(
 					IntersmashConfig.eap7ImageURL(),
 					binarySource.getArchive(),
-					environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
+					environmentVariables.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())),
 					application.getName() + "-" + IntersmashConfig.eap7ProductCode());
 			ManagedBuildReference reference = BuildManagers.get().deploy(build);
 			BuildManagers.get().hasBuildCompleted(build).level(Level.DEBUG).waitFor();
@@ -199,7 +199,7 @@ public class Eap7ImageOpenShiftProvisioner implements OpenShiftProvisioner<Eap7I
 
 		// env vars
 		appBuilder.deploymentConfig().podTemplate().container()
-				.envVars(application.getEnvVars().stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)));
+				.envVars(application.getEnvVars().stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())));
 
 		// enable script debugging
 		if (application.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals("SCRIPT_DEBUG")))) {
