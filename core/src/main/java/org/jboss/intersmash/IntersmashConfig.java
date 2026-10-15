@@ -141,6 +141,11 @@ public class IntersmashConfig {
 	private static final String MYSQL_IMAGE_URL = "intersmash.mysql.image";
 	private static final String PGSQL_IMAGE_URL = "intersmash.postgresql.image";
 
+	// MAVEN
+	private static final String MAVEN_PROXY_URL = "intersmash.maven.proxy.url";
+	private static final String MAVEN_PROXY_USERNAME = "intersmash.maven.proxy.username";
+	private static final String MAVEN_PROXY_PASSWORD = "intersmash.maven.proxy.password";
+
 	public static boolean skipDeploy() {
 		return XTFConfig.get(SKIP_DEPLOY, "false").equals("true");
 	}
@@ -554,5 +559,17 @@ public class IntersmashConfig {
 
 	public static String openShiftAIOperatorVersion() {
 		return XTFConfig.get(OPENSHIFT_AI_OPERATOR_VERSION);
+	}
+
+	public static String mavenProxyUrl() {
+		return XTFConfig.get(MAVEN_PROXY_URL);
+	}
+
+	public static String mavenProxyUsername() {
+		return XTFConfig.get(MAVEN_PROXY_USERNAME);
+	}
+
+	public static String mavenProxyPassword() {
+		return XTFConfig.get(MAVEN_PROXY_PASSWORD);
 	}
 }
