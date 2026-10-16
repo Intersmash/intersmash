@@ -140,7 +140,7 @@ public abstract class BootableJarImageOpenShiftProvisioner
 				bootableJarBuild = new BinarySourceBuild(
 						IntersmashConfig.bootableJarImageURL(),
 						binarySource.getArchive(),
-						environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
+						environmentVariables.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())),
 						bootableApplication.getName());
 			} else if (archiveFile.isFile()) {
 				/*
@@ -165,7 +165,7 @@ public abstract class BootableJarImageOpenShiftProvisioner
 				bootableJarBuild = new BinaryBuildFromFile(
 						IntersmashConfig.bootableJarImageURL(),
 						binarySource.getArchive(),
-						environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
+						environmentVariables.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())),
 						bootableApplication.getName());
 			} else {
 				throw new RuntimeException(
@@ -222,7 +222,8 @@ public abstract class BootableJarImageOpenShiftProvisioner
 		// env vars
 		appBuilder.deploymentConfig().podTemplate().container()
 				.envVars(
-						bootableApplication.getEnvVars().stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)));
+						bootableApplication.getEnvVars().stream()
+								.collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())));
 
 		configureAppBuilder(appBuilder);
 

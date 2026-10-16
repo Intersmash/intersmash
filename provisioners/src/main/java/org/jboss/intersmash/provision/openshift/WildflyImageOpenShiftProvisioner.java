@@ -175,7 +175,7 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 				binaryBuild = new BinarySourceBuild(
 						IntersmashConfig.wildflyImageURL(),
 						localSourceCode,
-						environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
+						environmentVariables.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())),
 						wildflyApplication.getName());
 				ManagedBuildReference reference = BuildManagers.get().deploy(binaryBuild);
 				BuildManagers.get().hasBuildCompleted(binaryBuild).waitFor();
@@ -215,7 +215,7 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 				BinaryBuildFromFile wildflyBuild = new BinaryBuildFromFile(
 						IntersmashConfig.wildflyImageURL(),
 						binarySource.getArchive(),
-						environmentVariables.stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)),
+						environmentVariables.stream().collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())),
 						wildflyApplication.getName() + "-"
 								+ IntersmashConfig.getProductCode(IntersmashConfig.wildflyImageURL()));
 				ManagedBuildReference reference = BuildManagers.get().deploy(wildflyBuild);
@@ -302,7 +302,8 @@ public class WildflyImageOpenShiftProvisioner implements OpenShiftProvisioner<Wi
 
 		// env vars
 		appBuilder.deploymentConfig().podTemplate().container()
-				.envVars(wildflyApplication.getEnvVars().stream().collect(Collectors.toMap(EnvVar::getName, EnvVar::getValue)));
+				.envVars(wildflyApplication.getEnvVars().stream()
+						.collect(Collectors.toMap(e -> e.getName(), e -> e.getValue())));
 
 		// enable script debugging
 		if (wildflyApplication.getEnvVars().stream().noneMatch((envVar -> envVar.getName().equals(SCRIPT_DEBUG)))) {
